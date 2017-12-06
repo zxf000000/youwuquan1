@@ -36,7 +36,8 @@
 #define YBYLogout @"login/signOut?"
 // 保存头像
 #define YBYsaveUserIcon @"image/headImagesUpload?"
-
+// 获取所有技能
+#define YBYGetAllSkills @"skill/querySkillList?"
 
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 动态
