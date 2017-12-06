@@ -10,6 +10,12 @@
 
 @interface XFSkillModel : NSObject
 
+@property (nonatomic,copy) NSString *id;
+@property (nonatomic,copy) NSString *skillIcon;
+@property (nonatomic,copy) NSString *skillName;
+@property (nonatomic,copy) NSString *skillNo;
+
+
 @property (nonatomic,copy) NSString *icon;
 @property (nonatomic,copy) NSString *name;
 @property (nonatomic,assign) BOOL status;

@@ -95,7 +95,13 @@
 
 - (void)presentLoginVC {
     
-    [self presentViewController:[[XFLoginVCViewController alloc] init] animated:YES completion:nil];
+    XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
+    
+    UINavigationController *naviLogin = [[UINavigationController alloc] initWithRootViewController:loginVC];
+    
+    [self presentViewController:naviLogin animated:YES completion:nil];
+    
+    
 }
 
 - (void)dealloc {
@@ -131,7 +137,11 @@
         
     } else {
         
-        [self presentViewController:[[XFLoginVCViewController alloc] init] animated:YES completion:nil];
+        XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
+        
+        UINavigationController *naviLogin = [[UINavigationController alloc] initWithRootViewController:loginVC];
+        
+        [self presentViewController:naviLogin animated:YES completion:nil];
 
     }
     

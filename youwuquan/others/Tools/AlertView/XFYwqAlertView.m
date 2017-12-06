@@ -77,6 +77,7 @@
     [window addSubview:alertView];
     
     alertView.transform = CGAffineTransformMakeScale(0.1, 0.1);
+    
 
     
     return alertView;
@@ -94,6 +95,7 @@
     [window addSubview:alertView];
     
     alertView.transform = CGAffineTransformMakeScale(0.1, 0.1);
+    
     return alertView;
 
 }
@@ -161,6 +163,7 @@
         _detailLabel.font = [UIFont systemFontOfSize:15];
         _detailLabel.textColor = [UIColor blackColor];
         _detailLabel.text = [NSString stringWithFormat:@"查看%@的微信号",@"萱萱"];
+        _detailLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:_detailLabel];
         
         _cancelButton = [[UIButton alloc] init];
@@ -172,6 +175,7 @@
         _numberTextField.font = [UIFont systemFontOfSize:36];
         _numberTextField.borderStyle = UITextBorderStyleNone;
         _numberTextField.text = @"100";
+        _numberTextField.textAlignment = NSTextAlignmentCenter;
         [self addSubview:_numberTextField];
         _numberTextField.userInteractionEnabled = NO;
         
@@ -186,56 +190,26 @@
         _remainNum.font = [UIFont systemFontOfSize:12];
         _remainNum.textColor = UIColorHex(808080);
         _remainNum.text = @"支付后,ta的微信号会以短信的形式发送您的手机";
+        _remainNum.textAlignment = NSTextAlignmentCenter;
+
         [self addSubview:_remainNum];
         
-        [_iconView mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_offset(kIconTop);
-            make.centerX.mas_offset(0);
-            make.width.height.mas_equalTo(44);
-            
-        }];
+        _iconView.left = (kDsAlertViewWidth - 44)/2;
+        _iconView.top = kIconTop;
+        _iconView.width = 44;
+        _iconView.height = 44;
         
-        [_cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_offset(13);
-            make.right.mas_offset(-13);
-            make.height.width.mas_equalTo(15);
-            
-        }];
+        _cancelButton.frame = CGRectMake(kDsAlertViewWidth - 28 - 10, 10, 28, 28);
         
-        [_detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(_iconView.mas_bottom).offset(kdetailTop);
-            make.centerX.mas_offset(0);
-            make.height.mas_equalTo(kdetailheight);
-            
-        }];
+        _detailLabel.frame = CGRectMake(0, _iconView.bottom + kdetailTop, kDsAlertViewWidth, kdetailheight);
         
-        [_numberTextField mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(_detailLabel.mas_bottom).offset(kNumberTop);
-            make.centerX.mas_offset(0);
-            make.height.mas_equalTo(kNumberHeight);
-            
-        }];
+        _numberTextField.frame = CGRectMake(0, _detailLabel.bottom + kNumberTop, kDsAlertViewWidth, kNumberHeight);
         
-        [_rewardButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(_numberTextField.mas_bottom).offset(kDsButtonTop + kLineTop);
-            make.left.mas_offset(35);
-            make.right.mas_offset(-35);
-            make.height.mas_equalTo(44);
-            
-        }];
+        _rewardButton.frame = CGRectMake(35, _numberTextField.bottom + kDsButtonTop + kLineTop, (kDsAlertViewWidth - 70), 44);
         
-        [_remainNum mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(_rewardButton.mas_bottom).offset(kRemainTop);
-            make.centerX.mas_offset(0);
-            make.height.mas_equalTo(kRemainHeight);
-            
-        }];
+        _remainNum.frame = CGRectMake(0, _rewardButton.bottom + kRemainTop, (kDsAlertViewWidth ), kRemainHeight);
+        
+        
         
         [_rewardButton addTarget:self action:@selector(clickDoneButton:) forControlEvents:(UIControlEventTouchUpInside)];
         [_cancelButton addTarget:self action:@selector(clickCancelButton) forControlEvents:(UIControlEventTouchUpInside)];
@@ -408,6 +382,7 @@
         _detailLabel.font = [UIFont systemFontOfSize:15];
         _detailLabel.textColor = [UIColor blackColor];
         _detailLabel.text = [NSString stringWithFormat:@"向%@打赏钻石",@"萱萱"];
+        _detailLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:_detailLabel];
         
         _cancelButton = [[UIButton alloc] init];
@@ -419,6 +394,7 @@
         _numberTextField.font = [UIFont systemFontOfSize:36];
         _numberTextField.borderStyle = UITextBorderStyleNone;
         _numberTextField.text = @"100";
+        _numberTextField.textAlignment = NSTextAlignmentCenter;
         [self addSubview:_numberTextField];
         
         UIView *lineView = [[UIView alloc] init];
@@ -436,64 +412,30 @@
         _remainNum.font = [UIFont systemFontOfSize:12];
         _remainNum.textColor = UIColorHex(808080);
         _remainNum.text = @"您目前钻石余额:  1000";
+        _remainNum.textAlignment = NSTextAlignmentCenter;
         [self addSubview:_remainNum];
         
-        [_iconView mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_offset(kIconTop);
-            make.centerX.mas_offset(0);
-            make.width.height.mas_equalTo(44);
-            
-        }];
+
         
-        [_cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_offset(13);
-            make.right.mas_offset(-13);
-            make.height.width.mas_equalTo(15);
-            
-        }];
+        _iconView.left = (kDsAlertViewWidth - 44)/2;
+        _iconView.top = kIconTop;
+        _iconView.width = 44;
+        _iconView.height = 44;
         
-        [_detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(_iconView.mas_bottom).offset(kdetailTop);
-            make.centerX.mas_offset(0);
-            make.height.mas_equalTo(kdetailheight);
-            
-        }];
+
         
-        [_numberTextField mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(_detailLabel.mas_bottom).offset(kNumberTop);
-            make.centerX.mas_offset(0);
-            make.height.mas_equalTo(kNumberHeight);
-            
-        }];
+        _cancelButton.frame = CGRectMake(kDsAlertViewWidth - 28 - 10, 10, 28, 28);
         
-        [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(_numberTextField.mas_bottom).offset(kLineTop);
-            make.centerX.mas_offset(0);
-            make.height.mas_equalTo(1);
-            make.width.mas_equalTo(110);
-            
-        }];
-        [_rewardButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(lineView.mas_bottom).offset(kDsButtonTop);
-            make.left.mas_offset(35);
-            make.right.mas_offset(-35);
-            make.height.mas_equalTo(44);
-            
-        }];
+        _detailLabel.frame = CGRectMake(0, _iconView.bottom + kdetailTop, kDsAlertViewWidth, kdetailheight);
+
+        _numberTextField.frame = CGRectMake(0, _detailLabel.bottom + kNumberTop, kDsAlertViewWidth, kNumberHeight);
         
-        [_remainNum mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.top.mas_equalTo(_rewardButton.mas_bottom).offset(kRemainTop);
-            make.centerX.mas_offset(0);
-            make.height.mas_equalTo(kRemainHeight);
-            
-        }];
+        lineView.frame = CGRectMake((kDsAlertViewWidth - 110)/2, _numberTextField.bottom + kLineTop, 110, 1);
+
+        _rewardButton.frame = CGRectMake(35, lineView.bottom + kDsButtonTop, (kDsAlertViewWidth - 70), 44);
+
+        _remainNum.frame = CGRectMake(0, _rewardButton.bottom + kRemainTop, (kDsAlertViewWidth ), kRemainHeight);
+
         
         [_rewardButton addTarget:self action:@selector(clickDoneButton:) forControlEvents:(UIControlEventTouchUpInside)];
         [_cancelButton addTarget:self action:@selector(clickCancelButton) forControlEvents:(UIControlEventTouchUpInside)];
@@ -552,6 +494,7 @@
     
     [self pop_addAnimation:dropAnimation forKey:@""];
     
+    
     [UIView animateWithDuration:0.2 animations:^{
         
 //        self.transform = CGAffineTransformMakeScale(1, 1);
@@ -609,8 +552,7 @@
     dropAnimation.springBounciness = 10;
 
     [self pop_addAnimation:dropAnimation forKey:@""];
-    
-    
+
     
     [UIView animateWithDuration:0.2 animations:^{
        

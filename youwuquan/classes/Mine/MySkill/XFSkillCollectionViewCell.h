@@ -27,4 +27,7 @@
 
 @property (nonatomic,strong) id <XFSkillCelldelegate> delegate;
 
+@property (nonatomic,assign) BOOL isOpen;
+
+
 @end

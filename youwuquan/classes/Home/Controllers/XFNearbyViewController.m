@@ -91,7 +91,7 @@
 
 - (void)setupNavigationBar {
     
-    UIButton *sxButton = [[UIButton alloc] init];
+    UIButton *sxButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 30, 30))];
     [sxButton setImage:[UIImage imageNamed:@"home_filtrate"] forState:(UIControlStateNormal)];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:sxButton];

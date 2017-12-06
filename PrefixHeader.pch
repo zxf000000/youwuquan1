@@ -25,6 +25,7 @@
 
 #import "UIView+SetShadow.h"
 #import "UILabel+Setup.h"
+#import "UIView+GetBounes.h"
 
 // 第三方
 #import <MBProgressHUD.h>

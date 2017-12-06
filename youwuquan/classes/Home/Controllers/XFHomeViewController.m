@@ -398,45 +398,45 @@
         button.selected = NO;
     }
     
-    // 固定tabbar的位置
-    if (self.tableNode.view.contentOffset.y > 0 && self.tableNode.view.contentOffset.y < 200) {
-        
-        CGFloat progress = self.tableNode.view.contentOffset.y / 200.f;
-        
-        
-        CGRect frame = self.tabBarController.tabBar.frame;
-        frame.origin.y = kScreenHeight-49 + progress * 49;
-        
-        [UIView animateWithDuration:0.2 animations:^{
-            
-            self.tabBarController.tabBar.frame = frame;
-
-        }];
-        
-    }
-    
-    if (self.tableNode.view.contentOffset.y >= 200) {
-        
-        CGRect frame = self.tabBarController.tabBar.frame;
-        frame.origin.y = kScreenHeight;
-        [UIView animateWithDuration:0.2 animations:^{
-            
-            self.tabBarController.tabBar.frame = frame;
-            
-        }];
-    }
-    
-    if (self.tableNode.view.contentOffset.y <= 0) {
-        
-        CGRect frame = self.tabBarController.tabBar.frame;
-        frame.origin.y = kScreenHeight - 49;
-        [UIView animateWithDuration:0.2 animations:^{
-            
-            self.tabBarController.tabBar.frame = frame;
-            
-        }];
-        
-    }
+//    // 固定tabbar的位置
+//    if (self.tableNode.view.contentOffset.y > 0 && self.tableNode.view.contentOffset.y < 200) {
+//        
+//        CGFloat progress = self.tableNode.view.contentOffset.y / 200.f;
+//
+//
+//        CGRect frame = self.tabBarController.tabBar.frame;
+//        frame.origin.y = kScreenHeight-49 + progress * 49;
+//
+//        [UIView animateWithDuration:0.2 animations:^{
+//
+//            self.tabBarController.tabBar.frame = frame;
+//
+//        }];
+//
+//    }
+//
+//    if (self.tableNode.view.contentOffset.y >= 200) {
+//
+//        CGRect frame = self.tabBarController.tabBar.frame;
+//        frame.origin.y = kScreenHeight;
+//        [UIView animateWithDuration:0.2 animations:^{
+//
+//            self.tabBarController.tabBar.frame = frame;
+//
+//        }];
+//    }
+//
+//    if (self.tableNode.view.contentOffset.y <= 0) {
+//
+//        CGRect frame = self.tabBarController.tabBar.frame;
+//        frame.origin.y = kScreenHeight - 49;
+//        [UIView animateWithDuration:0.2 animations:^{
+//
+//            self.tabBarController.tabBar.frame = frame;
+//
+//        }];
+//
+//    }
     
 }
 

@@ -337,13 +337,16 @@
         
         make.left.mas_offset(15);
         make.top.mas_equalTo(self.loginButton.mas_bottom).offset(25);
+        make.width.mas_equalTo(70);
+        make.height.mas_equalTo(20);
         
     }];
     [self.forgetButton mas_makeConstraints:^(MASConstraintMaker *make) {
         
         make.right.mas_offset(-15);
         make.top.mas_equalTo(self.loginButton.mas_bottom).offset(25);
-        
+        make.width.mas_equalTo(70);
+        make.height.mas_equalTo(20);
     }];
     
     [self.loginLabel mas_makeConstraints:^(MASConstraintMaker *make) {

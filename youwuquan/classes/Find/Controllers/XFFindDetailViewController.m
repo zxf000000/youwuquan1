@@ -285,11 +285,11 @@
     
     [self.headerView addSubview:self.headerImage];
     
-    [self.headerImage mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.top.left.right.bottom.mas_offset(0);
-        
-    }];
+//    [self.headerImage mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.top.left.right.bottom.mas_offset(0);
+//
+//    }];
     
     self.tableNode.view.contentInset = UIEdgeInsetsMake(kHeaderHeight, 0, 0, 0);
     self.headerView.frame = CGRectMake(0, -kHeaderHeight, kScreenWidth, kHeaderHeight);
@@ -300,11 +300,13 @@
     
     [self.headerView addSubview:shadowView];
     
-    [shadowView mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.top.left.right.bottom.mas_offset(0);
-        
-    }];
+    shadowView.frame = CGRectMake(0, 0, kScreenWidth, kHeaderHeight);
+    
+//    [shadowView mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.top.left.right.bottom.mas_offset(0);
+//
+//    }];
     
     // 个人信息view
     self.infoView = [[UIView alloc] initWithFrame:(CGRectMake(0, -100, kScreenWidth, 100))];
@@ -428,7 +430,6 @@
 - (void)clickShareButton {
     
     [XFShareManager sharedImageWithBg:@"backgroundImage" icon:@"find_pic3" name:kRandomName userid:@"ID:2334530" address:@"福田区,深圳"];
-    
     
 }
 

@@ -24,30 +24,33 @@
     
     _model = model;
     
-    _iconView.image = [UIImage imageNamed:_model.icon];
-    _nameLabel.text = _model.name;
+    [_iconView setImageWithURL:[NSURL URLWithString:_model.skillIcon] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+    _nameLabel.text = _model.skillName;
     
-    if (_model.status == 0) {
-        
+}
+
+- (void)setIsOpen:(BOOL)isOpen {
+    
+    _isOpen = isOpen;
+    
+    if (!isOpen) {
         _bgView.image = [UIImage imageNamed:@"skill_nolight"];
         [_editButton setTitle:@"点亮该技能" forState:(UIControlStateNormal)];
-        
     } else {
-        
         _bgView.image = [UIImage imageNamed:@"skill_Light"];
         [_editButton setTitle:@"编辑" forState:(UIControlStateNormal)];
+        
         
     }
     
 }
 
 
-
 - (IBAction)clickEditButton:(UIButton *)sender {
     
     if ([self.delegate respondsToSelector:@selector(skillCell:didClickEditButtonWithStatus:skillId:)]) {
         
-        [self.delegate skillCell:self didClickEditButtonWithStatus:self.model.status skillId:@""];
+        [self.delegate skillCell:self didClickEditButtonWithStatus:self.isOpen skillId:@""];
         
     }
     

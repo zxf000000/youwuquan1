@@ -14,8 +14,6 @@
 #define kOpenMoreButtonPadding 15
 #define kNoOpenMoreButtonPadding 0
 
-#define kLittlePicWidth
-
 @implementation XFFindCellNode
 
 - (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics {
@@ -457,7 +455,8 @@
         CGFloat picShadowHeight = picWidth * 19/35.f * 6/19.f;
         
         CGFloat littlePicWidth = (picWidth - 6)/3;
-        
+        CGFloat middlePicWidth = (picWidth - 3)/2;
+
         _imgShadowNode.style.preferredSize = CGSizeMake(picWidth, picShadowHeight);
         _rewardButton.style.preferredSize = CGSizeMake(65, 65);
         
@@ -505,7 +504,7 @@
         } else if (_pics.count == 4) {
             
             for (ASNetworkImageNode *picNode in _picNodes) {
-                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                picNode.style.preferredSize = CGSizeMake(middlePicWidth, middlePicWidth);
 
             }
             
@@ -517,7 +516,7 @@
             ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,downPicLayout]];
             
             
-            ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth - 3, 0,0)) child:picsLayout];
+            ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 0, 0,0)) child:picsLayout];
             
             ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
             
@@ -687,6 +686,7 @@
         
         CGFloat picShadowHeight = picHeight * 6/19.f;
         CGFloat littlePicWidth = (picWidth - 6)/3;
+        CGFloat middlePicWidth = (picWidth - 3)/2;
 
         _imgShadowNode.style.preferredSize = CGSizeMake(picWidth, picShadowHeight);
         _rewardButton.style.preferredSize = CGSizeMake(65, 65);
@@ -735,7 +735,7 @@
         } else if (_pics.count == 4) {
             
             for (ASNetworkImageNode *picNode in _picNodes) {
-                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                picNode.style.preferredSize = CGSizeMake(middlePicWidth, middlePicWidth);
                 
             }
             
@@ -747,7 +747,7 @@
             ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,downPicLayout]];
             
             
-            ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth - 3, 0,0)) child:picsLayout];
+            ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  0, 0,0)) child:picsLayout];
             
             ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
             

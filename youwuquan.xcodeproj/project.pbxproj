@@ -120,6 +120,8 @@
 		B76EA5B11FB479B0001673CC /* XFNetHotViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B76EA5B01FB479B0001673CC /* XFNetHotViewController.m */; };
 		B76EA5B41FB54B3B001673CC /* XFFIndHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B76EA5B31FB54B3B001673CC /* XFFIndHeaderCell.m */; };
 		B76EA5B71FB55801001673CC /* XFSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = B76EA5B61FB55801001673CC /* XFSlideView.m */; };
+		B78F632B1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B78F632A1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m */; };
+		B78F632E1FD8142000F83900 /* UIView+GetBounes.m in Sources */ = {isa = PBXBuildFile; fileRef = B78F632D1FD8142000F83900 /* UIView+GetBounes.m */; };
 		B7954EB81FC26BE10016BD45 /* NSBundle+PGDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B7954EA11FC26BE10016BD45 /* NSBundle+PGDatePicker.m */; };
 		B7954EB91FC26BE10016BD45 /* NSCalendar+PGCurrent.m in Sources */ = {isa = PBXBuildFile; fileRef = B7954EA31FC26BE10016BD45 /* NSCalendar+PGCurrent.m */; };
 		B7954EBA1FC26BE10016BD45 /* NSDate+PGCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = B7954EA51FC26BE10016BD45 /* NSDate+PGCategory.m */; };
@@ -437,6 +439,10 @@
 		B76EA5B31FB54B3B001673CC /* XFFIndHeaderCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFFIndHeaderCell.m; sourceTree = "<group>"; };
 		B76EA5B51FB55801001673CC /* XFSlideView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFSlideView.h; sourceTree = "<group>"; };
 		B76EA5B61FB55801001673CC /* XFSlideView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFSlideView.m; sourceTree = "<group>"; };
+		B78F63291FD7FCF800F83900 /* XFUserInfoNetWorkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFUserInfoNetWorkManager.h; sourceTree = "<group>"; };
+		B78F632A1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFUserInfoNetWorkManager.m; sourceTree = "<group>"; };
+		B78F632C1FD8142000F83900 /* UIView+GetBounes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+GetBounes.h"; path = "../../../../huishang/huishangPlus/huishangPlus/Tools/UIView+GetBounes.h"; sourceTree = "<group>"; };
+		B78F632D1FD8142000F83900 /* UIView+GetBounes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+GetBounes.m"; path = "../../../../huishang/huishangPlus/huishangPlus/Tools/UIView+GetBounes.m"; sourceTree = "<group>"; };
 		B7954EA01FC26BE10016BD45 /* NSBundle+PGDatePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+PGDatePicker.h"; sourceTree = "<group>"; };
 		B7954EA11FC26BE10016BD45 /* NSBundle+PGDatePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+PGDatePicker.m"; sourceTree = "<group>"; };
 		B7954EA21FC26BE10016BD45 /* NSCalendar+PGCurrent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCalendar+PGCurrent.h"; sourceTree = "<group>"; };
@@ -1372,6 +1378,7 @@
 		B74AE9DD1FA30835002BD4A6 /* NetWork */ = {
 			isa = PBXGroup;
 			children = (
+				B78F63281FD7FCDB00F83900 /* UserInfo */,
 				B73933C61FD66FAB00F2B0DD /* Money */,
 				B73933BC1FD4471900F2B0DD /* Status */,
 				B729E0E41FBE93420045FF68 /* Login */,
@@ -1396,6 +1403,8 @@
 		B74AE9E51FA30835002BD4A6 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				B78F632C1FD8142000F83900 /* UIView+GetBounes.h */,
+				B78F632D1FD8142000F83900 /* UIView+GetBounes.m */,
 				B7954E9F1FC26BE10016BD45 /* PGDatePicker */,
 				B7DDBC871FBD7A6300D53091 /* AlertView */,
 				B75362A81FB6E53600EDFE94 /* XFcarousel */,
@@ -1560,6 +1569,15 @@
 			children = (
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		B78F63281FD7FCDB00F83900 /* UserInfo */ = {
+			isa = PBXGroup;
+			children = (
+				B78F63291FD7FCF800F83900 /* XFUserInfoNetWorkManager.h */,
+				B78F632A1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m */,
+			);
+			path = UserInfo;
 			sourceTree = "<group>";
 		};
 		B7954E9F1FC26BE10016BD45 /* PGDatePicker */ = {
@@ -1995,6 +2013,7 @@
 				B723CBEE1FBC1A6400DC25E9 /* XFStatusDetailViewController.m in Sources */,
 				B7DF03101FA6BC1C0093022C /* XFHomeTopHeaderReusableView.m in Sources */,
 				B718C79F1FA8DDFC00DA470B /* YYTableView.m in Sources */,
+				B78F632B1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m in Sources */,
 				B73933D01FD6892A00F2B0DD /* XFFansViewController.m in Sources */,
 				B7E10FDC1FC506E1007FFCE0 /* XFActorCardInfoView.m in Sources */,
 				B723CBF11FBC1B7500DC25E9 /* XFStatusDetailCellNode.m in Sources */,
@@ -2077,6 +2096,7 @@
 				B723CBEA1FBBEF1800DC25E9 /* XFNearbyTableViewCell.m in Sources */,
 				B74AE9971FA306DB002BD4A6 /* AppDelegate.m in Sources */,
 				B757DAA71FCC095A002C0F3D /* XFSkillCollectionViewCell.m in Sources */,
+				B78F632E1FD8142000F83900 /* UIView+GetBounes.m in Sources */,
 				B74AE9F61FA30835002BD4A6 /* XFHomeCoreDataManager.m in Sources */,
 				B7AABEC01FC55A1D0031E0E8 /* XFChatViewController.m in Sources */,
 			);

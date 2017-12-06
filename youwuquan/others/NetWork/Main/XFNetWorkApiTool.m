@@ -68,41 +68,41 @@
 #define YBYGetAllLabels @"moment/getLabel"
 
 // 上传照片墙
-#define YBYUploadImgToWall @"yby/moment/photoWall"
+#define YBYUploadImgToWall @"moment/photoWall"
 
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 获取技能列表
-#define YBYGetSkillList @"yby/skill/querySkillList?"
+#define YBYGetSkillList @"skill/querySkillList?"
 // 激活或者修改邀约的技能
-#define YBYChangeSkill @"yby/skill/openOrUpdateSkill?"
+#define YBYChangeSkill @"skill/openOrUpdateSkill?"
 // 通过制定技能邀约用户
-#define YBYInviteSomeone @"yby/invite/invitationUser?"
+#define YBYInviteSomeone @"invite/invitationUser?"
 // 获取被邀约用户的所有信息
-#define YBYGetInvitedBodyInfo @"yby/invite/queryInviteList?"
+#define YBYGetInvitedBodyInfo @"invite/queryInviteList?"
 // 邀请注册页面
-#define YBYGetInvitePage @"yby/invite/queryInviteList?"
+#define YBYGetInvitePage @"invite/queryInviteList?"
 
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 获取融云token
-#define YBYGetRongToken @"yby/ronguser/getRongToken"
+#define YBYGetRongToken @"ronguser/getRongToken"
 // 获取用户昵称和头像
-#define YBYGetUSernameIcon @"yby/ronguser/getUserNickAndHeadUrl"
+#define YBYGetUSernameIcon @"ronguser/getUserNickAndHeadUrl"
 
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 充值钻石
-#define YBYChargeDiamond @"yby/property/rechargeDiamonds?"
+#define YBYChargeDiamond @"property/rechargeDiamonds?"
 // 打赏
-#define YBYReward @"yby/property/reward?"
+#define YBYReward @"property/reward?"
 // 解锁动态
-#define YBYUnlockStatus @"yby/property/unlockMoment"
+#define YBYUnlockStatus @"property/unlockMoment"
 
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 签到
-#define YBYSingUp @"yby/sign/goSign"
+#define YBYSingUp @"sign/goSign"
 // 获取每月签到数据
-#define YBYGetSingData @"yby/sign/getSignDataFromMonth"
+#define YBYGetSingData @"sign/getSignDataFromMonth"
 // 获取用户每日任务数据
-#define YBYGetDayMissionData @"yby/task/findTaskByUserNo"
+#define YBYGetDayMissionData @"task/findTaskByUserNo"
 
 
 @implementation XFNetWorkApiTool : NSObject
@@ -304,6 +304,12 @@
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetSingData];
 }
+
++ (NSString *)pathUrlForGetAllSkills {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetAllSkills];
+}
+
 
 
 @end

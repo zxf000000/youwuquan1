@@ -233,4 +233,9 @@
  */
 + (NSString *)pathUrlForGetUserNameIcon;
 
+/**
+ 获取所有技能
+ */
++ (NSString *)pathUrlForGetAllSkills;
+
 @end
