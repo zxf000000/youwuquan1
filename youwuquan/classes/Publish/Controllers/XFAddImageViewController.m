@@ -13,6 +13,7 @@
 #import "XFPublishAddImageViewCollectionViewCell.h"
 #import "XFImagePickerViewController.h"
 #import "XFSelectLabelViewController.h"
+#import "XFStatusNetworkManager.h"
 
 #define kImgInset 12
 #define kImgPadding 2
@@ -65,6 +66,7 @@
 //@property (nonatomic,assign) CGFloat centerHeight;
 @property (nonatomic,assign) BOOL isOpenImage;
 
+@property (nonatomic,strong) NSMutableArray *video;
 
 @end
 
@@ -100,7 +102,55 @@
 
 - (void)clickPublishButton {
     
+    if (self.video.count == 0 || self.video == nil) {
+        
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在发布"];
+        
+        NSString *type;
+        
+        if ((self.openintentionImages.count + self.secintentionImages.count) > 0) {
+            
+            type =  @"2";
+        } else {
+            
+            type =  @"1";
 
+        }
+        
+        // 上传图片文字
+        [XFStatusNetworkManager publishStatusWithopenAlbumId:@"1" intimateAlbumId:@"2" opens:self.openintentionImages intimates:self.secintentionImages type:type title:self.textView.text unlockNum:@"555" customLabel:@"好" labels:@"1,2" successBlock:^(NSDictionary *reponseDic) {
+            [HUD hideAnimated:YES];
+
+            if (reponseDic) {
+                
+//                [XFToolManager changeHUD:HUD successWithText:@"发布成功"];
+                [XFToolManager showProgressInWindowWithString:@"发布成功"];
+                
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    
+                    [self dismissViewControllerAnimated:YES completion:^{
+                        
+                        // 刷新动态页面通知
+                        
+                        
+                    }];
+                });
+
+                
+            }
+            
+            
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+            
+        }];
+        
+    } else {
+        
+        // 上传视频
+    }
+    
 }
 
 - (void)setupScrolLView {
@@ -230,20 +280,21 @@
         
         [self reloadImageViewHeight];
 
-
     } else {
         
         [self.secintentionImages addObjectsFromArray:images];
         [self.secretView reloadData];
         
         [self reloadImageViewHeight];
+    
+        
     }
+    [self setScrollContent];
     
     
 }
 // 重新计算高度
 - (void)reloadImageViewHeight {
-    
     
     self.secretHeight = 30 + [self heightForSecIntentionView];
     
@@ -272,11 +323,16 @@
 - (void)selecteTagVC:(XFSelectLabelViewController *)selecteVC didSelectedTagsWith:(NSArray *)tags {
     
     self.labelsArr = [NSMutableArray arrayWithArray:tags];
+    
     [self.labelsArr addObject:@""];
     [self.centerView reloadData];
+    [self.centerView layoutIfNeeded];
+
+
     [self setScrollContent];
     
 }
+
 
 #pragma mark - 图片选择collectionViewCellDelegate
 - (void)publishCollectionCell:(XFPublishAddImageViewCollectionViewCell *)cell didClickDeleteButtonWithIndexPath:(NSIndexPath *)indexPath {
@@ -508,6 +564,17 @@
 - (void)setScrollContent {
     
     self.centerHeight = self.centerView.contentSize.height;
+    
+    [self.centerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        
+        make.left.mas_offset(0);
+        make.top.mas_equalTo(self.textView.mas_bottom).offset(4);
+        make.height.mas_equalTo(self.centerView.contentSize.height);
+        make.width.mas_equalTo(kScreenWidth);
+        
+    }];
+    
+    [self.view setNeedsUpdateConstraints];
     
     self.scrollView.contentSize = CGSizeMake(0, self.topHeight + self.centerHeight + self.openHeight + self.secretHeight + 16 + 20);
     
@@ -753,10 +820,12 @@
 }
 
 
+
 - (void)clickBackButton {
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
 
 
 @end

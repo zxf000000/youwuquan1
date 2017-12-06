@@ -67,6 +67,11 @@ typedef NS_ENUM(NSInteger,FindCellType) {
  */
 @property (nonatomic,strong) ASNetworkImageNode *picNode;
 
+// 图片集合
+@property (nonatomic,copy) NSArray *pics;
+
+@property (nonatomic,copy) NSArray *picNodes;
+
 /**
  文编
  */
@@ -123,10 +128,10 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 @property (nonatomic,assign) BOOL isOpen;
 
-- (instancetype)initWithOpen:(BOOL)open;
+- (instancetype)initWithOpen:(BOOL)open pics:(NSArray *)pics;
 
 @property (nonatomic,assign) FindCellType type;
 
-- (instancetype)initWithType:(FindCellType)type;
+- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics;
 
 @end

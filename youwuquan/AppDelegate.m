@@ -31,6 +31,7 @@
 
 #import "XFMessageViewController.h"
 #import "XFMineViewController.h"
+#import "XFMessageListViewController.h"
 
 //#import "XFDiamondMessageContent.h"
 
@@ -166,7 +167,9 @@
 #pragma mark - tabbarVCdelegate
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
     
-    if ([viewController isKindOfClass:[XFMessageViewController class]] || [viewController isKindOfClass:[XFMineViewController class]]) {
+    UINavigationController *navi = (UINavigationController *)viewController;
+    
+    if ([navi.topViewController isKindOfClass:[XFMessageListViewController class]] || [navi.topViewController isKindOfClass:[XFMineViewController class]]) {
         
         if (![XFUserInfoManager sharedManager].token) {
             

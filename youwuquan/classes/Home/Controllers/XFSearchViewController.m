@@ -618,7 +618,7 @@
 
     return ^ASCellNode *{
         
-        XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO];
+        XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO pics:@[]];
         
         node.index = indexPath;
         

@@ -85,19 +85,38 @@
 
 /**
  发布动态
- 
- @param businType 类型
- @param openAlbumId 开放相册id
- @param intimateAlbumId 隐私相册id
- @param opens 开放图片
- @param intimates 隐私图片
- @param files 视频
- @param jsonString json
- @param labels 标签
- @param jsonVideo 视频json
  */
-+ (void)publishStatusWithbusinType:(NSString *)businType openAlbumId:(NSString *)openAlbumId intimateAlbumId:(NSString *)intimateAlbumId opens:(NSString *)opens intimates:(NSString *)intimates files:(NSString *)files jsonString:(NSString *)jsonString  labels:(NSString *)labels jsonVideo:(NSString *)jsonVideo {
++ (void)publishStatusWithopenAlbumId:(NSString *)openAlbumId intimateAlbumId:(NSString *)intimateAlbumId opens:(NSArray *)opens intimates:(NSArray *)intimates type:(NSString *)type title:(NSString *)title unlockNum:(NSString *)unlockNum customLabel:(NSString *)customLabel labels:(NSString *)labels successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock {
     
+    NSMutableDictionary *jsonDic = [NSMutableDictionary dictionary];
+    [jsonDic setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
+    [jsonDic setObject:type forKey:@"type"];
+    [jsonDic setObject:title forKey:@"title"];
+    [jsonDic setObject:unlockNum forKey:@"unlockNum"];
+    if (customLabel) {
+        
+        [jsonDic setObject:customLabel forKey:@"customLabel"];
+        
+    }
+    NSString *jsonString = [self DataTOjsonString:jsonDic];
+    
+
+    NSMutableDictionary *para = [NSMutableDictionary dictionary];
+    [para setObject:openAlbumId forKey:@"openAlbumId"];
+    [para setObject:intimateAlbumId forKey:@"intimateAlbumId"];
+    [para setObject:jsonString forKey:@"jsonString"];
+    [para setObject:@"1,2" forKey:@"labels"];
+    
+    [[XFNetWorkManager sharedManager] publishUploadWithUrl:[XFNetWorkApiTool pathUrlForPublish] Opens:opens secs:intimates paraments:para successHandle:^(NSDictionary *responseDic) {
+       
+        success(responseDic);
+        
+    } failedBlock:^(NSError *error) {
+        
+        failedBlock(error);
+    }];
+    
+
     
     
 }
@@ -300,6 +319,21 @@
         failedBlock(error);
     }];
     
+}
+
++ (NSString*)DataTOjsonString:(id)object
+{
+    NSString *jsonString = nil;
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object
+                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                         error:&error];
+    if (! jsonData) {
+        NSLog(@"Got an error: %@", error);
+    } else {
+        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+    return jsonString;
 }
 
 @end

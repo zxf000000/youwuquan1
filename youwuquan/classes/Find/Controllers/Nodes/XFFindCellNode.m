@@ -14,13 +14,15 @@
 #define kOpenMoreButtonPadding 15
 #define kNoOpenMoreButtonPadding 0
 
+#define kLittlePicWidth
 
 @implementation XFFindCellNode
 
-- (instancetype)initWithType:(FindCellType)type {
+- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics {
     
     if (self  = [super init]) {
 
+        _pics = pics;
         _type = type;
         self.backgroundColor = UIColorHex(f4f4f4);
         
@@ -35,14 +37,24 @@
         [self addSubnode:_backNode];
         
         // 图像
-        _picNode = [[ASNetworkImageNode alloc] init];
-        _picNode.defaultImage = [UIImage imageNamed:kRandomPic];
+        NSMutableArray *nodes = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < _pics.count ; i ++ ) {
+            
+            ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
+            picNode.defaultImage = [UIImage imageNamed:_pics[i]];
+            
+            picNode.cornerRadius = 10;
+            picNode.clipsToBounds = YES;
+            
+            [self addSubnode:picNode];
+            [nodes addObject:picNode];
+        }
         
-        [self addSubnode:_picNode];
+        _picNodes = nodes.copy;
         
         // 图像遮罩
         _imgShadowNode = [[ASImageNode alloc] init];
-        _imgShadowNode.image = [UIImage imageNamed:@"overlay-zise"];
+//        _imgShadowNode.image = [UIImage imageNamed:@"overlay-zise"];
         [self addSubnode:_imgShadowNode];
         
         // 打赏
@@ -55,7 +67,7 @@
         
         // 文字
         _contentNode = [[ASTextNode alloc] init];
-        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:2 kern:1];
+        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:4 kern:1];
         _contentNode.maximumNumberOfLines = 3;
         [self addSubnode:_contentNode];
         
@@ -126,14 +138,16 @@
     
 }
 
-- (instancetype)initWithOpen:(BOOL)open {
+- (instancetype)initWithOpen:(BOOL)open pics:(NSArray *)pics {
     
     if (self  = [super init]) {
         _type = List;
 
         _isOpen = NO;
-        self.backgroundColor = UIColorHex(f4f4f4);
         
+        _pics = pics;
+        
+        self.backgroundColor = UIColorHex(f4f4f4);
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
         _backNode = [[ASDisplayNode alloc] init];
@@ -200,14 +214,28 @@
         [self addSubnode:_shareButton];
         
         // 图像
-        _picNode = [[ASNetworkImageNode alloc] init];
-        _picNode.defaultImage = [UIImage imageNamed:kRandomPic];
+//        _picNode = [[ASNetworkImageNode alloc] init];
+//        _picNode.defaultImage = [UIImage imageNamed:@"actor_pic2"];
+//
+//        [self addSubnode:_picNode];
         
-        [self addSubnode:_picNode];
+        NSMutableArray *nodes = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < _pics.count ; i ++ ) {
+            
+            ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
+            picNode.defaultImage = [UIImage imageNamed:_pics[i]];
+            picNode.cornerRadius = 10;
+            picNode.clipsToBounds = YES;
+            [self addSubnode:picNode];
+            [nodes addObject:picNode];
+        }
+        
+        _picNodes = nodes.copy;
+        
         
         // 图像遮罩
         _imgShadowNode = [[ASImageNode alloc] init];
-        _imgShadowNode.image = [UIImage imageNamed:@"overlay-zise"];
+//        _imgShadowNode.image = [UIImage imageNamed:@"overlay-zise"];
         [self addSubnode:_imgShadowNode];
         
         // 打赏
@@ -220,7 +248,7 @@
         
         // 文字
         _contentNode = [[ASTextNode alloc] init];
-        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:2 kern:1];
+        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:4 kern:1];
         _contentNode.maximumNumberOfLines =3;
         _contentNode.truncationMode = NSLineBreakByTruncatingTail;
         [self addSubnode:_contentNode];
@@ -261,7 +289,8 @@
         // 图片遮罩
         _shadowNode = [[ASImageNode alloc] init];
         _shadowNode.image = [UIImage imageNamed:@"find_bai1"];
-        
+        _shadowNode.cornerRadius = 10;
+        _shadowNode.clipsToBounds = YES;
         [self addSubnode:_shadowNode];
         
         // 小图标们
@@ -424,29 +453,182 @@
         upLayout.style.spacingAfter = 18;
         //图像比例   19/35
         CGFloat picWidth = kScreenWidth - 20;
-        CGFloat picHeight = picWidth * 19/35.f;
         
-        CGFloat picShadowHeight = picHeight * 6/19.f;
+        CGFloat picShadowHeight = picWidth * 19/35.f * 6/19.f;
         
+        CGFloat littlePicWidth = (picWidth - 6)/3;
         
-        // 图像
-        _picNode.style.preferredSize = CGSizeMake(picWidth, picHeight);
         _imgShadowNode.style.preferredSize = CGSizeMake(picWidth, picShadowHeight);
         _rewardButton.style.preferredSize = CGSizeMake(65, 65);
         
-        ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(picHeight - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+        ASStackLayoutSpec *picButtonLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[]];
+
+        if (_pics.count == 1) {
+
+            ASNetworkImageNode *picNode = self.picNodes[0];
+            CGSize imgSize = picNode.defaultImage.size;
+            CGFloat leftInset = 0;
+            CGFloat picHeight = 0;
+            
+            if (imgSize.height > imgSize.width) {
+                
+                picWidth = picWidth/2;
+                picHeight = picWidth * imgSize.height/imgSize.width;
+                leftInset = picWidth;
+                
+                if (picHeight > kScreenWidth) {
+                    
+                    picHeight = kScreenWidth;
+                    
+                }
+                
+            } else {
+                
+                picHeight = picWidth * imgSize.height/imgSize.width;
+                
+            }
+            
+            picNode.style.preferredSize = CGSizeMake(picWidth, picHeight);
+
+            // 图像
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(picHeight - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:picShadowLayout];
+            
+            ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, -leftInset, 0, 0)) child:picLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picInset,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+            
+        } else if (_pics.count == 4) {
+            
+            for (ASNetworkImageNode *picNode in _picNodes) {
+                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+
+            }
+            
+            ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1]]];
+            ASStackLayoutSpec *downPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[2],_picNodes[3]]];
+
+//            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) flexWrap:(ASStackLayoutFlexWrapNoWrap) alignContent:(ASStackLayoutAlignContentStretch) children:@[upPicLayout,downPicLayout]];
+            
+            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,downPicLayout]];
+            
+            
+            ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth - 3, 0,0)) child:picsLayout];
+            
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+            
+        } else if (_pics.count > 1 && _pics.count <= 3) {
+            
+            for (ASNetworkImageNode *picNode in _picNodes) {
+                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                
+            }
+            
+            ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:_picNodes];
+            
+            ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth * (3 - _picNodes.count), 0,0)) child:upPicLayout];
+
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+            
+        } else if (_pics.count > 3 && _pics.count <= 6) {
+            
+            NSMutableArray *downNodes = [NSMutableArray array];
+            for (NSInteger i = 0 ; i <_picNodes.count ; i ++ ) {
+                
+                ASNetworkImageNode *picNode = _picNodes[i];
+                
+                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                
+                if (i > 2) {
+                    
+                    [downNodes addObject:picNode];
+                    
+                }
+            }
+            
+            ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1],_picNodes[2]]];
+            ASStackLayoutSpec *downPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:downNodes];
+            
+            //            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) flexWrap:(ASStackLayoutFlexWrapNoWrap) alignContent:(ASStackLayoutAlignContentStretch) children:@[upPicLayout,downPicLayout]];
+            
+            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,downPicLayout]];
+            
+            
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+            
+        } else if (_pics.count > 6 && _pics.count <= 9) {
+            
+            NSMutableArray *centerNodes = [NSMutableArray array];
+            NSMutableArray *downNodes = [NSMutableArray array];
+            
+            for (NSInteger i = 0 ; i <_picNodes.count ; i ++ ) {
+                
+                ASNetworkImageNode *picNode = _picNodes[i];
+                
+                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                
+                if (i > 2 && i < 6) {
+                    
+                    [centerNodes addObject:picNode];
+                    
+                }
+                
+                if (i >= 6 && i < 9) {
+                    
+                    [downNodes addObject:picNode];
+
+                }
+            }
+            
+            ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1],_picNodes[2]]];
+            ASStackLayoutSpec *centerPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:centerNodes];
+            ASStackLayoutSpec *downPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:downNodes];
+
+            
+            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,centerPicLayout,downPicLayout]];
+            
+            
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 3 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+        }
         
-        ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:_picNode overlay:picShadowLayout];
-        
-        ASStackLayoutSpec *picButtonLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+
         
         
+        CGFloat textWidth = kScreenWidth - 20 - 36;
         
         // 文字
         _contentNode.style.flexShrink = 1;
-        _shadowNode.style.preferredSize = CGSizeMake(picWidth-36, kTextShadowHeight);
+        _shadowNode.style.preferredSize = CGSizeMake(textWidth, kTextShadowHeight);
         _shadowNode.style.spacingBefore = kTextShadowInset;
-        _contentNode.style.width = ASDimensionMake(picWidth-36);
+        _contentNode.style.width = ASDimensionMake(textWidth);
         
         _shadowNode.style.spacingAfter = 0;
         _shadowNode.style.flexGrow = 1;
@@ -494,24 +676,180 @@
         return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 10, 5, 10)) child:backLayout];
         
     } else {
+        
+        
+        // 个人资料中
+        
+        
         //图像比例   19/35
         CGFloat picWidth = kScreenWidth - 20;
         CGFloat picHeight = picWidth * 19/35.f;
         
         CGFloat picShadowHeight = picHeight * 6/19.f;
-        
-        // 图像
-        _picNode.style.preferredSize = CGSizeMake(picWidth, picHeight);
+        CGFloat littlePicWidth = (picWidth - 6)/3;
+
         _imgShadowNode.style.preferredSize = CGSizeMake(picWidth, picShadowHeight);
         _rewardButton.style.preferredSize = CGSizeMake(65, 65);
         
-        ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(picHeight - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+        ASStackLayoutSpec *picButtonLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[]];
         
-        ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:_picNode overlay:picShadowLayout];
+        if (_pics.count == 1) {
+            
+            ASNetworkImageNode *picNode = self.picNodes[0];
+            CGSize imgSize = picNode.defaultImage.size;
+            CGFloat leftInset = 0;
+            CGFloat picHeight = 0;
+            
+            if (imgSize.height > imgSize.width) {
+                
+                picWidth = picWidth/2;
+                picHeight = picWidth * imgSize.height/imgSize.width;
+                leftInset = picWidth;
+                
+                if (picHeight > kScreenWidth) {
+                    
+                    picHeight = kScreenWidth;
+                    
+                }
+                
+            } else {
+                
+                picHeight = picWidth * imgSize.height/imgSize.width;
+                
+            }
+            
+            picNode.style.preferredSize = CGSizeMake(picWidth, picHeight);
+            
+            // 图像
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(picHeight - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:picShadowLayout];
+            
+            ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, -leftInset, 0, 0)) child:picLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picInset,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+            
+        } else if (_pics.count == 4) {
+            
+            for (ASNetworkImageNode *picNode in _picNodes) {
+                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                
+            }
+            
+            ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1]]];
+            ASStackLayoutSpec *downPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[2],_picNodes[3]]];
+            
+            //            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) flexWrap:(ASStackLayoutFlexWrapNoWrap) alignContent:(ASStackLayoutAlignContentStretch) children:@[upPicLayout,downPicLayout]];
+            
+            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,downPicLayout]];
+            
+            
+            ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth - 3, 0,0)) child:picsLayout];
+            
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+            
+        } else if (_pics.count > 1 && _pics.count <= 3) {
+            
+            for (ASNetworkImageNode *picNode in _picNodes) {
+                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                
+            }
+            
+            ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:_picNodes];
+            
+            ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth * (3 - _picNodes.count), 0,0)) child:upPicLayout];
+            
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+            
+        } else if (_pics.count > 3 && _pics.count <= 6) {
+            
+            NSMutableArray *downNodes = [NSMutableArray array];
+            for (NSInteger i = 0 ; i <_picNodes.count ; i ++ ) {
+                
+                ASNetworkImageNode *picNode = _picNodes[i];
+                
+                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                
+                if (i > 2) {
+                    
+                    [downNodes addObject:picNode];
+                    
+                }
+            }
+            
+            ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1],_picNodes[2]]];
+            ASStackLayoutSpec *downPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:downNodes];
+            
+            //            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) flexWrap:(ASStackLayoutFlexWrapNoWrap) alignContent:(ASStackLayoutAlignContentStretch) children:@[upPicLayout,downPicLayout]];
+            
+            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,downPicLayout]];
+            
+            
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+            
+        } else if (_pics.count > 6 && _pics.count <= 9) {
+            
+            NSMutableArray *centerNodes = [NSMutableArray array];
+            NSMutableArray *downNodes = [NSMutableArray array];
+            
+            for (NSInteger i = 0 ; i <_picNodes.count ; i ++ ) {
+                
+                ASNetworkImageNode *picNode = _picNodes[i];
+                
+                picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+                
+                if (i > 2 && i < 6) {
+                    
+                    [centerNodes addObject:picNode];
+                    
+                }
+                
+                if (i >= 6 && i < 9) {
+                    
+                    [downNodes addObject:picNode];
+                    
+                }
+            }
+            
+            ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1],_picNodes[2]]];
+            ASStackLayoutSpec *centerPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:centerNodes];
+            ASStackLayoutSpec *downPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:downNodes];
+            
+            
+            ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,centerPicLayout,downPicLayout]];
+            
+            
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 3 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            
+            picButtonLayout = picButtonLayou;
+        }
         
-        ASStackLayoutSpec *picButtonLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
-        
-        
+
         
         // 文字
         // 文字

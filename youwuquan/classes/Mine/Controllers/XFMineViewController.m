@@ -22,6 +22,8 @@
 #import "XFYwqAlertView.h"
 #import "XFLoginManager.h"
 #import "XFShareManager.h"
+#import "XFMyCaresViewController.h"
+#import "XFFansViewController.h"
 
 
 #define kHeaderHeight (kScreenWidth * 170/375.f)
@@ -79,7 +81,7 @@
 
 @end
 
-@interface XFMineViewController () <ASTableDelegate,ASTableDataSource,XFMyHeaderDelegate>
+@interface XFMineViewController () <ASTableDelegate,ASTableDataSource,XFMyHeaderDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @property (nonatomic,strong) ASTableNode *tableNode;
 
@@ -123,8 +125,7 @@
     [self setupHeaderView];
     [self setupInfoView];
     
-    self.userInfo = [XFUserInfoManager sharedManager].userInfo;
-    [self refreshData];
+    [self refreshUserInfo];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshUserInfo) name:kRefreshUserInfoKey object:nil];
     
@@ -164,11 +165,29 @@
     
     self.nameLabel.text = self.userInfo[@"userNike"];
     [self.iconView setImageWithURL:[NSURL URLWithString:self.userInfo[@"headUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
-    
-    
+    [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:(UITableViewRowAnimationFade)];
 }
 
 #pragma mark - headerDelegate
+// 动态哦
+- (void)headerDidClickStatuslabel {
+    
+    
+}
+// 关注
+- (void)headerDidClickCarelabel {
+    
+    XFMyCaresViewController *caresVC = [[XFMyCaresViewController alloc] init];
+    caresVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:caresVC animated:YES];
+}
+// 粉丝
+- (void)headerDidClickfanslabel {
+    
+    XFFansViewController *fansVC = [[XFFansViewController alloc] init];
+    fansVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:fansVC animated:YES];
+}
 
 - (void)headerDidClickInvitebutton {
     
@@ -273,15 +292,9 @@
 
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.row == 3) {
-        
-        XFSetViewController *setVC  =[[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFSetViewController"];
-        
-        setVC.hidesBottomBarWhenPushed = YES;
-        
-        [self.navigationController pushViewController:setVC animated:YES];
-        
-    }
+    XFMyTableCellNode *node = [tableNode nodeForRowAtIndexPath:indexPath];
+    
+    [node setSelected:NO];
     
     switch (indexPath.row) {
             
@@ -306,7 +319,11 @@
             break;
         case 3:
         {
+            XFSetViewController *setVC  =[[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFSetViewController"];
             
+            setVC.hidesBottomBarWhenPushed = YES;
+            
+            [self.navigationController pushViewController:setVC animated:YES];
         }
             break;
             
@@ -330,7 +347,6 @@
             XFMyHeaderNode *node = [[XFMyHeaderNode alloc] initWithUserinfo:self.userInfo];
             
             node.delegate = self;
-            
 
             return node;
             
@@ -454,13 +470,96 @@
 
 }
 
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
+    
+    UIImage *image = info[UIImagePickerControllerEditedImage];
+    
+    [picker dismissViewControllerAnimated:YES completion:^{
+       
+        
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在保存"];
+        
+        // 上传头像
+        [[XFLoginManager sharedInstance] saveUserIconWithfiles:image successBlock:^(id reponseDic) {
+           
+            if (reponseDic) {
+                
+                
+                NSString *headUrl = reponseDic[@"data"][0];
+                
+                // 上传
+                [[XFLoginManager sharedInstance] saveUserInfoWithUserName:[XFUserInfoManager sharedManager].userName nickName:nil birthday:nil sex:nil tags:nil roleNos:nil headUrl:headUrl height:nil weight:nil bwh:nil weixin:nil synopsis:nil successBlock:^(id reponseDic) {
+                    
+                    if (reponseDic) {
+                        [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
+
+                        self.iconView.image = image;
+
+                    }
+                    [HUD hideAnimated:YES];
+
+                } failedBlock:^(NSError *error) {
+                    
+                    [HUD hideAnimated:YES];
+
+                }];
+            } else {
+                
+                
+                [HUD hideAnimated:YES];
+
+            }
+            
+            
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+
+        }];
+        
+    }];
+    
+}
+
 - (void)clickTapImage {
+//
+//    XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
+//    UINavigationController *loginNavi = [[UINavigationController alloc] initWithRootViewController:loginVC];
+//    loginNavi.hidesBottomBarWhenPushed = YES;
+//
+//    [self presentViewController:loginNavi animated:YES completion:nil];
     
-    XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
-    UINavigationController *loginNavi = [[UINavigationController alloc] initWithRootViewController:loginVC];
-    loginNavi.hidesBottomBarWhenPushed = YES;
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.allowsEditing = YES;
+    picker.delegate = self;
     
-    [self presentViewController:loginNavi animated:YES completion:nil];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:(UIAlertControllerStyleActionSheet)];
+    
+    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+    }];
+    
+    UIAlertAction *actionCar = [UIAlertAction actionWithTitle:@"相机" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        
+        [self presentViewController:picker animated:YES completion:nil];
+    }];
+    
+    UIAlertAction *actionphoto = [UIAlertAction actionWithTitle:@"相册" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        [self presentViewController:picker animated:YES completion:nil];
+
+    }];
+    
+    [alert addAction:actionphoto];
+    [alert addAction:actionCar];
+    [alert addAction:actionCancel];
+
+    [self presentViewController:alert animated:YES completion:nil];
+    
 }
 
 - (void)setupInfoView {
@@ -503,6 +602,9 @@
     self.iconView.frame = CGRectMake((kScreenWidth - 90)/2, -60, 90, 90);
     
     [self.tableNode.view addSubview:self.iconView];
+    
+    self.iconView.layer.cornerRadius = 45;
+    self.iconView.layer.masksToBounds = YES;
     
     // TODO:
     UITapGestureRecognizer *tapHeader = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickTapImage)];

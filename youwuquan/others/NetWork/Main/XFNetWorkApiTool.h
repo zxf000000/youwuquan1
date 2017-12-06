@@ -228,6 +228,9 @@
  */
 + (NSString *)pathUrlForGetMonthSingData;
 
-
+/**
+ 获取用户昵称或头像
+ */
++ (NSString *)pathUrlForGetUserNameIcon;
 
 @end

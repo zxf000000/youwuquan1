@@ -242,7 +242,13 @@
             
             return ^ASCellNode *{
                 
-                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail];
+                NSMutableArray *mutableArr = [NSMutableArray array];
+                for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
+                    
+                    [mutableArr addObject:kRandomPic];
+                }
+                
+                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail pics:mutableArr.copy];
                 
                 node.delegate = self;
                 
@@ -421,7 +427,7 @@
 #pragma mark - 分享海报
 - (void)clickShareButton {
     
-    [XFShareManager sharedImageWithBg:@"backgroundImage" icon:@"find_pic3" name:kRandomName userid:@"ID:2334530" address:@"福田区 深圳"];
+    [XFShareManager sharedImageWithBg:@"backgroundImage" icon:@"find_pic3" name:kRandomName userid:@"ID:2334530" address:@"福田区,深圳"];
     
     
 }

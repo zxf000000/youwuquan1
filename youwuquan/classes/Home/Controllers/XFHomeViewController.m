@@ -623,9 +623,6 @@
                 
                 XFHomeTableNode *node = [[XFHomeTableNode alloc] init];
                 
-                node.cornerRadius = 10;
-                node.clipsToBounds = YES;
-                
                 switch (indexPath.section) {
                     case 0:
                     {

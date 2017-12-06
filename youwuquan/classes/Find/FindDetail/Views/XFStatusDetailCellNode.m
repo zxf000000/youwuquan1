@@ -140,7 +140,7 @@
         // 动态内容
         _commentNode = [[ASTextNode alloc] init];
         
-        [_commentNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:2 kern:1];
+        [_commentNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:4 kern:1];
         
 //        NSMutableAttributedString *comment = [[NSMutableAttributedString  alloc] initWithString:];
 //        NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
@@ -280,6 +280,8 @@
         CGFloat imgHeight = imgWidth * size.height/size.width;
         imgNode.style.preferredSize = CGSizeMake(imgWidth, imgHeight);
         
+        imgNode.cornerRadius = 20;
+        imgNode.clipsToBounds = YES;
         
     }
     

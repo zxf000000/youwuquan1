@@ -45,18 +45,7 @@
     
     [self.view addSubview:self.collectionView];
     
-    [self.view addSubview:self.bottomView];
-    
-    [self.bottomView addSubview:self.bottomButton];
-    
-    [self.bottomButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.centerX.centerY.mas_offset(0);
-        make.width.mas_equalTo(70);
-        make.height.mas_equalTo(30);
-    }];
-    
-    
+    [self setupBottomView];
     [self getThumbnailImages];
     
 }
@@ -66,13 +55,11 @@
     self.HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.HUD.tintColor = [UIColor whiteColor];
     
-    
     [self.selectedImages addObjectsFromArray:[self getBigImageWithArr:self.selectedIndexPaths]];
 
     if (self.selectedImages.count < 1) {
     
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"至少选择一张图片" preferredStyle:(UIAlertControllerStyleAlert)];
-        
         
         [self presentViewController:alert animated:YES completion:nil];
         
@@ -371,37 +358,35 @@
     [self enumerateAssetsInAssetCollection:cameraRoll original:NO];
 }
 
-
-- (UIButton *)bottomButton {
+- (void)setupBottomView {
     
-    if (_bottomButton == nil ) {
+    _bottomView = [[UIView alloc] initWithFrame:(CGRectMake(0, kScreenHeight - 49, kScreenWidth, 49))];
     
-        _bottomButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
-        
-        _bottomButton.layer.cornerRadius = 5;
-        
-        _bottomButton.backgroundColor = [UIColor colorWithRed:0.000 green:0.502 blue:1.000 alpha:1.000];
-        
-        [_bottomButton setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-        
-        [_bottomButton setTitle:@"完成" forState:(UIControlStateNormal)];
-        
-        [_bottomButton addTarget:self action:@selector(clickDoneButton) forControlEvents:(UIControlEventTouchUpInside)];
-    }
-    return _bottomButton;
-
-}
-
-- (UIView *)bottomView {
+    _bottomView.backgroundColor = [UIColor colorWithWhite:0.200 alpha:1.000];
     
-    if (_bottomView == nil) {
+    [self.view addSubview:_bottomView];
+    
+    _bottomButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
+    
+    _bottomButton.layer.cornerRadius = 5;
+    
+    _bottomButton.backgroundColor = [UIColor colorWithRed:0.000 green:0.502 blue:1.000 alpha:1.000];
+    
+    [_bottomButton setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+    
+    [_bottomButton setTitle:@"完成" forState:(UIControlStateNormal)];
+    
+    [_bottomButton addTarget:self action:@selector(clickDoneButton) forControlEvents:(UIControlEventTouchUpInside)];
+    
+    [self.bottomView addSubview:_bottomButton];
+    
+    [self.bottomButton mas_makeConstraints:^(MASConstraintMaker *make) {
         
-        _bottomView = [[UIView alloc] initWithFrame:(CGRectMake(0, kScreenHeight - 49, kScreenWidth, 49))];
-        
-        _bottomView.backgroundColor = [UIColor colorWithWhite:0.200 alpha:1.000];
-        
-    }
-    return _bottomView;
+        make.centerX.centerY.mas_offset(0);
+        make.width.mas_equalTo(70);
+        make.height.mas_equalTo(30);
+    }];
+    
 }
 
 
@@ -419,7 +404,7 @@
         layout.minimumInteritemSpacing = 5;
         layout.sectionInset = UIEdgeInsetsMake(5, 5, 5, 5);
         
-        _collectionView = [[UICollectionView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight)) collectionViewLayout:layout];
+        _collectionView = [[UICollectionView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight- 49)) collectionViewLayout:layout];
         
         _collectionView.delegate = self;
         

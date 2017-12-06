@@ -74,10 +74,10 @@
         
         if (i == 0) {
             
-            string = [string stringByAppendingString:model.labelName];
+            string = [string stringByAppendingString:model.labelNo];
         } else {
             
-            string = [string stringByAppendingString:[NSString stringWithFormat:@",%@",model.labelName]];
+            string = [string stringByAppendingString:[NSString stringWithFormat:@",%@",model.labelNo]];
         }
         
     }
@@ -100,7 +100,8 @@
         
     } failedBlock:^(NSError *error) {
         [HUD hideAnimated:YES];
-
+        
+        NSLog(@"%@---",error.description);
         
     }];
     

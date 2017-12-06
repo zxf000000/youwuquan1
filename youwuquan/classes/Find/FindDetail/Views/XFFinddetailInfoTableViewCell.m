@@ -41,7 +41,7 @@
         _desNode = [[ASTextNode alloc] init];
         [_desNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"简介" lineSpace:2 kern:0];
         _desDetailNode = [[ASTextNode alloc] init];
-        [_desDetailNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:UIColorHex(808080) offset:0 text:@"内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手内地男歌手" lineSpace:2 kern:2];
+        [_desDetailNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:UIColorHex(808080) offset:0 text:kRandomComment lineSpace:4 kern:2];
         [self addSubnode:_bgNode];
         [self addSubnode:_heightNode];
         [self addSubnode:_wightNode];

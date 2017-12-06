@@ -156,7 +156,7 @@
                                                          @"text/json",
                                                          nil];
     
-    [self.sessionManager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    [self.sessionManager POST:url parameters:para constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         
         NSDateFormatter *format = [[NSDateFormatter alloc] init];
         
@@ -196,5 +196,109 @@
         failedBlock(error);
     }];
 }
+
+
+// 发布上传数据
+- (void)publishUploadWithUrl:(NSString *)url Opens:(NSArray *)opens secs:(NSArray *)secs paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
+    
+    // 拼接token
+    NSMutableDictionary *para = [NSMutableDictionary dictionaryWithDictionary:paraments];
+    
+    [para setObject:[XFUserInfoManager sharedManager].token forKey:@"token"];
+    
+    self.sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",
+                                                                     @"text/html",
+                                                                     @"image/jpeg",
+                                                                     @"image/png",
+                                                                     @"application/octet-stream",
+                                                                     @"text/json",
+                                                                     nil];
+    
+    [self.sessionManager POST:url parameters:para constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        
+        for (int i = 0; i < opens.count; i++) {
+            
+            UIImage *image = opens[i];
+            NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+            
+            // 在网络开发中，上传文件时，是文件不允许被覆盖，文件重名
+            // 要解决此问题，
+            // 可以在上传时使用当前的系统事件作为文件名
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            // 设置时间格式
+            [formatter setDateFormat:@"yyyyMMddHHmmss"];
+            NSString *dateString = [formatter stringFromDate:[NSDate date]];
+            NSString *fileName = [NSString  stringWithFormat:@"%@%zd.jpg",dateString,i];
+            /*
+             *该方法的参数
+             1. appendPartWithFileData：要上传的照片[二进制流]
+             2. name：对应网站上[upload.php中]处理文件的字段（比如upload）
+             3. fileName：要保存在服务器上的文件名
+             4. mimeType：上传的文件的类型
+             */
+            [formData appendPartWithFileData:imageData name:@"opens" fileName:fileName mimeType:@"image/jpeg"];
+        }
+        
+        for (int i = 0; i < secs.count; i++) {
+            
+            UIImage *image = secs[i];
+            NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+            
+            // 在网络开发中，上传文件时，是文件不允许被覆盖，文件重名
+            // 要解决此问题，
+            // 可以在上传时使用当前的系统事件作为文件名
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            // 设置时间格式
+            [formatter setDateFormat:@"yyyyMMddHHmmss"];
+            NSString *dateString = [formatter stringFromDate:[NSDate date]];
+            NSString *fileName = [NSString  stringWithFormat:@"%@%zd.jpg",dateString,i];
+            /*
+             *该方法的参数
+             1. appendPartWithFileData：要上传的照片[二进制流]
+             2. name：对应网站上[upload.php中]处理文件的字段（比如upload）
+             3. fileName：要保存在服务器上的文件名
+             4. mimeType：上传的文件的类型
+             */
+            [formData appendPartWithFileData:imageData name:@"intimates" fileName:fileName mimeType:@"image/jpeg"];
+        }
+
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+        NSLog(@"%zd",uploadProgress.completedUnitCount);
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
+        dic = [NSDictionary changeType:dic];
+        
+        
+        if (dic[@"success"]) {
+            
+            successBlock(dic);
+            
+            return;
+        }
+        
+        // 判断错误码
+        NSDictionary *appbean = dic[@"appBean"];
+        
+        if ([appbean[@"sign"] intValue] == 666) {
+            
+            successBlock(appbean);
+            
+        } else {
+            
+            [XFToolManager showProgressInWindowWithString:appbean[@"msg"]];
+            
+            successBlock(nil);
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [XFToolManager showProgressInWindowWithString:@"网络错误"];
+        
+        failedBlock(error);
+    }];
+}
+
 
 @end

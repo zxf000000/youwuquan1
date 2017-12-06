@@ -21,11 +21,13 @@
     if (urlStr) {
         
         NSMutableDictionary *shareParams = [NSMutableDictionary dictionary];
-        [shareParams SSDKSetupShareParamsByText:@"分享内容"
-                                         images:nil
+        [shareParams SSDKSetupShareParamsByText:@"点击注册"
+                                         images:[UIImage imageNamed:@"23"]
                                             url:[NSURL URLWithString:urlStr]
-                                          title:@"分享标题"
-                                           type:SSDKContentTypeImage];
+                                          title:@"我在尤物圈等你哦"
+                                           type:SSDKContentTypeWebPage];
+        
+        
         //有的平台要客户端分享需要加此方法，例如微博
         [shareParams SSDKEnableUseClientShare];
         //2、分享（可以弹出我们的分享菜单和编辑界面）

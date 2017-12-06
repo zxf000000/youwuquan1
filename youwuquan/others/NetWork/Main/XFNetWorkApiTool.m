@@ -282,6 +282,12 @@
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYUnlockStatus];
 }
 
++ (NSString *)pathUrlForGetUserNameIcon {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetUSernameIcon];
+}
+
+
 
 + (NSString *)pathUrlForsignUp {
     

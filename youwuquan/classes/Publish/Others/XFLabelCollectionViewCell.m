@@ -51,7 +51,7 @@
         [_deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
            
             make.centerY.mas_offset(0);
-            make.right.mas_offset(-10);
+            make.right.mas_offset(0);
             make.width.height.mas_equalTo(20);
             
         }];

@@ -21,6 +21,10 @@
 
 - (void)headerDidClickInvitebutton;
 
+- (void)headerDidClickCarelabel;
+- (void)headerDidClickfanslabel;
+- (void)headerDidClickStatuslabel;
+
 @end
 
 @interface XFMyHeaderNode : ASCellNode <ASCollectionDelegate,ASCollectionDataSource>

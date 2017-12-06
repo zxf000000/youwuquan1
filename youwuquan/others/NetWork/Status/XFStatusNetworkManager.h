@@ -52,17 +52,19 @@ typedef void(^RequestFailedBlock)(NSError *error);
 /**
  发布动态
 
- @param businType 类型
- @param openAlbumId 开放相册id
- @param intimateAlbumId 隐私相册id
- @param opens 开放图片
- @param intimates 隐私图片
- @param files 视频
- @param jsonString json
+ @param openAlbumId 开放相册Id
+ @param intimateAlbumId 隐私相册Id
+ @param opens 开放照片
+ @param intimates 隐私照片
+ @param type 类型
+ @param title 内容
+ @param unlockNum 解锁钻石数量
+ @param customLabel 自定义标签
  @param labels 标签
- @param jsonVideo 视频json
+ @param success 成功
+ @param failedBlock 失败
  */
-+ (void)publishStatusWithbusinType:(NSString *)businType openAlbumId:(NSString *)openAlbumId intimateAlbumId:(NSString *)intimateAlbumId opens:(NSString *)opens intimates:(NSString *)intimates files:(NSString *)files jsonString:(NSString *)jsonString  labels:(NSString *)labels jsonVideo:(NSString *)jsonVideo;
++ (void)publishStatusWithopenAlbumId:(NSString *)openAlbumId intimateAlbumId:(NSString *)intimateAlbumId opens:(NSArray *)opens intimates:(NSArray *)intimates type:(NSString *)type title:(NSString *)title unlockNum:(NSString *)unlockNum customLabel:(NSString *)customLabel labels:(NSString *)labels successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock;
 
 /**
  不需要登录查看的动态

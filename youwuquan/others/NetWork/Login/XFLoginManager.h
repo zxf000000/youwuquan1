@@ -144,4 +144,14 @@ typedef void(^LoginFailedBlock)(NSError *error);
  */
 - (void)loginWithUserNumber:(NSString *)userNumber pwd:(NSString *)pwd successBlock:(LoginSuccessBlock)success failedBlock:(LoginFailedBlock)failed;
 
+
+/**
+ 上传用户头像
+
+ @param files 头像数据
+ @param success 成功
+ @param failed 失败
+ */
+- (void)saveUserIconWithfiles:(UIImage *)files successBlock:(LoginSuccessBlock)success failedBlock:(LoginFailedBlock)failed;
+
 @end

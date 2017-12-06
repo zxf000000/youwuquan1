@@ -123,9 +123,19 @@
 
 - (void)tabbarDidClickPlusButton:(XFTabBar *)tabbar {
     
-    XFPublishViewController *publishVC = [[XFPublishViewController alloc] init];
-    XFPublishNaviViewController *navi = [[XFPublishNaviViewController alloc] initWithRootViewController:publishVC];
-    [self presentViewController:navi animated:YES completion:nil];
+    if ([XFUserInfoManager sharedManager].token) {
+        
+        XFPublishViewController *publishVC = [[XFPublishViewController alloc] init];
+        XFPublishNaviViewController *navi = [[XFPublishNaviViewController alloc] initWithRootViewController:publishVC];
+        [self presentViewController:navi animated:YES completion:nil];
+        
+    } else {
+        
+        [self presentViewController:[[XFLoginVCViewController alloc] init] animated:YES completion:nil];
+
+    }
+    
+
 }
 
 

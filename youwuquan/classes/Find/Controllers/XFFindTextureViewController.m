@@ -184,7 +184,7 @@
             return self.hdCount;
         } else {
             
-            return 10;
+            return 15;
         }
     }
 
@@ -341,7 +341,13 @@
             {
                 return ^ASCellNode *{
                     
-                    XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO];
+                    NSMutableArray *mutableArr = [NSMutableArray array];
+                    for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
+                        
+                        [mutableArr addObject:kRandomPic];
+                    }
+                    
+                    XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO pics:mutableArr.copy];
                     
                     node.index = indexPath;
                     
@@ -349,7 +355,6 @@
         
                     node.picNode.defaultImage = [UIImage imageNamed:kRandomPic];
 
-                    
                     return node;
                 };
             }
@@ -361,9 +366,9 @@
         
         return ^ASCellNode *{
             
-            XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO];
+            XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO pics:@[@"timg"]];
             
-            node.index = indexPath;
+//            node.index = indexPath;
             
             node.delegate = self;
             

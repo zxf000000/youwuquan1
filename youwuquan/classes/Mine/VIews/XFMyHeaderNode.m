@@ -41,6 +41,7 @@
     
     if (self = [super init]) {
         
+        _userInfo = userInfo;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
         self.backgroundColor = kBgGrayColor;
@@ -60,20 +61,32 @@
         _fansLabel = [[ASTextNode alloc] init];
         [_fansLabel setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"粉丝" lineSpace:2 kern:0];
         
+        [_fansLabel addTarget:self action:@selector(clickFansNode) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        
         _fansNumberLabel = [[ASTextNode alloc] init];
-        [_fansNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"10000" lineSpace:2 kern:0];
+        [_fansNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:[NSString stringWithFormat:@"%@",_userInfo[@"fansNum"]] lineSpace:2 kern:0];
     
+        [_fansNumberLabel addTarget:self action:@selector(clickFansNode) forControlEvents:(ASControlNodeEventTouchUpInside)];
+
         _careLabel = [[ASTextNode alloc] init];
         [_careLabel setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"关注" lineSpace:2 kern:0];
         
         _careNumberLabel = [[ASTextNode alloc] init];
-        [_careNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"8888" lineSpace:2 kern:0];
+        [_careNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:[NSString stringWithFormat:@"%@",_userInfo[@"followNum"]] lineSpace:2 kern:0];
+        
+        [_careLabel addTarget:self action:@selector(clickCaresNode) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        [_careNumberLabel addTarget:self action:@selector(clickCaresNode) forControlEvents:(ASControlNodeEventTouchUpInside)];
+
         
         _statusLabel = [[ASTextNode alloc] init];
-        [_statusLabel setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"状态" lineSpace:2 kern:0];
+        [_statusLabel setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"动态" lineSpace:2 kern:0];
         
         _statusNumberLabel = [[ASTextNode alloc] init];
-        [_statusNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"111" lineSpace:2 kern:0];
+        [_statusNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:[NSString stringWithFormat:@"%@",_userInfo[@"releaseNum"]] lineSpace:2 kern:0];
+        
+        [_statusLabel addTarget:self action:@selector(clickStatusLabel) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        [_statusNumberLabel addTarget:self action:@selector(clickStatusLabel) forControlEvents:(ASControlNodeEventTouchUpInside)];
+
         
         [self addSubnode:_BgNode];
         [self addSubnode:_topBgNode];
@@ -122,6 +135,32 @@
     return self;
 }
 
+
+- (void)clickFansNode {
+    
+    if ([self.delegate respondsToSelector:@selector(headerDidClickfanslabel)]) {
+        
+        [self.delegate headerDidClickfanslabel];
+    }
+    
+}
+
+- (void)clickCaresNode {
+    
+    if ([self.delegate respondsToSelector:@selector(headerDidClickCarelabel)]) {
+        
+        [self.delegate headerDidClickCarelabel];
+    }
+}
+
+- (void)clickStatusLabel {
+    
+    if ([self.delegate respondsToSelector:@selector(headerDidClickStatuslabel)]) {
+        
+        [self.delegate headerDidClickStatuslabel];
+    }
+    
+}
 
 
 #pragma mark - 邀请有礼

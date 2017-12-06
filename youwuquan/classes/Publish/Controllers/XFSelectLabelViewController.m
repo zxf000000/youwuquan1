@@ -15,6 +15,8 @@
 
 #import <YYCache.h>
 
+#import "XFStatusNetworkManager.h"
+
 
 @interface XFSelectLabelViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UISearchBarDelegate,UICollectionViewDelegateFlowLayout,ASTableDelegate,ASTableDataSource,XFHomeNodedelegate,UITextFieldDelegate>
 
@@ -88,10 +90,52 @@
     
     [self getHistoryData];
     
+    [self getTags];
+    
     [self addObserver:self forKeyPath:@"labelsArr" options:(NSKeyValueObservingOptionNew) context:nil];
     
     [self.view setNeedsUpdateConstraints];
 
+}
+
+- (void)getTags {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+    // 获取标签
+    [XFStatusNetworkManager getAllTagsWithsuccessBlock:^(NSDictionary *reponseDic) {
+        
+        [HUD hideAnimated:YES];
+        
+        if (reponseDic) {
+            
+            NSArray *datas = reponseDic[@"data"][0];
+            
+            NSMutableArray *arr = [NSMutableArray array];
+            
+            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+                
+                [arr addObject:datas[i][@"labelName"]];
+                
+            }
+            
+            self.titleArr = arr.copy;
+            
+            [self.historyView reloadData];
+            
+        } else {
+            
+            [self.navigationController popViewControllerAnimated:YES];
+            
+        }
+        
+    } failedBlock:^(NSError *error) {
+        [HUD hideAnimated:YES];
+        
+        [self.navigationController popViewControllerAnimated:YES];
+        
+    }];
+    
+    
 }
 
 - (void)getHistoryData {
@@ -114,15 +158,13 @@
 
 - (void)clickDoneButton {
     
-    [self.navigationController popViewControllerAnimated:YES];
-
-    
     if ([self.delegate respondsToSelector:@selector(selecteTagVC:didSelectedTagsWith:)]) {
         
         [self.delegate selecteTagVC:self didSelectedTagsWith:self.labelsArr.copy];
     }
     
-    
+    [self.navigationController popViewControllerAnimated:YES];
+
 }
 // 删除历史记录
 - (void)deleteHistory {
@@ -305,11 +347,13 @@
     }
     
     [self.labelsView addTagViewWith:text];
-
-    [self.labelsArr addObject:text];
+    
+//    [self.labelsArr addObject:text];
     
     // 更新缓存
     [self.historyCache setObject:self.labelsArr forKey:kTagsHistoryKey];
+    
+    NSLog(@"%@0------",[self.historyCache objectForKey:kTagsHistoryKey]);
     
     [self.historyView reloadData];
     
@@ -398,6 +442,7 @@
     self.labelsView.tagArr = self.labelsArr;
     self.labelsView.backgroundColor = [UIColor whiteColor];
     __weak typeof(self) weakSelf = self;
+    
     self.labelsView.reloadTagViewBlock = ^{
         
         weakSelf.labelsArr = weakSelf.labelsView.tagArr;

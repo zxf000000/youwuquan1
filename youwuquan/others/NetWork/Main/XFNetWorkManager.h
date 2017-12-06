@@ -51,6 +51,21 @@ typedef void(^RequestFailedBlock)(NSError *error);
  */
 - (void)uploadData:(NSData *)data url:(NSString *)url name:(NSString *)name paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
 
+
+/**
+ 发布数据
+
+ @param url 地址
+ @param opens 公开图片
+ @param secs 隐私图片
+ @param paraments 参数
+ @param successBlock 成功
+ @param failedBlock 失败
+ */
+- (void)publishUploadWithUrl:(NSString *)url Opens:(NSArray *)opens secs:(NSArray *)secs paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+
+
+
 - (void)noneStatuspostUrl:(NSString *)urlString paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
 
 @end

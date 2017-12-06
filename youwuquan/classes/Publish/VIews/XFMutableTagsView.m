@@ -145,10 +145,6 @@
     XFTagView *tagView = [XFTagView creatTagViewWith:tag index:self.tagViewArr.count];
     
     tagView.frame = [self caculatFrameForTag:tag];
-//    [self mas_remakeConstraints:^(MASConstraintMaker *make) {
-//        make.top.left.right.mas_offset(0);
-//        make.height.mas_equalTo(self.tagsViewHeight);
-//    }];
     
     tagView.clickDeleteButtonBlock = ^(NSInteger index) {
         // 刷新frame

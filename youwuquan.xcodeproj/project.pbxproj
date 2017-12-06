@@ -47,6 +47,9 @@
 		B73933BF1FD4473100F2B0DD /* XFStatusNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B73933BE1FD4473100F2B0DD /* XFStatusNetworkManager.m */; };
 		B73933C21FD55B7F00F2B0DD /* XFTagsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B73933C11FD55B7E00F2B0DD /* XFTagsModel.m */; };
 		B73933C51FD58BC700F2B0DD /* NSDictionary+ChangeNuLL.m in Sources */ = {isa = PBXBuildFile; fileRef = B73933C41FD58BC700F2B0DD /* NSDictionary+ChangeNuLL.m */; };
+		B73933C91FD66FC500F2B0DD /* XFMoneyNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B73933C81FD66FC500F2B0DD /* XFMoneyNetworkManager.m */; };
+		B73933CD1FD677EA00F2B0DD /* XFMyCaresViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B73933CC1FD677EA00F2B0DD /* XFMyCaresViewController.m */; };
+		B73933D01FD6892A00F2B0DD /* XFFansViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B73933CF1FD6892A00F2B0DD /* XFFansViewController.m */; };
 		B74AE9971FA306DB002BD4A6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B74AE9961FA306DB002BD4A6 /* AppDelegate.m */; };
 		B74AE99A1FA306DB002BD4A6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B74AE9991FA306DB002BD4A6 /* ViewController.m */; };
 		B74AE99D1FA306DB002BD4A6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B74AE99B1FA306DB002BD4A6 /* Main.storyboard */; };
@@ -306,6 +309,12 @@
 		B73933C11FD55B7E00F2B0DD /* XFTagsModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFTagsModel.m; sourceTree = "<group>"; };
 		B73933C31FD58BC700F2B0DD /* NSDictionary+ChangeNuLL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+ChangeNuLL.h"; sourceTree = "<group>"; };
 		B73933C41FD58BC700F2B0DD /* NSDictionary+ChangeNuLL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+ChangeNuLL.m"; sourceTree = "<group>"; };
+		B73933C71FD66FC500F2B0DD /* XFMoneyNetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMoneyNetworkManager.h; sourceTree = "<group>"; };
+		B73933C81FD66FC500F2B0DD /* XFMoneyNetworkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMoneyNetworkManager.m; sourceTree = "<group>"; };
+		B73933CB1FD677EA00F2B0DD /* XFMyCaresViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMyCaresViewController.h; sourceTree = "<group>"; };
+		B73933CC1FD677EA00F2B0DD /* XFMyCaresViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMyCaresViewController.m; sourceTree = "<group>"; };
+		B73933CE1FD6892A00F2B0DD /* XFFansViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFFansViewController.h; sourceTree = "<group>"; };
+		B73933CF1FD6892A00F2B0DD /* XFFansViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFFansViewController.m; sourceTree = "<group>"; };
 		B74AE9921FA306DB002BD4A6 /* youwuquan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = youwuquan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B74AE9951FA306DB002BD4A6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B74AE9961FA306DB002BD4A6 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -840,6 +849,26 @@
 			path = Status;
 			sourceTree = "<group>";
 		};
+		B73933C61FD66FAB00F2B0DD /* Money */ = {
+			isa = PBXGroup;
+			children = (
+				B73933C71FD66FC500F2B0DD /* XFMoneyNetworkManager.h */,
+				B73933C81FD66FC500F2B0DD /* XFMoneyNetworkManager.m */,
+			);
+			path = Money;
+			sourceTree = "<group>";
+		};
+		B73933CA1FD677D500F2B0DD /* Cares */ = {
+			isa = PBXGroup;
+			children = (
+				B73933CB1FD677EA00F2B0DD /* XFMyCaresViewController.h */,
+				B73933CC1FD677EA00F2B0DD /* XFMyCaresViewController.m */,
+				B73933CE1FD6892A00F2B0DD /* XFFansViewController.h */,
+				B73933CF1FD6892A00F2B0DD /* XFFansViewController.m */,
+			);
+			path = Cares;
+			sourceTree = "<group>";
+		};
 		B74AE9891FA306DB002BD4A6 = {
 			isa = PBXGroup;
 			children = (
@@ -1152,6 +1181,7 @@
 		B74AE9C31FA30834002BD4A6 /* Mine */ = {
 			isa = PBXGroup;
 			children = (
+				B73933CA1FD677D500F2B0DD /* Cares */,
 				B7C174381FBAEAF00029ACDE /* MyMoney */,
 				B723CC061FBC921E00DC25E9 /* PhotoLirbary */,
 				B7DDBC801FBD681600D53091 /* MyAuth */,
@@ -1342,6 +1372,7 @@
 		B74AE9DD1FA30835002BD4A6 /* NetWork */ = {
 			isa = PBXGroup;
 			children = (
+				B73933C61FD66FAB00F2B0DD /* Money */,
 				B73933BC1FD4471900F2B0DD /* Status */,
 				B729E0E41FBE93420045FF68 /* Login */,
 				B74AE9DE1FA30835002BD4A6 /* Main */,
@@ -1953,6 +1984,7 @@
 				B74AE9F01FA30835002BD4A6 /* NSString+checkPhone.m in Sources */,
 				B74AEA191FA322CB002BD4A6 /* XFTabBar.m in Sources */,
 				B73898471FA600290000D4B0 /* XFOutsideButtonView.m in Sources */,
+				B73933CD1FD677EA00F2B0DD /* XFMyCaresViewController.m in Sources */,
 				B74AE9A01FA306DC002BD4A6 /* youwuquan.xcdatamodeld in Sources */,
 				B718C78E1FA8C4DA00DA470B /* XFFindModel.m in Sources */,
 				B7EB67CE1FB199B700AAD65D /* XFHomeSectionHeader.m in Sources */,
@@ -1963,10 +1995,12 @@
 				B723CBEE1FBC1A6400DC25E9 /* XFStatusDetailViewController.m in Sources */,
 				B7DF03101FA6BC1C0093022C /* XFHomeTopHeaderReusableView.m in Sources */,
 				B718C79F1FA8DDFC00DA470B /* YYTableView.m in Sources */,
+				B73933D01FD6892A00F2B0DD /* XFFansViewController.m in Sources */,
 				B7E10FDC1FC506E1007FFCE0 /* XFActorCardInfoView.m in Sources */,
 				B723CBF11FBC1B7500DC25E9 /* XFStatusDetailCellNode.m in Sources */,
 				B75ECB3C1FB9A9FC00952713 /* XFPwdTextField.m in Sources */,
 				B73933BA1FD2A7F500F2B0DD /* VideoPlayerViewController.m in Sources */,
+				B73933C91FD66FC500F2B0DD /* XFMoneyNetworkManager.m in Sources */,
 				B7E3FF381FC6E8F40086414F /* XFImagePickerViewController.m in Sources */,
 				B79C76121FC2D7790040B844 /* XFStatusCommentViewController.m in Sources */,
 				B7E3AEA91FD15833008E11E2 /* XFDateHerViewController.m in Sources */,
