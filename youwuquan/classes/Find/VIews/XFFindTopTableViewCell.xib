@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="XFFindTopTableViewCell" rowHeight="193" id="KGk-i7-Jjw" customClass="XFFindTopTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="404" height="193"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="404" height="192.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yug-nf-s1k">
+                        <rect key="frame" x="10" y="0.0" width="384" height="182.5"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="find_pic1" translatesAutoresizingMaskIntoConstraints="NO" id="pDr-Mc-eQW">
+                        <rect key="frame" x="10" y="0.0" width="384" height="182.5"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="立即参与" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zrs-jg-gOm">
+                        <rect key="frame" x="20" y="79" width="49.5" height="14.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="遇见美好夜生活" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HOy-JR-GNz">
+                        <rect key="frame" x="20" y="18" width="121.5" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="一颗躁动的心" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4u8-O8-rS2">
+                        <rect key="frame" x="20" y="49" width="86" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_back" translatesAutoresizingMaskIntoConstraints="NO" id="81a-pn-hU9">
+                        <rect key="frame" x="77" y="79" width="15.5" height="14.5"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="81a-pn-hU9" secondAttribute="height" multiplier="1:1" constant="1" id="MF9-tO-srD"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="pDr-Mc-eQW" secondAttribute="bottom" constant="10" id="37y-Qy-fxu"/>
+                    <constraint firstItem="HOy-JR-GNz" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="18" id="4MD-or-lFl"/>
+                    <constraint firstItem="Yug-nf-s1k" firstAttribute="top" secondItem="pDr-Mc-eQW" secondAttribute="top" id="5ea-A4-hFh"/>
+                    <constraint firstItem="Yug-nf-s1k" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="BQZ-r5-gjw"/>
+                    <constraint firstItem="pDr-Mc-eQW" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="I8N-Z1-UFU"/>
+                    <constraint firstItem="pDr-Mc-eQW" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Ij9-qZ-h7f"/>
+                    <constraint firstItem="81a-pn-hU9" firstAttribute="centerY" secondItem="zrs-jg-gOm" secondAttribute="centerY" id="NUe-QB-gjm"/>
+                    <constraint firstItem="HOy-JR-GNz" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="P9v-Lj-fEs"/>
+                    <constraint firstItem="81a-pn-hU9" firstAttribute="leading" secondItem="zrs-jg-gOm" secondAttribute="trailing" constant="7.5" id="QNk-0N-Td0"/>
+                    <constraint firstItem="Yug-nf-s1k" firstAttribute="trailing" secondItem="pDr-Mc-eQW" secondAttribute="trailing" id="Xmg-4s-Huh"/>
+                    <constraint firstItem="4u8-O8-rS2" firstAttribute="top" secondItem="HOy-JR-GNz" secondAttribute="bottom" constant="10" id="a49-A1-F2K"/>
+                    <constraint firstItem="81a-pn-hU9" firstAttribute="height" secondItem="zrs-jg-gOm" secondAttribute="height" id="cMe-ia-go0"/>
+                    <constraint firstItem="zrs-jg-gOm" firstAttribute="leading" secondItem="4u8-O8-rS2" secondAttribute="leading" id="cZU-tD-ldj"/>
+                    <constraint firstItem="zrs-jg-gOm" firstAttribute="top" secondItem="4u8-O8-rS2" secondAttribute="bottom" constant="13" id="dI6-mQ-Qfl"/>
+                    <constraint firstItem="Yug-nf-s1k" firstAttribute="bottom" secondItem="pDr-Mc-eQW" secondAttribute="bottom" id="djx-Dy-8tl"/>
+                    <constraint firstItem="Yug-nf-s1k" firstAttribute="leading" secondItem="pDr-Mc-eQW" secondAttribute="leading" id="hkh-Sf-xnL"/>
+                    <constraint firstAttribute="trailing" secondItem="pDr-Mc-eQW" secondAttribute="trailing" constant="10" id="pHj-g0-jwo"/>
+                    <constraint firstItem="4u8-O8-rS2" firstAttribute="leading" secondItem="HOy-JR-GNz" secondAttribute="leading" id="rXn-IX-cZF"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="bgView" destination="Yug-nf-s1k" id="fyJ-N0-Dsg"/>
+                <outlet property="picView" destination="pDr-Mc-eQW" id="NPi-gL-Z3l"/>
+            </connections>
+            <point key="canvasLocation" x="121" y="-103"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="find_pic1" width="285" height="155"/>
+        <image name="home_back" width="6" height="11"/>
+    </resources>
+</document>

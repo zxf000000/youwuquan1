@@ -1,0 +1,243 @@
+//
+//  XFMessageViewController.m
+//  youwuquan
+//
+//  Created by mr.zhou on 2017/10/27.
+//  Copyright © 2017年 mr.zhou. All rights reserved.
+//
+
+#import "XFMessageViewController.h"
+#import "XFMessageListTableViewCell.h"
+#import "XFRewardedTableViewCell.h"
+#import "XFChatViewController.h"
+#import "XFYueViewController.h"
+
+@interface XFMessageViewController () <UITableViewDelegate,UITableViewDataSource>
+
+@property (nonatomic,strong) UITableView *tableView;
+
+@property (nonatomic,copy) NSArray *cellTitles;
+
+@property (nonatomic,copy) NSArray *cellIcons;
+
+@end
+
+@implementation XFMessageViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"消息";
+    
+    [self setupTableView];
+
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+
+    XFYueViewController *chatVC = [[XFYueViewController alloc] init];
+    chatVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:chatVC animated:YES];
+
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    switch (section) {
+            
+        case 0:
+        {
+            return 1;
+        }
+            break;
+        case 1:
+        {
+            return 1;
+        }
+            break;
+        case 2:
+        {
+            return 5;
+        }
+            break;
+            
+    }
+    return 0;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    return 3;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (indexPath.section == 1) {
+        
+        return 136;
+    }
+    
+    return 65;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    
+    switch (section) {
+        case 0:
+        {
+            return 15;
+            
+        }
+            break;
+        case 1:
+        {
+            return 15;
+            
+        }
+            break;
+        case 2:
+        {
+            
+            return 20;
+        }
+            break;
+        default:
+            break;
+    }
+    return 0;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    
+    return 0.01;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    
+    UIView *header = [[UIView alloc] init];
+    
+    header.backgroundColor = kBgGrayColor;
+    
+    header.backgroundColor = [UIColor clearColor];
+    
+    return header;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    
+    UIView *header = [[UIView alloc] init];
+    
+    header.backgroundColor = kBgGrayColor;
+    header.backgroundColor = [UIColor clearColor];
+
+    return header;}
+
+//去掉UItableview headerview黏性
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (scrollView == self.tableView)
+    {
+        CGFloat sectionHeaderHeight = 47;
+        if (scrollView.contentOffset.y<=sectionHeaderHeight&&scrollView.contentOffset.y>=0) {
+            scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, 0, 0);
+        } else if (scrollView.contentOffset.y>=sectionHeaderHeight) {
+            scrollView.contentInset = UIEdgeInsetsMake(-sectionHeaderHeight, 0, 0, 0);
+        }
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (indexPath.section == 1) {
+        
+        XFRewardedTableViewCell *cell = [[[NSBundle mainBundle] loadNibNamed:@"XFRewardedTableViewCell" owner:nil options:nil] lastObject];
+        
+        return cell;
+    }
+    
+    XFMessageListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFMessageListTableViewCell"];
+    
+    if (cell == nil) {
+        
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"XFMessageListTableViewCell" owner:nil options:nil] lastObject];
+        
+    }
+    
+    if (indexPath.section == 0) {
+        
+        [cell setMyShadow];
+        
+        cell.iconImage.image = [UIImage imageNamed:@"message_cyhd"];
+    }
+    
+    if (indexPath.section == 1 || indexPath.row == 7) {
+        
+        [cell setMyShadow];
+        
+    }
+    
+    if (indexPath.section == 2) {
+        
+        if (indexPath.row < 5) {
+            
+            cell.iconImage.image = [UIImage imageNamed:self.cellIcons[indexPath.row]];
+            cell.titleLabel.text = self.cellTitles[indexPath.row];
+        }else {
+            
+            cell.iconImage.image = [UIImage imageNamed:@"zhanweitu44"];
+            cell.titleLabel.text = @"小妖精";
+            
+        }
+    }
+    
+    if (indexPath.row == 3) {
+        
+        self.tableView.frame = CGRectMake(0, 0, kScreenWidth, self.tableView.contentSize.height - 64);
+        
+        self.changeHeaderHeightBlock(self.tableView.contentSize.height - 64);
+        
+    }
+
+    return cell;
+}
+
+- (void)setupTableView {
+    
+    self.tableView = [[UITableView alloc] init];
+    
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    
+    [self.view addSubview:self.tableView];
+    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundColor = kBgGrayColor;
+    self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
+    self.tableView.showsVerticalScrollIndicator = NO;
+    
+    self.tableView.scrollEnabled = NO;
+}
+
+- (NSArray *)cellTitles {
+    if (_cellTitles == nil) {
+        
+        _cellTitles = @[@"参与的活动",@"有人约你啦~",@"赞",@"评论",@"未关注人的私信"];
+    }
+    return _cellTitles;
+    
+}
+
+- (NSArray *)cellIcons {
+    if (_cellIcons == nil) {
+        
+        _cellIcons = @[@"message_cyhd",@"message_yryn",@"message_like",@"message_comment",@"message_Unfocused messages"];
+
+        
+    }
+    return _cellIcons;
+    
+}
+
+@end

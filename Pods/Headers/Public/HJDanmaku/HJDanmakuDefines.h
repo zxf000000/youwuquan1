@@ -1,0 +1,1 @@
+../../../HJDanmaku/HJDanmaku/HJDanmakuDefines.h

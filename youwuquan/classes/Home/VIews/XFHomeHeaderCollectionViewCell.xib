@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="XFHomeHeaderCollectionViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="246" height="332"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="246" height="332"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_pic8" translatesAutoresizingMaskIntoConstraints="NO" id="5Cj-US-PCH">
+                        <rect key="frame" x="79" y="12" width="88" height="88"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="88" id="Svu-yc-2y5"/>
+                            <constraint firstAttribute="width" constant="88" id="nZV-2s-bad"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="小小" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lVX-yA-YcC">
+                        <rect key="frame" x="108" y="111" width="31" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="身高:  170CM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P6z-0r-hmg">
+                        <rect key="frame" x="87" y="138" width="74" height="15"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.52549019607843139" green="0.51372549019607838" blue="0.51372549019607838" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="体重:  50KG" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="shm-sF-V1t">
+                        <rect key="frame" x="87" y="160" width="67" height="15"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.52549019610000003" green="0.51372549020000002" blue="0.51372549020000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_vip" translatesAutoresizingMaskIntoConstraints="NO" id="z5s-mk-1ZL">
+                        <rect key="frame" x="148" y="81" width="14" height="14"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="14" id="MtM-CF-DRG"/>
+                            <constraint firstAttribute="height" constant="14" id="YwO-Z0-gPg"/>
+                        </constraints>
+                    </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eQK-rv-shn">
+                        <rect key="frame" x="227" y="9" width="12" height="12"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="12" id="OJQ-wr-1JA"/>
+                            <constraint firstAttribute="height" constant="12" id="X4S-Dn-Dm3"/>
+                        </constraints>
+                        <state key="normal" image="home_cancel"/>
+                        <connections>
+                            <action selector="clickDelegateButton:" destination="gTV-IL-0wX" eventType="touchUpInside" id="kLC-8X-O3u"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="P6z-0r-hmg" firstAttribute="centerX" secondItem="lVX-yA-YcC" secondAttribute="centerX" id="1xT-m9-3xU"/>
+                <constraint firstItem="z5s-mk-1ZL" firstAttribute="bottom" secondItem="5Cj-US-PCH" secondAttribute="bottom" constant="-5" id="3KE-FM-Rbq"/>
+                <constraint firstItem="shm-sF-V1t" firstAttribute="leading" secondItem="P6z-0r-hmg" secondAttribute="leading" id="5c4-Rw-MHA"/>
+                <constraint firstItem="z5s-mk-1ZL" firstAttribute="trailing" secondItem="5Cj-US-PCH" secondAttribute="trailing" constant="-5" id="CyZ-gV-BzX"/>
+                <constraint firstItem="shm-sF-V1t" firstAttribute="top" secondItem="P6z-0r-hmg" secondAttribute="bottom" constant="7" id="Of8-bc-0D3"/>
+                <constraint firstAttribute="trailing" secondItem="eQK-rv-shn" secondAttribute="trailing" constant="7" id="ccJ-yC-oxp"/>
+                <constraint firstItem="eQK-rv-shn" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="9" id="e7t-iC-lCy"/>
+                <constraint firstItem="5Cj-US-PCH" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="oIM-NP-ZrL"/>
+                <constraint firstItem="lVX-yA-YcC" firstAttribute="centerX" secondItem="5Cj-US-PCH" secondAttribute="centerX" id="pBM-Vt-HTH"/>
+                <constraint firstItem="5Cj-US-PCH" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="12" id="r9K-db-afc"/>
+                <constraint firstItem="P6z-0r-hmg" firstAttribute="top" secondItem="lVX-yA-YcC" secondAttribute="bottom" constant="9" id="vjI-OG-wo2"/>
+                <constraint firstItem="lVX-yA-YcC" firstAttribute="top" secondItem="5Cj-US-PCH" secondAttribute="bottom" constant="11" id="w7i-ve-uaF"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="SEy-5g-ep8"/>
+            <size key="customSize" width="246" height="332"/>
+            <connections>
+                <outlet property="heightLabel" destination="shm-sF-V1t" id="1Iw-08-XkN"/>
+                <outlet property="iconVIew" destination="5Cj-US-PCH" id="COR-B1-7Wt"/>
+                <outlet property="nameLabel" destination="lVX-yA-YcC" id="cid-Jd-zdh"/>
+                <outlet property="tallLabel" destination="P6z-0r-hmg" id="8eh-G1-21a"/>
+                <outlet property="vipImage" destination="z5s-mk-1ZL" id="sRA-gd-2p2"/>
+            </connections>
+            <point key="canvasLocation" x="8" y="-21"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="home_cancel" width="9" height="9"/>
+        <image name="home_pic8" width="87" height="87"/>
+        <image name="home_vip" width="10" height="10"/>
+    </resources>
+</document>

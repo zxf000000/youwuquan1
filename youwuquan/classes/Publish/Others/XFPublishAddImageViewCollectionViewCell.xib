@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="XFPublishAddImageViewCollectionViewCell" id="gTV-IL-0wX" customClass="XFPublishAddImageViewCollectionViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="116" height="125"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="116" height="125"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6K9-A4-7dH">
+                        <rect key="frame" x="0.0" y="0.0" width="116" height="125"/>
+                    </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3vh-L3-s0P">
+                        <rect key="frame" x="96" y="0.0" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="20" id="5r3-w9-H3m"/>
+                            <constraint firstAttribute="height" constant="20" id="Zw7-eW-xTH"/>
+                        </constraints>
+                        <state key="normal" backgroundImage="publish_delete"/>
+                        <connections>
+                            <action selector="clickDeleteButton:" destination="gTV-IL-0wX" eventType="touchUpInside" id="RIA-0a-r3w"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="6K9-A4-7dH" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Bl3-pa-RIA"/>
+                <constraint firstItem="3vh-L3-s0P" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Qod-LR-2LS"/>
+                <constraint firstItem="6K9-A4-7dH" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="UiB-je-gSt"/>
+                <constraint firstAttribute="trailing" secondItem="6K9-A4-7dH" secondAttribute="trailing" id="X8T-dx-n4d"/>
+                <constraint firstAttribute="trailing" secondItem="3vh-L3-s0P" secondAttribute="trailing" id="cSK-C5-HWH"/>
+                <constraint firstAttribute="bottom" secondItem="6K9-A4-7dH" secondAttribute="bottom" id="t2R-na-Stm"/>
+            </constraints>
+            <size key="customSize" width="116" height="125"/>
+            <connections>
+                <outlet property="deleteButton" destination="3vh-L3-s0P" id="ZaI-Gy-VTd"/>
+                <outlet property="picView" destination="6K9-A4-7dH" id="awt-dV-7VC"/>
+            </connections>
+            <point key="canvasLocation" x="-24" y="12.5"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="publish_delete" width="15" height="15"/>
+    </resources>
+</document>
