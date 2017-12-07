@@ -90,7 +90,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentLoginVC) name:@"presentLoginVCNotification" object:nil];
 
     
-    
 }
 
 - (void)presentLoginVC {

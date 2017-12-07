@@ -94,6 +94,7 @@
                 make.bottom.mas_offset(2);
                 make.left.mas_offset(spacing);
                 make.width.mas_equalTo(50);
+                make.height.mas_equalTo(44);
                 
             }];
         } else
@@ -107,6 +108,8 @@
                 make.right.mas_offset(-spacing);
                 make.left.mas_equalTo(firstButton.mas_right).offset(spacing);
                 make.width.mas_equalTo(firstButton);
+                make.height.mas_equalTo(44);
+
                 
             }];
             
@@ -122,6 +125,8 @@
                 make.right.mas_equalTo(afterbutton.mas_left);
                 make.width.mas_equalTo(firstButton);
                 make.left.mas_equalTo(beforbutton.mas_right);
+                make.height.mas_equalTo(44);
+
             }];
             
         }
@@ -131,6 +136,16 @@
     }
     
     UIButton *firstbutton = self.titlesView[0];
+
+    for (UIButton *button in self.titlesView) {
+        
+        if (button.selected) {
+            
+            firstbutton = button;
+        }
+        
+    }
+    
 
     [self.slideView mas_makeConstraints:^(MASConstraintMaker *make) {
         

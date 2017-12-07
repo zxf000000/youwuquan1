@@ -99,6 +99,15 @@
     
 }
 
+
+- (void)viewDidDisappear:(BOOL)animated {
+    
+    [super viewDidDisappear:animated];
+    
+
+    
+}
+
 - (void)viewWillLayoutSubviews
 {
     self.scrollView.contentSize = CGSizeMake(kScreenWidth * 3, 0);
@@ -301,20 +310,36 @@
     frame.origin.y = kScreenHeight - 49;
     self.tabBarController.tabBar.frame = frame;
     
+    CGFloat centerOffset = 0;
+    
+    if (sender == _whButton) {
+        
+        centerOffset = -60;
+    }
+    if (sender == _yyButton) {
+        
+        centerOffset = 0;
+    }
+    
+    if (sender == _spButton) {
+        
+        centerOffset = 60;
+    }
+    
     [self.slideView mas_remakeConstraints:^(MASConstraintMaker *make) {
 
         make.bottom.mas_offset(0);
         make.width.mas_equalTo(35);
-        make.centerX.mas_equalTo(sender);
+        make.centerX.mas_offset(centerOffset);
         make.height.mas_equalTo(2);
     }];
 
-    [UIView animateWithDuration:0.2 animations:^{
-        [self.titleView layoutIfNeeded];
-        
-
-        
-    }];
+//    [UIView animateWithDuration:0.2 animations:^{
+//        [self.titleView layoutIfNeeded];
+//
+//
+//
+//    }];
     
     if (self.slideView.hidden == YES) {
         
@@ -398,46 +423,6 @@
         button.selected = NO;
     }
     
-//    // 固定tabbar的位置
-//    if (self.tableNode.view.contentOffset.y > 0 && self.tableNode.view.contentOffset.y < 200) {
-//        
-//        CGFloat progress = self.tableNode.view.contentOffset.y / 200.f;
-//
-//
-//        CGRect frame = self.tabBarController.tabBar.frame;
-//        frame.origin.y = kScreenHeight-49 + progress * 49;
-//
-//        [UIView animateWithDuration:0.2 animations:^{
-//
-//            self.tabBarController.tabBar.frame = frame;
-//
-//        }];
-//
-//    }
-//
-//    if (self.tableNode.view.contentOffset.y >= 200) {
-//
-//        CGRect frame = self.tabBarController.tabBar.frame;
-//        frame.origin.y = kScreenHeight;
-//        [UIView animateWithDuration:0.2 animations:^{
-//
-//            self.tabBarController.tabBar.frame = frame;
-//
-//        }];
-//    }
-//
-//    if (self.tableNode.view.contentOffset.y <= 0) {
-//
-//        CGRect frame = self.tabBarController.tabBar.frame;
-//        frame.origin.y = kScreenHeight - 49;
-//        [UIView animateWithDuration:0.2 animations:^{
-//
-//            self.tabBarController.tabBar.frame = frame;
-//
-//        }];
-//
-//    }
-    
 }
 
 - (void)setupTableNode {
@@ -508,32 +493,6 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     
     if (scrollView == self.tableNode.view) {
-//        // 隐藏tabbar
-//        if (scrollView.contentOffset.y > 0 && scrollView.contentOffset.y < 200) {
-//
-//            CGFloat progress = scrollView.contentOffset.y / 200.f;
-//
-//            CGRect frame = self.tabBarController.tabBar.frame;
-//            frame.origin.y = kScreenHeight-49 + progress * 49;
-//
-//            self.tabBarController.tabBar.frame = frame;
-//
-//        }
-//
-//        if (scrollView.contentOffset.y >= 200) {
-//
-//            CGRect frame = self.tabBarController.tabBar.frame;
-//            frame.origin.y = kScreenHeight;
-//            self.tabBarController.tabBar.frame = frame;
-//        }
-//
-//        if (scrollView.contentOffset.y <= 0) {
-//
-//            CGRect frame = self.tabBarController.tabBar.frame;
-//            frame.origin.y = kScreenHeight - 49;
-//            self.tabBarController.tabBar.frame = frame;
-//
-//        }
         
         CGFloat sectionHeaderHeight = 47;
         if (scrollView.contentOffset.y<=sectionHeaderHeight&&scrollView.contentOffset.y>=0) {
@@ -727,7 +686,6 @@
         return 2;
     }
     
-    
     return 4;
 }
 
@@ -741,9 +699,8 @@
     self.navigationItem.titleView = titleView;
     
     if (@available (iOS 11 , *)) {
-        
+    
         [titleView mas_makeConstraints:^(MASConstraintMaker *make) {
-           
             make.edges.mas_offset(0);
         }];
         
@@ -779,11 +736,7 @@
     spButton.tag = 1003;
     [titleView addSubview:spButton];
     
-    [@[whButton,yyButton,spButton] mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.height.mas_equalTo(44);
-        
-    }];
+
     
     self.slideView = [[UIView alloc] init];
     self.slideView.backgroundColor = kMainColor;
@@ -795,11 +748,7 @@
     
     self.titleView = titleView;
 
-//    [self.titleView addSubview:self.whButton];
-//    [self.titleView addSubview:self.yyButton];
-//    [self.titleView addSubview:self.spButton];
     [self.titleView addSubview:self.slideView];
-    
     self.titleButtons = @[self.whButton,self.yyButton,self.spButton];
     
     [self.whButton addTarget:self action:@selector(clickTopButton:) forControlEvents:(UIControlEventTouchUpInside)];
@@ -903,28 +852,85 @@
        
         make.left.top.bottom.mas_offset(0);
         make.width.mas_equalTo(60);
-        make.right.mas_equalTo(self.yyButton.mas_left);
+        if (@available (ios 11, *)) {
+            make.right.mas_equalTo(self.yyButton.mas_left);
+
+        }
     }];
     
     [self.spButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.left.mas_equalTo(self.yyButton.mas_right);
+        if (@available (ios 11, *)) {
+
+            make.left.mas_equalTo(self.yyButton.mas_right);
+        }
         make.width.mas_equalTo(60);
         make.right.mas_offset(0);
         make.top.bottom.mas_offset(0);
         
     }];
     
-    [self.slideView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [@[_whButton,_yyButton,_spButton] mas_makeConstraints:^(MASConstraintMaker *make) {
         
+        make.height.mas_equalTo(44);
+        
+    }];
+    
+    
+        CGFloat centerOffset = 0;
+        
+        if (_whButton.selected) {
+            
+            centerOffset = -60;
+        }
+        if (_yyButton.selected) {
+            
+            centerOffset = 0;
+        }
+        
+        if (_spButton.selected) {
+            
+            centerOffset = 60;
+        }
+
+    [self.slideView mas_makeConstraints:^(MASConstraintMaker *make) {
+    
         make.bottom.mas_offset(0);
         make.width.mas_equalTo(35);
-        make.centerX.mas_equalTo(self.whButton);
+        make.centerX.mas_offset(centerOffset);
         make.height.mas_equalTo(2);
     }];
     
     [super updateViewConstraints];
 }
+
+- (void)remakeButtons {
+    
+//    [self.yyButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.center.mas_offset(0);
+//        make.top.bottom.mas_offset(0);
+//        make.width.mas_equalTo(60);
+//
+//    }];
+//
+//    [self.whButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.left.top.bottom.mas_offset(0);
+//        make.width.mas_equalTo(60);
+//        make.right.mas_equalTo(self.yyButton.mas_left);
+//    }];
+//
+//    [self.spButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.left.mas_equalTo(self.yyButton.mas_right);
+//        make.width.mas_equalTo(60);
+//        make.right.mas_offset(0);
+//        make.top.bottom.mas_offset(0);
+//
+//    }];
+}
+
+
 
 - (NSMutableArray *)selectedIndexs {
     

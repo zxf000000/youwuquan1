@@ -83,9 +83,9 @@
     
     self.pics = @[kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic];
 
+    self.topView.frame = CGRectMake(0, 0, kScreenWidth, 44);
+
     if (@available (ios 11 , *)) {
-        
-        self.topView.frame = CGRectMake(0, 0, kScreenWidth, 64);
         
         [self.topView mas_makeConstraints:^(MASConstraintMaker *make) {
             
