@@ -48,6 +48,7 @@
 
 @property (nonatomic,strong) UILabel *detailLabel;
 
+
 @property (nonatomic,assign) CGFloat topHeight;
 
 @property (nonatomic,assign) CGFloat centerHeight;
@@ -85,24 +86,38 @@
     [self.view setNeedsUpdateConstraints];
 }
 
-- (void)viewDidLayoutSubviews {
-    
-    [super viewDidLayoutSubviews];
-    
-    [self.centerView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        
-        make.left.mas_offset(0);
-        make.top.mas_equalTo(self.textView.mas_bottom).offset(4);
-        make.height.mas_equalTo(self.centerView.contentSize.height);
-        make.width.mas_equalTo(kScreenWidth);
-        
-    }];
-    
-}
+//- (void)viewDidLayoutSubviews {
+//
+//    [super viewDidLayoutSubviews];
+//
+//    [self.centerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.left.mas_offset(0);
+//        make.top.mas_equalTo(self.textView.mas_bottom).offset(4);
+//        make.height.mas_equalTo(self.labelsArr.count > 0 ? self.centerView.collectionViewLayout.collectionViewContentSize.height : 30);
+//        make.width.mas_equalTo(kScreenWidth);
+//
+//    }];
+//
+//}
 
 - (void)clickPublishButton {
     
     if (self.video.count == 0 || self.video == nil) {
+        
+        if (self.secintentionImages.count > 0 && [self.diamondTextField.text integerValue] <= 0) {
+            
+            [XFToolManager showProgressInWindowWithString:@"轻为私密相册设置解锁金额"];
+            
+            return;
+        }
+        
+        if (self.openintentionImages.count == 0 && self.secintentionImages.count > 0) {
+            [XFToolManager showProgressInWindowWithString:@"请至少选择一张公开图片"];
+            
+            return;
+            
+        }
         
         MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在发布"];
         
@@ -118,7 +133,7 @@
         }
         
         // 上传图片文字
-        [XFStatusNetworkManager publishStatusWithopenAlbumId:@"1" intimateAlbumId:@"2" opens:self.openintentionImages intimates:self.secintentionImages type:type title:self.textView.text unlockNum:@"555" customLabel:@"好" labels:@"1,2" successBlock:^(NSDictionary *reponseDic) {
+        [XFStatusNetworkManager publishStatusWithopenAlbumId:@"1" intimateAlbumId:@"2" opens:self.openintentionImages intimates:self.secintentionImages type:type title:self.textView.text unlockNum:self.diamondTextField.text customLabel:@"好" labels:@"1,2" successBlock:^(NSDictionary *reponseDic) {
             [HUD hideAnimated:YES];
 
             if (reponseDic) {
@@ -155,9 +170,13 @@
 
 - (void)setupScrolLView {
     
-    self.scrollView = [[UIScrollView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight))];
+    self.scrollView = [[UIScrollView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64))];
     [self.view addSubview:self.scrollView];
     
+    if (@available (iOS 11 , *)) {
+        self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+
+    }
     self.scrollView.backgroundColor = UIColorHex(f4f4f4);
     
 }
@@ -194,7 +213,7 @@
     layout.estimatedItemSize = CGSizeMake(20, 60);
     // 设置滑动的方向 (默认是竖着滑动的)
     layout.scrollDirection =  UICollectionViewScrollDirectionVertical;
-    // 设置item的内边距
+
     layout.sectionInset = UIEdgeInsetsMake(5,5,5,5);
     
     self.centerView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) collectionViewLayout:layout];
@@ -263,10 +282,20 @@
     self.secretButton.imageEdgeInsets = UIEdgeInsetsMake(0, -10, 0, 0);
     [self.secretHeader addSubview:self.secretButton];
 
-
     // 小控件
+    self.detailLabel = [[UILabel alloc] init];
+    self.detailLabel.text = @"钻石解锁查看";
+    self.detailLabel.textColor = [UIColor blackColor];
+    self.detailLabel.font = [UIFont systemFontOfSize:12];
+    [self.secretHeader addSubview:self.detailLabel];
     
-    
+    self.diamondTextField = [[UITextField alloc] init];
+    self.diamondTextField.text = @"10";
+    self.diamondTextField.keyboardType = UIKeyboardTypeNumberPad;
+    self.diamondTextField.textAlignment = NSTextAlignmentRight;
+    [self.secretHeader addSubview:self.diamondTextField];
+
+
 
 }
 #pragma mark - imagepickerdelegate
@@ -276,17 +305,17 @@
         
         [self.openintentionImages addObjectsFromArray:images];
 
-        [self.openView reloadData];
-        
         [self reloadImageViewHeight];
+        [self.openView reloadData];
+
 
     } else {
         
         [self.secintentionImages addObjectsFromArray:images];
-        [self.secretView reloadData];
         
         [self reloadImageViewHeight];
-    
+        [self.secretView reloadData];
+
         
     }
     [self setScrollContent];
@@ -297,26 +326,24 @@
 - (void)reloadImageViewHeight {
     
     self.secretHeight = 30 + [self heightForSecIntentionView];
-    
+
     [self.secretView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        
+
         make.top.mas_equalTo(self.secretHeader.mas_bottom);
         make.width.left.mas_equalTo(self.secretHeader);
-        make.height.mas_equalTo(self.secretHeight - 30);
-        
+        make.height.mas_equalTo(self.secretHeight);
+
     }];
     
-//    [self setScrollContent];
     self.openHeight = 30 + [self heightForOpenIntentionView];
-    
+
     [self.openView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        
+
         make.top.mas_equalTo(self.openHeader.mas_bottom);
         make.width.left.mas_equalTo(self.openHeader);
-        make.height.mas_equalTo(self.openHeight - 30);
-        
+        make.height.mas_equalTo(self.openHeight);
+
     }];
-    [self setScrollContent];
 }
 
 #pragma mark - 标签选择器代理
@@ -325,14 +352,14 @@
     self.labelsArr = [NSMutableArray arrayWithArray:tags];
     
     [self.labelsArr addObject:@""];
+    
     [self.centerView reloadData];
+    
     [self.centerView layoutIfNeeded];
-
 
     [self setScrollContent];
     
 }
-
 
 #pragma mark - 图片选择collectionViewCellDelegate
 - (void)publishCollectionCell:(XFPublishAddImageViewCollectionViewCell *)cell didClickDeleteButtonWithIndexPath:(NSIndexPath *)indexPath {
@@ -342,7 +369,7 @@
         // 公开的
         [self.openintentionImages removeObjectAtIndex:indexPath.item];
         [self.openView reloadData];
-//        [self.openView deleteItemsAtIndexPaths:@[indexPath]];
+        
     } else {
         
         // 私密的
@@ -350,6 +377,7 @@
         [self.secretView reloadData];
         
     }
+
     [self reloadImageViewHeight];
     
 }
@@ -465,21 +493,12 @@
           
             // 删除相应的标
             [self.labelsArr removeObjectAtIndex:indexpath.item];
-            [self.centerView.collectionViewLayout invalidateLayout];
-            [self.centerView reloadData];
+//            [self.centerView.collectionViewLayout invalidateLayout];
+//            [self.centerView deleteItemsAtIndexPaths:@[indexpath]];
+            [self.centerView reloadSections:[NSIndexSet indexSetWithIndex:0]];
             
             // 计算高度
             // 计算标签栏高度
-            
-            [self.centerView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                
-                make.left.mas_offset(0);
-                make.top.mas_equalTo(self.textView.mas_bottom).offset(4);
-                make.height.mas_equalTo(self.centerView.contentSize.height);
-                make.width.mas_equalTo(kScreenWidth);
-            }];
-            
-            
             
             [self setScrollContent];
             
@@ -563,18 +582,16 @@
 
 - (void)setScrollContent {
     
-    self.centerHeight = self.centerView.contentSize.height;
+    self.centerHeight = self.centerView.collectionViewLayout.collectionViewContentSize.height;
     
     [self.centerView mas_remakeConstraints:^(MASConstraintMaker *make) {
         
         make.left.mas_offset(0);
         make.top.mas_equalTo(self.textView.mas_bottom).offset(4);
-        make.height.mas_equalTo(self.centerView.contentSize.height);
+        make.height.mas_equalTo(self.labelsArr.count > 1 ? self.centerHeight : 30);
         make.width.mas_equalTo(kScreenWidth);
         
     }];
-    
-    [self.view setNeedsUpdateConstraints];
     
     self.scrollView.contentSize = CGSizeMake(0, self.topHeight + self.centerHeight + self.openHeight + self.secretHeight + 16 + 20);
     
@@ -597,7 +614,7 @@
        
         make.left.mas_offset(0);
         make.top.mas_equalTo(self.textView.mas_bottom).offset(4);
-        make.height.mas_equalTo(self.centerView.contentSize.height);
+        make.height.mas_equalTo(self.centerHeight > 30 ? self.centerView.collectionViewLayout.collectionViewContentSize.height : 30);
         make.width.mas_equalTo(kScreenWidth);
         
     }];
@@ -612,7 +629,7 @@
        
         make.top.mas_equalTo(self.openHeader.mas_bottom);
         make.width.left.mas_equalTo(self.openHeader);
-        make.height.mas_equalTo(10 + KImgBottom + kItemWidth);
+        make.height.mas_equalTo([self heightForOpenIntentionView]);
         
     }];
     [self.secretHeader mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -626,7 +643,7 @@
         
         make.top.mas_equalTo(self.secretHeader.mas_bottom);
         make.width.left.mas_equalTo(self.secretHeader);
-        make.height.mas_equalTo(10 + KImgBottom + kItemWidth);
+        make.height.mas_equalTo([self heightForSecIntentionView]);
         
     }];
     
@@ -644,11 +661,31 @@
         make.width.mas_equalTo(90);
     }];
     
+    [self.detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.centerY.mas_offset(0);
+        make.right.mas_offset(-20);
+        
+        
+    }];
+    
+    [self.diamondTextField mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.right.mas_equalTo(self.detailLabel.mas_left).offset(-10);
+        make.height.mas_equalTo(20);
+        make.centerY.mas_offset(0);
+        make.width.mas_equalTo(130);
+        
+    }];
+    
     self.topHeight = 175;
     self.openHeight = 40 + KImgBottom + kItemWidth;
     self.secretHeight = 40 + KImgBottom + kItemWidth;
     
-    [self setScrollContent];
+//    self.scrollView.contentSize = CGSizeMake(0, self.topHeight + self.centerHeight + self.openHeight + self.secretHeight + 16 + 20);
+
+    
+//    [self setScrollContent];
     
     [super updateViewConstraints];
 }
@@ -796,7 +833,6 @@
     if (_labelsArr == nil) {
         
         _labelsArr = [NSMutableArray array];
-//        _labelsArr = [NSMutableArray arrayWithArray:@[@"添加/编辑标签",@"添签",@"添加/编辑标签",@"添加/签",@"添加/编辑标   签",@"辑标签",@""]];
     }
     return _labelsArr;
 }

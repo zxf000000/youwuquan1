@@ -41,4 +41,9 @@ typedef void(^RequestFailedBlock)(NSError *error);
  */
 + (void)changeOrlightSkillWithSkillno:(NSString *)skillNo inviteTime:(NSString *)inviteTime invitePlace:(NSString *)invitePlace inviteMoney:(NSString *)inviteMoney inviteDemand:(NSString *)inviteDemand successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
 
+/**
+ 获取账户信心
+ */
++ (void)getMyMoneyInfoWithsuccessBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+
 @end

@@ -10,6 +10,12 @@
 #import "XFOtherMainViewController.h"
 @class XFImagePickerViewController;
 
+typedef NS_ENUM(NSInteger,XFImagePickerType) {
+  
+    XFImagePickerTypeImage,
+    XFImagePickerTypeVideo,
+    
+};
 
 @protocol XFImagePickerDelegate <NSObject>
 
@@ -24,6 +30,8 @@
 @property (nonatomic,strong) NSMutableArray *selectedImages;
 
 @property (nonatomic,assign) NSInteger selectedNumber;
+
+@property (nonatomic,assign) XFImagePickerType type;
 
 
 @property (nonatomic,assign) BOOL isCircle;

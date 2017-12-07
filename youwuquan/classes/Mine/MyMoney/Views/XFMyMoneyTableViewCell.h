@@ -14,5 +14,14 @@
 @property (weak, nonatomic) IBOutlet UIButton *castButton;
 
 @property (nonatomic,copy) void(^clickCashButtonBlock)(void);
+@property (nonatomic,copy) void(^clickPayButtonBlock)(void);
+
+@property (weak, nonatomic) IBOutlet UILabel *totalInLabel;
+@property (weak, nonatomic) IBOutlet UILabel *canCashLabel;
+@property (weak, nonatomic) IBOutlet UILabel *cashedLabel;
+@property (weak, nonatomic) IBOutlet UILabel *diamondLabel;
+@property (weak, nonatomic) IBOutlet UILabel *goadNumLabel;
+
+@property (nonatomic,copy) NSDictionary *info;
 
 @end

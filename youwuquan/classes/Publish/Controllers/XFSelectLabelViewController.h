@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "XFMainViewController.h"
+#import "XFOtherMainViewController.h"
+
 @class XFSelectLabelViewController;
 
 @protocol XFSelectTagVCDelegate <NSObject>
@@ -16,11 +18,10 @@
 
 @end
 
-@interface XFSelectLabelViewController : XFMainViewController
+@interface XFSelectLabelViewController : XFOtherMainViewController
 
 @property (nonatomic,strong) NSMutableArray *labelsArr;
 
 @property (nonatomic,strong) id <XFSelectTagVCDelegate> delegate;
-
 
 @end

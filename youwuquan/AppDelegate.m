@@ -167,11 +167,13 @@
 #pragma mark - tabbarVCdelegate
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
     
-    UINavigationController *navi = (UINavigationController *)viewController;
+    NSInteger index = [tabBarController.childViewControllers indexOfObject:viewController];
     
-    if ([navi.topViewController isKindOfClass:[XFMessageListViewController class]] || [navi.topViewController isKindOfClass:[XFMineViewController class]]) {
+//    UINavigationController *navi = (UINavigationController *)viewController;
+    
+    if (index == 2 || index == 3) {
         
-        if (![XFUserInfoManager sharedManager].token) {
+        if ([XFUserInfoManager sharedManager].token == nil || [XFUserInfoManager sharedManager].token.length == 0) {
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"presentLoginVCNotification" object:nil];
             

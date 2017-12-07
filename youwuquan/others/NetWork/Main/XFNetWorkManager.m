@@ -107,6 +107,8 @@
     
     self.sessionManager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
     
+    NSDictionary *dic = paraments;
+    
     [self.sessionManager POST:urlString parameters:paraments progress:^(NSProgress * _Nonnull uploadProgress) {
         
         NSLog(@"%zd/%zd",uploadProgress.totalUnitCount,uploadProgress.completedUnitCount);

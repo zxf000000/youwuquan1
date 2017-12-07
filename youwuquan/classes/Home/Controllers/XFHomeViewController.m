@@ -224,11 +224,11 @@
     
     // 用户位置对象
     CLLocation *location = [locations lastObject];
-//    CLLocationCoordinate2D coordinate = location.coordinate;
+    CLLocationCoordinate2D coordinate = location.coordinate;
     
-//
-//    self.longitute = [NSNumber numberWithDouble:coordinate.longitude];
-//    self.latitude = [NSNumber numberWithDouble:coordinate.latitude];
+
+    [XFUserInfoManager sharedManager].userLong = coordinate.longitude;
+    [XFUserInfoManager sharedManager].userLati = coordinate.latitude;
 
     _geoC = [[CLGeocoder alloc] init];
 
@@ -515,7 +515,6 @@
     // 弹性动画
     [XFToolManager popanimationForLikeNode:node.likeNode.imageNode.layer];
     
-
     if (node.likeNode.selected) {
         
         [self.selectedIndexs addObject:indexPath];

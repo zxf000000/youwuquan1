@@ -58,7 +58,7 @@
 
 - (void)setupTableView {
     
-    self.tableView = [[UITableView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 44))];
+    self.tableView = [[UITableView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64))];
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;

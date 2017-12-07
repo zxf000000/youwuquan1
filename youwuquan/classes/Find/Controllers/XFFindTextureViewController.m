@@ -120,6 +120,11 @@
 
 }
 
+- (void)viewWillLayoutSubviews
+{
+    self.scrollView.contentSize = CGSizeMake(kScreenWidth * 2, 0);
+}
+
 - (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
     
     if (isOpen) {

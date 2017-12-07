@@ -17,6 +17,21 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    //    [self initNavigationBar];
+    
+    [self.navigationController.navigationBar setBackgroundColor:[UIColor whiteColor]];
+    
+    self.navigationController.navigationBar.translucent = NO;
+    
+    self.navigationController.navigationBar.layer.shadowColor = [UIColor blackColor].CGColor;
+    
+    self.navigationController.navigationBar.layer.shadowOffset = CGSizeMake(0, 2);
+    
+    self.navigationController.navigationBar.layer.shadowOpacity = 0.1;
+    
+    [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@""]];
     // 返回按钮
     UIButton *backButton = [UIButton naviBackButton];
     [backButton setImage:[UIImage imageNamed:@"login_back"] forState:(UIControlStateNormal)];

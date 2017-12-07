@@ -48,13 +48,15 @@
                 // 退出融云
                 [[RCIM sharedRCIM] logout];
                 
+                
                 // 主界面
                 UIWindow *window = [UIApplication sharedApplication].keyWindow;
                 
-                XFMainTabbarViewController *tabbarVC = [[XFMainTabbarViewController alloc] init];
+                self.tabbarVC.selectedIndex = 0;
                 
-                window.rootViewController = tabbarVC;
-                
+                window.rootViewController = self.tabbarVC;
+                [self.navigationController popViewControllerAnimated:NO];
+
                 
             }
             

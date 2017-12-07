@@ -35,10 +35,9 @@
       
         weakSelf.headerVC.view.frame = CGRectMake(0, 0, kScreenWidth, height);
 
-        
     };
 
-    self.headerVC.view.frame = CGRectMake(0, 0, kScreenWidth, 2000);
+    self.headerVC.view.frame = CGRectMake(0, 0, kScreenWidth, self.headerVC.headerHeight);
     self.conversationListTableView.tableHeaderView = self.headerVC.view;
     
     self.emptyConversationView = [[UIView alloc] init];

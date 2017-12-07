@@ -62,8 +62,18 @@
     [super viewDidLoad];
 
     
+    UIButton *addButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 40, 30))];
+    [addButton setTitle:@"添加" forState:(UIControlStateNormal)];
+    [addButton addTarget:self action:@selector(clickAddbutton) forControlEvents:(UIControlEventTouchUpInside)];
+    
     [self setupCollectionView];
 
+}
+
+- (void)clickAddbutton {
+    
+    
+    
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {

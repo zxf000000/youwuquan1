@@ -22,7 +22,10 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.userCache = [[YYCache alloc] initWithName:@"userInfo"];
+        _userCache = [[YYCache alloc] initWithName:@"userInfo"];
+        
+        _userLong = 100.f;
+        _userLati = 100.f;
     }
     return self;
 }
@@ -30,6 +33,7 @@
 - (void)removeAllData {
     
     [_userCache removeAllObjects];
+    
     
 }
 

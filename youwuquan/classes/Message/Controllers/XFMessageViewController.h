@@ -18,4 +18,7 @@
 
 @property (nonatomic,copy) void(^changeHeaderHeightBlock)(CGFloat height);
 
+@property (nonatomic,assign) CGFloat headerHeight;
+
+
 @end

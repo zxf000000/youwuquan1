@@ -20,6 +20,8 @@
 
 @property (nonatomic,copy) NSArray *mySkills;
 
+@property (nonatomic,copy) NSArray *skillNames;
+
 @end
 
 @implementation XFSkillsViewController
@@ -31,6 +33,8 @@
     
     [self getData];
 }
+
+
 
 - (void)getData {
     
@@ -60,11 +64,14 @@
                     NSArray *selectedS = responseDic[@"data"][0];
                     
                     NSMutableArray *selectedSkill = [NSMutableArray array];
+                    NSMutableArray *selectedIds = [NSMutableArray array];
                     for (NSInteger i = 0; i < selectedS.count; i ++ ) {
                         
                         [selectedSkill addObject:[XFSkillModel modelWithDictionary:selectedS[i]]];
-                        
+                        [selectedIds addObject:selectedS[i][@"skillNo"]];
                     }
+                    
+                    self.skillNames = selectedIds.copy;
                     
                     self.mySkills = selectedSkill.copy;
                     
@@ -106,12 +113,28 @@
         // 编辑
         XFEditSkillTableViewController *editSkillVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFEditSkillTableViewController"];
         
+        editSkillVC.skill = cell.model;
+        
+        editSkillVC.refreshSkillsBlock = ^{
+          
+            [self getData];
+            
+        };
+        
         [self.navigationController pushViewController:editSkillVC animated:YES];
         
     } else {
         
         // 点亮
         XFEditSkillTableViewController *editSkillVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFEditSkillTableViewController"];
+        editSkillVC.skill = cell.model;
+
+        editSkillVC.refreshSkillsBlock = ^{
+            
+            [self getData];
+            
+        };
+        
         
         [self.navigationController pushViewController:editSkillVC animated:YES];
         
@@ -135,9 +158,10 @@
     
     cell.delegate = self;
     
-    if ([self.mySkills containsObject:model]) {
+    if ([self.skillNames containsObject:model.skillNo]) {
         
         cell.isOpen = YES;
+        
     } else {
         
         cell.isOpen = NO;

@@ -323,6 +323,8 @@
             
             setVC.hidesBottomBarWhenPushed = YES;
             
+            setVC.tabbarVC = (XFMainTabbarViewController *)self.tabBarController;
+            
             [self.navigationController pushViewController:setVC animated:YES];
         }
             break;

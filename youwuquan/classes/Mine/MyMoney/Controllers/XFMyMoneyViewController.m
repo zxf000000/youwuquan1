@@ -10,9 +10,14 @@
 #import "XFMyMoneyTableViewCell.h"
 #import "XFTxViewController.h"
 #import "XFCashViewController.m"
+#import "XFUserInfoNetWorkManager.h"
+#import "XFMoneyNetworkManager.h"
 
 @interface XFMyMoneyViewController () <UITableViewDelegate,UITableViewDataSource>
 @property (nonatomic,strong) UITableView *tableView;
+
+@property (nonatomic,copy) NSDictionary *moneyInfo;
+
 @end
 
 @implementation XFMyMoneyViewController
@@ -39,6 +44,30 @@
     
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.bounces = NO;
+    
+    [self loadData];
+}
+
+- (void)loadData {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    [XFUserInfoNetWorkManager getMyMoneyInfoWithsuccessBlock:^(NSDictionary *responseDic) {
+       
+        [HUD hideAnimated:YES];
+        if (responseDic) {
+            
+            self.moneyInfo = responseDic[@"data"][0];
+            [self.tableView reloadData];
+        }
+        
+        
+    } failedBlock:^(NSError *error) {
+        
+        [HUD hideAnimated:YES];
+
+    }];
+    
 }
 
 - (void)clickRightButton {
@@ -46,8 +75,7 @@
     XFTxViewController *txVC = [[XFTxViewController alloc] init];
     
     [self.navigationController pushViewController:txVC animated:YES];
-    
-    
+
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -65,11 +93,36 @@
     
     XFMyMoneyTableViewCell *cell = [[[NSBundle mainBundle] loadNibNamed:@"XFMyMoneyTableViewCell" owner:nil options:nil] lastObject];
     
+    cell.info = self.moneyInfo;
+    
     cell.clickCashButtonBlock = ^{
         
         XFCashViewController *cashVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFCashViewController"];
         
         [self.navigationController pushViewController:cashVC animated:YES];
+    };
+    
+    cell.clickPayButtonBlock = ^{
+      
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在充值"];
+
+        // 充值
+        [XFMoneyNetworkManager chargeDiamondWithNUm:@"1000" successBlock:^(NSDictionary *responseDic) {
+            
+            if (responseDic) {
+                
+                [XFToolManager changeHUD:HUD successWithText:@"充值成功"];
+                
+                [self loadData];
+            }
+            [HUD hideAnimated:YES];
+            
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+
+        }];
+        
     };
     
     return cell;

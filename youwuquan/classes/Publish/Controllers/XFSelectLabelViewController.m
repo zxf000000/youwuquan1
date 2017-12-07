@@ -67,10 +67,11 @@
     
     [backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
     
-    _doneButton = [[UIButton alloc] init];
+    _doneButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 60, 30))];
+    _doneButton.titleEdgeInsets = UIEdgeInsetsMake(0, 20, 0, 0);
     [_doneButton setTitle:@"确定" forState:(UIControlStateNormal)];
     [_doneButton addTarget:self action:@selector(clickDoneButton) forControlEvents:(UIControlEventTouchUpInside)];
-    _doneButton.titleLabel.font = [UIFont systemFontOfSize:12];
+    _doneButton.titleLabel.font = [UIFont systemFontOfSize:14];
     if (self.labelsArr.count > 0) {
         [_doneButton setTitleColor:kMainRedColor forState:(UIControlStateNormal)];
 
@@ -96,6 +97,11 @@
     
     [self.view setNeedsUpdateConstraints];
 
+}
+
+- (void)dealloc {
+    
+    [self removeObserver:self forKeyPath:@"labelsArr"];
 }
 
 - (void)getTags {
@@ -153,7 +159,8 @@
 
 - (void)clickBackButton {
     
-    [self dismissViewControllerAnimated:YES completion:nil];
+//    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)clickDoneButton {
@@ -433,6 +440,7 @@
     // 添加标签
     [self addTagWithText:self.inputTagView.text];
     
+    self.inputTagView.text = @"";
 }
 
 
@@ -469,6 +477,7 @@
     self.inputTagView.delegate = self;
     self.inputTagView.font = [UIFont systemFontOfSize:12];
     self.inputTagView.returnKeyType = UIReturnKeyDone;
+    self.inputTagView.placeholder = @"输入自定义标签";
     // 监听变化
     [self.inputTagView addObserver:self forKeyPath:@"text" options:(NSKeyValueObservingOptionNew) context:nil];
     

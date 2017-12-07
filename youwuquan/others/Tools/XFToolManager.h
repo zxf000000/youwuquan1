@@ -14,6 +14,14 @@
 
 @interface XFToolManager : NSObject
 
+/**
+ 字典转字符串
+
+ @param object 字典
+ @return 字符串
+ */
++ (NSString*)DataTOjsonString:(id)object;
+
 + (NSString *)timeStringWithTime:(Float64)time;
 
 /**

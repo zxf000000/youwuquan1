@@ -24,6 +24,15 @@
 
 @implementation XFMessageViewController
 
+- (instancetype)init {
+    
+    if (self = [super init]) {
+        
+        _headerHeight = 65 * (self.cellIcons.count + 1) + 136 + 15 + 15;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -58,7 +67,7 @@
             break;
         case 2:
         {
-            return 5;
+            return self.cellIcons.count;
         }
             break;
             
@@ -169,7 +178,8 @@
         
         [cell setMyShadow];
         
-        cell.iconImage.image = [UIImage imageNamed:@"message_cyhd"];
+        cell.iconImage.image = [UIImage imageNamed:@"message_gg"];
+        cell.titleLabel.text = @"尤物圈动态";
     }
     
     if (indexPath.section == 1 || indexPath.row == 7) {
@@ -184,6 +194,7 @@
             
             cell.iconImage.image = [UIImage imageNamed:self.cellIcons[indexPath.row]];
             cell.titleLabel.text = self.cellTitles[indexPath.row];
+            
         }else {
             
             cell.iconImage.image = [UIImage imageNamed:@"zhanweitu44"];
@@ -196,7 +207,6 @@
         
         self.tableView.frame = CGRectMake(0, 0, kScreenWidth, self.tableView.contentSize.height - 64);
         
-        self.changeHeaderHeightBlock(self.tableView.contentSize.height - 64);
         
     }
 
@@ -214,7 +224,12 @@
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = kBgGrayColor;
-    self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
+//    self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.edges.mas_offset(0);
+        
+    }];
     self.tableView.showsVerticalScrollIndicator = NO;
     
     self.tableView.scrollEnabled = NO;
@@ -223,7 +238,7 @@
 - (NSArray *)cellTitles {
     if (_cellTitles == nil) {
         
-        _cellTitles = @[@"参与的活动",@"有人约你啦~",@"赞",@"评论",@"未关注人的私信"];
+        _cellTitles = @[@"参与的活动",@"有人约你啦~",@"赞",@"评论"];
     }
     return _cellTitles;
     
@@ -232,7 +247,7 @@
 - (NSArray *)cellIcons {
     if (_cellIcons == nil) {
         
-        _cellIcons = @[@"message_cyhd",@"message_yryn",@"message_like",@"message_comment",@"message_Unfocused messages"];
+        _cellIcons = @[@"message_cyhd",@"message_yryn",@"message_like",@"message_comment"];
 
         
     }

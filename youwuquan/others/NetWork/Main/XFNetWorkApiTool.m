@@ -72,7 +72,7 @@
 
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 获取技能列表
-#define YBYGetSkillList @"skill/querySkillList?"
+#define YBYGetSkillList @"skill/queryUserSkillList?"
 // 激活或者修改邀约的技能
 #define YBYChangeSkill @"skill/openOrUpdateSkill?"
 // 通过制定技能邀约用户
@@ -95,6 +95,13 @@
 #define YBYReward @"property/reward?"
 // 解锁动态
 #define YBYUnlockStatus @"property/unlockMoment"
+
+// 获取账户信息
+#define YBYGetMyMoneyINfo @"property/account?"
+// 提现
+#define YBYCash @"withdrawals/withdrawals?"
+// 认证
+#define YBYAuth @"property/attestation?"
 
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 签到
@@ -309,6 +316,24 @@
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetAllSkills];
 }
+
+//------------------------------------------- 可爱的分割线 --------------------------------------//
+
++ (NSString *)pathUrlForGetMyMoneyInfo {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetMyMoneyINfo];
+}
+
++ (NSString *)pathUrlForCash {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYCash];
+}
+
++ (NSString *)pathUrlForAuth {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYAuth];
+}
+
 
 
 

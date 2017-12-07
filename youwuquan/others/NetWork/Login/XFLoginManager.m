@@ -75,7 +75,8 @@
     
     NSMutableDictionary *parament = [NSMutableDictionary dictionary];
     [parament setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
-    
+    [parament setObject:[NSString stringWithFormat:@"%f",[XFUserInfoManager sharedManager].userLong] forKey:@"lng"];
+    [parament setObject:[NSString stringWithFormat:@"%f",[XFUserInfoManager sharedManager].userLati] forKey:@"lat"];
     [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForGetUserInfo] paraments:parament successHandle:^(NSDictionary *responseDic) {
         
         success(responseDic);
@@ -97,6 +98,7 @@
 
     
     [[XFNetWorkManager sharedManager] postUrl:[XFNetWorkApiTool pathUrlForLoginWithToken] paraments:parament successHandle:^(NSDictionary *responseDic) {
+        
         success(responseDic);
         
     } failedBlock:^(NSError *error) {
@@ -112,6 +114,8 @@
     NSMutableDictionary *parament = [NSMutableDictionary dictionary];
     [parament setObject:userNumber forKey:@"userNo"];
     [parament setObject:pwd forKey:@"loginPsw"];
+    [parament setObject:[NSString stringWithFormat:@"%f",[XFUserInfoManager sharedManager].userLong] forKey:@"lng"];
+    [parament setObject:[NSString stringWithFormat:@"%f",[XFUserInfoManager sharedManager].userLati] forKey:@"lat"];
     
     [[XFNetWorkManager sharedManager] postUrl:[XFNetWorkApiTool pathUrlForLogin] paraments:parament successHandle:^(NSDictionary *responseDic) {
         

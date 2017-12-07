@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "XFSkillModel.h"
 @interface XFEditSkillTableViewController : UITableViewController
+
+@property (nonatomic,strong) XFSkillModel *skill;
+
+@property (nonatomic,copy) void(^refreshSkillsBlock)();
 
 @end

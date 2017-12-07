@@ -30,6 +30,12 @@
         _tagLabel.text = tag;
         _tagLabel.textColor = kMainRedColor;
         
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                              action:@selector(clickDeleteButton)];
+        _tagLabel.userInteractionEnabled = YES;
+        
+        [self addGestureRecognizer:tap];
+        
         [self addSubview:_tagLabel];
         
         _deleteButton = [[UIButton alloc] init];
@@ -49,8 +55,9 @@
             
             make.left.mas_equalTo(_tagLabel.mas_right).offset(10);
             make.centerY.mas_offset(0);
-            make.width.height.mas_equalTo(10);
-            
+            make.width.mas_equalTo(20);
+            make.height.mas_equalTo(15);
+
         }];
         
     }

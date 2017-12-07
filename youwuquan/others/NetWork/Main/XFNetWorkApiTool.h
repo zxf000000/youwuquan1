@@ -238,4 +238,27 @@
  */
 + (NSString *)pathUrlForGetAllSkills;
 
+//------------------------------------------- 可爱的分割线 --------------------------------------//
+
+/**
+ 账户信息
+
+ @return url
+ */
++ (NSString *)pathUrlForGetMyMoneyInfo;
+
+/**
+ 提现
+
+ @return url
+ */
++ (NSString *)pathUrlForCash;
+
+/**
+ 认证
+
+ @return url
+ */
++ (NSString *)pathUrlForAuth;
+
 @end

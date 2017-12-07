@@ -14,7 +14,7 @@
     
     if (self = [super initWithFrame:frame]) {
         
-        _iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zhanweitu44"]];
+        _iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:kRandomIcon]];
         _iconView.layer.cornerRadius = 30;
         _iconView.layer.masksToBounds = YES;
         [self.contentView addSubview:_iconView];
@@ -22,7 +22,7 @@
         _nameLabel = [[UILabel alloc] init];
         _nameLabel.textColor = UIColorHex(868383);
         _nameLabel.font = [UIFont systemFontOfSize:12];
-        _nameLabel.text = @"小王八蛋";
+        _nameLabel.text = kRandomName;
         [self.contentView addSubview:_nameLabel];
         
         [self setNeedsUpdateConstraints];

@@ -7,6 +7,7 @@
 //
 
 #import "XFEditSkillTableViewController.h"
+#import "XFUserInfoNetWorkManager.h"
 
 @interface XFEditSkillTableViewController ()
 
@@ -17,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *priceTextField;
 @property (weak, nonatomic) IBOutlet UITextField *requestTextField;
 @property (weak, nonatomic) IBOutlet UIButton *doneButton;
+@property (weak, nonatomic) IBOutlet UILabel *skillNameLabel;
 
 @end
 
@@ -25,11 +27,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.title = @"编辑技能";
+    self.title = @"技能";
     
     [self setupTopView];
     
-    [XFToolManager setTopCornerwith:15 view:self.firstCell];
+//    [XFToolManager setTopCornerwith:15 view:self.firstCell];
     
     self.doneButton.layer.cornerRadius = 21;
     
@@ -41,6 +43,14 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     
     [backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
+    
+    self.skillNameLabel.text = self.skill.skillName;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    
+    [self.view endEditing:YES];
+    
 }
 
 - (void)clickBackButton {
@@ -51,7 +61,58 @@
 
 - (void)clickDoneButton {
     
+    if (![self.timetextField.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入时间"];
+        
+        return;
+    }
     
+    if (![self.siteTextField.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入地点"];
+        
+        return;
+    }
+    
+    if (![self.priceTextField.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入价格"];
+        
+        return;
+    }
+    
+    if (![self.requestTextField.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入要求"];
+        
+        return;
+    }
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在保存"];
+    
+    [XFUserInfoNetWorkManager changeOrlightSkillWithSkillno:self.skill.skillNo inviteTime:self.timetextField.text invitePlace:self.siteTextField.text inviteMoney:self.priceTextField.text inviteDemand:self.requestTextField.text successBlock:^(NSDictionary *responseDic) {
+       
+        if (responseDic) {
+           
+            [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
+            
+            [self.navigationController popViewControllerAnimated:YES];
+            
+            if (self.refreshSkillsBlock) {
+                
+                self.refreshSkillsBlock();
+            }
+            
+        }
+        
+        [HUD hideAnimated:YES];
+        
+    } failedBlock:^(NSError *error) {
+        
+        [HUD hideAnimated:YES];
+
+    }];
     
 }
 

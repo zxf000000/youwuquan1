@@ -48,6 +48,10 @@
 // 密码
 @property (nonatomic,copy) NSString *pwd;
 
+// 经纬度
+@property (nonatomic,assign) CGFloat userLong;
+@property (nonatomic,assign) CGFloat userLati;
+
 
 @property (nonatomic,strong) YYCache *userCache;
 

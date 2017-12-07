@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "XFMainTableViewController.h"
+#import "XFMainTabbarViewController.h"
 
 @interface XFSetViewController : XFMainTableViewController
 @property (weak, nonatomic) IBOutlet UIButton *logoutButton;
+
+@property (nonatomic,strong) XFMainTabbarViewController *tabbarVC;
 
 @end

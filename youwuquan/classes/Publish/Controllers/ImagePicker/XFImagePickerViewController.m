@@ -81,48 +81,14 @@
 
 }
 
-//#pragma mark VPImageCropperDelegate
-//- (void)imageCropper:(VPImageCropperViewController *)cropperViewController didFinished:(UIImage *)editedImage {
-//
-//    [self.editedImages addObject:editedImage];
-//
-//    [cropperViewController dismissViewControllerAnimated:YES completion:^{
-//        // TO DO
-//
-//        if (self.editedImages.count < self.selectedIndexPaths.count) {
-//
-//            VPImageCropperViewController *imageCliper = [[VPImageCropperViewController alloc] initWithImage:self.selectedImages[self.editedImages.count] cropFrame:(CGRectMake(0, (kScreenHeight - kScreenWidth)/2.0, kScreenWidth, kScreenWidth)) limitScaleRatio:3];
-//
-//
-//            imageCliper.delegate = self;
-//
-//            [self presentViewController:imageCliper animated:YES completion:nil];
-//
-//        } else {
-//
-//            [self.delegate XFImagePicker:self didSelectedImagesWith:self.editedImages];
-//
-//            [self.navigationController popViewControllerAnimated:YES];
-//
-//        }
-//
-//
-//    }];
-//}
-
-//- (void)imageCropperDidCancel:(VPImageCropperViewController *)cropperViewController {
-//    [cropperViewController dismissViewControllerAnimated:YES completion:^{
-//    }];
-//}
-
 - (void)setupNavigationBar {
 
     self.title = @"选择图片";
     
-    self.numberLabel = [[UILabel alloc] initWithFrame:(CGRectMake(0, 0, 60, 21))];
+    self.numberLabel = [[UILabel alloc] initWithFrame:(CGRectMake(0, 0, 100, 21))];
     self.numberLabel.font = [UIFont systemFontOfSize:12];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.numberLabel];
-    
+    self.numberLabel.textAlignment = NSTextAlignmentRight;
     self.numberLabel.text = [NSString stringWithFormat:@"%zd/9张已选择",self.selectedNumber];
 
 }
@@ -271,7 +237,6 @@
         // 从asset中获得图片
         [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
             
-            NSLog(@"%@-------image", result);
             
             [array addObject:result];
             
@@ -308,7 +273,6 @@
  */
 - (void)enumerateAssetsInAssetCollection:(PHAssetCollection *)assetCollection original:(BOOL)original
 {
-    NSLog(@"相簿名:%@", assetCollection.localizedTitle);
     
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     // 同步获得图片, 只会返回1张图片
@@ -325,7 +289,6 @@
         
         // 从asset中获得图片
         [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-            NSLog(@"%@-------image", result);
             
             [array addObject:result];
         }];
@@ -360,7 +323,7 @@
 
 - (void)setupBottomView {
     
-    _bottomView = [[UIView alloc] initWithFrame:(CGRectMake(0, kScreenHeight - 49, kScreenWidth, 49))];
+    _bottomView = [[UIView alloc] initWithFrame:(CGRectMake(0, kScreenHeight - 49 -64, kScreenWidth, 49))];
     
     _bottomView.backgroundColor = [UIColor colorWithWhite:0.200 alpha:1.000];
     
@@ -404,7 +367,7 @@
         layout.minimumInteritemSpacing = 5;
         layout.sectionInset = UIEdgeInsetsMake(5, 5, 5, 5);
         
-        _collectionView = [[UICollectionView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight- 49)) collectionViewLayout:layout];
+        _collectionView = [[UICollectionView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight- 49 - 64)) collectionViewLayout:layout];
         
         _collectionView.delegate = self;
         

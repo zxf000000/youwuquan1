@@ -22,6 +22,11 @@
 
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    
+    [self.view endEditing:YES];
+}
+
 - (void)setupBackView {
     
     UIImageView *topImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"signup_bjt"]];
