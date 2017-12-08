@@ -29,6 +29,10 @@
 
 @interface XFMyHeaderNode : ASCellNode <ASCollectionDelegate,ASCollectionDataSource>
 
+@property (nonatomic,strong) ASButtonNode *fansButton;
+@property (nonatomic,strong) ASButtonNode *caresButton;
+@property (nonatomic,strong) ASButtonNode *statusNode;
+
 @property (nonatomic,strong) ASTextNode *fansLabel;
 @property (nonatomic,strong) ASTextNode *fansNumberLabel;
 

@@ -9,6 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "XFStatusCommentViewController.h"
 
+typedef NS_ENUM(NSInteger,XFStatusDetailVCType) {
+    
+    Other,
+    Mine,
+    
+};
+
 @interface XFStatusCenterNode : ASCellNode
 
 @property (nonatomic,strong) ASTextNode *titleNode;
@@ -26,5 +33,8 @@
 @end
 
 @interface XFStatusDetailViewController : XFStatusCommentViewController
+
+@property (nonatomic,assign) XFStatusDetailVCType type;
+
 
 @end

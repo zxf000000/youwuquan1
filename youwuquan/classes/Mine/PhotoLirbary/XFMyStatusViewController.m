@@ -108,6 +108,7 @@
 - (void)clickCommentButton {
     
     XFStatusDetailViewController *statusDetail = [[XFStatusDetailViewController alloc] init];
+    statusDetail.type = Mine;
     [self.navigationController pushViewController:statusDetail animated:YES];
     
 }

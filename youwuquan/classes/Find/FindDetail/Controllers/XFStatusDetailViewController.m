@@ -178,6 +178,11 @@
             
             XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithImages:@[@"find_pic4",@"find_pic8",@"find_pic10",@"find_pic12"] likeImgs:@[@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2"]];
             
+            if (self.type == Mine) {
+                
+                node.followButton.hidden = YES;
+            }
+            
             return node;
             
         };

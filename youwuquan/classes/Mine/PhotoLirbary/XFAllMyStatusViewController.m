@@ -9,6 +9,7 @@
 #import "XFAllMyStatusViewController.h"
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFMyStatusCellNode.h"
+#import "XFStatusDetailViewController.h"
 
 @interface XFAllMyStatusViewController () <ASTableDelegate,ASTableDataSource,XFMyStatusCellDelegate>
 
@@ -26,6 +27,25 @@
     
     [self setupNavigationBar];
     [self setupTableNode];
+    
+    [self loadData];
+}
+
+- (void)loadData {
+    
+    
+    
+    
+}
+- (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    XFStatusDetailViewController *statusDetailVC = [[XFStatusDetailViewController alloc] init];
+    
+    statusDetailVC.type = Mine;
+    
+    [self.navigationController pushViewController:statusDetailVC animated:YES];
+    
+
 }
 
 
