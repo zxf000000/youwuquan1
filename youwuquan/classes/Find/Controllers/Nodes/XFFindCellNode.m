@@ -640,7 +640,7 @@
 
             
         }
-        _moreButton.style.preferredSize = CGSizeMake(60, 20);
+        _moreButton.style.preferredSize = CGSizeMake(60, 40);
         // 渐变
         ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_contentNode,_shadowNode,_moreButton]];
         
@@ -869,7 +869,7 @@
             
             
         }
-        _moreButton.style.preferredSize = CGSizeMake(60, 20);
+        _moreButton.style.preferredSize = CGSizeMake(60, 40);
         // 渐变
         ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_contentNode,_shadowNode,_moreButton]];
         

@@ -46,7 +46,7 @@
     // 刷新个人信息
     self.nameTextField.text = self.userInfo[@"userNike"];
     self.dateTextField.text = self.userInfo[@"birthday"];
-    self.heightTextField.text = self.userInfo[@"height"];
+    self.heightTextField.text = [NSString stringWithFormat:@"%@",self.userInfo[@"height"]];
     self.wxTextField.text = self.userInfo[@"weixin"];
     self.phoneTexTField.text = [XFUserInfoManager sharedManager].userName;
     self.xzTextField.text = self.userInfo[@"constellation"];

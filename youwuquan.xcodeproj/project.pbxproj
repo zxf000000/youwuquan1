@@ -79,6 +79,7 @@
 		B74AEA131FA31AD3002BD4A6 /* XFMineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B74AEA121FA31AD3002BD4A6 /* XFMineViewController.m */; };
 		B74AEA161FA32115002BD4A6 /* XFPublishViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B74AEA151FA32115002BD4A6 /* XFPublishViewController.m */; };
 		B74AEA191FA322CB002BD4A6 /* XFTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B74AEA181FA322CB002BD4A6 /* XFTabBar.m */; };
+		B7503AE21FD9489B00192BF4 /* XFStatusModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B7503AE11FD9489B00192BF4 /* XFStatusModel.m */; };
 		B753626F1FB5896D00EDFE94 /* XFFindNewTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B753626E1FB5896D00EDFE94 /* XFFindNewTableViewCell.m */; };
 		B75362721FB59B4C00EDFE94 /* XFfindCellLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = B75362711FB59B4C00EDFE94 /* XFfindCellLayout.m */; };
 		B75362751FB5C74000EDFE94 /* XFFindDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75362741FB5C74000EDFE94 /* XFFindDetailViewController.m */; };
@@ -160,7 +161,6 @@
 		B7C174371FBAB6C30029ACDE /* XFSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C174361FBAB6C30029ACDE /* XFSearchBar.m */; };
 		B7C174431FBAEB260029ACDE /* XFMyMoneyTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C174411FBAEB260029ACDE /* XFMyMoneyTableViewCell.m */; };
 		B7C174441FBAEB260029ACDE /* XFMyMoneyTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7C174421FBAEB260029ACDE /* XFMyMoneyTableViewCell.xib */; };
-		B7C9EB361FCE54710087C87E /* test.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B7C9EB351FCE54710087C87E /* test.mp4 */; };
 		B7C9EB391FCE8DFA0087C87E /* XFDownloadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C9EB381FCE8DFA0087C87E /* XFDownloadViewController.m */; };
 		B7C9EB3C1FCE9EBE0087C87E /* XFMyStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C9EB3B1FCE9EBE0087C87E /* XFMyStatusViewController.m */; };
 		B7DB14E81FCF94C10095AED0 /* XFLittleImageSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = B7DB14E71FCF94C10095AED0 /* XFLittleImageSlider.m */; };
@@ -219,6 +219,8 @@
 		B7EB67CD1FB199B700AAD65D /* XFHomeNearNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67C91FB199B600AAD65D /* XFHomeNearNode.m */; };
 		B7EB67CE1FB199B700AAD65D /* XFHomeSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67CC1FB199B700AAD65D /* XFHomeSectionHeader.m */; };
 		B7EB67D11FB1ADCF00AAD65D /* XFNearbyCellNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67D01FB1ADCF00AAD65D /* XFNearbyCellNode.m */; };
+		B7F8AF831FDA241B00C9173D /* XFAllMyStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F8AF821FDA241B00C9173D /* XFAllMyStatusViewController.m */; };
+		B7F8AF861FDA2BCF00C9173D /* XFMyStatusCellNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F8AF841FDA2BCE00C9173D /* XFMyStatusCellNode.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -372,6 +374,8 @@
 		B74AEA171FA322CB002BD4A6 /* XFTabBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFTabBar.h; sourceTree = "<group>"; };
 		B74AEA181FA322CB002BD4A6 /* XFTabBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFTabBar.m; sourceTree = "<group>"; };
 		B74AEA1A1FA328F3002BD4A6 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		B7503AE01FD9489B00192BF4 /* XFStatusModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFStatusModel.h; sourceTree = "<group>"; };
+		B7503AE11FD9489B00192BF4 /* XFStatusModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFStatusModel.m; sourceTree = "<group>"; };
 		B753626D1FB5896D00EDFE94 /* XFFindNewTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFFindNewTableViewCell.h; sourceTree = "<group>"; };
 		B753626E1FB5896D00EDFE94 /* XFFindNewTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFFindNewTableViewCell.m; sourceTree = "<group>"; };
 		B75362701FB59B4C00EDFE94 /* XFfindCellLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFfindCellLayout.h; sourceTree = "<group>"; };
@@ -517,7 +521,6 @@
 		B7C174401FBAEB260029ACDE /* XFMyMoneyTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMyMoneyTableViewCell.h; sourceTree = "<group>"; };
 		B7C174411FBAEB260029ACDE /* XFMyMoneyTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMyMoneyTableViewCell.m; sourceTree = "<group>"; };
 		B7C174421FBAEB260029ACDE /* XFMyMoneyTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = XFMyMoneyTableViewCell.xib; sourceTree = "<group>"; };
-		B7C9EB351FCE54710087C87E /* test.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.mp4; sourceTree = "<group>"; };
 		B7C9EB371FCE8DFA0087C87E /* XFDownloadViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFDownloadViewController.h; sourceTree = "<group>"; };
 		B7C9EB381FCE8DFA0087C87E /* XFDownloadViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFDownloadViewController.m; sourceTree = "<group>"; };
 		B7C9EB3A1FCE9EBE0087C87E /* XFMyStatusViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMyStatusViewController.h; sourceTree = "<group>"; };
@@ -622,6 +625,10 @@
 		B7EB67CC1FB199B700AAD65D /* XFHomeSectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFHomeSectionHeader.m; sourceTree = "<group>"; };
 		B7EB67CF1FB1ADCF00AAD65D /* XFNearbyCellNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFNearbyCellNode.h; sourceTree = "<group>"; };
 		B7EB67D01FB1ADCF00AAD65D /* XFNearbyCellNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFNearbyCellNode.m; sourceTree = "<group>"; };
+		B7F8AF811FDA241B00C9173D /* XFAllMyStatusViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFAllMyStatusViewController.h; sourceTree = "<group>"; };
+		B7F8AF821FDA241B00C9173D /* XFAllMyStatusViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFAllMyStatusViewController.m; sourceTree = "<group>"; };
+		B7F8AF841FDA2BCE00C9173D /* XFMyStatusCellNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XFMyStatusCellNode.m; path = youwuquan/classes/Find/Controllers/Nodes/XFMyStatusCellNode.m; sourceTree = SOURCE_ROOT; };
+		B7F8AF851FDA2BCF00C9173D /* XFMyStatusCellNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XFMyStatusCellNode.h; path = youwuquan/classes/Find/Controllers/Nodes/XFMyStatusCellNode.h; sourceTree = SOURCE_ROOT; };
 		B9E44837A542194B9079B32E /* Pods-youwuquan.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-youwuquan.debug.xcconfig"; path = "Pods/Target Support Files/Pods-youwuquan/Pods-youwuquan.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -671,12 +678,16 @@
 		B723CC061FBC921E00DC25E9 /* PhotoLirbary */ = {
 			isa = PBXGroup;
 			children = (
+				B7F8AF851FDA2BCF00C9173D /* XFMyStatusCellNode.h */,
+				B7F8AF841FDA2BCE00C9173D /* XFMyStatusCellNode.m */,
 				B723CC071FBC923900DC25E9 /* XFMyPhotoViewController.h */,
 				B723CC081FBC923900DC25E9 /* XFMyPhotoViewController.m */,
 				B757DAB71FCD3CF5002C0F3D /* XFOpenPhotoViewController.h */,
 				B757DAB81FCD3CF5002C0F3D /* XFOpenPhotoViewController.m */,
 				B7C9EB3A1FCE9EBE0087C87E /* XFMyStatusViewController.h */,
 				B7C9EB3B1FCE9EBE0087C87E /* XFMyStatusViewController.m */,
+				B7F8AF811FDA241B00C9173D /* XFAllMyStatusViewController.h */,
+				B7F8AF821FDA241B00C9173D /* XFAllMyStatusViewController.m */,
 			);
 			path = PhotoLirbary;
 			sourceTree = "<group>";
@@ -878,7 +889,6 @@
 		B74AE9891FA306DB002BD4A6 = {
 			isa = PBXGroup;
 			children = (
-				B7C9EB351FCE54710087C87E /* test.mp4 */,
 				B75E75811FD1077200AFE7E3 /* test1.mp4 */,
 				B75E75801FD1077100AFE7E3 /* test2.mp4 */,
 				B74AEA1A1FA328F3002BD4A6 /* PrefixHeader.pch */,
@@ -964,6 +974,8 @@
 			children = (
 				B718C78C1FA8C4DA00DA470B /* XFFindModel.h */,
 				B718C78D1FA8C4DA00DA470B /* XFFindModel.m */,
+				B7503AE01FD9489B00192BF4 /* XFStatusModel.h */,
+				B7503AE11FD9489B00192BF4 /* XFStatusModel.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1849,7 +1861,6 @@
 				B7DF034D1FA87E9F0093022C /* XFActorInviteBottomTableViewCell.xib in Resources */,
 				B7DF03431FA804620093022C /* XFNewActorTableViewCell.xib in Resources */,
 				B7DF03111FA6BC1C0093022C /* XFHomeTopHeaderReusableView.xib in Resources */,
-				B7C9EB361FCE54710087C87E /* test.mp4 in Resources */,
 				B723CBEB1FBBEF1800DC25E9 /* XFNearbyTableViewCell.xib in Resources */,
 				B757DAC51FCD7850002C0F3D /* AliyunLanguageSource.bundle in Resources */,
 				B701ACA81FA9B3EA000728FC /* XFFindTopTableViewCell.xib in Resources */,
@@ -1949,6 +1960,7 @@
 				B7EB67C81FB1995700AAD65D /* ASTextNode+XFSetTextAttributes.m in Sources */,
 				B753626F1FB5896D00EDFE94 /* XFFindNewTableViewCell.m in Sources */,
 				B74AE9F41FA30835002BD4A6 /* UIScrollView+touchesCatch.m in Sources */,
+				B7503AE21FD9489B00192BF4 /* XFStatusModel.m in Sources */,
 				B79C76271FC434830040B844 /* XFCardSizeCache.m in Sources */,
 				B7954EC01FC26BE10016BD45 /* PGPickerTableView.m in Sources */,
 				B718C78B1FA8C4CF00DA470B /* XFFindLayout.m in Sources */,
@@ -1982,6 +1994,7 @@
 				B7954EB81FC26BE10016BD45 /* NSBundle+PGDatePicker.m in Sources */,
 				B75362751FB5C74000EDFE94 /* XFFindDetailViewController.m in Sources */,
 				B74AEA041FA31844002BD4A6 /* XFMainTabbarViewController.m in Sources */,
+				B7F8AF831FDA241B00C9173D /* XFAllMyStatusViewController.m in Sources */,
 				B7C9EB391FCE8DFA0087C87E /* XFDownloadViewController.m in Sources */,
 				B74AE9FB1FA30835002BD4A6 /* MBProgressHUD+XMG.m in Sources */,
 				B718C7961FA8DA0000DA470B /* YYControl.m in Sources */,
@@ -2024,6 +2037,7 @@
 				B79C76121FC2D7790040B844 /* XFStatusCommentViewController.m in Sources */,
 				B7E3AEA91FD15833008E11E2 /* XFDateHerViewController.m in Sources */,
 				B7E3AEAC1FD1585A008E11E2 /* XFDateHerTableViewController.m in Sources */,
+				B7F8AF861FDA2BCF00C9173D /* XFMyStatusCellNode.m in Sources */,
 				B7E3FF271FC6BD5E0086414F /* XFLabelCollectionViewCell.m in Sources */,
 				B79C76151FC2DC7E0040B844 /* XFPublishVCTransation.m in Sources */,
 				B7DF034C1FA87E9F0093022C /* XFActorInviteBottomTableViewCell.m in Sources */,

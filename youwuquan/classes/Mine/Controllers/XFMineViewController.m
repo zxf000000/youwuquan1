@@ -24,6 +24,7 @@
 #import "XFShareManager.h"
 #import "XFMyCaresViewController.h"
 #import "XFFansViewController.h"
+#import "XFAllMyStatusViewController.h"
 
 
 #define kHeaderHeight (kScreenWidth * 170/375.f)
@@ -172,6 +173,11 @@
 // 动态哦
 - (void)headerDidClickStatuslabel {
     
+    XFAllMyStatusViewController *myStatusVC = [[XFAllMyStatusViewController alloc] init];
+    
+    myStatusVC.hidesBottomBarWhenPushed = YES;
+    
+    [self.navigationController pushViewController:myStatusVC animated:YES];
     
 }
 // 关注
