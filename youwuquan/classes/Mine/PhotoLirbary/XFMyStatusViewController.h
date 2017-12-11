@@ -9,14 +9,26 @@
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
 
+typedef NS_ENUM(NSInteger,XFMyStatuVCType) {
+  
+    XFMyStatuVCTypeMine,
+    XFMyStatuVCTypeOther,
+    
+};
+
 @interface XFMyStatusCell : UICollectionViewCell <UIScrollViewDelegate>
 
 @property (nonatomic,strong) UIScrollView *scrollView;
 
 @property (nonatomic,strong) UIImageView *picView;
 
+
+
 @end
 
 @interface XFMyStatusViewController : XFOtherMainViewController
+
+@property (nonatomic,assign) XFMyStatuVCType type;
+
 
 @end

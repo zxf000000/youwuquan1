@@ -76,10 +76,15 @@
     
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    
+    return UIStatusBarStyleDefault;
+}
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
     XFMyStatusViewController *statusVC = [[XFMyStatusViewController alloc] init];
-    
+    statusVC.type = XFMyStatuVCTypeMine;
     [self.navigationController pushViewController:statusVC animated:YES];
     
 }

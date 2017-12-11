@@ -10,6 +10,7 @@
 #import "XFStatusDetailCellNode.h"
 #import "XFStatusCommentCellNode.h"
 #import <IQKeyboardManager.h>
+#import "XFMyStatusViewController.h"
 
 @implementation XFStatusCenterNode
 
@@ -99,7 +100,7 @@
 
 
 
-@interface XFStatusDetailViewController () <ASTableDelegate,ASTableDataSource,UITextFieldDelegate,XFStatusCommentDelegate>
+@interface XFStatusDetailViewController () <ASTableDelegate,ASTableDataSource,UITextFieldDelegate,XFStatusCommentDelegate,XFStatusDetailCellDelegate>
 
 @property (nonatomic,strong) ASTableNode *tableNode;
 
@@ -146,6 +147,11 @@
 
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    
+    return UIStatusBarStyleDefault;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     
     [super viewWillAppear:animated];
@@ -161,6 +167,33 @@
     [[IQKeyboardManager sharedManager] setEnable:YES];
     [IQKeyboardManager sharedManager].enableAutoToolbar = YES;
 
+}
+
+#pragma mark - 点击图片查看大图的代理
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didSelectedPicWithIndex:(NSInteger)index pics:(NSArray *)pics picnodes:(NSArray *)picNodes {
+    
+//    NSArray *names = pics;
+//    NSMutableArray *items = [NSMutableArray array];
+//
+//    for (int i = 0; i < names.count; i++) {
+//
+//        ASNetworkImageNode *picNode = picNodes[i];
+//
+//        CGRect frame = [statusCell.view convertRect:picNode.view.frame toView:self.view.window];
+//
+//        UIImageView *imageView = [[UIImageView alloc] initWithFrame:frame];
+//
+//        KSPhotoItem *item = [KSPhotoItem itemWithSourceView:imageView image:[UIImage imageNamed:names[i]]];
+//        [items addObject:item];
+//    }
+//    KSPhotoBrowser *browser = [KSPhotoBrowser browserWithPhotoItems:items selectedIndex:index];
+//    browser.pageindicatorStyle = KSPhotoBrowserPageIndicatorStyleText;
+//    [browser showFromViewController:self];
+    
+    XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
+    photoVC.type = XFMyStatuVCTypeOther;
+    [self.navigationController pushViewController:photoVC animated:YES];
+    
 }
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
@@ -182,6 +215,8 @@
                 
                 node.followButton.hidden = YES;
             }
+            
+            node.detailDelegate = self;
             
             return node;
             

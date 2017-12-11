@@ -167,7 +167,7 @@
             imageNode.defaultImage = [UIImage imageNamed:kRandomPic];
             imageNode.contentMode = UIViewContentModeScaleToFill;
             
-            
+            [imageNode addTarget:self action:@selector(selectedPicWithImage:) forControlEvents:(ASControlNodeEventTouchUpInside)];
             
             [self addSubnode:imageNode];
             [noteImgs addObject:imageNode];
@@ -223,6 +223,14 @@
     
     }
     return self;
+}
+
+- (void)selectedPicWithImage:(ASNetworkImageNode *)picNode {
+    
+    NSInteger index = [self.imageNodes indexOfObject:picNode];
+    
+    [self.detailDelegate statusCellNode:self didSelectedPicWithIndex:index pics:self.images picnodes:self.imageNodes];
+    
 }
 
 - (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section {

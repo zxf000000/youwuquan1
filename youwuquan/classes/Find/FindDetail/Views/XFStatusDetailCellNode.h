@@ -7,10 +7,19 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+@class XFStatusDetailCellNode;
+
 
 @interface XFStatusDetailCollectionCellnode : ASCellNode
 
 @property (nonatomic,strong) ASNetworkImageNode *iconNode;
+
+@end
+
+
+@protocol XFStatusDetailCellDelegate
+
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didSelectedPicWithIndex:(NSInteger)index pics:(NSArray *)pics picnodes:(NSArray *)picNodes;
 
 @end
 
@@ -47,5 +56,7 @@
 @property (nonatomic,strong) ASCollectionNode *collectionNode;
 
 @property (nonatomic,strong) ASDisplayNode *bgNode;
+
+@property (nonatomic,strong) id <XFStatusDetailCellDelegate> detailDelegate;
 
 @end

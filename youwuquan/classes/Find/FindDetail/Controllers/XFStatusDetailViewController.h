@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger,XFStatusDetailVCType) {
 
 @property (nonatomic,strong) ASDisplayNode *bgNode;
 
-@property (nonatomic,copy) void(^clickMoreButtonBlock)();
+@property (nonatomic,copy) void(^clickMoreButtonBlock)(void);
 
 @end
 

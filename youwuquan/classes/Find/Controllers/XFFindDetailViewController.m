@@ -389,8 +389,8 @@
     
     [backButton setImage:[UIImage imageNamed:@"find_back"] forState:(UIControlStateNormal)];
     [backButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
-    backButton.frame = CGRectMake(10, 33, 60, 30);
-    backButton.imageEdgeInsets = UIEdgeInsetsMake(0, -30, 0, 0);
+    backButton.frame = CGRectMake(0, 20, 60, 44);
+    backButton.imageEdgeInsets = UIEdgeInsetsMake(0, -33, 0, 0);
     [self.myNavigationbar addSubview:backButton];
     
     [backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
@@ -405,8 +405,9 @@
     [self.myNavigationbar addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         
-        make.top.mas_offset(35);
+        make.top.mas_offset(20);
         make.centerX.mas_offset(0);
+        make.height.mas_equalTo(44);
         
     }];
     

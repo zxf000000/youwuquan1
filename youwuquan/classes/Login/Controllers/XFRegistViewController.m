@@ -109,7 +109,7 @@
     
     if (![self.pwdTextField.text isPasswordContent]) {
         
-        [XFToolManager showProgressInWindowWithString:@"密码必须由字母数字组成,且大于6位"];
+        [XFToolManager showProgressInWindowWithString:@"密码必须由字母数字组成,且大于8位"];
         
         return;
         

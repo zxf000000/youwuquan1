@@ -151,7 +151,7 @@
 
     ASStackLayoutSpec *picLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[_picNode]];
     
-    ASInsetLayoutSpec *shadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(kCellHeight - 65, 0, 0, 0)) child:_shadowNode];
+    ASInsetLayoutSpec *shadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(kCellHeight - 32, 0, 0, 0)) child:_shadowNode];
     
     ASOverlayLayoutSpec *overLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:shadowLayout];
     

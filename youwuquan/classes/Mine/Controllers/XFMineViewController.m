@@ -126,7 +126,7 @@
     [self setupHeaderView];
     [self setupInfoView];
     
-    [self refreshUserInfo];
+    [self loadData];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshUserInfo) name:kRefreshUserInfoKey object:nil];
     
@@ -135,6 +135,22 @@
 - (void)dealloc {
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kRefreshUserInfoKey object:nil];
+    
+}
+
+- (void)loadData {
+    
+    if ([XFUserInfoManager sharedManager].userInfo) {
+        
+        self.userInfo = [XFUserInfoManager sharedManager].userInfo;
+
+        [self refreshData];
+        
+    } else {
+        
+        [self refreshUserInfo];
+        
+    }
     
 }
 

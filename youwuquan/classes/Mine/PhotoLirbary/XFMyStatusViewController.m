@@ -16,8 +16,10 @@
     
     if (self = [super initWithFrame:frame]) {
         
+        self.contentView.backgroundColor = [UIColor blackColor];
+        
         _scrollView = [[UIScrollView alloc] init];
-        _scrollView.backgroundColor = [UIColor whiteColor];
+        _scrollView.backgroundColor = [UIColor blackColor];
         [self.contentView addSubview:_scrollView];
         _scrollView.frame = self.bounds;
         
@@ -27,11 +29,17 @@
         _picView.backgroundColor = [UIColor blackColor];
         [_scrollView addSubview:_picView];
         
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTapPic:)];
+        tap.numberOfTapsRequired = 2;
+        _picView.userInteractionEnabled = YES;
+        
+        [_picView addGestureRecognizer:tap];
+        
         _scrollView.delegate = self;
         //设置最大放大倍数，默认是1.0
         _scrollView.maximumZoomScale = 3.0;
         //设置最小缩小倍数，默认是1.0
-        _scrollView.minimumZoomScale = 0.5;
+        _scrollView.minimumZoomScale = 1;
         //设置默认缩放倍数，默认是1.0
         _scrollView.zoomScale = 1.0;
         //是否打开缩放回弹效果，默认是YES
@@ -39,6 +47,31 @@
         
     }
     return self;
+}
+
+- (void)doubleTapPic:(UITapGestureRecognizer *)tap {
+    
+    if (self.scrollView.zoomScale == 2) {
+        
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            
+            _scrollView.zoomScale = 1;
+
+        }];
+
+    } else {
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            
+            _scrollView.zoomScale = 2;
+            
+        }];
+    }
+    
+
+    
+    
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -49,17 +82,16 @@
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view {
     //缩放前调用
+    
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
     //正在缩放时调用
-    self.picView.center = CGPointMake(CGRectGetWidth(self.bounds)/2, CGRectGetHeight(self.bounds)/2);
 
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
     
-    view.center = CGPointMake(CGRectGetWidth(self.bounds)/2, CGRectGetHeight(self.bounds)/2);
     
 }
 @end
@@ -82,34 +114,116 @@
 
 @property (nonatomic,strong) UILabel *contentLabel;
 
+@property (nonatomic,strong) UIView *myNavigationbar;
+
+@property (nonatomic,assign) BOOL barIsHide;
+
+
 @end
 
 @implementation XFMyStatusViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    
+    if (self.type == XFMyStatuVCTypeMine) {
+        
+        self.title = @"日期";
 
-    self.title = @"公开相册";
-    
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    UIButton *deleteButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
-    [deleteButton setImage:[UIImage imageNamed:@"delete"] forState:(UIControlStateNormal)];
-    deleteButton.imageEdgeInsets = UIEdgeInsetsMake(0, 37, 0, 0);
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:deleteButton];
-    [deleteButton addTarget:self action:@selector(clickdeleteButton) forControlEvents:(UIControlEventTouchUpInside)];
-    
+    } else {
+        
+        self.title = @"名字";
+
+    }
+
     [self initCollectionView];
     [self initBottomView];
     [self initContnetView];
+    [self setupNavigationBar];
+    
+    UITapGestureRecognizer *tapView = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapView)];
+    [self.view addGestureRecognizer:tapView];
+
+}
+
+- (void)clickMyBackButton {
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+}
+
+
+#pragma mark - 单击底部View
+- (void)tapBottomView {
+    
+    [self clickCommentButton];
+    
+}
+
+- (void)tapView {
+ 
+    if (self.barIsHide) {
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            
+            self.myNavigationbar.frame = CGRectMake(0, -64, kScreenWidth, 64);
+            self.bottomView.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 44);
+            [self.view layoutIfNeeded];
+
+        } completion:^(BOOL finished) {
+            
+            self.barIsHide = NO;
+        }];
+        
+        
+        
+    } else {
+        [UIView animateWithDuration:0.2 animations:^{
+            
+            self.myNavigationbar.frame = CGRectMake(0, 0, kScreenWidth, 64);
+            self.bottomView.frame = CGRectMake(0, kScreenHeight -44, kScreenWidth, 44);
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            
+            self.barIsHide = YES;
+        }];
+    }
+    
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    
+    return UIStatusBarStyleLightContent;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    [super viewWillDisappear:animated];
+
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
 
 }
 
 - (void)clickCommentButton {
     
-    XFStatusDetailViewController *statusDetail = [[XFStatusDetailViewController alloc] init];
-    statusDetail.type = Mine;
-    [self.navigationController pushViewController:statusDetail animated:YES];
+    if (self.type == XFMyStatuVCTypeMine) {
+        
+        XFStatusDetailViewController *statusDetail = [[XFStatusDetailViewController alloc] init];
+        statusDetail.type = Mine;
+        [self.navigationController pushViewController:statusDetail animated:YES];
+        
+    } else {
+        
+        [self.navigationController popViewControllerAnimated:YES];
+    }
     
 }
 
@@ -137,7 +251,7 @@
 - (void)initCollectionView {
     
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(kScreenWidth, kScreenHeight - 64);
+    layout.itemSize = CGSizeMake(kScreenWidth, kScreenHeight);
     layout.sectionInset = UIEdgeInsetsZero;
     layout.minimumLineSpacing = 0;
     layout.minimumInteritemSpacing = 0;
@@ -146,8 +260,11 @@
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
     [self.collectionView registerClass:[XFMyStatusCell class] forCellWithReuseIdentifier:@"XFMyStatusCell"];
-    self.collectionView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+    self.collectionView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
     self.collectionView.pagingEnabled = YES;
+    
+//    self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+    
     [self.view addSubview:self.collectionView];
 }
 
@@ -155,7 +272,7 @@
     
     self.bottomView = [[UIView alloc] init];
     self.bottomView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-    self.bottomView.frame = CGRectMake(0, kScreenHeight - 64 - 44, kScreenWidth, 44);
+    self.bottomView.frame = CGRectMake(0, kScreenHeight - 44, kScreenWidth, 44);
     [self.view addSubview:self.bottomView];
     
     self.timeLabel = [[UILabel alloc] init];
@@ -200,6 +317,10 @@
         
     }];
     
+    UITapGestureRecognizer *tapBottom = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapBottomView)];
+    
+    [self.bottomView addGestureRecognizer:tapBottom];
+    
     [self.commentButton addTarget:self action:@selector(clickCommentButton) forControlEvents:(UIControlEventTouchUpInside)];
     [self.likeButton addTarget:self action:@selector(clickCommentButton) forControlEvents:(UIControlEventTouchUpInside)];
 
@@ -212,7 +333,7 @@
     CGRect stringFrame = [content boundingRectWithSize:(CGSizeMake(kScreenWidth - 27, MAXFLOAT)) options:(NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin) attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:15]} context:nil];
     
     self.contentView = [[UIView alloc] init];
-    self.contentView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
+    self.contentView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     [self.view addSubview:self.contentView];
     
     self.contentLabel = [[UILabel alloc] init];
@@ -230,4 +351,53 @@
     }];
 }
 
+
+- (void)setupNavigationBar {
+    
+    self.myNavigationbar = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, 64))];
+    [self.view addSubview:self.myNavigationbar];
+    
+    self.myNavigationbar.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+    
+    UIButton *backButton = [[UIButton alloc] init];
+    
+    [backButton setImage:[UIImage imageNamed:@"find_back"] forState:(UIControlStateNormal)];
+    [backButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
+    backButton.frame = CGRectMake(0, 20, 60, 44);
+    backButton.imageEdgeInsets = UIEdgeInsetsMake(0, -27, 0, 0);
+    [self.myNavigationbar addSubview:backButton];
+    
+    [backButton addTarget:self action:@selector(clickMyBackButton) forControlEvents:(UIControlEventTouchUpInside)];
+    
+    // title
+    UILabel *titleLabel = [[UILabel alloc] init];
+    
+    titleLabel.text = self.title;
+    
+    titleLabel.font = [UIFont systemFontOfSize:16];
+    titleLabel.textColor = [UIColor whiteColor];
+    [self.myNavigationbar addSubview:titleLabel];
+    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.top.mas_offset(20);
+        make.centerX.mas_offset(0);
+        make.height.mas_equalTo(44);
+        
+    }];
+    
+    UIButton *deleteButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
+    [deleteButton setImage:[UIImage imageNamed:@"delete"] forState:(UIControlStateNormal)];
+    deleteButton.imageEdgeInsets = UIEdgeInsetsMake(0, 37, 0, 0);
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:deleteButton];
+    [deleteButton addTarget:self action:@selector(clickdeleteButton) forControlEvents:(UIControlEventTouchUpInside)];
+    [self.myNavigationbar addSubview:deleteButton];
+    [deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(titleLabel);
+        make.right.mas_offset(-10);
+        make.height.mas_equalTo(44);
+        
+        make.width.mas_equalTo(60);
+        
+    }];
+}
 @end
