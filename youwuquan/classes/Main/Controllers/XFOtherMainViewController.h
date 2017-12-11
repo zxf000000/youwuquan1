@@ -10,4 +10,6 @@
 
 @interface XFOtherMainViewController : UIViewController
 
+- (void)clickBackButton;
+
 @end

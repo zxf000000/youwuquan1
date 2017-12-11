@@ -436,7 +436,7 @@
 // 聊天
 - (void)clickChatButton {
     
-    XFChatViewController *chatVC = [[XFChatViewController alloc] initWithConversationType:(ConversationType_PRIVATE) targetId:@""];
+    XFChatViewController *chatVC = [[XFChatViewController alloc] initWithConversationType:(ConversationType_PRIVATE) targetId:@"13640886496"];
     
     [self.navigationController pushViewController:chatVC animated:YES];
 }

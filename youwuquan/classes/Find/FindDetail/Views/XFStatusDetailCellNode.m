@@ -166,6 +166,9 @@
             ASNetworkImageNode *imageNode = [[ASNetworkImageNode alloc] init];
             imageNode.defaultImage = [UIImage imageNamed:kRandomPic];
             imageNode.contentMode = UIViewContentModeScaleToFill;
+            
+            
+            
             [self addSubnode:imageNode];
             [noteImgs addObject:imageNode];
             

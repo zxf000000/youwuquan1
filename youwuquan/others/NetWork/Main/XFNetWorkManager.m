@@ -59,7 +59,9 @@
     NSMutableDictionary *para = [NSMutableDictionary dictionaryWithDictionary:paraments];
     
     [para setObject:[XFUserInfoManager sharedManager].token forKey:@"token"];
-    
+
+    [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
+
     [self.sessionManager POST:urlString parameters:para progress:^(NSProgress * _Nonnull uploadProgress) {
         
         NSLog(@"%zd/%zd",uploadProgress.totalUnitCount,uploadProgress.completedUnitCount);
@@ -207,6 +209,7 @@
     NSMutableDictionary *para = [NSMutableDictionary dictionaryWithDictionary:paraments];
     
     [para setObject:[XFUserInfoManager sharedManager].token forKey:@"token"];
+    [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
     
     self.sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",
                                                                      @"text/html",

@@ -80,6 +80,7 @@
 #define kUserNameKey @"userNo"              // 账号
 #define kUserWightKey @"weight"             // 体重
 #define kUserWxKey @"weixin"                // 微信
+#define kUserSignKey @"synopsis"
 
 #import "XFUserInfoManager.h"
 #import "XFIconmanager.h"
@@ -97,5 +98,7 @@
 #define kRandomVideo [XFIconmanager sharedManager].findImages[arc4random() % 2]
 
 #endif /* PrefixHeader_pch */
+
+
 
 

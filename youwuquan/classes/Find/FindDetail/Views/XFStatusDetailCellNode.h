@@ -25,10 +25,12 @@
 @property (nonatomic,strong) ASTextNode *timeNode;
 @property (nonatomic,strong) ASButtonNode *followButton;
 
+// 内容
 @property (nonatomic,strong) ASTextNode *commentNode;
 
 @property (nonatomic,copy) NSArray *images;
 
+// 所有动态图片集合
 @property (nonatomic,copy) NSArray *imageNodes;
 
 @property (nonatomic,strong) ASTextNode *numberNode;

@@ -9,6 +9,7 @@
 #import "XFPublishViewController.h"
 #import "XFAddImageViewController.h"
 #import "XFPublishVCTransation.h"
+#import "XFPreviewViewController.h"
 
 @interface XFPublishViewController () <UINavigationControllerDelegate>
 
@@ -64,20 +65,67 @@
 
 - (void)clickButton:(UIButton *)button {
 
+    
     [UIView animateWithDuration:0.3 animations:^{
-       
+        
         CGAffineTransform scale = CGAffineTransformMakeScale(3, 3);
         button.transform = scale;
         button.alpha = 0;
         
     } completion:^(BOOL finished) {
         
-        XFAddImageViewController *addimgVC = [[XFAddImageViewController alloc] init];
-        self.navigationController.delegate = addimgVC;
         
-        [self.navigationController pushViewController:addimgVC animated:YES];
-    }];
+        switch (button.tag) {
+            case 3001:
+            {
+                // 文字
+                [self pushOutAddImgVC];
+            }
+                break;
+            case 3002:
+            {
+                // 拍摄
+                [self pushOutPreviewVC];
+            }
+                break;
+            case 3003:
+            {
+                // 相册
+                [self pushOutAddImgVC];
+                
+            }
+                break;
+            case 3004:
+            {
+                // 小视频
+                [self pushOutPreviewVC];
+            }
+                break;
+            default:
+                break;
+        }
+        
 
+    }];
+}
+
+- (void)pushOutPreviewVC {
+    
+//    XFPreviewViewController *previewVC = [[XFPreviewViewController alloc] init];
+//
+//    [self.navigationController pushViewController:previewVC animated:YES];
+    
+
+    
+}
+
+- (void)pushOutAddImgVC {
+    
+    XFAddImageViewController *addimgVC = [[XFAddImageViewController alloc] init];
+    self.navigationController.delegate = addimgVC;
+    
+    [self.navigationController pushViewController:addimgVC animated:YES];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {

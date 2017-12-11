@@ -10,7 +10,6 @@
 //#import <Hyphenate/Hyphenate.h>
 
 
-
 @implementation XFLoginManager
 
 
@@ -20,6 +19,17 @@
     [[RCIM sharedRCIM] connectWithToken:rongToken success:^(NSString *userId) {
         
         success(userId);
+        
+        
+        // 个人信息
+        // 设置当前登录用户信息
+        NSDictionary *userInfo = [XFUserInfoManager sharedManager].userInfo;
+        
+        RCUserInfo *info = [[RCUserInfo alloc] initWithUserId:[XFUserInfoManager sharedManager].userName name:userInfo[kUserNickKey] portrait:userInfo[kUserIconKey]];
+        
+        [RCIM sharedRCIM].currentUserInfo = info;
+
+        
         NSLog(@"登陆成功。当前登录的用户ID：%@", userId);
     } error:^(RCConnectErrorCode status) {
         NSLog(@"登陆的错误码为:%d", status);
@@ -59,7 +69,11 @@
 
 - (void)logoutWithsuccessBlock:(LoginSuccessBlock)success failedBlock:(LoginFailedBlock)failed {
     
-    [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForLogout] paraments:[NSMutableDictionary dictionary] successHandle:^(NSDictionary *responseDic) {
+    NSMutableDictionary *para = [NSMutableDictionary dictionary];
+    
+    [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
+    
+    [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForLogout] paraments:para successHandle:^(NSDictionary *responseDic) {
         
         success(responseDic);
 

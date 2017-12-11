@@ -16,12 +16,12 @@
 #import "XFPublishViewController.h"
 #import "XFLoginVCViewController.h"
 #import "XFPublishNaviViewController.h"
+#import "XFLoginManager.h"
 #import "XFMessageListViewController.h"
 
 @interface XFMainTabbarViewController () <XFTabBarDelegate>
 
 @property (nonatomic,assign) NSInteger index;
-
 
 @end
 
@@ -40,7 +40,6 @@
     
     UINavigationController *naviHome = [[UINavigationController alloc] initWithRootViewController:homeVC];
     
-//    XFFindViewController *findVC = [[XFFindViewController alloc] init];
     XFFindTextureViewController *findVC  =[[XFFindTextureViewController alloc] init];
     UINavigationController *naviFInd = [[UINavigationController alloc] initWithRootViewController:findVC];
     
@@ -53,7 +52,6 @@
     
     UINavigationController *naviMine = [[UINavigationController alloc] initWithRootViewController:mineVC];
     
-
     naviHome.tabBarItem.image = [UIImage imageNamed:@"tabbar_home"];
     [naviHome.tabBarItem setSelectedImage:[[UIImage imageNamed:@"tabbar_homeSelected"] imageWithRenderingMode:(UIImageRenderingModeAlwaysOriginal)]];
     naviHome.tabBarItem.title = @"主页";
@@ -86,9 +84,27 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissLoginVC) name:@"dismissLoginVCNotification" object:nil];
     
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentLoginVC) name:@"presentLoginVCNotification" object:nil];
 
+    // 登录融云
+    if ([XFUserInfoManager sharedManager].rongToken) {
+        
+        [self autoLoginRongyun];
+        
+    }
+    
+}
+
+- (void)autoLoginRongyun {
+    
+    [[XFLoginManager sharedInstance] loginRongyunWithRongtoken:[XFUserInfoManager sharedManager].rongToken successBlock:^(id reponseDic) {
+       
+        NSLog(@"登录融云失败");
+        
+    } failedBlock:^(NSError *error) {
+        
+        
+    }];
     
 }
 
@@ -100,7 +116,6 @@
     
     [self presentViewController:naviLogin animated:YES completion:nil];
     
-    
 }
 
 - (void)dealloc {
@@ -108,7 +123,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"dismissLoginVCNotification" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"presentLoginVCNotification" object:nil];
 
-    
 }
 // 退出登录页面的时候自动跳到首页
 - (void)dismissLoginVC {

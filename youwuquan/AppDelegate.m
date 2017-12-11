@@ -33,13 +33,14 @@
 #import "XFMineViewController.h"
 #import "XFMessageListViewController.h"
 
-//#import "XFDiamondMessageContent.h"
+#import "XFDiamondMessageContent.h"
 
+#define kRongyunAppkey @"sfci50a7s4p0i"
 #define kJPUSHAppKey @"11ed157a69bc21bd93670005"
 
 
 
-@interface AppDelegate () <JPUSHRegisterDelegate,UITabBarControllerDelegate>
+@interface AppDelegate () <JPUSHRegisterDelegate,UITabBarControllerDelegate,RCIMUserInfoDataSource>
 
 @end
 
@@ -47,6 +48,13 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    #pragma mark - 捕获
+    // app接受通知之后开启
+    // 捕获通知
+    NSDictionary *remoteNotificationUserInfo = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+
+    NSLog(@"%@-----通知",remoteNotificationUserInfo);
 
     
     // 初始化shareSDK
@@ -98,7 +106,15 @@
      }];
 
     // 初始化融云
-    [[RCIM sharedRCIM] initWithAppKey:@"82hegw5u8do0x"];
+    [[RCIM sharedRCIM] initWithAppKey:kRongyunAppkey];
+
+    
+    // 设置头像形状
+    [RCIM sharedRCIM].globalMessageAvatarStyle = RC_USER_AVATAR_CYCLE;
+    [RCIM sharedRCIM].globalConversationAvatarStyle = RC_USER_AVATAR_CYCLE;
+
+    // 设置用户信息代理
+    [[RCIM sharedRCIM] setUserInfoDataSource:self];
 
     // 注册自定义发钻石消息
     /*!
@@ -109,9 +125,24 @@
      @warning 如果您使用IMKit，请使用此方法注册自定义的消息类型；
      如果您使用IMLib，请使用RCIMClient中的同名方法注册自定义的消息类型，而不要使用此方法。
      */
-//    [[RCIM sharedRCIM] registerMessageType:[XFDiamondMessageContent class]];
+    [[RCIMClient sharedRCIMClient] registerMessageType:XFDiamondMessageContent.class];
     
-
+    // 融云推送设置
+    
+    /**
+     * 推送处理1
+     */
+    if ([application
+         respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        //注册推送, 用于iOS8以及iOS8之后的系统
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings
+                                                settingsForTypes:(UIUserNotificationTypeBadge |
+                                                                  UIUserNotificationTypeSound |
+                                                                  UIUserNotificationTypeAlert)
+                                                categories:nil];
+        [application registerUserNotificationSettings:settings];
+    }
+    
     
     // 极光推送
     //Required
@@ -149,6 +180,10 @@
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self selector:@selector(networkDidReceiveMessage:) name:kJPFNetworkDidReceiveMessageNotification object:nil];
     
+    
+    
+    
+    
     // rootVC
     self.window = [[UIWindow alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight))];
     
@@ -157,11 +192,54 @@
     
     mainTabbar.delegate = self;
     
+    
+    // 如果有推送通知,则直接跳转到消息界面
+    if (remoteNotificationUserInfo) {
+        
+        mainTabbar.selectedIndex = 2;
+        
+    }
+    
     self.window.rootViewController = mainTabbar;
     
     [self.window makeKeyAndVisible];
     
     return YES;
+}
+
+/**
+ * 推送处理2
+ */
+//注册用户通知设置
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    // register to receive notifications
+    [application registerForRemoteNotifications];
+}
+
+// AppDelegate class
+
+
+
+#pragma mark - 会话用户消息获取
+- (void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion {
+    
+    RCUserInfo *info;
+    
+    NSLog(@"%@------userId",userId);
+    
+    if ([userId isEqualToString:@"13140886496"]) {
+        
+         info = [[RCUserInfo alloc] initWithUserId:@"13140886496" name:@"小魂淡" portrait:@"http://d.hiphotos.baidu.com/image/pic/item/9f2f070828381f3062643d7ba3014c086f06f0e7.jpg"];
+
+    } else {
+        
+         info = [[RCUserInfo alloc] initWithUserId:@"13040886496" name:@"网吧淡" portrait:@"http://d.hiphotos.baidu.com/image/pic/item/9f2f070828381f3062643d7ba3014c086f06f0e7.jpg"];
+
+    }
+    
+    
+    completion(info);
+    
 }
 
 #pragma mark - tabbarVCdelegate
@@ -197,6 +275,17 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     
     /// Required - 注册 DeviceToken
     [JPUSHService registerDeviceToken:deviceToken];
+    
+    // 融云注册token
+    NSString *token =
+    [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"
+                                                           withString:@""]
+      stringByReplacingOccurrencesOfString:@">"
+      withString:@""]
+     stringByReplacingOccurrencesOfString:@" "
+     withString:@""];
+    
+    [[RCIMClient sharedRCIMClient] setDeviceToken:token];
 }
 
 // apns注册失败接口
@@ -236,6 +325,8 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    
+    // 程序在后台的时候接受到推送消息
     
     // Required, iOS 7 Support
     [JPUSHService handleRemoteNotification:userInfo];

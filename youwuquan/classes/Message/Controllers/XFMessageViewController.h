@@ -14,7 +14,7 @@
 
 @end
 
-@interface XFMessageViewController : XFMainViewController
+@interface XFMessageViewController : UIViewController
 
 @property (nonatomic,copy) void(^changeHeaderHeightBlock)(CGFloat height);
 
