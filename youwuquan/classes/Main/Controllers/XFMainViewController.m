@@ -36,8 +36,20 @@
     
     [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@""]];
     
-    [self setupLoadfailedView];
+//    [self setupLoadfailedView];
+
     
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    
+    //获取到状态栏
+    UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
+    //设置透明度为0
+    statusBar.alpha = 1;
     
 }
 

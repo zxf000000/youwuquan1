@@ -10,8 +10,19 @@
 #import "XFAddImageViewController.h"
 #import "XFPublishVCTransation.h"
 #import "XFPreviewViewController.h"
+#import <AssetsLibrary/AssetsLibrary.h>
+#if SDK_VERSION == SDK_VERSION_BASE
+#import <AliyunVideoSDK/AliyunVideoSDK.h>
+#else
+#import "AliyunMediator.h"
+#import "AliyunMediaConfig.h"
+#import "AliyunVideoBase.h"
+#import "AliyunVideoUIConfig.h"
+#import "AliyunVideoCropParam.h"
+#endif
 
-@interface XFPublishViewController () <UINavigationControllerDelegate>
+
+@interface XFPublishViewController () <UINavigationControllerDelegate,AliyunVideoBaseDelegate>
 
 @property (nonatomic,weak) UIButton *cancelButton;
 
@@ -34,6 +45,40 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self setupViews];
     
+    
+    
+    AliyunVideoUIConfig *config = [[AliyunVideoUIConfig alloc] init];
+    
+    config.backgroundColor = UIColorHex(707070);
+    config.timelineBackgroundCollor = [UIColor yellowColor];
+    config.timelineDeleteColor = [UIColor redColor];
+    config.timelineTintColor = [UIColor redColor];
+    config.durationLabelTextColor = [UIColor redColor];
+    config.cutTopLineColor = [UIColor redColor];
+    config.cutBottomLineColor = [UIColor redColor];
+    config.noneFilterText = @"无滤镜";
+    config.hiddenDurationLabel = NO;
+    config.hiddenFlashButton = NO;
+    config.hiddenBeautyButton = NO;
+    config.hiddenCameraButton = NO;
+    config.hiddenImportButton = NO;
+    config.hiddenDeleteButton = NO;
+    config.hiddenFinishButton = NO;
+    config.recordOnePart = NO;
+    config.filterArray = @[@"炽黄",@"粉桃",@"海蓝",@"红润",@"灰白",@"经典",@"麦茶",@"浓烈",@"柔柔",@"闪耀",@"鲜果",@"雪梨",@"阳光",@"优雅",@"朝阳"];
+    config.imageBundleName = @"QPSDK";
+    config.filterBundleName = @"FilterResource";
+    config.recordType = AliyunVideoRecordTypeCombination;
+    config.showCameraButton = YES;
+    
+    [[AliyunVideoBase shared] registerWithAliyunIConfig:config];
+    
+
+//    AliyunVideoUIConfig *config = [[AliyunVideoUIConfig alloc] init];
+//    config.timelineDeleteColor = [UIColor redColor];
+//    config.hiddenFlashButton = NO;
+//    config.imageBundleName = @"image";
+//    [[AliyunVideoBase shared] registerWithAliyunIConfig:config];
 }
 
 - (nullable id <UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController
@@ -61,6 +106,7 @@
     [super viewWillDisappear:animated];
     
     self.navigationController.navigationBarHidden = NO;
+    
 }
 
 - (void)clickButton:(UIButton *)button {
@@ -111,10 +157,49 @@
 
 - (void)pushOutPreviewVC {
     
-//    XFPreviewViewController *previewVC = [[XFPreviewViewController alloc] init];
-//
-//    [self.navigationController pushViewController:previewVC animated:YES];
+    AliyunVideoRecordParam *quVideo = [[AliyunVideoRecordParam alloc] init];
+    quVideo.ratio = AliyunVideoVideoRatio3To4;
+    quVideo.size = AliyunVideoVideoSize540P;
+    quVideo.minDuration = 2;
+    quVideo.maxDuration = 30;
+    quVideo.position = AliyunCameraPositionFront;
+    quVideo.beautifyStatus = YES;
+    quVideo.beautifyValue = 100;
+    quVideo.torchMode = AliyunCameraTorchModeOff;
+    quVideo.outputPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/record_save.mp4"];
     
+    UIViewController *recordViewController = [[AliyunVideoBase shared] createRecordViewControllerWithRecordParam:(AliyunVideoRecordParam*)quVideo];
+    [AliyunVideoBase shared].delegate = (id)self;
+    [self.navigationController pushViewController:recordViewController animated:YES];
+    
+    //获取到状态栏
+    UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
+    //设置透明度为0
+    statusBar.alpha = 0;
+    
+}
+
+- (void)videoBasePhotoExitWithPhotoViewController:(UIViewController *)photoVC {
+    
+    [photoVC.navigationController popViewControllerAnimated:YES];
+    
+}
+
+- (void)videoBaseRecordVideoExit {
+
+    
+    [self dismissViewControllerAnimated:YES completion:^{
+        
+
+    }];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        
+        //获取到状态栏
+        UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
+        //设置透明度为0
+        statusBar.alpha = 1;
+    }];
 
     
 }
@@ -145,8 +230,11 @@
     self.buttonCount = 0;
     
     [self addbutton];
+    
+
 
 }
+
 
 - (void)removeButton {
     
@@ -185,6 +273,8 @@
 
 - (void)addbutton {
     
+    self.view.userInteractionEnabled = NO;
+    
     NSInteger i = self.buttonCount;
     
     CGFloat bottom = 180* kScreenHeight/667.f;
@@ -217,11 +307,11 @@
     
     animation.toValue = [NSValue valueWithCGRect:(CGRectMake(padding + (width + padding) * i, (kScreenHeight - height - bottom), width, height))];
     
-    animation.springBounciness = 13;
+    animation.springBounciness = 5;
     
-    [button pop_addAnimation:animation forKey:@""];
+    animation.springSpeed = 20;
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.07 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    animation.completionBlock = ^(POPAnimation *anim, BOOL finished) {
         
         if (self.buttonCount < 3) {
             self.buttonCount += 1;
@@ -229,10 +319,18 @@
             [self addbutton];
         } else {
             
+            self.view.userInteractionEnabled = YES;
             return;
         }
-        
-    });
+    };
+    
+    [button pop_addAnimation:animation forKey:@""];
+    
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.07 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//
+//
+//
+//    });
     
     
 }

@@ -92,7 +92,7 @@
     
     [self getLocation];
     
-    self.allMainViews = @[self.loadFaildView,self.tableNode.view,self.netHotVC.view,self.actorVC.view,self.videoVC.view];
+//    self.allMainViews = @[self.loadFaildView,self.tableNode.view,self.netHotVC.view,self.actorVC.view,self.videoVC.view];
     
     [self.view setNeedsUpdateConstraints];
 

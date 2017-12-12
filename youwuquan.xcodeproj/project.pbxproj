@@ -200,6 +200,13 @@
 		B7DF034D1FA87E9F0093022C /* XFActorInviteBottomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7DF034B1FA87E9F0093022C /* XFActorInviteBottomTableViewCell.xib */; };
 		B7E10FDC1FC506E1007FFCE0 /* XFActorCardInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E10FDB1FC506E1007FFCE0 /* XFActorCardInfoView.m */; };
 		B7E10FDF1FC52EE0007FFCE0 /* XFMessageListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E10FDE1FC52EE0007FFCE0 /* XFMessageListViewController.m */; };
+		B7E1B4BF1FDEB6C700D242D6 /* QuCore-ThirdParty.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7E1B4BD1FDEB6C700D242D6 /* QuCore-ThirdParty.framework */; };
+		B7E1B4C01FDEB6C700D242D6 /* AliyunVideoSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7E1B4BE1FDEB6C700D242D6 /* AliyunVideoSDK.framework */; };
+		B7E1B4C11FDEB6FA00D242D6 /* AliyunVideoSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7E1B4BE1FDEB6C700D242D6 /* AliyunVideoSDK.framework */; };
+		B7E1B4C21FDEB6FA00D242D6 /* AliyunVideoSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B7E1B4BE1FDEB6C700D242D6 /* AliyunVideoSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B7E1B4C31FDEB6FA00D242D6 /* QuCore-ThirdParty.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7E1B4BD1FDEB6C700D242D6 /* QuCore-ThirdParty.framework */; };
+		B7E1B4C41FDEB6FA00D242D6 /* QuCore-ThirdParty.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B7E1B4BD1FDEB6C700D242D6 /* QuCore-ThirdParty.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B7E1B4C61FDEBAA300D242D6 /* QPSDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B7E1B4C51FDEBAA300D242D6 /* QPSDK.bundle */; };
 		B7E3AEA91FD15833008E11E2 /* XFDateHerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E3AEA81FD15833008E11E2 /* XFDateHerViewController.m */; };
 		B7E3AEAC1FD1585A008E11E2 /* XFDateHerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E3AEAB1FD1585A008E11E2 /* XFDateHerTableViewController.m */; };
 		B7E3AEAE1FD1586B008E11E2 /* Find.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B7E3AEAD1FD1586B008E11E2 /* Find.storyboard */; };
@@ -244,6 +251,8 @@
 				B757DACD1FCD787A002C0F3D /* AliyunVodPlayerViewSDK.framework in Embed Frameworks */,
 				B757DACB1FCD787A002C0F3D /* AliyunVodPlayerSDK.framework in Embed Frameworks */,
 				B757DAC91FCD787A002C0F3D /* AliyunPlayerSDK.framework in Embed Frameworks */,
+				B7E1B4C41FDEB6FA00D242D6 /* QuCore-ThirdParty.framework in Embed Frameworks */,
+				B7E1B4C21FDEB6FA00D242D6 /* AliyunVideoSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -604,6 +613,9 @@
 		B7E10FDB1FC506E1007FFCE0 /* XFActorCardInfoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFActorCardInfoView.m; sourceTree = "<group>"; };
 		B7E10FDD1FC52EE0007FFCE0 /* XFMessageListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMessageListViewController.h; sourceTree = "<group>"; };
 		B7E10FDE1FC52EE0007FFCE0 /* XFMessageListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMessageListViewController.m; sourceTree = "<group>"; };
+		B7E1B4BD1FDEB6C700D242D6 /* QuCore-ThirdParty.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "QuCore-ThirdParty.framework"; sourceTree = "<group>"; };
+		B7E1B4BE1FDEB6C700D242D6 /* AliyunVideoSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AliyunVideoSDK.framework; path = ../../../../Downloads/AliyunVideoSDK_basic_iOS_3.3.5_20171124/framework/Debug/AliyunVideoSDK.framework; sourceTree = "<group>"; };
+		B7E1B4C51FDEBAA300D242D6 /* QPSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = QPSDK.bundle; path = "../../../../Downloads/demo 3/qusdk/QPSDK.bundle"; sourceTree = "<group>"; };
 		B7E3AEA71FD15833008E11E2 /* XFDateHerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFDateHerViewController.h; sourceTree = "<group>"; };
 		B7E3AEA81FD15833008E11E2 /* XFDateHerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFDateHerViewController.m; sourceTree = "<group>"; };
 		B7E3AEAA1FD1585A008E11E2 /* XFDateHerTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFDateHerTableViewController.h; sourceTree = "<group>"; };
@@ -664,20 +676,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7F8AFA31FDA80DD00C9173D /* libiconv.tbd in Frameworks */,
+				B7E1B4BF1FDEB6C700D242D6 /* QuCore-ThirdParty.framework in Frameworks */,
 				B7F8AFA11FDA80C800C9173D /* libsqlite3.tbd in Frameworks */,
 				B7F8AF9F1FDA80B900C9173D /* libc++.tbd in Frameworks */,
 				B7F8AF9D1FDA80AF00C9173D /* OpenAL.framework in Frameworks */,
 				B7F8AF9B1FDA80A600C9173D /* MediaPlayer.framework in Frameworks */,
 				B7F8AF991FDA809D00C9173D /* VideoToolbox.framework in Frameworks */,
-				B7F8AF971FDA809400C9173D /* CoreVideo.framework in Frameworks */,
+				B7E1B4C11FDEB6FA00D242D6 /* AliyunVideoSDK.framework in Frameworks */,
 				B7F8AF951FDA808A00C9173D /* CoreMedia.framework in Frameworks */,
 				B7F8AF931FDA807F00C9173D /* ImageIO.framework in Frameworks */,
 				B7F8AF911FDA807500C9173D /* libz.tbd in Frameworks */,
+				B7F8AFA31FDA80DD00C9173D /* libiconv.tbd in Frameworks */,
+				B7F8AF971FDA809400C9173D /* CoreVideo.framework in Frameworks */,
+				B7E1B4C31FDEB6FA00D242D6 /* QuCore-ThirdParty.framework in Frameworks */,
 				B757DAD51FCD87E8002C0F3D /* AliyunPlayerSDK.framework in Frameworks */,
 				B757DACC1FCD787A002C0F3D /* AliyunVodPlayerViewSDK.framework in Frameworks */,
 				B757DAC71FCD7850002C0F3D /* AliyunVodPlayerSDK.framework in Frameworks */,
 				418A0283D11842F202E2CD6F /* libPods-youwuquan.a in Frameworks */,
+				B7E1B4C01FDEB6C700D242D6 /* AliyunVideoSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -957,6 +973,7 @@
 		B74AE9941FA306DB002BD4A6 /* youwuquan */ = {
 			isa = PBXGroup;
 			children = (
+				B7E1B2301FDEAC4900D242D6 /* ShortVideo */,
 				B757DABD1FCD7840002C0F3D /* AliSDK */,
 				B7E3FF3C1FC7B1B00086414F /* youwuquan.entitlements */,
 				B74AE9AE1FA30834002BD4A6 /* classes */,
@@ -1787,6 +1804,16 @@
 			path = AlertView;
 			sourceTree = "<group>";
 		};
+		B7E1B2301FDEAC4900D242D6 /* ShortVideo */ = {
+			isa = PBXGroup;
+			children = (
+				B7E1B4C51FDEBAA300D242D6 /* QPSDK.bundle */,
+				B7E1B4BE1FDEB6C700D242D6 /* AliyunVideoSDK.framework */,
+				B7E1B4BD1FDEB6C700D242D6 /* QuCore-ThirdParty.framework */,
+			);
+			path = ShortVideo;
+			sourceTree = "<group>";
+		};
 		B7E3FF301FC6E8F30086414F /* ImagePicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -1906,6 +1933,7 @@
 				B74AE9A51FA306DC002BD4A6 /* LaunchScreen.storyboard in Resources */,
 				B7C174441FBAEB260029ACDE /* XFMyMoneyTableViewCell.xib in Resources */,
 				B7DF03251FA6E28A0093022C /* XFHomeCollectionViewCell.xib in Resources */,
+				B7E1B4C61FDEBAA300D242D6 /* QPSDK.bundle in Resources */,
 				B7AABEC81FC5671E0031E0E8 /* XFMissionTableViewCell.xib in Resources */,
 				B7E3FF2F1FC6DCFC0086414F /* XFPublishAddImageViewCollectionViewCell.xib in Resources */,
 				B757DAA81FCC095A002C0F3D /* XFSkillCollectionViewCell.xib in Resources */,
@@ -2314,6 +2342,7 @@
 					"$(PROJECT_DIR)/youwuquan/AliSDK",
 					"$(PROJECT_DIR)/youwuquan",
 					"$(PROJECT_DIR)/youwuquan/classes/AliyunVideo/AliyunVideoBase",
+					"$(PROJECT_DIR)/youwuquan/ShortVideo",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2322,12 +2351,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
-					"-ObjC",
 					"-l\"AFNetworking\"",
 					"-l\"IQKeyboardManager\"",
 					"-l\"MBProgressHUD\"",
 					"-l\"MJRefresh\"",
-					"-l\"Masonry\"",
 					"-l\"PINCache\"",
 					"-l\"PINOperation\"",
 					"-l\"PINRemoteImage\"",
@@ -2374,6 +2401,7 @@
 					"-weak_framework",
 					"\"UIKit\"",
 					"$(inherited)",
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nckj.youwuquan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2399,6 +2427,7 @@
 					"$(PROJECT_DIR)/youwuquan/AliSDK",
 					"$(PROJECT_DIR)/youwuquan",
 					"$(PROJECT_DIR)/youwuquan/classes/AliyunVideo/AliyunVideoBase",
+					"$(PROJECT_DIR)/youwuquan/ShortVideo",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2407,12 +2436,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
-					"-ObjC",
 					"-l\"AFNetworking\"",
 					"-l\"IQKeyboardManager\"",
 					"-l\"MBProgressHUD\"",
 					"-l\"MJRefresh\"",
-					"-l\"Masonry\"",
 					"-l\"PINCache\"",
 					"-l\"PINOperation\"",
 					"-l\"PINRemoteImage\"",
@@ -2459,6 +2486,7 @@
 					"-weak_framework",
 					"\"UIKit\"",
 					"$(inherited)",
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nckj.youwuquan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
