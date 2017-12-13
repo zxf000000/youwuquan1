@@ -132,6 +132,7 @@
     
 }
 
+
 - (void)dealloc {
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kRefreshUserInfoKey object:nil];
@@ -643,6 +644,8 @@
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:YES animated:NO];
+    
+    [self loadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

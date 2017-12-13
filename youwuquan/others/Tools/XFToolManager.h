@@ -12,6 +12,8 @@
 #import "XFHomeTableNode.h"
 #import <MBProgressHUD.h>
 
+typedef void(^completeBlock)(void);
+
 @interface XFToolManager : NSObject
 
 /**
@@ -65,8 +67,7 @@
 + (UIActivityIndicatorView *)showIndicatorViewTo:(UIView *)view;
 
 // 点赞冬瓜
-+ (void)popanimationForLikeNode:(CALayer *)layer;
-
++ (void)popanimationForLikeNode:(CALayer *)layer complate:(completeBlock)completeHandle;
 // 缩放图片
 + (UIImage *)changeImageToWidth:(CGFloat)width image:(UIImage *)image;
 

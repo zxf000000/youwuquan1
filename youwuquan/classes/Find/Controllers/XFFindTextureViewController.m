@@ -240,7 +240,10 @@
     
     node.likeButton.selected = !node.likeButton.selected;
     
-    [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer];
+    [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
+        
+        
+    }];
     
 }
 

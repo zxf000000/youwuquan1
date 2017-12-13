@@ -242,10 +242,15 @@
  @param success 成功
  @param failedBlock 失败
  */
-+ (void)likeStatusWithStatusId:(NSString *)releaseId successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock {
++ (void)likeStatusWithStatusId:(NSString *)releaseId userNo:(NSString *)userNo successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock {
     
     NSMutableDictionary *para = [NSMutableDictionary dictionary];
-    [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
+    
+    if (userNo) {
+        
+        [para setObject:userNo forKey:@"userNoA"];
+
+    }
     [para setObject:releaseId forKey:@"releaseId"];
     
     [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForLikeSomeone] paraments:para successHandle:^(NSDictionary *responseDic) {

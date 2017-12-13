@@ -148,6 +148,7 @@
                     [self dismissViewControllerAnimated:YES completion:^{
                         
                         // 刷新动态页面通知
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
                         
                         
                     }];

@@ -89,7 +89,10 @@
     
     node.likeNode.selected = !node.likeNode.selected;
     
-    [XFToolManager popanimationForLikeNode:node.likeNode.imageNode.layer];
+    [XFToolManager popanimationForLikeNode:node.likeNode.imageNode.layer complate:^{
+        
+        
+    }];
 }
 
 //去掉UItableview headerview黏性

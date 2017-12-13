@@ -115,7 +115,7 @@ typedef void(^RequestFailedBlock)(NSError *error);
  @param success 成功
  @param failedBlock 失败
  */
-+ (void)likeStatusWithStatusId:(NSString *)releaseId successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock;
++ (void)likeStatusWithStatusId:(NSString *)releaseId userNo:(NSString *)userNo successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock;
 
 /**
  评论

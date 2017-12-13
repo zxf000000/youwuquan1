@@ -58,7 +58,10 @@
     
     sender.selected = !sender.selected;
     
-    [XFToolManager popanimationForLikeNode:sender.layer];
+    [XFToolManager popanimationForLikeNode:sender.layer complate:^{
+        
+        
+    }];
     
     
 }

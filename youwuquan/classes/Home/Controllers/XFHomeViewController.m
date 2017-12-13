@@ -513,7 +513,10 @@
     
     node.likeNode.selected = !node.likeNode.selected;
     // 弹性动画
-    [XFToolManager popanimationForLikeNode:node.likeNode.imageNode.layer];
+    [XFToolManager popanimationForLikeNode:node.likeNode.imageNode.layer complate:^{
+        
+        
+    }];
     
     if (node.likeNode.selected) {
         

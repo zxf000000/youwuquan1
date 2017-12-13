@@ -152,8 +152,8 @@
     
 }
 
-+ (void)popanimationForLikeNode:(CALayer *)layer {
-    
++ (void)popanimationForLikeNode:(CALayer *)layer complate:(completeBlock)completeHandle {
+
     POPBasicAnimation *animation = [POPBasicAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
     
     animation.toValue = [NSValue valueWithCGPoint:(CGPointMake(0.75, 0.75))];
@@ -168,6 +168,10 @@
     animation2.springSpeed = 0;
     animation2.springBounciness = 18;
 
+    animation2.completionBlock = ^(POPAnimation *anim, BOOL finished) {
+        
+        completeHandle();
+    };
     
     [layer pop_addAnimation:animation forKey:@""];
     
