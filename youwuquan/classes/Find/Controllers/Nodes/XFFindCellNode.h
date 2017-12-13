@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 - (void)findCellNode:(XFFindCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath;
 
+- (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath;
 
 @end
 
@@ -76,6 +77,9 @@ typedef NS_ENUM(NSInteger,FindCellType) {
  文编
  */
 @property (nonatomic,strong) ASTextNode *contentNode;
+@property (nonatomic,strong) ASTextNode *proContentNode;
+@property (nonatomic,strong) ASTextNode *allcontentNode;
+
 
 /**
  打赏
@@ -132,6 +136,6 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 @property (nonatomic,assign) FindCellType type;
 
-- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics;
+- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics open:(BOOL)isOpen;
 
 @end

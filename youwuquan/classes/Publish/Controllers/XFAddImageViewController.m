@@ -132,8 +132,10 @@
 
         }
         
+        NSArray *albums = [XFUserInfoManager sharedManager].userInfo[@"albums"];
+        
         // 上传图片文字
-        [XFStatusNetworkManager publishStatusWithopenAlbumId:@"1" intimateAlbumId:@"2" opens:self.openintentionImages intimates:self.secintentionImages type:type title:self.textView.text unlockNum:self.diamondTextField.text customLabel:@"好" labels:@"1,2" successBlock:^(NSDictionary *reponseDic) {
+        [XFStatusNetworkManager publishStatusWithopenAlbumId:albums[1][@"id"] intimateAlbumId:albums[2][@"id"] opens:self.openintentionImages intimates:self.secintentionImages type:type title:self.textView.text unlockNum:self.diamondTextField.text customLabel:@"好" labels:@"1,2" successBlock:^(NSDictionary *reponseDic) {
             [HUD hideAnimated:YES];
 
             if (reponseDic) {

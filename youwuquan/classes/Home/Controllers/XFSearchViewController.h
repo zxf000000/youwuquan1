@@ -27,6 +27,6 @@
 
 @interface XFSearchViewController : XFMainViewController
 
-@property (nonatomic,copy) void(^backBlock)();
+@property (nonatomic,copy) void(^backBlock)(void);
 
 @end

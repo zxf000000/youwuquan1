@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
 
+
+
 @interface XFOpenPhotoCell : UICollectionViewCell
 
 @property (nonatomic,strong) UIButton *iconButton;
@@ -19,5 +21,10 @@
 
 
 @interface XFOpenPhotoViewController : XFOtherMainViewController
+
+@property (nonatomic,copy) NSString *albumId;
+
+@property (nonatomic,assign) BOOL iswall;
+
 
 @end

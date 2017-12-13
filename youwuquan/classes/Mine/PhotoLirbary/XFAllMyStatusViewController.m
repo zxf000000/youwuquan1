@@ -10,11 +10,17 @@
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFMyStatusCellNode.h"
 #import "XFStatusDetailViewController.h"
+#import "XFUserInfoNetWorkManager.h"
+#import <MJRefresh.h>
+#import "XFStatusModel.h"
 
 @interface XFAllMyStatusViewController () <ASTableDelegate,ASTableDataSource,XFMyStatusCellDelegate>
 
 @property (nonatomic,strong) ASTableNode *tableNode;
 
+@property (nonatomic,strong) NSIndexPath *openIndexPath;
+
+@property (nonatomic,copy) NSArray *datas;
 
 @end
 
@@ -28,15 +34,98 @@
     [self setupNavigationBar];
     [self setupTableNode];
     
-    [self loadData];
+//    [self loadData];
+    
+    [self.tableNode.view.mj_header beginRefreshing];
 }
 
 - (void)loadData {
     
-    
+    [XFUserInfoNetWorkManager getAllMyStatusWithStart:0 successBlock:^(NSDictionary *responseDic) {
+        
+        [self.tableNode.view.mj_header endRefreshing];
+        
+        if (responseDic) {
+            
+            NSArray *datas = responseDic[@"data"];
+            
+            NSMutableArray *arr = [NSMutableArray array];
+            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+                
+                NSDictionary *dic = datas[i];
+                
+                XFStatusModel *model = [XFStatusModel modelWithDictionary:dic];
+                
+                [arr addObject:model];
+                
+            }
+            
+            self.datas = arr.copy;
+            
+            [self.tableNode reloadData];
+            
+        }
+        
+    } failedBlock:^(NSError *error) {
+        
+        [self.tableNode.view.mj_header endRefreshing];
+
+    }];
     
     
 }
+
+- (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
+    
+    if (isOpen) {
+        
+        self.openIndexPath = index;
+        
+    } else {
+        
+        self.openIndexPath = nil;
+        
+    }
+    
+//    [UIView performWithoutAnimation:^{
+//
+//        [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
+//
+//    }];
+    
+
+    
+//    UIImageView *imgView = (UIImageView*) [self.view snapshotViewAfterScreenUpdates:true];
+//    [self.navigationController.view addSubview:imgView];
+//    imgView.frame = CGRectMake(0, 64, kScreenWidth, kScreenHeight);
+//
+
+    
+    
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//
+//        [imgView removeFromSuperview];
+//
+//    });
+    
+//
+    //关闭CALayer隐式动画
+//    [CATransaction begin];
+//    [CATransaction setDisableActions:YES];
+//
+////    [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
+//
+//    [CATransaction commit];
+    
+    
+    self.tableNode.hidden = YES;
+    [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
+
+
+    self.tableNode.hidden = NO;
+    
+}
+
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     XFStatusDetailViewController *statusDetailVC = [[XFStatusDetailViewController alloc] init];
@@ -51,18 +140,39 @@
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-
     return ^ASCellNode *{
         
         NSMutableArray *mutableArr = [NSMutableArray array];
         for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
             
-            [mutableArr addObject:kRandomPic];
+            [mutableArr addObject:@"34"];
+        }
+        BOOL isOpen;
+        
+        if (self.openIndexPath == indexPath) {
+            
+            isOpen = YES;
+            
+        } else {
+            
+            isOpen = NO;
         }
         
-        XFMyStatusCellNode *node = [[XFMyStatusCellNode alloc] initWithPics:mutableArr.copy];
+        
+        XFMyStatusCellNode *node = [[XFMyStatusCellNode alloc] initWithPics:mutableArr.copy open:isOpen model:self.datas[indexPath.row]];
+        
+        node.index = indexPath;
         
         node.delegate = self;
+        
+        if (self.openIndexPath == indexPath) {
+            node.shadowNode.hidden = YES;
+            
+        } else {
+            node.shadowNode.hidden = NO;
+        }
+        
+        
         
         return node;
     };
@@ -77,7 +187,7 @@
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
-    return 10;
+    return self.datas.count;
 }
 
 
@@ -104,6 +214,11 @@
     
     self.tableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
     
+    self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+       
+        [self loadData];
+        
+    }];
     
 }
 - (void)setupNavigationBar {

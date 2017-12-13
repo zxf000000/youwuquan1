@@ -135,13 +135,13 @@
 //
 //}
 
-- (instancetype)initWithPics:(NSArray *)pics {
+- (instancetype)initWithPics:(NSArray *)pics open:(BOOL)open model:(XFStatusModel *)model{
     
     if (self  = [super init]) {
-        _isOpen = NO;
         
+        _isOpen = open;
         _pics = pics;
-        
+        _model = model;
         self.backgroundColor = UIColorHex(f4f4f4);
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
@@ -156,7 +156,7 @@
         _iconNode = [ASNetworkImageNode new];
         _iconNode.delegate = self;
         _iconNode.defaultImage = [UIImage imageNamed:@"31"];
-        
+        _iconNode.URL = [NSURL URLWithString:_model.headUrl];
         _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
           
             UIGraphicsBeginImageContext(image.size);
@@ -181,7 +181,7 @@
         
         _nameNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:@"小魂淡"];
+        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:[XFUserInfoManager sharedManager].userInfo[@"userNike"]];
         
         str.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:15.0],
@@ -215,11 +215,27 @@
 //
 //        [self addSubnode:_picNode];
         
+        NSMutableArray *allImgs = [NSMutableArray array];
+        
+        NSArray *opens = _model.openImageList;
+        NSArray *secs = _model.intimateImageList;
+
+        [allImgs addObjectsFromArray:opens];
+        [allImgs addObjectsFromArray:secs];
+        _picCount = allImgs.count;
+        _allImgs = _model.imageList;
+        _picCount = _allImgs.count;
+        
         NSMutableArray *nodes = [NSMutableArray array];
-        for (NSInteger i = 0 ; i < _pics.count ; i ++ ) {
+        for (NSInteger i = 0 ; i < _allImgs.count ; i ++ ) {
             
+            NSDictionary *imgDic = _allImgs[i];
+
             ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
-            picNode.defaultImage = [UIImage imageNamed:_pics[i]];
+            
+//            picNode.defaultImage = [UIImage imageNamed:_pics[i]];
+            picNode.defaultImage = [UIImage imageNamed:@"zhanweitu33"];
+            picNode.URL = [NSURL URLWithString:imgDic[@"breviaryUrl"]];
             picNode.cornerRadius = 10;
             picNode.clipsToBounds = YES;
             [self addSubnode:picNode];
@@ -245,10 +261,17 @@
         
         // 文字
         _contentNode = [[ASTextNode alloc] init];
-        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:4 kern:1];
-        _contentNode.maximumNumberOfLines =3;
+        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:_model.title lineSpace:4 kern:1];
+        _contentNode.maximumNumberOfLines = 2;
         _contentNode.truncationMode = NSLineBreakByTruncatingTail;
         [self addSubnode:_contentNode];
+        
+        _allcontentNode = [[ASTextNode alloc] init];
+        [_allcontentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:_model.title lineSpace:4 kern:1];
+        _allcontentNode.maximumNumberOfLines = 0;
+        _allcontentNode.truncationMode = NSLineBreakByTruncatingTail;
+        [self addSubnode:_allcontentNode];
+        
         
         // 更多按钮
         _moreButton = [[ASButtonNode alloc] init];
@@ -264,13 +287,13 @@
         
         // 时间
         _timeNode = [[ASTextNode alloc] init];
-        [_timeNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:@"10 分钟前" lineSpace:2 kern:0];
+        [_timeNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:_model.createTime lineSpace:2 kern:0];
         
         [self addSubnode:_timeNode];
         
         // 点赞
         _likeButton = [[ASButtonNode alloc] init];
-        [ _likeButton setTitle:@"520" withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+        [ _likeButton setTitle:[NSString stringWithFormat:@"%@",_model.greatNum] withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
         [_likeButton setImage:[UIImage imageNamed:@"find_like"] forState:(UIControlStateNormal)];
         [_likeButton setImage:[UIImage imageNamed:@"home_liked"] forState:(UIControlStateSelected)];
 
@@ -278,7 +301,7 @@
         
         // 评论
         _commentButton = [[ASButtonNode alloc] init];
-        [ _commentButton setTitle:@"520" withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+        [ _commentButton setTitle:[NSString stringWithFormat:@"%@",_model.messageNum] withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
         [_commentButton setImage:[UIImage imageNamed:@"find_comment"] forState:(UIControlStateNormal)];
 
         [self addSubnode:_commentButton];
@@ -318,6 +341,20 @@
         [_nameNode addTarget:self action:@selector(clickIconNode) forControlEvents:(ASControlNodeEventTouchUpInside)];
         
         [_rewardButton addTarget:self action:@selector(clickRewardButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        
+        // 状态
+        if (_isOpen) {
+            
+            _moreButton.selected = YES;
+            _imgShadowNode.hidden = YES;
+            
+            
+        } else {
+            
+            _moreButton.selected = NO;
+            _imgShadowNode.hidden = NO;
+            
+        }
 
     }
     return self;
@@ -376,22 +413,30 @@
 - (void)clickMoreButton:(ASButtonNode *)sender {
     
     sender.selected = !sender.isSelected;
-    
+
+//    // 展开
+//    [self.delegate findCellclickMpreButtonWithIndex:self.indexPath open:sender.selected];
+
     if (sender.selected) {
 
         self.isOpen = YES;
         self.shadowNode.hidden = YES;
+
+        self.proContentNode = self.allcontentNode;
     } else {
 
         self.shadowNode.hidden = NO;
         self.isOpen = NO;
 
+        self.proContentNode = self.contentNode;
+
     }
+
+    self.automaticallyManagesSubnodes = YES;
     
     [self transitionLayoutWithAnimation:NO shouldMeasureAsync:YES measurementCompletion:^{
-        
+
         [self setNeedsLayout];
-        [self layoutIfNeeded];
 
     }];
 }
@@ -399,12 +444,11 @@
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
 
     if (self.isOpen) {
+        self.proContentNode = self.allcontentNode;
 
-        self.contentNode.maximumNumberOfLines = 0;
 
     } else {
-
-        self.contentNode.maximumNumberOfLines = 2;
+        self.proContentNode = self.contentNode;
 
     }
     
@@ -459,10 +503,14 @@
     
     ASStackLayoutSpec *picButtonLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[]];
     
-    if (_pics.count == 1) {
+    if (_picCount == 1) {
         
         ASNetworkImageNode *picNode = self.picNodes[0];
-        CGSize imgSize = picNode.defaultImage.size;
+        
+        NSDictionary *imgDic = self.allImgs[0];
+        
+        
+        CGSize imgSize = CGSizeMake([imgDic[@"imgWidth"] intValue], [imgDic[@"imgHeight"] intValue]);
         CGFloat leftInset = 0;
         CGFloat picHeight = 0;
         
@@ -498,7 +546,7 @@
         
         picButtonLayout = picButtonLayou;
         
-    } else if (_pics.count == 4) {
+    } else if (_picCount == 4) {
         
         for (ASNetworkImageNode *picNode in _picNodes) {
             picNode.style.preferredSize = CGSizeMake(middlePicWidth, middlePicWidth);
@@ -523,7 +571,7 @@
         
         picButtonLayout = picButtonLayou;
         
-    } else if (_pics.count > 1 && _pics.count <= 3) {
+    } else if (_picCount > 1 && _picCount) {
         
         for (ASNetworkImageNode *picNode in _picNodes) {
             picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
@@ -542,7 +590,7 @@
         
         picButtonLayout = picButtonLayou;
         
-    } else if (_pics.count > 3 && _pics.count <= 6) {
+    } else if (_picCount && _picCount) {
         
         NSMutableArray *downNodes = [NSMutableArray array];
         for (NSInteger i = 0 ; i <_picNodes.count ; i ++ ) {
@@ -574,7 +622,7 @@
         
         picButtonLayout = picButtonLayou;
         
-    } else if (_pics.count > 6 && _pics.count <= 9) {
+    } else if (_picCount > 6 && _picCount <= 9) {
         
         NSMutableArray *centerNodes = [NSMutableArray array];
         NSMutableArray *downNodes = [NSMutableArray array];
@@ -624,10 +672,15 @@
     _contentNode.style.flexShrink = 1;
     _shadowNode.style.preferredSize = CGSizeMake(textWidth, kTextShadowHeight);
     _shadowNode.style.spacingBefore = kTextShadowInset;
+    
     _contentNode.style.width = ASDimensionMake(textWidth);
+    _allcontentNode.style.width = ASDimensionMake(textWidth);
+    
+//    ASBackgroundLayoutSpec *contentBg = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:_contentNode background:_allcontentNode];
     
     _shadowNode.style.spacingAfter = 0;
     _shadowNode.style.flexGrow = 1;
+    
     if (_isOpen) {
         
         _moreButton.style.spacingBefore = kOpenMoreButtonPadding;
@@ -639,7 +692,9 @@
     }
     _moreButton.style.preferredSize = CGSizeMake(60, 40);
     // 渐变
-    ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_contentNode,_shadowNode,_moreButton]];
+    ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_proContentNode,_shadowNode,_moreButton]];
+    
+
     
     ASInsetLayoutSpec *contentInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 18, 0, 18)) child:contentShadow];
     

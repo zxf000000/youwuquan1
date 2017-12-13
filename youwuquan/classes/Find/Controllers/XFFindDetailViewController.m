@@ -43,6 +43,8 @@
 
 @property (nonatomic,strong) UIView *bottomView;
 
+@property (nonatomic,strong) NSIndexPath   *openIndexpath;
+
 @end
 
 @implementation XFFindDetailViewController
@@ -69,6 +71,13 @@
 }
 
 #pragma mark - cellNodeDelegate点赞
+// 分享
+- (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
+    // 分享
+    [XFShareManager sharedImageWithBg:@"" icon:@"find_pic3" name:kRandomName userid:@"ID:12234213" address:@"深圳南山区"];
+    
+}
+
 - (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
     
     node.likeButton.selected = !node.likeButton.selected;
@@ -124,6 +133,24 @@
     
 }
 
+- (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
+    
+    if (isOpen) {
+        self.openIndexpath = index;
+        
+    } else {
+        
+        self.openIndexpath = nil;
+        
+    }
+    
+    self.tableNode.hidden = YES;
+    
+    [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
+    self.tableNode.hidden = NO;
+
+}
+
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
     return 10;
@@ -150,8 +177,6 @@
             return ^ASCellNode *{
                 
                 XFFindApproveNode *node = [[XFFindApproveNode alloc] initWithType:Approve];
-                
-                
                 
                 return node;
             };
@@ -245,12 +270,34 @@
                 NSMutableArray *mutableArr = [NSMutableArray array];
                 for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
                     
-                    [mutableArr addObject:kRandomPic];
+                    [mutableArr addObject:@"34"];
+                }
+                BOOL isOpen;
+                
+                if (self.openIndexpath == indexPath) {
+                    
+                    isOpen = YES;
+                    
+                } else {
+                    
+                    isOpen = NO;
                 }
                 
-                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail pics:mutableArr.copy];
+                
+                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail pics:mutableArr open:isOpen];
+                
+                node.index = indexPath;
                 
                 node.delegate = self;
+                
+                if (self.openIndexpath == indexPath) {
+                    
+                    node.shadowNode.hidden = YES;
+                    
+                } else {
+                    node.shadowNode.hidden = NO;
+                }
+                
                 
                 
                 return node;

@@ -11,6 +11,31 @@ typedef void(^RequestSuccessBlock)(NSDictionary *responseDic);
 typedef void(^RequestFailedBlock)(NSError *error);
 @interface XFUserInfoNetWorkManager : NSObject
 
+
+/**
+ 获取我的动态
+
+ @param start 开始下表
+ @param successBlock 成功
+ @param failedBlock 失败
+ */
++ (void)getAllMyStatusWithStart:(NSInteger)start successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+/**
+ 获取相册图片
+
+ @param albumId 相册Id
+ @param successBlock chenggong
+ @param failedBlock shibai
+ */
++ (void)getPhotoAlbumPicsWithId:(NSString *)albumId successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+/**
+ 上传照片到照片墙
+
+ @param successBlock 成功
+ @param failedBlock 失败
+ */
++ (void)uploadImgTowallWithImages:(NSArray *)imgs SuccessBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+
 /**
  获取所有技能
 

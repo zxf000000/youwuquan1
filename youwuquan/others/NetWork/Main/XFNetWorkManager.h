@@ -21,6 +21,18 @@ typedef void(^RequestFailedBlock)(NSError *error);
 
 
 /**
+ 上传到照片墙
+
+ @param url url
+ @param imgs 图片
+ @param name 名称
+ @param paraments 参数
+ @param successBlock 成功
+ @param failedBlock 失败
+ */
+- (void)publishUploadWithUrl:(NSString *)url imgs:(NSArray *)imgs name:(NSString *)name paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+
+/**
  带token的请求
 
  @param urlString 请求url

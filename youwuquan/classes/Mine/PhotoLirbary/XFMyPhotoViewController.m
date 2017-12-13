@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *openView;
 @property (weak, nonatomic) IBOutlet UIImageView *secView;
 
+
 @end
 
 @implementation XFMyPhotoViewController
@@ -24,7 +25,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-
+    self.title = @"我的相册";
+    
     [self setupEvent];
 }
 
@@ -33,6 +35,10 @@
     
     XFOpenPhotoViewController *photoVC = [[XFOpenPhotoViewController alloc] init];
     photoVC.title = @"照片墙";
+    NSDictionary *wallDic = self.photoAlbums[0];
+    NSString *albumId = wallDic[@"id"];
+    photoVC.albumId = albumId;
+    photoVC.iswall = YES;
     [self.navigationController pushViewController:photoVC animated:YES];
     
 }
@@ -41,6 +47,10 @@
     
     XFOpenPhotoViewController *photoVC = [[XFOpenPhotoViewController alloc] init];
     photoVC.title = @"公开相册";
+    NSDictionary *wallDic = self.photoAlbums[1];
+    NSString *albumId = wallDic[@"id"];
+    photoVC.albumId = albumId;
+    photoVC.iswall = NO;
 
     [self.navigationController pushViewController:photoVC animated:YES];
 }
@@ -49,6 +59,10 @@
     
     XFOpenPhotoViewController *photoVC = [[XFOpenPhotoViewController alloc] init];
     photoVC.title = @"私密相册";
+    NSDictionary *wallDic = self.photoAlbums[2];
+    NSString *albumId = wallDic[@"id"];
+    photoVC.albumId = albumId;
+    photoVC.iswall = NO;
 
     [self.navigationController pushViewController:photoVC animated:YES];
     

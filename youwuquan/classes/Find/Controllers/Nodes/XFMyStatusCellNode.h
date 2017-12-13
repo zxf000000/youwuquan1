@@ -7,6 +7,7 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+#import "XFStatusModel.h"
 @class XFMyStatusCellNode;
 
 @protocol XFMyStatusCellDelegate <NSObject>
@@ -69,6 +70,8 @@
  文编
  */
 @property (nonatomic,strong) ASTextNode *contentNode;
+@property (nonatomic,strong) ASTextNode *allcontentNode;
+@property (nonatomic,strong) ASTextNode *proContentNode;
 
 /**
  打赏
@@ -113,6 +116,12 @@
 /**
  认证图标
  */
+
+@property (nonatomic,assign) NSInteger picCount;
+
+@property (nonatomic,copy) NSArray *allImgs;
+
+
 @property (nonatomic,copy) NSArray *authenticationIcons;
 
 @property (nonatomic,strong) id <XFMyStatusCellDelegate> delegate;
@@ -121,5 +130,7 @@
 
 @property (nonatomic,assign) BOOL isOpen;
 
-- (instancetype)initWithPics:(NSArray *)pics;
+@property (nonatomic,strong) XFStatusModel *model;
+
+- (instancetype)initWithPics:(NSArray *)pics open:(BOOL)open model:(XFStatusModel *)model;
 @end

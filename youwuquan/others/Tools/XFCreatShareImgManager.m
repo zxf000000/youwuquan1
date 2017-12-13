@@ -153,15 +153,17 @@
 
 + (UIImage *)drawCircleImageForImage:(UIImage *)image {
     
+    UIImage *littleImg = [XFToolManager imageWithImage:image scaledToSize:(CGSizeMake(215, 215))];
+    
     // 更改image
-    CGFloat side = MIN(image.size.width, image.size.height);
+    CGFloat side = MIN(littleImg.size.width, littleImg.size.height);
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(side, side), YES, 0);
     CGContextAddPath(UIGraphicsGetCurrentContext(),
                      [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, side, side)].CGPath);
     CGContextClip(UIGraphicsGetCurrentContext());
-    CGFloat marginX = -(image.size.width - side) / 2.f;
-    CGFloat marginY = -(image.size.height - side) / 2.f;
-    [image drawInRect:CGRectMake(marginX, marginY, image.size.width, image.size.height)];
+    CGFloat marginX = -(littleImg.size.width - side) / 2.f;
+    CGFloat marginY = -(littleImg.size.height - side) / 2.f;
+    [littleImg drawInRect:CGRectMake(marginX, marginY, littleImg.size.width, littleImg.size.height)];
     CGContextDrawPath(UIGraphicsGetCurrentContext(), kCGPathFillStroke);
     UIImage *output = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();

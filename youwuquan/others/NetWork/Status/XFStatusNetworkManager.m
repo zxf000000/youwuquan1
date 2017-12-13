@@ -107,6 +107,7 @@
     [para setObject:jsonString forKey:@"jsonString"];
     [para setObject:@"1,2" forKey:@"labels"];
     
+    
     [[XFNetWorkManager sharedManager] publishUploadWithUrl:[XFNetWorkApiTool pathUrlForPublish] Opens:opens secs:intimates paraments:para successHandle:^(NSDictionary *responseDic) {
        
         success(responseDic);

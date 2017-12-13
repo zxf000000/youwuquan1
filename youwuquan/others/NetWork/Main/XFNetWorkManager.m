@@ -9,6 +9,7 @@
 #import "XFNetWorkManager.h"
 //#import "XFLoginViewController.h"
 #import <YYCache.h>
+#import "XFJudgeErrorNumTool.h"
 
 @implementation XFNetWorkManager
 
@@ -74,6 +75,8 @@
         // 判断错误码
         NSDictionary *appbean = dic[@"appBean"];
         
+
+        
         if ([appbean[@"sign"] intValue] == 666) {
             
             successBlock(appbean);
@@ -130,8 +133,10 @@
 
         } else {
             
-            [XFToolManager showProgressInWindowWithString:appbean[@"msg"]];
-            
+//            [XFToolManager showProgressInWindowWithString:appbean[@"msg"]];
+            NSString *msg = [XFJudgeErrorNumTool judgeNumberWith:appbean[@"sign"]];
+            [XFToolManager showProgressInWindowWithString:msg];
+
             successBlock(nil);
         }
         
@@ -197,6 +202,85 @@
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [XFToolManager showProgressInWindowWithString:@"网络错误"];
 
+        failedBlock(error);
+    }];
+}
+// 上传图片到照片墙
+- (void)publishUploadWithUrl:(NSString *)url imgs:(NSArray *)imgs name:(NSString *)name paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
+    
+    // 拼接token
+    NSMutableDictionary *para = [NSMutableDictionary dictionaryWithDictionary:paraments];
+    
+    [para setObject:[XFUserInfoManager sharedManager].token forKey:@"token"];
+    [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
+    
+    self.sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",
+                                                                     @"text/html",
+                                                                     @"image/jpeg",
+                                                                     @"image/png",
+                                                                     @"application/octet-stream",
+                                                                     @"text/json",
+                                                                     nil];
+    
+    [self.sessionManager POST:url parameters:para constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        
+        for (int i = 0; i < imgs.count; i++) {
+            
+            UIImage *image = imgs[i];
+            NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+            
+            // 在网络开发中，上传文件时，是文件不允许被覆盖，文件重名
+            // 要解决此问题，
+            // 可以在上传时使用当前的系统事件作为文件名
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            // 设置时间格式
+            [formatter setDateFormat:@"yyyyMMddHHmmss"];
+            NSString *dateString = [formatter stringFromDate:[NSDate date]];
+            NSString *fileName = [NSString  stringWithFormat:@"%@%zd.jpg",dateString,i];
+            /*
+             *该方法的参数
+             1. appendPartWithFileData：要上传的照片[二进制流]
+             2. name：对应网站上[upload.php中]处理文件的字段（比如upload）
+             3. fileName：要保存在服务器上的文件名
+             4. mimeType：上传的文件的类型
+             */
+            [formData appendPartWithFileData:imageData name:name fileName:fileName mimeType:@"image/jpeg"];
+        }
+        
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+        NSLog(@"%zd",uploadProgress.completedUnitCount);
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
+        dic = [NSDictionary changeType:dic];
+        
+        
+        if (dic[@"success"]) {
+            
+            successBlock(dic);
+            
+            return;
+        }
+        
+        // 判断错误码
+        NSDictionary *appbean = dic[@"appBean"];
+        
+        if ([appbean[@"sign"] intValue] == 666) {
+            
+            successBlock(appbean);
+            
+        } else {
+            
+            [XFToolManager showProgressInWindowWithString:appbean[@"msg"]];
+            
+            successBlock(nil);
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [XFToolManager showProgressInWindowWithString:@"网络错误"];
+        
         failedBlock(error);
     }];
 }

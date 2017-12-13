@@ -15,6 +15,7 @@
 #import "XFFindDetailViewController.h"
 #import "XFStatusDetailViewController.h"
 #import "XFYwqAlertView.h"
+#import "XFShareManager.h"
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
 
@@ -125,21 +126,7 @@
     self.scrollView.contentSize = CGSizeMake(kScreenWidth * 2, 0);
 }
 
-- (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
-    
-    if (isOpen) {
-        self.openIndexPath = index;
 
-    } else {
-        
-        self.openIndexPath = nil;
-
-    }
-    
-    [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationMiddle)];
-
-    
-}
 
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -241,6 +228,14 @@
 }
 
 #pragma mark - cellNodeDelegate点赞
+
+- (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
+    
+    // 分享
+    [XFShareManager sharedImageWithBg:@"" icon:@"find_pic3" name:kRandomName userid:@"ID:12234213" address:@"深圳南山区"];
+    
+}
+
 - (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
     
     node.likeButton.selected = !node.likeButton.selected;
@@ -310,6 +305,43 @@
 
 }
 
+- (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
+    
+    if (isOpen) {
+        self.openIndexPath = index;
+        
+    } else {
+        
+        self.openIndexPath = nil;
+        
+    }
+    
+    if (self.scrollView.contentOffset.x == 0) {
+        
+        self.tableNode.hidden = YES;
+
+        [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
+        self.tableNode.hidden = NO;
+//
+//        [UIView performWithoutAnimation:^{
+//            [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
+//        }];
+
+
+    } else {
+        self.rightNode.hidden = YES;
+
+        [self.rightNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
+        self.rightNode.hidden = NO;
+
+    }
+    
+
+    
+    //    [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:(UITableViewRowAnimationNone)];
+    
+}
+
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
 
@@ -349,17 +381,35 @@
                     NSMutableArray *mutableArr = [NSMutableArray array];
                     for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
                         
-                        [mutableArr addObject:kRandomPic];
+                        [mutableArr addObject:@"34"];
+                    }
+                    BOOL isOpen;
+                    
+                    if (self.openIndexPath == indexPath) {
+                        
+                        isOpen = YES;
+                        
+                    } else {
+                        
+                        isOpen = NO;
                     }
                     
-                    XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO pics:mutableArr.copy];
+                    
+                    XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy];
                     
                     node.index = indexPath;
                     
                     node.delegate = self;
-        
-                    node.picNode.defaultImage = [UIImage imageNamed:kRandomPic];
-
+                    
+                    if (self.openIndexPath == indexPath) {
+                        node.shadowNode.hidden = YES;
+                        
+                    } else {
+                        node.shadowNode.hidden = NO;
+                    }
+                    
+                    
+                    
                     return node;
                 };
             }
@@ -371,13 +421,37 @@
         
         return ^ASCellNode *{
             
-            XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO pics:@[@"timg"]];
+            NSMutableArray *mutableArr = [NSMutableArray array];
+            for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
+                
+                [mutableArr addObject:@"34"];
+            }
+            BOOL isOpen;
             
-//            node.index = indexPath;
+            if (self.openIndexPath == indexPath) {
+                
+                isOpen = YES;
+                
+            } else {
+                
+                isOpen = NO;
+            }
+            
+            
+            XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy];
+            
+            node.index = indexPath;
             
             node.delegate = self;
             
-            node.picNode.defaultImage = [UIImage imageNamed:self.pics[indexPath.row]];
+            if (self.openIndexPath == indexPath) {
+                node.shadowNode.hidden = YES;
+                
+            } else {
+                node.shadowNode.hidden = NO;
+            }
+            
+
             
             return node;
         };

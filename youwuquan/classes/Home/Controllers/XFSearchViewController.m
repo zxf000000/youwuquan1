@@ -17,6 +17,7 @@
 #import "XFStatusDetailCellNode.h"
 #import "XFStatusDetailViewController.h"
 #import "XFYwqAlertView.h"
+#import "XFShareManager.h"
 
 // 缓存历史记录
 #import <YYCache.h>
@@ -102,7 +103,7 @@
 @end
 
 
-@interface XFSearchViewController () <UICollectionViewDelegate,UICollectionViewDataSource,UISearchBarDelegate,UICollectionViewDelegateFlowLayout,ASTableDelegate,ASTableDataSource,XFHomeNodedelegate>
+@interface XFSearchViewController () <UICollectionViewDelegate,UICollectionViewDataSource,UISearchBarDelegate,UICollectionViewDelegateFlowLayout,ASTableDelegate,ASTableDataSource,XFHomeNodedelegate,XFFindCellDelegate>
 
 @property (nonatomic,strong) UICollectionView *historyView;
 
@@ -130,6 +131,7 @@
 // 缓存数据
 @property (nonatomic,strong) YYCache *historyCache;
 
+@property (nonatomic,strong) NSIndexPath *isOpenIndexPath;
 
 @end
 
@@ -531,6 +533,14 @@
 }
 
 #pragma mark - cellNodeDelegate点赞
+- (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
+    
+    // 分享
+    [XFShareManager sharedImageWithBg:@"" icon:kRandomPic name:kRandomName userid:@"ID:12234213" address:@"深圳南山区"];
+    
+}
+
+
 - (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
     
     node.likeButton.selected = !node.likeButton.selected;
@@ -584,6 +594,23 @@
     
 }
 
+- (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
+    
+    if (isOpen) {
+        self.isOpenIndexPath = index;
+        
+    } else {
+        
+        self.isOpenIndexPath = nil;
+        
+    }
+    self.resultNode.hidden = YES;
+    
+    [self.resultNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationFade)];
+    self.resultNode.hidden = NO;
+
+}
+
 - (NSInteger)numberOfSectionsInTableNode:(ASTableNode *)tableNode {
     
     return 1;
@@ -615,19 +642,47 @@
         };
         
     }
-
+    
+    
     return ^ASCellNode *{
         
-        XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:NO pics:@[]];
+        NSMutableArray *mutableArr = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
+            
+            [mutableArr addObject:kRandomPic];
+        }
+        
+        BOOL isOpen;
+        
+        if (self.isOpenIndexPath == indexPath) {
+            
+            isOpen = YES;
+            
+        } else {
+            
+            isOpen = NO;
+        }
+        
+        
+        XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy];
         
         node.index = indexPath;
         
         node.delegate = self;
         
+        if (self.isOpenIndexPath == indexPath) {
+            node.shadowNode.hidden = YES;
+            
+        } else {
+            node.shadowNode.hidden = NO;
+        }
+        
+        
+        
         return node;
     };
-
     
+
 }
 
 - (void)updateViewConstraints {

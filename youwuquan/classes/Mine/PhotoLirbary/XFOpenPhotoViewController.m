@@ -8,7 +8,8 @@
 
 #import "XFOpenPhotoViewController.h"
 #import "XFMyStatusViewController.h"
-
+#import "XFUserInfoNetWorkManager.h"
+#import "XFWallImagePickerViewController.h"
 @implementation XFOpenPhotoCell
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -50,7 +51,7 @@
 
 @end
 
-@interface XFOpenPhotoViewController () <UICollectionViewDelegate,UICollectionViewDataSource>
+@interface XFOpenPhotoViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFWallImagePickerDelegate>
 
 @property (nonatomic,strong) UICollectionView *collectionView;
 
@@ -61,18 +62,68 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    
     UIButton *addButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 40, 30))];
     [addButton setTitle:@"添加" forState:(UIControlStateNormal)];
+    addButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [addButton addTarget:self action:@selector(clickAddbutton) forControlEvents:(UIControlEventTouchUpInside)];
+    [addButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
+    if (self.iswall) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:addButton];
+    }
     
     [self setupCollectionView];
+    
+    [self loadData];
 
+}
+
+- (void)loadData {
+    
+    [XFUserInfoNetWorkManager getPhotoAlbumPicsWithId:self.albumId successBlock:^(NSDictionary *responseDic) {
+       
+        if (responseDic) {
+            
+            // :TODO 接口问题
+            
+        }
+        
+    } failedBlock:^(NSError *error) {
+        
+        
+    }];
+}
+
+- (void)XFImagePicker:(XFImagePickerViewController *)imagePicker didSelectedImagesWith:(NSArray *)images {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在上传"];
+    
+    [XFUserInfoNetWorkManager uploadImgTowallWithImages:images SuccessBlock:^(NSDictionary *responseDic) {
+       
+        if (responseDic) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"上传成功"];
+            
+            // 刷新数据
+            
+            
+        }
+        
+        [HUD hideAnimated:YES];
+        
+    } failedBlock:^(NSError *error) {
+        
+        [HUD hideAnimated:YES];
+
+    }];
+    
 }
 
 - (void)clickAddbutton {
     
-    
+    XFWallImagePickerViewController *imgPicker = [[XFWallImagePickerViewController alloc] init];
+    imgPicker.delegate = self;
+    [self.navigationController pushViewController:imgPicker animated:YES];
+
     
 }
 
@@ -82,6 +133,11 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (self.iswall) {
+        
+        return;
+    }
     
     XFMyStatusViewController *statusVC = [[XFMyStatusViewController alloc] init];
     statusVC.type = XFMyStatuVCTypeMine;

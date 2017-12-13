@@ -273,8 +273,6 @@
 
 - (void)addbutton {
     
-    self.view.userInteractionEnabled = NO;
-    
     NSInteger i = self.buttonCount;
     
     CGFloat bottom = 180* kScreenHeight/667.f;
@@ -313,24 +311,24 @@
     
     animation.completionBlock = ^(POPAnimation *anim, BOOL finished) {
         
+
+    };
+    
+    [button pop_addAnimation:animation forKey:@""];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.07 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
         if (self.buttonCount < 3) {
+            
             self.buttonCount += 1;
             
             [self addbutton];
         } else {
             
-            self.view.userInteractionEnabled = YES;
             return;
         }
-    };
-    
-    [button pop_addAnimation:animation forKey:@""];
-    
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.07 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//
-//
-//
-//    });
+
+    });
     
     
 }

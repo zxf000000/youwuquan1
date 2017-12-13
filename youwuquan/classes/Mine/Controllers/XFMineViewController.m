@@ -286,6 +286,7 @@
             
             photoVC.hidesBottomBarWhenPushed = YES;
             
+            photoVC.photoAlbums = self.userInfo[@"albums"];
             [self.navigationController pushViewController:photoVC animated:YES];
             
 

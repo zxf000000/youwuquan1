@@ -11,6 +11,55 @@
 #import "XFNetWorkManager.h"
 @implementation XFUserInfoNetWorkManager
 
++ (void)getAllMyStatusWithStart:(NSInteger)start successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
+    
+    
+    NSMutableDictionary *para = [NSMutableDictionary dictionary];
+    [para setObject:[NSString stringWithFormat:@"%zd",start] forKey:@"start"];
+    [para setObject:@"10" forKey:@"rows"];
+    
+    [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForGetMyStatus] paraments:para successHandle:^(NSDictionary *responseDic) {
+        
+        
+        successBlock(responseDic);
+        
+    } failedBlock:^(NSError *error) {
+        
+        failedBlock(error);
+    }];
+
+    
+}
+
++ (void)getPhotoAlbumPicsWithId:(NSString *)albumId successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
+    
+    NSMutableDictionary *para = [NSMutableDictionary dictionary];
+    [para setObject:albumId forKey:@"albumId"];
+    
+    [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForMyPublish] paraments:para successHandle:^(NSDictionary *responseDic) {
+       
+        successBlock(responseDic);
+        
+    } failedBlock:^(NSError *error) {
+        
+        failedBlock(error);
+    }];
+    
+}
+
++ (void)uploadImgTowallWithImages:(NSArray *)imgs SuccessBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
+    
+    [[XFNetWorkManager sharedManager] publishUploadWithUrl:[XFNetWorkApiTool pathUrlForUploadImgToWall] imgs:imgs name:@"files" paraments:[NSMutableDictionary dictionary] successHandle:^(NSDictionary *responseDic) {
+       
+        successBlock(responseDic);
+        
+    } failedBlock:^(NSError *error) {
+        
+        failedBlock(error);
+    }];
+    
+}
+
 + (void)getAllSkillsWithSuccessBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
     
     [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForGetAllSkills] paraments:[NSMutableDictionary dictionary] successHandle:^(NSDictionary *responseDic) {

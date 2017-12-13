@@ -10,4 +10,7 @@
 
 @interface XFMyPhotoViewController : XFOtherMainViewController
 
+@property (nonatomic,copy) NSArray *photoAlbums;
+
+
 @end

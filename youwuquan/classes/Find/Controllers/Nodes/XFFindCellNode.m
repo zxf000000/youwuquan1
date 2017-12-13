@@ -16,12 +16,13 @@
 
 @implementation XFFindCellNode
 
-- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics {
+- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics open:(BOOL)isOpen{
     
     if (self  = [super init]) {
 
         _pics = pics;
         _type = type;
+        _isOpen = isOpen;
         self.backgroundColor = UIColorHex(f4f4f4);
         
         self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -58,17 +59,22 @@
         // 打赏
         _rewardButton = [[ASButtonNode alloc] init];
         
-        [_rewardButton setImage:[UIImage imageNamed:@"find_dashang"] forState:(UIControlStateNormal)];
+        [_rewardButton setImage:[UIImage imageNamed:@"find_rewardbg"] forState:(UIControlStateNormal)];
         //        _rewardButton.borderColor = [UIColor whiteColor].CGColor;
         //        _rewardButton.borderWidth = 2;
         [self addSubnode:_rewardButton];
         
         // 文字
         _contentNode = [[ASTextNode alloc] init];
-        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:4 kern:1];
-        _contentNode.maximumNumberOfLines = 3;
+        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:@"有些年轻人，一毕业就到某些大型国企和机关中工作。每天没什么事儿，就是吃饭喝酒，福利好得不得了。人生还没有奋斗过就开始养老，自己的理想被丢在一旁，用民脂民膏来享受特权。对于这样的年轻人，我只想问你们四个字：哪投简历？" lineSpace:4 kern:1];
+        _contentNode.maximumNumberOfLines = 2;
         [self addSubnode:_contentNode];
-        
+        // 文字
+        _allcontentNode = [[ASTextNode alloc] init];
+        [_allcontentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:@"有些年轻人，一毕业就到某些大型国企和机关中工作。每天没什么事儿，就是吃饭喝酒，福利好得不得了。人生还没有奋斗过就开始养老，自己的理想被丢在一旁，用民脂民膏来享受特权。对于这样的年轻人，我只想问你们四个字：哪投简历？" lineSpace:4 kern:1];
+        _allcontentNode.maximumNumberOfLines =0;
+        _allcontentNode.truncationMode = NSLineBreakByTruncatingTail;
+        [self addSubnode:_allcontentNode];
         // 更多按钮
         _moreButton = [[ASButtonNode alloc] init];
         [_moreButton setImage:[UIImage imageNamed:@"find_unfold"] forState:(UIControlStateNormal)];
@@ -130,7 +136,20 @@
         
         [_likeButton addTarget:self action:@selector(clickLikeButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
         [_rewardButton addTarget:self action:@selector(clickRewardButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
-
+        
+        // 状态
+        if (_isOpen) {
+            
+            _moreButton.selected = YES;
+            _imgShadowNode.hidden = YES;
+            
+            
+        } else {
+            
+            _moreButton.selected = NO;
+            _imgShadowNode.hidden = NO;
+            
+        }
     }
     return self;
     
@@ -139,9 +158,10 @@
 - (instancetype)initWithOpen:(BOOL)open pics:(NSArray *)pics {
     
     if (self  = [super init]) {
+        
         _type = List;
 
-        _isOpen = NO;
+        _isOpen = open;
         
         _pics = pics;
         
@@ -158,7 +178,7 @@
         
         _iconNode = [ASNetworkImageNode new];
         _iconNode.delegate = self;
-        _iconNode.defaultImage = [UIImage imageNamed:kRandomIcon];
+        _iconNode.defaultImage = [UIImage imageNamed:@"messages_tou2"];
         
         _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
           
@@ -184,7 +204,7 @@
         
         _nameNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:kRandomName];
+        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:@"大脸猫"];
         
         str.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:15.0],
@@ -202,6 +222,7 @@
         _approveButton = [[ASButtonNode alloc] init];
         [_approveButton setTitle:@"+ 关注" withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
         [_approveButton setTitle:@"已关注" withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateSelected)];
+        [_approveButton setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
 
         _approveButton.backgroundColor = UIColorHex(F72F5E);
         [self addSubnode:_approveButton];
@@ -209,6 +230,7 @@
         // 分享
         _shareButton = [[ASButtonNode alloc] init];
         [_shareButton setImage:[UIImage imageNamed:@"find_share"] forState:(UIControlStateNormal)];
+        
         [self addSubnode:_shareButton];
         
         // 图像
@@ -239,17 +261,24 @@
         // 打赏
         _rewardButton = [[ASButtonNode alloc] init];
 
-        [_rewardButton setImage:[UIImage imageNamed:@"find_dashang"] forState:(UIControlStateNormal)];
+        [_rewardButton setImage:[UIImage imageNamed:@"find_rewardbg"] forState:(UIControlStateNormal)];
 //        _rewardButton.borderColor = [UIColor whiteColor].CGColor;
 //        _rewardButton.borderWidth = 2;
         [self addSubnode:_rewardButton];
         
         // 文字
         _contentNode = [[ASTextNode alloc] init];
-        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:4 kern:1];
-        _contentNode.maximumNumberOfLines =3;
+        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:@"有些年轻人，一毕业就到某些大型国企和机关中工作。每天没什么事儿，就是吃饭喝酒，福利好得不得了。人生还没有奋斗过就开始养老，自己的理想被丢在一旁，用民脂民膏来享受特权。对于这样的年轻人，我只想问你们四个字：哪投简历？" lineSpace:4 kern:1];
+        _contentNode.maximumNumberOfLines =2;
         _contentNode.truncationMode = NSLineBreakByTruncatingTail;
         [self addSubnode:_contentNode];
+        
+        // 文字
+        _allcontentNode = [[ASTextNode alloc] init];
+        [_allcontentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:@"有些年轻人，一毕业就到某些大型国企和机关中工作。每天没什么事儿，就是吃饭喝酒，福利好得不得了。人生还没有奋斗过就开始养老，自己的理想被丢在一旁，用民脂民膏来享受特权。对于这样的年轻人，我只想问你们四个字：哪投简历？" lineSpace:4 kern:1];
+        _allcontentNode.maximumNumberOfLines =0;
+        _allcontentNode.truncationMode = NSLineBreakByTruncatingTail;
+        [self addSubnode:_allcontentNode];
         
         // 更多按钮
         _moreButton = [[ASButtonNode alloc] init];
@@ -319,9 +348,34 @@
         [_nameNode addTarget:self action:@selector(clickIconNode) forControlEvents:(ASControlNodeEventTouchUpInside)];
         
         [_rewardButton addTarget:self action:@selector(clickRewardButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        [_shareButton addTarget:self action:@selector(clickShareButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        // 状态
+        if (_isOpen) {
+            
+            _moreButton.selected = YES;
+            _imgShadowNode.hidden = YES;
+            
+            
+        } else {
+            
+            _moreButton.selected = NO;
+            _imgShadowNode.hidden = NO;
+            
+        }
 
     }
     return self;
+}
+
+// 分享
+- (void)clickShareButton {
+    
+    if ([self.delegate respondsToSelector:@selector(findCellNode:didClickShareButtonWithIndex:)]) {
+        
+        [self.delegate findCellNode:self didClickShareButtonWithIndex:self.indexPath];
+        
+    }
+    
 }
 
 // 打赏
@@ -353,10 +407,13 @@
        
         if (sender.selected) {
             
+            [_approveButton setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+
             sender.backgroundColor = [UIColor lightGrayColor];
 
         } else {
-            
+            [_approveButton setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
+
             sender.backgroundColor = kMainRedColor;
 
         }
@@ -364,7 +421,7 @@
     }];
 
 }
-
+// 点赞
 - (void)clickLikeButton {
     
     if ([self.delegate respondsToSelector:@selector(findCellNode:didClickLikeButtonForIndex:)]) {
@@ -373,40 +430,64 @@
     }
     
 }
-
+// 展开
 - (void)clickMoreButton:(ASButtonNode *)sender {
     
     sender.selected = !sender.isSelected;
-    
+//
+//    [self.delegate findCellclickMpreButtonWithIndex:self.indexPath open:sender.selected];
+//
     if (sender.selected) {
 
         self.isOpen = YES;
         self.shadowNode.hidden = YES;
+        
+
+            self.proContentNode = self.allcontentNode;
+
+
+        
+
     } else {
 
         self.shadowNode.hidden = NO;
         self.isOpen = NO;
+        self.proContentNode = self.contentNode;
+
 
     }
-    
-    [self transitionLayoutWithAnimation:NO shouldMeasureAsync:YES measurementCompletion:^{
-        
+
+//    self.automaticallyManagesSubnodes = YES;
+
+
+    [self transitionLayoutWithAnimation:NO shouldMeasureAsync:NO measurementCompletion:^{
+
+
         [self setNeedsLayout];
-        [self layoutIfNeeded];
 
     }];
+    
+
 }
 
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
 
+//    if (self.isOpen) {
+//
+//        self.contentNode.maximumNumberOfLines = 0;
+//
+//    } else {
+//
+//        self.contentNode.maximumNumberOfLines = 2;
+//
+//    }
     if (self.isOpen) {
-
-        self.contentNode.maximumNumberOfLines = 0;
-
+        
+        self.proContentNode = self.allcontentNode;
+        
     } else {
-
-        self.contentNode.maximumNumberOfLines = 2;
-
+        
+        self.proContentNode = self.contentNode;
     }
     
     if (self.type == List) {
@@ -422,12 +503,12 @@
         _nameNode.style.flexShrink = YES;
         _nameNode.style.preferredSize = CGSizeMake(100, 20);
         
-        _approveButton.style.spacingAfter = 8;
+        _approveButton.style.spacingAfter = 0;
         _approveButton.style.preferredSize = CGSizeMake(70, 28);
         _approveButton.cornerRadius = 3;
-        _shareButton.style.spacingAfter = 19;
-
-        
+        _shareButton.style.spacingAfter = 0;
+        _shareButton.style.preferredSize = CGSizeMake(40, 30);
+        _shareButton.contentEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 30);
         for (ASImageNode *img in _authenticationIcons) {
             
             img.style.preferredSize = CGSizeMake(12, 12);
@@ -624,13 +705,13 @@
         CGFloat textWidth = kScreenWidth - 20 - 36;
         
         // 文字
-        _contentNode.style.flexShrink = 1;
-        _shadowNode.style.preferredSize = CGSizeMake(textWidth, kTextShadowHeight);
-        _shadowNode.style.spacingBefore = kTextShadowInset;
-        _contentNode.style.width = ASDimensionMake(textWidth);
+        _proContentNode.style.flexShrink = 1;
+        _proContentNode.style.width = ASDimensionMake(textWidth);
         
         _shadowNode.style.spacingAfter = 0;
         _shadowNode.style.flexGrow = 1;
+        _shadowNode.style.preferredSize = CGSizeMake(textWidth, kTextShadowHeight);
+        _shadowNode.style.spacingBefore = kTextShadowInset;
         if (_isOpen) {
             
             _moreButton.style.spacingBefore = kOpenMoreButtonPadding;
@@ -642,7 +723,7 @@
         }
         _moreButton.style.preferredSize = CGSizeMake(60, 40);
         // 渐变
-        ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_contentNode,_shadowNode,_moreButton]];
+        ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_proContentNode,_shadowNode,_moreButton]];
         
         ASInsetLayoutSpec *contentInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 18, 0, 18)) child:contentShadow];
         
@@ -871,7 +952,7 @@
         }
         _moreButton.style.preferredSize = CGSizeMake(60, 40);
         // 渐变
-        ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_contentNode,_shadowNode,_moreButton]];
+        ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_proContentNode,_shadowNode,_moreButton]];
         
         ASInsetLayoutSpec *contentInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 18, 0, 18)) child:contentShadow];
         
