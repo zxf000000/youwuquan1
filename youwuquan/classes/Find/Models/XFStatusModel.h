@@ -52,6 +52,6 @@
 @property (nonatomic,copy) NSString *userNo;
 
 @property (nonatomic,copy) NSArray *videoUrlList;
-
+@property (nonatomic,copy) NSArray *coverImage;
 
 @end

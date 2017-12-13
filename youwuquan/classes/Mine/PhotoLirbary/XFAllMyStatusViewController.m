@@ -87,37 +87,6 @@
         
     }
     
-//    [UIView performWithoutAnimation:^{
-//
-//        [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
-//
-//    }];
-    
-
-    
-//    UIImageView *imgView = (UIImageView*) [self.view snapshotViewAfterScreenUpdates:true];
-//    [self.navigationController.view addSubview:imgView];
-//    imgView.frame = CGRectMake(0, 64, kScreenWidth, kScreenHeight);
-//
-
-    
-    
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//
-//        [imgView removeFromSuperview];
-//
-//    });
-    
-//
-    //关闭CALayer隐式动画
-//    [CATransaction begin];
-//    [CATransaction setDisableActions:YES];
-//
-////    [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
-//
-//    [CATransaction commit];
-    
-    
     self.tableNode.hidden = YES;
     [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
 

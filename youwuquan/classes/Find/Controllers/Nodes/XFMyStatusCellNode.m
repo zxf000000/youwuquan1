@@ -219,12 +219,12 @@
         
         NSArray *opens = _model.openImageList;
         NSArray *secs = _model.intimateImageList;
+//        NSArray *secs = _model.coverImage;
 
         [allImgs addObjectsFromArray:opens];
         [allImgs addObjectsFromArray:secs];
+        _allImgs = allImgs.copy;
         _picCount = allImgs.count;
-        _allImgs = _model.imageList;
-        _picCount = _allImgs.count;
         
         NSMutableArray *nodes = [NSMutableArray array];
         for (NSInteger i = 0 ; i < _allImgs.count ; i ++ ) {
@@ -417,22 +417,31 @@
 //    // 展开
 //    [self.delegate findCellclickMpreButtonWithIndex:self.indexPath open:sender.selected];
 
+    self.defaultLayoutTransitionDuration = 0.05;
+    
     if (sender.selected) {
-
+        
         self.isOpen = YES;
-        self.shadowNode.hidden = YES;
-
+        [UIView animateWithDuration:0.1 animations:^{
+            
+            self.shadowNode.alpha = 0;
+            
+        }];
         self.proContentNode = self.allcontentNode;
     } else {
-
-        self.shadowNode.hidden = NO;
+        
+        //        self.shadowNode.hidden = NO;
         self.isOpen = NO;
-
         self.proContentNode = self.contentNode;
-
+        
+        [UIView animateWithDuration:0.1 animations:^{
+            
+            self.shadowNode.alpha = 1;
+            
+        }];
     }
 
-    self.automaticallyManagesSubnodes = YES;
+//    self.automaticallyManagesSubnodes = YES;
     
     [self transitionLayoutWithAnimation:NO shouldMeasureAsync:YES measurementCompletion:^{
 
@@ -571,7 +580,7 @@
         
         picButtonLayout = picButtonLayou;
         
-    } else if (_picCount > 1 && _picCount) {
+    } else if (_picCount > 1 && _picCount <= 3) {
         
         for (ASNetworkImageNode *picNode in _picNodes) {
             picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
@@ -590,7 +599,7 @@
         
         picButtonLayout = picButtonLayou;
         
-    } else if (_picCount && _picCount) {
+    } else if (_picCount > 3 && _picCount <= 6) {
         
         NSMutableArray *downNodes = [NSMutableArray array];
         for (NSInteger i = 0 ; i <_picNodes.count ; i ++ ) {
@@ -670,31 +679,36 @@
     
     // 文字
     _contentNode.style.flexShrink = 1;
-    _shadowNode.style.preferredSize = CGSizeMake(textWidth, kTextShadowHeight);
-    _shadowNode.style.spacingBefore = kTextShadowInset;
+//    _shadowNode.style.preferredSize = CGSizeMake(textWidth, kTextShadowHeight);
+//    _shadowNode.style.spacingBefore = kTextShadowInset;
     
     _contentNode.style.width = ASDimensionMake(textWidth);
     _allcontentNode.style.width = ASDimensionMake(textWidth);
-    
-//    ASBackgroundLayoutSpec *contentBg = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:_contentNode background:_allcontentNode];
-    
     _shadowNode.style.spacingAfter = 0;
     _shadowNode.style.flexGrow = 1;
-    
+    //        _shadowNode.style.preferredSize = CGSizeMake(textWidth, kTextShadowHeight);
+    //        _shadowNode.style.spacingBefore = kTextShadowInset;
     if (_isOpen) {
         
         _moreButton.style.spacingBefore = kOpenMoreButtonPadding;
-        
+
     } else {
         _moreButton.style.spacingBefore = kNoOpenMoreButtonPadding;
-        
+        _contentNode.style.height = ASDimensionMake(25);
+
         
     }
     _moreButton.style.preferredSize = CGSizeMake(60, 40);
     // 渐变
-    ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_proContentNode,_shadowNode,_moreButton]];
     
-
+    ASInsetLayoutSpec *shadowInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 0, 0, 0)) child:_shadowNode];
+    
+    ASOverlayLayoutSpec *contentOverlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:_proContentNode overlay:shadowInset];
+    
+    //        ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_proContentNode,_shadowNode,_moreButton]];
+    
+    ASStackLayoutSpec *contentShadow = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[contentOverlay,_moreButton]];
+    
     
     ASInsetLayoutSpec *contentInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 18, 0, 18)) child:contentShadow];
     
@@ -727,5 +741,52 @@
     return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 10, 5, 10)) child:backLayout];
         
 }
+
+//#if USE_CUSTOM_LAYOUT_TRANSITION
+
+- (void)animateLayoutTransition:(id<ASContextTransitioning>)context
+{
+    ASDisplayNode *fromNode = [[context removedSubnodes] objectAtIndex:0];
+    ASDisplayNode *toNode = [[context insertedSubnodes] objectAtIndex:0];
+    
+    ASButtonNode *buttonNode = nil;
+    for (ASDisplayNode *node in [context subnodesForKey:ASTransitionContextToLayoutKey]) {
+        if ([node isKindOfClass:[ASButtonNode class]]) {
+            buttonNode = (ASButtonNode *)node;
+            break;
+        }
+    }
+    
+    CGRect toNodeFrame = [context finalFrameForNode:toNode];
+    //    toNodeFrame.origin.x += (self.isOpen ? toNodeFrame.size.width : -toNodeFrame.size.width);
+    toNode.frame = toNodeFrame;
+    toNode.alpha = 0.0;
+    
+    CGRect fromNodeFrame = fromNode.frame;
+    //    fromNodeFrame.origin.x += (self.isOpen ? -fromNodeFrame.size.width : fromNodeFrame.size.width);
+    
+    // We will use the same transition duration as the default transition
+    [UIView animateWithDuration:self.defaultLayoutTransitionDuration animations:^{
+        toNode.frame = [context finalFrameForNode:toNode];
+        toNode.alpha = 1.0;
+        
+        fromNode.frame = fromNodeFrame;
+        fromNode.alpha = 0.0;
+        
+        // Update frame of self
+        CGSize fromSize = [context layoutForKey:ASTransitionContextFromLayoutKey].size;
+        CGSize toSize = [context layoutForKey:ASTransitionContextToLayoutKey].size;
+        BOOL isResized = (CGSizeEqualToSize(fromSize, toSize) == NO);
+        if (isResized == YES) {
+            CGPoint position = self.frame.origin;
+            self.frame = CGRectMake(position.x, position.y, toSize.width, toSize.height);
+        }
+        
+        buttonNode.frame = [context finalFrameForNode:buttonNode];
+    } completion:^(BOOL finished) {
+        [context completeTransition:finished];
+    }];
+}
+
 
 @end
