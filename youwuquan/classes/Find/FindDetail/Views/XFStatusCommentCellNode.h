@@ -7,6 +7,8 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+#import "XFCommentModel.h"
+
 @class XFStatusCommentCellNode;
 
 @protocol XFStatusCommentDelegate <NSObject>
@@ -27,6 +29,10 @@
 
 @property (nonatomic,strong) ASDisplayNode *lineNode;
 
+@property (nonatomic,strong) XFCommentModel *model;
+
 @property (nonatomic,strong) id <XFStatusCommentDelegate> delegate;
+
+- (instancetype)initWithMode:(XFCommentModel *)model;
 
 @end

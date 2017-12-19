@@ -31,6 +31,8 @@
     
         _sessionManager = [AFHTTPSessionManager manager];
         _sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        _sessionManager.requestSerializer.timeoutInterval = 5;
+        
     }
     return self;
 }
@@ -70,7 +72,7 @@
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
         NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
-        dic = [NSDictionary changeType:dic];
+//        dic = [NSDictionary changeType:dic];
 
         // 判断错误码
         NSDictionary *appbean = dic[@"appBean"];
@@ -91,6 +93,14 @@
             [XFToolManager showProgressInWindowWithString:appbean[@"msg"]];
             
             successBlock(nil);
+            NSURLResponse *responseStatus = [task response];
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)responseStatus;
+            
+            NSInteger statusCode = [httpResponse statusCode];
+            
+            MBProgressHUD *HUD = [MBProgressHUD HUDForView:[UIApplication sharedApplication].keyWindow];
+            HUD.label.text = [NSString stringWithFormat:@"%zd",statusCode];
+            [HUD hideAnimated:YES afterDelay:1];
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -100,12 +110,15 @@
         [XFToolManager showProgressInWindowWithString:@"网络错误"];
         
         failedBlock(error);
+        NSURLResponse *responseStatus = [task response];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)responseStatus;
+        
+        NSInteger statusCode = [httpResponse statusCode];
+        
+        MBProgressHUD *HUD = [MBProgressHUD HUDForView:[UIApplication sharedApplication].keyWindow];
+        HUD.label.text = [NSString stringWithFormat:@"%zd",statusCode];
+        [HUD hideAnimated:YES afterDelay:1];
     }];
-    
-//    NSString *str = [self DataTOjsonString:para];
-    
-//    NSDictionary *finalPara = @{@"req_from":@"mj-app",
-//                                @"data":str};
 }
 
 - (void)postUrl:(NSString *)urlString paraments:(NSMutableDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
@@ -122,8 +135,6 @@
         
         NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
         
-        dic = [NSDictionary changeType:dic];
-        
         // 判断错误码
         NSDictionary *appbean = dic[@"appBean"];
         
@@ -133,7 +144,6 @@
 
         } else {
             
-//            [XFToolManager showProgressInWindowWithString:appbean[@"msg"]];
             NSString *msg = [XFJudgeErrorNumTool judgeNumberWith:appbean[@"sign"]];
             [XFToolManager showProgressInWindowWithString:msg];
 
@@ -145,6 +155,15 @@
         [XFToolManager showProgressInWindowWithString:@"网络错误"];
 
         failedBlock(error);
+        
+        NSURLResponse *responseStatus = [task response];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)responseStatus;
+        
+        NSInteger statusCode = [httpResponse statusCode];
+        
+        MBProgressHUD *HUD = [MBProgressHUD HUDForView:[UIApplication sharedApplication].keyWindow];
+        HUD.label.text = [NSString stringWithFormat:@"%zd",statusCode];
+        [HUD hideAnimated:YES afterDelay:1];
     }];
 
 }
@@ -183,7 +202,6 @@
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
         NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
-        dic = [NSDictionary changeType:dic];
 
         // 判断错误码
         NSDictionary *appbean = dic[@"appBean"];
@@ -203,6 +221,14 @@
         [XFToolManager showProgressInWindowWithString:@"网络错误"];
 
         failedBlock(error);
+        NSURLResponse *responseStatus = [task response];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)responseStatus;
+        
+        NSInteger statusCode = [httpResponse statusCode];
+        
+        MBProgressHUD *HUD = [MBProgressHUD HUDForView:[UIApplication sharedApplication].keyWindow];
+        HUD.label.text = [NSString stringWithFormat:@"%zd",statusCode];
+        [HUD hideAnimated:YES afterDelay:1];
     }];
 }
 // 上传图片到照片墙
@@ -254,7 +280,7 @@
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
         NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
-        dic = [NSDictionary changeType:dic];
+//        dic = [NSDictionary changeType:dic];
         
         
         if (dic[@"success"]) {
@@ -282,12 +308,20 @@
         [XFToolManager showProgressInWindowWithString:@"网络错误"];
         
         failedBlock(error);
+        NSURLResponse *responseStatus = [task response];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)responseStatus;
+        
+        NSInteger statusCode = [httpResponse statusCode];
+        
+        MBProgressHUD *HUD = [MBProgressHUD HUDForView:[UIApplication sharedApplication].keyWindow];
+        HUD.label.text = [NSString stringWithFormat:@"%zd",statusCode];
+        [HUD hideAnimated:YES afterDelay:1];
     }];
 }
 
 
 // 发布上传数据
-- (void)publishUploadWithUrl:(NSString *)url Opens:(NSArray *)opens secs:(NSArray *)secs paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
+- (void)publishUploadWithUrl:(NSString *)url Opens:(NSArray *)opens secs:(NSArray *)secs paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock progress:(ProgressBlock)progress {
     
     // 拼接token
     NSMutableDictionary *para = [NSMutableDictionary dictionaryWithDictionary:paraments];
@@ -308,7 +342,7 @@
         for (int i = 0; i < opens.count; i++) {
             
             UIImage *image = opens[i];
-            NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+            NSData *imageData = UIImageJPEGRepresentation(image, 0.01);
             
             // 在网络开发中，上传文件时，是文件不允许被覆盖，文件重名
             // 要解决此问题，
@@ -317,7 +351,10 @@
             // 设置时间格式
             [formatter setDateFormat:@"yyyyMMddHHmmss"];
             NSString *dateString = [formatter stringFromDate:[NSDate date]];
-            NSString *fileName = [NSString  stringWithFormat:@"%@%zd.jpg",dateString,i];
+            NSString *fileName = [NSString  stringWithFormat:@"%@%zd.jpg",dateString,i];\
+            
+            NSLog(@"%@--------open",fileName);
+            
             /*
              *该方法的参数
              1. appendPartWithFileData：要上传的照片[二进制流]
@@ -331,7 +368,7 @@
         for (int i = 0; i < secs.count; i++) {
             
             UIImage *image = secs[i];
-            NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+            NSData *imageData = UIImageJPEGRepresentation(image, 0.01);
             
             // 在网络开发中，上传文件时，是文件不允许被覆盖，文件重名
             // 要解决此问题，
@@ -340,7 +377,10 @@
             // 设置时间格式
             [formatter setDateFormat:@"yyyyMMddHHmmss"];
             NSString *dateString = [formatter stringFromDate:[NSDate date]];
-            NSString *fileName = [NSString  stringWithFormat:@"%@%zd.jpg",dateString,i];
+            NSString *fileName = [NSString  stringWithFormat:@"%@%zd.jpg",dateString,i + 10];
+            
+            NSLog(@"%@--------sec",fileName);
+
             /*
              *该方法的参数
              1. appendPartWithFileData：要上传的照片[二进制流]
@@ -353,12 +393,13 @@
 
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         
-        NSLog(@"%zd",uploadProgress.completedUnitCount);
+        progress(uploadProgress.completedUnitCount/(CGFloat)uploadProgress.totalUnitCount);
+        
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
         NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
-        dic = [NSDictionary changeType:dic];
+//        dic = [NSDictionary changeType:dic];
         
         
         if (dic[@"success"]) {
@@ -367,7 +408,6 @@
             
             return;
         }
-        
         // 判断错误码
         NSDictionary *appbean = dic[@"appBean"];
         
@@ -386,6 +426,14 @@
         [XFToolManager showProgressInWindowWithString:@"网络错误"];
         
         failedBlock(error);
+        NSURLResponse *responseStatus = [task response];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)responseStatus;
+        
+        NSInteger statusCode = [httpResponse statusCode];
+        
+        MBProgressHUD *HUD = [MBProgressHUD HUDForView:[UIApplication sharedApplication].keyWindow];
+        HUD.label.text = [NSString stringWithFormat:@"%zd",statusCode];
+        [HUD hideAnimated:YES afterDelay:1];
     }];
 }
 

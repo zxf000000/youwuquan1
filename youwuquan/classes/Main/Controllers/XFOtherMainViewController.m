@@ -39,6 +39,8 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     
     [backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
+    
+    [self setupLoadfailedView];
 }
 
 - (void)clickBackButton {
@@ -47,19 +49,49 @@
     
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)loadAgain {
+    
+    
+    
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)setupLoadfailedView {
+    
+    self.noneDataView = [[UIView alloc] initWithFrame:self.view.bounds];
+    
+    self.noneDataView.backgroundColor = [UIColor whiteColor];
+    
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Load_ Fail"]];
+    
+    [self.noneDataView addSubview:imgView];
+    
+    UIButton *reloadButton = [[UIButton alloc] init];
+    reloadButton.backgroundColor = kMainRedColor;
+    [reloadButton setTitle:@"重新加载" forState:(UIControlStateNormal)];
+    [reloadButton setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+    reloadButton.layer.cornerRadius = 4;
+    [self.noneDataView addSubview:reloadButton];
+    
+    [reloadButton addTarget:self action:@selector(loadAgain) forControlEvents:(UIControlEventTouchUpInside)];
+    
+    [imgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.centerX.mas_offset(0);
+        make.centerY.mas_offset(-130);
+        
+    }];
+    
+    [reloadButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.top.mas_equalTo(imgView.mas_bottom).offset(33);
+        make.centerX.mas_offset(0);
+        make.width.mas_equalTo(125);
+        make.height.mas_equalTo(44);
+        
+    }];
+    
+    [self.view addSubview:self.noneDataView];
+    self.noneDataView.hidden = YES;
 }
-*/
 
 @end

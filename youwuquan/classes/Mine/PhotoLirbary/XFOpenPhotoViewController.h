@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
-
+@class XFmyPhotoModel;
 
 
 @interface XFOpenPhotoCell : UICollectionViewCell
+
+@property (nonatomic,strong) XFmyPhotoModel *model;
 
 @property (nonatomic,strong) UIButton *iconButton;
 

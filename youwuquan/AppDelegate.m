@@ -188,19 +188,19 @@
     self.window = [[UIWindow alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight))];
     
 //    XFSnapShotViewController *mainTabbar = [[XFSnapShotViewController alloc] init];
-    XFMainTabbarViewController *mainTabbar = [[XFMainTabbarViewController alloc] init];
+    self.mainTabbar = [[XFMainTabbarViewController alloc] init];
     
-    mainTabbar.delegate = self;
+    self.mainTabbar.delegate = self;
     
     
     // 如果有推送通知,则直接跳转到消息界面
     if (remoteNotificationUserInfo) {
         
-        mainTabbar.selectedIndex = 2;
+        self.mainTabbar.selectedIndex = 2;
         
     }
     
-    self.window.rootViewController = mainTabbar;
+    self.window.rootViewController = self.mainTabbar;
     
     [self.window makeKeyAndVisible];
     
@@ -349,6 +349,34 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    UIApplicationState state = [UIApplication sharedApplication].applicationState;
+    
+    switch (state) {
+            
+        case UIApplicationStateActive:
+        {
+            
+            
+        }
+            break;
+        case UIApplicationStateInactive:
+        {
+            
+            
+        }
+            break;
+        case UIApplicationStateBackground:
+        {
+            
+            
+        }
+            break;
+            
+            
+    }
+    
+    
 }
 
 

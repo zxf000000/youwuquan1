@@ -20,7 +20,6 @@ PODS:
   - JCore (1.1.6)
   - JPush (3.0.7):
     - JCore (~> 1.1.6)
-  - JPVideoPlayer (2.3.4)
   - Masonry (1.0.2)
   - MBProgressHUD (1.0.0)
   - MD360Player4iOS (1.0.0)
@@ -80,7 +79,6 @@ DEPENDENCIES:
   - HJDanmaku
   - IQKeyboardManager
   - JPush
-  - JPVideoPlayer
   - Masonry
   - MBProgressHUD
   - MD360Player4iOS (~> 1.0.0)
@@ -106,7 +104,6 @@ SPEC CHECKSUMS:
   IQKeyboardManager: 8eab4d8111418414619d1df8e4779ce5d0f8d7e2
   JCore: 18fc8725124f26e55625eaf224659b3a999dcf63
   JPush: 111b79b8a0169ab8fd4c486dac3ed166ed69293e
-  JPVideoPlayer: 02b6d95e9dd2c8a8dcc5bdb111014957848b73b1
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   MD360Player4iOS: a53e27ee79c1bb728bda9361cddcd15238b5ad76
@@ -122,6 +119,6 @@ SPEC CHECKSUMS:
   VIMVideoPlayer: f4ed0a9986294ec3684a2e6bdc738e30051ef4ef
   YYKit: 7cda43304a8dc3696c449041e2cb3107b4e236e7
 
-PODFILE CHECKSUM: b719939db1ffff230838568ebc913986095fe89e
+PODFILE CHECKSUM: a93de3d92d1a30de73016bdabf7be97bea865f4d
 
 COCOAPODS: 1.3.1

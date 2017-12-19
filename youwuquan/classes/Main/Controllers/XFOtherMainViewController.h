@@ -12,4 +12,8 @@
 
 - (void)clickBackButton;
 
+@property (nonatomic,strong) UIView *noneDataView;
+
+- (void)loadAgain;
+
 @end

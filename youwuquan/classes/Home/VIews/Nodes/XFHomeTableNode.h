@@ -7,6 +7,7 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+#import "XFHomeDataModel.h"
 @class XFHomeTableNode;
 
 @protocol XFHomeNodedelegate <NSObject>
@@ -35,7 +36,10 @@
 
 @property (nonatomic,assign) BOOL isBig;
 
+@property (nonatomic,strong) XFHomeDataModel *model;
+
 @property (nonatomic,strong) id <XFHomeNodedelegate> delegate;
 
+- (instancetype)initWithModel:(XFHomeDataModel *)model;
 
 @end

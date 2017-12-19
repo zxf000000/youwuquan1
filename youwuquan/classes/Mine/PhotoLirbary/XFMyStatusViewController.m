@@ -45,14 +45,69 @@
         //是否打开缩放回弹效果，默认是YES
         _scrollView.bouncesZoom = YES;
         
+        _HUD = [MBProgressHUD showHUDAddedTo:self.contentView animated:YES];
+
+        _HUD.mode = MBProgressHUDModeAnnularDeterminate;
+        _HUD.progress = 0.9;
+        _HUD.animationType = MBProgressHUDAnimationZoom;
+        _HUD.minShowTime = 0.3;
+        _HUD.removeFromSuperViewOnHide = YES;
+
+        _HUD.contentColor = [UIColor whiteColor];
+
+        _HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+        _HUD.bezelView.backgroundColor = [UIColor clearColor];
+
+        self.userInteractionEnabled = NO;
+        _HUD.progress = 0;
     }
     return self;
+}
+
+- (void)setUrl:(NSString *)url {
+    
+    _url = url;
+    
+    [[YYWebImageManager sharedManager] requestImageWithURL:[NSURL URLWithString:_url] options:(YYWebImageOptionSetImageWithFadeAnimation) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            _HUD.progress = (CGFloat)receivedSize/(CGFloat)expectedSize;
+
+        });
+
+
+    } transform:^UIImage * _Nullable(UIImage * _Nonnull image, NSURL * _Nonnull url) {
+
+        return image;
+
+
+    } completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
+
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            if (error) {
+                _HUD.mode = MBProgressHUDModeText;
+                _HUD.label.text = @"加载失败,请稍后重试";
+                [_HUD hideAnimated:YES afterDelay:0.5];
+                return;
+            }
+            
+            [_HUD hideAnimated:YES afterDelay:0.5];
+            self.picView.image = image;
+            self.userInteractionEnabled = YES;
+
+
+        });
+
+    }];
+    
 }
 
 - (void)doubleTapPic:(UITapGestureRecognizer *)tap {
     
     if (self.scrollView.zoomScale == 2) {
-        
         
         [UIView animateWithDuration:0.2 animations:^{
             
@@ -68,9 +123,6 @@
             
         }];
     }
-    
-
-    
     
 }
 
@@ -118,6 +170,7 @@
 
 @property (nonatomic,assign) BOOL barIsHide;
 
+@property (nonatomic,copy) NSArray *picArr;
 
 @end
 
@@ -136,15 +189,33 @@
         self.title = @"名字";
 
     }
+    
+    NSMutableArray *allImg = [NSMutableArray array];
+    
+    [allImg addObjectsFromArray:self.model.openImageList];
+    [allImg addObjectsFromArray:self.model.intimateImageList];
 
+    self.picArr = allImg.copy;
+    
     [self initCollectionView];
     [self initBottomView];
     [self initContnetView];
     [self setupNavigationBar];
     
+    [self setDatas];
+    
     UITapGestureRecognizer *tapView = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapView)];
     [self.view addGestureRecognizer:tapView];
 
+}
+
+// 初始化数据
+- (void)setDatas {
+    
+    self.contentLabel.text = self.model.title;
+    [self.commentButton setTitle:self.model.messageNum forState:(UIControlStateNormal)];
+    [self.likeButton setTitle:self.model.greatNum forState:(UIControlStateNormal)];
+    
 }
 
 - (void)clickMyBackButton {
@@ -184,6 +255,7 @@
             self.myNavigationbar.frame = CGRectMake(0, 0, kScreenWidth, 64);
             self.bottomView.frame = CGRectMake(0, kScreenHeight -44, kScreenWidth, 44);
             [self.view layoutIfNeeded];
+            
         } completion:^(BOOL finished) {
             
             self.barIsHide = YES;
@@ -218,6 +290,7 @@
         
         XFStatusDetailViewController *statusDetail = [[XFStatusDetailViewController alloc] init];
         statusDetail.type = Mine;
+        statusDetail.status = self.model;
         [self.navigationController pushViewController:statusDetail animated:YES];
         
     } else {
@@ -235,14 +308,18 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return 9;
+    return self.picArr.count;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     XFMyStatusCell *cell =  [collectionView dequeueReusableCellWithReuseIdentifier:@"XFMyStatusCell" forIndexPath:indexPath];
     
-    cell.picView.image = [UIImage imageNamed:@"find_pic15"];
+//    cell.picView.image = [UIImage imageNamed:@"find_pic15"];
+    
+    NSDictionary *imgInfo = self.picArr[indexPath.item];
+    
+    cell.url = imgInfo[@"breviaryUrl"];
     
     return cell;
     
@@ -386,7 +463,7 @@
     }];
     
     UIButton *deleteButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
-    [deleteButton setImage:[UIImage imageNamed:@"delete"] forState:(UIControlStateNormal)];
+    [deleteButton setImage:[UIImage imageNamed:@"status_delete"] forState:(UIControlStateNormal)];
     deleteButton.imageEdgeInsets = UIEdgeInsetsMake(0, 37, 0, 0);
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:deleteButton];
     [deleteButton addTarget:self action:@selector(clickdeleteButton) forControlEvents:(UIControlEventTouchUpInside)];

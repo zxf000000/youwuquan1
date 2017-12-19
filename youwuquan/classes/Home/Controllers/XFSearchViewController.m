@@ -18,6 +18,7 @@
 #import "XFStatusDetailViewController.h"
 #import "XFYwqAlertView.h"
 #import "XFShareManager.h"
+#import "XFFIndCacheManager.h"
 
 // 缓存历史记录
 #import <YYCache.h>
@@ -133,6 +134,8 @@
 
 @property (nonatomic,strong) NSIndexPath *isOpenIndexPath;
 
+@property (nonatomic,strong) NSArray *datas;
+
 @end
 
 @implementation XFSearchViewController
@@ -150,9 +153,6 @@
     [self.navigationController.navigationBar setTintColor:[UIColor blackColor]];;
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:(UIBarButtonItemStylePlain) target:self action:@selector(clickCancelButton)];
-    
-    
-    
     // 历史记录
     [self setuphistoryView];
     
@@ -162,7 +162,15 @@
     
     [self.view setNeedsUpdateConstraints];
     
+    [self loadData];
 
+}
+
+- (void)loadData {
+    
+    self.datas = [XFFIndCacheManager sharedManager].searchData;
+    
+    [self.resultNode reloadData];
 }
 
 - (void)getHistoryData {
@@ -480,7 +488,6 @@
 
 - (void)setuphistoryView {
 
-    
     //    UICollectionViewFlowLayout
     UICollectionViewFlowLayout  *layout = [[UICollectionViewFlowLayout alloc] init];
     // 设置具体属性
@@ -624,7 +631,7 @@
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
-    return 10;
+    return self.datas.count + 1;
 }
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -669,7 +676,7 @@
         }
         
         
-        XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy];
+        XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.datas[indexPath.row -1]];
         
         node.index = indexPath;
         
@@ -682,11 +689,8 @@
             node.shadowNode.hidden = NO;
         }
         
-        
-        
         return node;
     };
-    
 
 }
 

@@ -39,20 +39,63 @@
     [self setupNavigationBar];
     [self setupTableNode];
     
-//    [self loadData];
-    
     [self.tableNode.view.mj_header beginRefreshing];
+    
+    self.tableNode.hidden = YES;
+
 }
+
+
+- (void)loadAgain {
+    
+    self.noneDataView.hidden = YES;
+    
+    [self loadDataWithProgress:YES indexpath:nil];
+    
+}
+
+- (void)setLoadFailed {
+    
+    self.tableNode.hidden = YES;
+    self.noneDataView.hidden = NO;
+    
+    
+}
+
 #pragma mark - 加载数据
-- (void)loadData {
+
+- (void)refreshDataForIndexPath:(NSIndexPath *)indexPath {
+    
+    // 直接更改模型中的数据
+    XFStatusModel *model = self.datas[indexPath.row];
+    
+    model.greatNum  = [NSString stringWithFormat:@"%zd",[model.greatNum intValue] + 1];
+    
+    [self.tableNode reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:(UITableViewRowAnimationFade)];
+    
+}
+
+- (void)loadDataWithProgress:(BOOL)progress indexpath:(NSIndexPath *)indexPath {
     
     self.start = 0;
+    
+    UIActivityIndicatorView *indicatorView;
+    
+    if (progress) {
+        
+        indicatorView = [XFToolManager showIndicatorViewTo:self.view];
+
+    }
     
     [XFUserInfoNetWorkManager getAllMyStatusWithStart:self.start successBlock:^(NSDictionary *responseDic) {
         
         [self.tableNode.view.mj_header endRefreshing];
+        [indicatorView setHidden:YES];
+        [indicatorView removeFromSuperview];
         
         if (responseDic) {
+            
+            self.noneDataView.hidden = YES;
             
             NSArray *datas = responseDic[@"data"];
             
@@ -62,6 +105,7 @@
                 NSDictionary *dic = datas[i];
                 
                 XFStatusModel *model = [XFStatusModel modelWithDictionary:dic];
+              
                 
                 [arr addObject:model];
                 
@@ -69,26 +113,36 @@
             
             self.datas = arr;
             
+            [self.tableNode reloadDataWithCompletion:^{
+                    
+
+                self.tableNode.hidden = NO;
+            }];
+                
+        
+        } else {
+            
+            self.noneDataView.hidden = NO;
             self.tableNode.hidden = YES;
             
-            [self.tableNode reloadData];
-            
-            self.tableNode.hidden = NO;
-
         }
         
     } failedBlock:^(NSError *error) {
+        [indicatorView setHidden:YES];
+        [indicatorView removeFromSuperview];
         
         [self.tableNode.view.mj_header endRefreshing];
-
+        self.noneDataView.hidden = NO;
+        self.tableNode.hidden = YES;
     }];
     
     
 }
 
+#pragma mark - 插入更多数据----智能预加载
 - (void)retrieveNextPageWithCompletion:(void (^)(NSArray *))block {
 
-    self.start += 3;
+    self.start += 10;
     
     [XFUserInfoNetWorkManager getAllMyStatusWithStart:self.start successBlock:^(NSDictionary *responseDic) {
         
@@ -132,9 +186,7 @@
     }
 
     [self.datas addObjectsFromArray:newDatas];
-    
-    
-    
+
     [self.tableNode insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
 }
 
@@ -158,29 +210,27 @@
     
     [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
         
-        XFStatusModel *model = self.datas[indexPath.row];
+
+    }];
+    
+    XFStatusModel *model = self.datas[indexPath.row];
+    
+    [XFStatusNetworkManager likeStatusWithStatusId:model.id userNo:nil successBlock:^(NSDictionary *reponseDic) {
         
-        [XFStatusNetworkManager likeStatusWithStatusId:model.id userNo:nil successBlock:^(NSDictionary *reponseDic) {
+        if (reponseDic) {
             
-            if (reponseDic) {
+            [self refreshDataForIndexPath:indexPath];
+            
+            if ([reponseDic[@"sign"] intValue] == 303) {
                 
-                [self loadData];
-                
-                if ([reponseDic[@"sign"] intValue] == 303) {
-                    
-                    [XFToolManager showProgressInWindowWithString:@"已经赞过了"];
-                    
-                    return;
-                }
-                
-                [XFToolManager showProgressInWindowWithString:@"点赞成功"];
-                
+                return;
             }
             
-        } failedBlock:^(NSError *error) {
-            
-            
-        }];
+        }
+        
+    } failedBlock:^(NSError *error) {
+        
+        
     }];
     
 
@@ -213,11 +263,10 @@
     
     statusDetailVC.type = Mine;
     
-    [self.navigationController pushViewController:statusDetailVC animated:YES];
+    statusDetailVC.status = self.datas[indexPath.row];
     
-
+    [self.navigationController pushViewController:statusDetailVC animated:YES];
 }
-
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -245,13 +294,6 @@
         node.index = indexPath;
         
         node.delegate = self;
-        
-        if (self.openIndexPath == indexPath) {
-            node.shadowNode.hidden = YES;
-            
-        } else {
-            node.shadowNode.hidden = NO;
-        }
         
         return node;
     };
@@ -298,7 +340,7 @@
     
     self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
 
-        [self loadData];
+        [self loadDataWithProgress:YES indexpath:nil];
 
     }];
     

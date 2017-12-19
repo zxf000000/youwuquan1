@@ -22,7 +22,6 @@
     
     self.likeButton.titleEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
     
-//    self.playNumberButton.imageEdgeInsets = UIEdgeInsetsMake(0, -5, 0, 0);
     
     self.picView.layer.masksToBounds = YES;
     self.nameLabel.textInsets = UIEdgeInsetsMake(6, 0, 0, 0);
@@ -30,16 +29,13 @@
     self.nameLabel.bounds = [self.nameLabel.text boundingRectWithSize:(CGSizeMake(MAXFLOAT, self.nameLabel.frame.size.height)) options:(NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin) attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:20]} context:nil];
     
     // 设置圆角
-//    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, kScreenWidth, self.picView.frame.size.height)     byRoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight cornerRadii:CGSizeMake(4, 4)];
-//    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-//    maskLayer.frame = CGRectMake(0, 0, kScreenWidth - 10, self.picView.frame.size.height);
-//    maskLayer.path = maskPath.CGPath;
-//    self.picView.layer.mask = maskLayer;
     
+    self.iconVIew.layer.cornerRadius = 15;
+    self.iconVIew.layer.masksToBounds = YES;
     UITapGestureRecognizer *tapIcon = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapIconView)];
     self.iconVIew.userInteractionEnabled = YES;
     [self.iconVIew addGestureRecognizer:tapIcon];
-    
+
     
     
 }

@@ -12,6 +12,7 @@
 
 @property (nonatomic,copy) NSArray *icons;
 
+@property (weak, nonatomic) IBOutlet UIImageView *picView;
 @property (nonatomic,copy) NSArray *iconImages;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 

@@ -109,6 +109,8 @@
         
         [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
         
+//        fromVC.view.hidden = YES;
+        
         if ([transitionContext transitionWasCancelled]) {
             //失败后，我们要把vc1显示出来
             fromVC.view.hidden = NO;

@@ -22,6 +22,6 @@
 
 @property (nonatomic,strong) ASTextNode *titleNode;
 
-@property (nonatomic,copy) void (^didSelecSearchMan)();
+@property (nonatomic,copy) void (^didSelecSearchMan)(void);
 
 @end

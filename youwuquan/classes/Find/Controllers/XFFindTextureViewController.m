@@ -16,6 +16,8 @@
 #import "XFStatusDetailViewController.h"
 #import "XFYwqAlertView.h"
 #import "XFShareManager.h"
+#import "XFFIndCacheManager.h"
+#import "XFFindModel.h"
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
 
@@ -34,6 +36,8 @@
 @property (nonatomic,copy) NSArray *pics;
 
 @property (nonatomic,assign) BOOL hdIsopen;
+
+@property (nonatomic,copy) NSArray *datas;
 
 @end
 
@@ -118,12 +122,16 @@
     
     [self setupScrollView];
     
+    self.datas = [XFFIndCacheManager sharedManager].findData;
+    
 
 }
 
 - (void)viewWillLayoutSubviews
 {
     self.scrollView.contentSize = CGSizeMake(kScreenWidth * 2, 0);
+    
+    [self.tableNode reloadData];
 }
 
 
@@ -176,11 +184,11 @@
             return self.hdCount;
         } else {
             
-            return 15;
+            return self.datas.count;
         }
     }
 
-    return 10;
+    return self.datas.count;
 }
 
 - (void)setupScrollView {
@@ -232,7 +240,9 @@
 - (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
     
     // 分享
-    [XFShareManager sharedImageWithBg:@"" icon:@"find_pic3" name:kRandomName userid:@"ID:12234213" address:@"深圳南山区"];
+    XFStatusModel *model = self.datas[inexPath.row];
+//    [XFShareManager sharedImageWithBg:@"" icon:@"find_pic3" name:kRandomName userid:@"ID:12234213" address:@"深圳南山区"];
+    [XFShareManager sharedUrl:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"] image:[UIImage imageNamed:model.headUrl] title:model.userNike detail:@"我在尤物圈等你哦"];
     
 }
 
@@ -359,9 +369,8 @@
                     
                     node.delegate = self;
                     
-                    node.picNode.defaultImage = [UIImage imageNamed:kRandomPic];
+                    node.picNode.defaultImage = [UIImage imageNamed:[NSString stringWithFormat:@"home2%zd",indexPath.row]];
 
-                    
                     if (indexPath.row == self.hdCount - 1) {
                         
                         node.isEnd = YES;
@@ -384,7 +393,7 @@
                     NSMutableArray *mutableArr = [NSMutableArray array];
                     for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
                         
-                        [mutableArr addObject:@"34"];
+                        [mutableArr addObject:[NSString stringWithFormat: @"find%zd",indexPath.row + i]];
                     }
                     BOOL isOpen;
                     
@@ -398,7 +407,7 @@
                     }
                     
                     
-                    XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy];
+                    XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.datas[indexPath.row]];
                     
                     node.index = indexPath;
                     
@@ -427,7 +436,7 @@
             NSMutableArray *mutableArr = [NSMutableArray array];
             for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
                 
-                [mutableArr addObject:@"34"];
+                [mutableArr addObject:[NSString stringWithFormat: @"find%zd",indexPath.row + i]];
             }
             BOOL isOpen;
             
@@ -441,7 +450,7 @@
             }
             
             
-            XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy];
+            XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.datas[indexPath.row]];
             
             node.index = indexPath;
             

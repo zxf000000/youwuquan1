@@ -20,6 +20,7 @@
 #import "XFHomeNearNode.h"
 #import "XFStatusDetailViewController.h"
 #import "XFFindDetailViewController.h"
+#import "XFHomeCacheManger.h"
 
 
 #define kHomeHeaderHeight (15 + 15 + 17 + 210 + 15 + 100 + 15 + 15 + 17)
@@ -50,6 +51,7 @@
 
 @property (nonatomic,copy) NSArray *invitePics;
 
+
 @end
 
 @implementation XFNetHotViewController
@@ -59,8 +61,7 @@
 
     self.upPics = @[@"1",@"2"];
     self.invitePics = @[@"3",@"4",@"5",@"6",@"7",@"8"];
-    
-    
+
     
     [self setupTableNode];
     
@@ -120,65 +121,66 @@
 
 - (NSInteger)numberOfSectionsInTableNode:(ASTableNode *)tableNode {
     
-    return 2;
+    return self.datas.count;
     
 }
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
-        
-        XFHomeTableNode *node = [[XFHomeTableNode alloc] init];
-        
-        node.delegate = self;
-        
+
         switch (indexPath.section) {
             case 0:
             {
+                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.datas[0][indexPath.row]];
+                
+                node.delegate = self;
                 
                 node.shadowNode.image = [UIImage imageNamed:@"overlay-zise"];
                 
-                if (self.type == NetHot) {
-                    
-                    node.picNode.defaultImage = [UIImage imageNamed:self.upPics[indexPath.row]];
-
-                } else {
-                    
-                    node.picNode.defaultImage = [UIImage imageNamed:kRandomPic];
-
-                }
-                
+//                if (self.type == NetHot) {
+//
+//                    node.picNode.defaultImage = [UIImage imageNamed:self.upPics[indexPath.row]];
+//
+//                } else {
+//                    
+//                    node.picNode.defaultImage = [UIImage imageNamed:kRandomPic];
+//
+//                }
+                return node;
                 
             }
                 break;
             case 1:
             {
+                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.datas[1][indexPath.row]];
+
+                node.delegate = self;
                 
                 node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
                 
-                if (self.type == NetHot) {
-                    
-                    node.picNode.defaultImage = [UIImage imageNamed:self.invitePics[indexPath.row]];
-
-                } else {
-                    
-                    node.picNode.defaultImage = [UIImage imageNamed:kRandomPic];
-
-                }
+//                if (self.type == NetHot) {
+//
+//                    node.picNode.defaultImage = [UIImage imageNamed:self.invitePics[indexPath.row]];
+//
+//                } else {
+//
+//                    node.picNode.defaultImage = [UIImage imageNamed:kRandomPic];
+//
+//                }
+                return node;
 
             }
+
                 break;
                 
             default:
+                return nil;
                 break;
         }
-        
-        node.delegate = self;
-        
-        return node;
     };
-    return cellNodeBlock;
 
+        return cellNodeBlock;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -236,16 +238,9 @@
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
-    if (section == 0) {
-        
-        return 2;
-    } else {
-        
-        return 4;
-    }
-    
-    
-    return 4;
+    NSArray *arr = self.datas[section];
+
+    return arr.count;
 }
 
 

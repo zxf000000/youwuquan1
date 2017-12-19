@@ -11,4 +11,9 @@
 
 @interface XFYueViewController : XFOtherMainViewController
 
+@property (nonatomic,strong) NSMutableArray *msgs;
+
+@property (nonatomic,assign) BOOL hasSeprator;
+
+
 @end

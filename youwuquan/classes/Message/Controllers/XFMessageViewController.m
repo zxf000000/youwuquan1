@@ -44,10 +44,39 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    if (indexPath.section == 0) {
+        
+        XFYueViewController *chatVC = [[XFYueViewController alloc] init];
+        chatVC.hidesBottomBarWhenPushed = YES;
+        chatVC.msgs = [NSMutableArray array];
+        [chatVC.msgs addObject:@(0)];
+        [chatVC.msgs addObject:@(2)];
+        [chatVC.msgs addObject:@(2)];
+        [chatVC.msgs addObject:@(0)];
+        chatVC.title = @"综合消息";
+        chatVC.hasSeprator = NO;
+        [self.navigationController pushViewController:chatVC animated:YES];
+        
+    } else {
+        
+        
+        XFYueViewController *chatVC = [[XFYueViewController alloc] init];
+        chatVC.hidesBottomBarWhenPushed = YES;
+        chatVC.msgs = [NSMutableArray array];
+        [chatVC.msgs addObject:@(4)];
+        [chatVC.msgs addObject:@(3)];
+        [chatVC.msgs addObject:@(4)];
+        [chatVC.msgs addObject:@(3)];
+        [chatVC.msgs addObject:@(5)];
+        [chatVC.msgs addObject:@(5)];
+        [chatVC.msgs addObject:@(6)];
+        [chatVC.msgs addObject:@(6)];
+        chatVC.title = @"动态互动";
+        chatVC.hasSeprator = YES;
+        [self.navigationController pushViewController:chatVC animated:YES];
+    }
 
-    XFYueViewController *chatVC = [[XFYueViewController alloc] init];
-    chatVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:chatVC animated:YES];
+
 
 }
 
@@ -179,7 +208,7 @@
         [cell setMyShadow];
         
         cell.iconImage.image = [UIImage imageNamed:@"message_gg"];
-        cell.titleLabel.text = @"尤物圈动态";
+        cell.titleLabel.text = @"综合消息";
     }
     
     if (indexPath.section == 1 || indexPath.row == 7) {
@@ -238,7 +267,7 @@
 - (NSArray *)cellTitles {
     if (_cellTitles == nil) {
         
-        _cellTitles = @[@"参与的活动",@"有人约你啦~",@"赞",@"评论"];
+        _cellTitles = @[@"动态互动"];
     }
     return _cellTitles;
     
@@ -247,7 +276,7 @@
 - (NSArray *)cellIcons {
     if (_cellIcons == nil) {
         
-        _cellIcons = @[@"message_cyhd",@"message_yryn",@"message_like",@"message_comment"];
+        _cellIcons = @[@"message_like"];
 
         
     }

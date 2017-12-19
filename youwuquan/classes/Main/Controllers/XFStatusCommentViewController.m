@@ -117,7 +117,7 @@
     self.sendButton.backgroundColor = kMainRedColor;
     [self.sendButton setTitle:@"发送" forState:(UIControlStateNormal)];
     self.sendButton.titleLabel.font = [UIFont systemFontOfSize:15];
-    
+    [self.sendButton addTarget:self action:@selector(clickSendButton) forControlEvents:(UIControlEventTouchUpInside)];
     [self.inputView addSubview:self.sendButton];
     
     self.inputTextField.delegate = self;
@@ -131,6 +131,16 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapShadowView)];
     [self.shadowView addGestureRecognizer:tap];
     
+}
+
+- (void)hide {
+    
+    [self tapShadowView];
+}
+
+- (void)clickSendButton {
+    
+
 }
 
 - (void)tapShadowView {

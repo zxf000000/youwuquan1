@@ -54,4 +54,12 @@
 @property (nonatomic,copy) NSArray *videoUrlList;
 @property (nonatomic,copy) NSArray *coverImage;
 
+@property (nonatomic,copy) NSString *isCared;
+
+@property (nonatomic,copy) NSString *isLiked;
+
+
+
++ (instancetype)modelWithName:(NSString *)userName icon:(NSString *)userIcon images:(NSArray *)images contents:(NSString *)contents isCares:(NSString *)isCared time:(NSString *)time isLiked:(NSString *)isLiked likeNumber:(NSString *)likeNumber commentNumber:(NSString *)commentNumber;
+
 @end

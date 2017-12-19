@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="XFVipTableViewCell" rowHeight="615" id="KGk-i7-Jjw" customClass="XFVipTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="389" height="615"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="389" height="614.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="my_huiyuanka1" translatesAutoresizingMaskIntoConstraints="NO" id="o9H-Ok-jea">
+                        <rect key="frame" x="59.5" y="17.5" width="270" height="162"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="162" id="gz6-Ct-cf2"/>
+                            <constraint firstAttribute="width" constant="270" id="ot4-dN-eMV"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="剩余天数99天" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LIH-IZ-URb">
+                        <rect key="frame" x="237.5" y="32.5" width="77" height="14.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="会员可免费查看所有用户的私密图片/视频" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BgG-Dj-LmU">
+                        <rect key="frame" x="73" y="198.5" width="243" height="16"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="请选择VIP类型" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hbs-j2-0VX">
+                        <rect key="frame" x="10" y="244.5" width="99.5" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OFm-gF-1bu">
+                        <rect key="frame" x="134.5" y="285" width="120" height="60"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="60" id="9dL-z9-zm6"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="VIP季卡   90天" backgroundImage="my_weixuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <state key="selected" title="VIP季卡   90天" backgroundImage="my_xuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <connections>
+                            <action selector="clickCardButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="JGe-VZ-nVp"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lio-Ve-vwI">
+                        <rect key="frame" x="6.5" y="285" width="120" height="60"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="VIP月卡   30天" backgroundImage="my_weixuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <state key="selected" title="VIP月卡   30天" backgroundImage="my_xuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <connections>
+                            <action selector="clickCardButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="msQ-3K-jey"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VHY-eJ-0Uf">
+                        <rect key="frame" x="262.5" y="285" width="120" height="60"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="VIP年卡  365天" backgroundImage="my_weixuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <state key="selected" title="VIP年卡  365天" backgroundImage="my_xuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <connections>
+                            <action selector="clickCardButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="J7e-Ne-Bhl"/>
+                        </connections>
+                    </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="请选择VIP类型" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5IL-IQ-vqe">
+                        <rect key="frame" x="10" y="376" width="99.5" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cUS-bc-LOQ">
+                        <rect key="frame" x="135" y="417" width="119" height="60"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="60" id="Iu1-PA-KSx"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="  支付宝" image="date_zhifubao" backgroundImage="my_weixuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <state key="selected" title="支付宝" image="date_zhifubao" backgroundImage="my_xuanze"/>
+                        <connections>
+                            <action selector="clickPayTypeButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="eAT-gp-ba0"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VcY-I7-8Gg">
+                        <rect key="frame" x="8.5" y="417" width="118.5" height="60"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="  微信" image="date_wechat" backgroundImage="my_weixuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <state key="selected" title="微信" image="date_wechat" backgroundImage="my_xuanze"/>
+                        <connections>
+                            <action selector="clickPayTypeButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="XPV-wU-Yk1"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iqT-ty-K8M">
+                        <rect key="frame" x="262" y="417" width="119" height="60"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="  钻石" image="my_zuanshi" backgroundImage="my_weixuanze">
+                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <state key="selected" title="钻石" image="my_zuanshi" backgroundImage="my_xuanze"/>
+                        <connections>
+                            <action selector="clickPayTypeButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="jli-fo-LD8"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AVw-gq-rAT">
+                        <rect key="frame" x="30" y="533" width="329" height="44"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="44" id="Blm-eC-4cs"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="支付99钻石">
+                            <color key="titleColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <connections>
+                            <action selector="clickPayButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="qTG-G5-KUe"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="AVw-gq-rAT" firstAttribute="top" secondItem="cUS-bc-LOQ" secondAttribute="bottom" constant="56" id="0TE-5p-D1w"/>
+                    <constraint firstItem="lio-Ve-vwI" firstAttribute="width" secondItem="OFm-gF-1bu" secondAttribute="width" id="10w-KK-Bfd"/>
+                    <constraint firstItem="VcY-I7-8Gg" firstAttribute="width" secondItem="cUS-bc-LOQ" secondAttribute="width" id="1lw-48-9SZ"/>
+                    <constraint firstItem="5IL-IQ-vqe" firstAttribute="leading" secondItem="hbs-j2-0VX" secondAttribute="leading" id="3WK-LZ-0cv"/>
+                    <constraint firstItem="hbs-j2-0VX" firstAttribute="top" secondItem="BgG-Dj-LmU" secondAttribute="bottom" constant="30" id="5Tb-Re-dE4"/>
+                    <constraint firstItem="iqT-ty-K8M" firstAttribute="width" secondItem="cUS-bc-LOQ" secondAttribute="width" id="8wj-HE-226"/>
+                    <constraint firstItem="o9H-Ok-jea" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="9Au-OV-k6G"/>
+                    <constraint firstItem="OFm-gF-1bu" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="B8H-Gq-Rab"/>
+                    <constraint firstAttribute="trailing" secondItem="AVw-gq-rAT" secondAttribute="trailing" constant="30" id="FdV-N1-gSN"/>
+                    <constraint firstItem="hbs-j2-0VX" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="N9j-zk-eaW"/>
+                    <constraint firstItem="OFm-gF-1bu" firstAttribute="top" secondItem="hbs-j2-0VX" secondAttribute="bottom" constant="22.5" id="PeX-Vq-ZjY"/>
+                    <constraint firstItem="VHY-eJ-0Uf" firstAttribute="top" secondItem="OFm-gF-1bu" secondAttribute="top" id="RL9-FC-bMR"/>
+                    <constraint firstItem="o9H-Ok-jea" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="17.5" id="TCq-0q-efv"/>
+                    <constraint firstItem="LIH-IZ-URb" firstAttribute="top" secondItem="o9H-Ok-jea" secondAttribute="top" constant="15" id="TZM-44-7fJ"/>
+                    <constraint firstItem="cUS-bc-LOQ" firstAttribute="top" secondItem="5IL-IQ-vqe" secondAttribute="bottom" constant="22.5" id="URb-L9-8TT"/>
+                    <constraint firstItem="OFm-gF-1bu" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" multiplier="1/3" constant="-10" id="UsX-K1-rGF"/>
+                    <constraint firstItem="cUS-bc-LOQ" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" multiplier="1/3" constant="-11" id="YAu-pz-TNj"/>
+                    <constraint firstItem="iqT-ty-K8M" firstAttribute="top" secondItem="cUS-bc-LOQ" secondAttribute="top" id="e4i-Vv-Qz1"/>
+                    <constraint firstItem="lio-Ve-vwI" firstAttribute="top" secondItem="OFm-gF-1bu" secondAttribute="top" id="eFv-qk-irj"/>
+                    <constraint firstItem="BgG-Dj-LmU" firstAttribute="top" secondItem="o9H-Ok-jea" secondAttribute="bottom" constant="19" id="fKy-0e-4Y4"/>
+                    <constraint firstItem="VcY-I7-8Gg" firstAttribute="top" secondItem="cUS-bc-LOQ" secondAttribute="top" id="fyB-Hy-vEz"/>
+                    <constraint firstItem="VHY-eJ-0Uf" firstAttribute="leading" secondItem="OFm-gF-1bu" secondAttribute="trailing" constant="8" id="gqQ-S0-0c1"/>
+                    <constraint firstItem="BgG-Dj-LmU" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="iO4-Dy-2W0"/>
+                    <constraint firstItem="VHY-eJ-0Uf" firstAttribute="width" secondItem="OFm-gF-1bu" secondAttribute="width" id="jB9-23-YS3"/>
+                    <constraint firstItem="LIH-IZ-URb" firstAttribute="trailing" secondItem="o9H-Ok-jea" secondAttribute="trailing" constant="-15" id="k9r-EH-Rjh"/>
+                    <constraint firstItem="cUS-bc-LOQ" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="lTp-ZP-u10"/>
+                    <constraint firstAttribute="bottom" secondItem="AVw-gq-rAT" secondAttribute="bottom" constant="37.5" id="mCM-Aa-rUn"/>
+                    <constraint firstItem="VcY-I7-8Gg" firstAttribute="bottom" secondItem="cUS-bc-LOQ" secondAttribute="bottom" id="ott-to-cTJ"/>
+                    <constraint firstItem="cUS-bc-LOQ" firstAttribute="leading" secondItem="VcY-I7-8Gg" secondAttribute="trailing" constant="8" id="pYm-9Y-NYW"/>
+                    <constraint firstItem="lio-Ve-vwI" firstAttribute="bottom" secondItem="OFm-gF-1bu" secondAttribute="bottom" id="q1x-1P-46z"/>
+                    <constraint firstItem="VHY-eJ-0Uf" firstAttribute="bottom" secondItem="OFm-gF-1bu" secondAttribute="bottom" id="rCy-dY-zjP"/>
+                    <constraint firstItem="5IL-IQ-vqe" firstAttribute="top" secondItem="lio-Ve-vwI" secondAttribute="bottom" constant="31" id="rPH-EL-fZu"/>
+                    <constraint firstItem="iqT-ty-K8M" firstAttribute="bottom" secondItem="cUS-bc-LOQ" secondAttribute="bottom" id="tXO-CO-mlj"/>
+                    <constraint firstItem="AVw-gq-rAT" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="30" id="wIc-Fj-eSs"/>
+                    <constraint firstItem="iqT-ty-K8M" firstAttribute="leading" secondItem="cUS-bc-LOQ" secondAttribute="trailing" constant="8" id="wPb-Hr-J07"/>
+                    <constraint firstItem="OFm-gF-1bu" firstAttribute="leading" secondItem="lio-Ve-vwI" secondAttribute="trailing" constant="8" id="z9i-v5-g3S"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="aliButton" destination="cUS-bc-LOQ" id="EYC-8w-04O"/>
+                <outlet property="card" destination="o9H-Ok-jea" id="ACE-wN-Vmu"/>
+                <outlet property="jikaMonthCard" destination="OFm-gF-1bu" id="gjg-bM-H6P"/>
+                <outlet property="monthCardbutton" destination="lio-Ve-vwI" id="B1V-5g-7mJ"/>
+                <outlet property="payButton" destination="AVw-gq-rAT" id="ImH-Gl-rPM"/>
+                <outlet property="weButton" destination="VcY-I7-8Gg" id="pLq-rP-xdL"/>
+                <outlet property="yearCardButton" destination="VHY-eJ-0Uf" id="Jc4-xs-mHS"/>
+                <outlet property="zuanButton" destination="iqT-ty-K8M" id="R0s-BZ-Uoc"/>
+            </connections>
+            <point key="canvasLocation" x="116.5" y="4.5"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="date_wechat" width="22" height="22"/>
+        <image name="date_zhifubao" width="22" height="22"/>
+        <image name="my_huiyuanka1" width="270" height="162"/>
+        <image name="my_weixuanze" width="110" height="60"/>
+        <image name="my_xuanze" width="110" height="60"/>
+        <image name="my_zuanshi" width="22" height="22"/>
+    </resources>
+</document>

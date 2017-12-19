@@ -12,6 +12,8 @@
 
 + (UIImage *)shareImgWithBgImage:(UIImage *)bgImage iconImage:(UIImage *)iconImage name:(NSString *)name userId:(NSString *)userId address:(NSString *)address;
 
+// 绘制分享注册页面
++ (UIImage *)shareurlImgWithBgImage:(UIImage *)bgImage iconImage:(UIImage *)iconImage url:(NSString *)url;
 
 + (UIImage *)creatQRcodeWithInfo:(NSString *)path;
 

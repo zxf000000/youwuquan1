@@ -7,7 +7,7 @@
 //
 
 #import "XFVideoDetailViewController.h"
-#import <UIView+WebVideoCache.h>
+//#import <UIView+WebVideoCache.h>
 #import "XFVideoNameCell.h"
 #import "XFVideoMoreCell.h"
 #import "XFStatusDetailViewController.h"
@@ -24,7 +24,7 @@
 
 #define kVideoVideHeight (9/16.f * kScreenWidth)
 
-@interface XFVideoDetailViewController () <JPVideoPlayerDelegate,ASTableDelegate,ASTableDataSource,AliyunVodPlayerDelegate,HJDanmakuViewDateSource,HJDanmakuViewDelegate,MD360DirectorFactory>
+@interface XFVideoDetailViewController () <ASTableDelegate,ASTableDataSource,AliyunVodPlayerDelegate,HJDanmakuViewDateSource,HJDanmakuViewDelegate,MD360DirectorFactory>
 
 @property (nonatomic,strong) UIButton *backButton;
 
@@ -506,14 +506,14 @@
     
     [self.danmuView registerClass:[XFDanmuCell class] forCellReuseIdentifier:@"danmu"];
     
-    [self.videoView insertSubview:self.danmuView belowSubview:self.controlView];
+//    [self.videoView insertSubview:self.danmuView belowSubview:self.controlView];
     
-    
-    [self.danmuView mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.edges.mas_offset(0);
-        
-    }];
+//
+//    [self.danmuView mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.edges.mas_offset(0);
+//
+//    }];
     
     
     NSString *danmakufile = [[NSBundle mainBundle] pathForResource:@"danmakufile" ofType:nil];
@@ -685,15 +685,11 @@
     
     [self.fullScreenButton addTarget:self action:@selector(clickFullButton) forControlEvents:(UIControlEventTouchUpInside)];
     
-    // 设置frame
-//    [self.controlView addSubview:self.videoView.jp_indicatorView];
-    
-    
     // 顶部遮罩
     self.topShadowView = [[UIView alloc] init];
     self.topShadowView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     [self.videoView addSubview:self.topShadowView];
-    //    self.controlView.frame = CGRectMake(0, kVideoVideHeight * 5/6.f, self.videoView.frame.size.width, kVideoVideHeight * 1/6.f);
+    self.topShadowView.frame = CGRectMake(0, 0, kScreenWidth, 43);
     self.topShadowView.hidden = YES;
     
     self.dmButton = [[UIButton alloc] init];
@@ -712,13 +708,18 @@
         
     }];
     
-    [self.topShadowView mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.top.left.right.mas_offset(0);
-        make.height.mas_equalTo(35);
+    if (@available (iOS 11 , * )) {
         
-    }];
+        [self.topShadowView mas_makeConstraints:^(MASConstraintMaker *make) {
+            
+            make.top.left.right.mas_offset(0);
+            make.height.mas_equalTo(35);
+            
+        }];
+        
+    }
     
+
     [self.dmButton mas_makeConstraints:^(MASConstraintMaker *make) {
        
         make.right.mas_offset(-43);
@@ -727,13 +728,21 @@
         
     }];
     
-    [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
+    if (@available (iOS 11 , *)) {
         
-        make.left.bottom.right.mas_offset(0);
-        make.height.mas_equalTo(35);
+        [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
+            
+            make.left.bottom.right.mas_offset(0);
+            make.height.mas_equalTo(35);
+            
+        }];
+
+    } else {
         
-    }];
-    
+        self.controlView.frame = CGRectMake(0, kScreenWidth * 9 / 16.f - 35, kScreenWidth, 35);
+
+    }
+
     [self.beginButton mas_makeConstraints:^(MASConstraintMaker *make) {
        
         make.left.mas_offset(0);
@@ -981,7 +990,6 @@
         make.centerY.mas_offset(0);
         make.right.mas_offset(0);
         make.width.mas_equalTo(43);
-        make.width.mas_equalTo(35);
         
     }];
     
@@ -1004,17 +1012,26 @@
         self.topShadowView.hidden = YES;
         self.controlView.hidden = NO;
         
-        // 弹幕界面
-        self.danmuView.hidden = YES;
-        [self.danmuView pause];
+        self.controlView.frame = CGRectMake(0, kScreenWidth * 9 / 16.f - 35, kScreenWidth, 35);
+        self.topShadowView.frame = CGRectMake(0, 0, kScreenWidth, 43);
+        
+        [self.topShadowView layoutIfNeeded];
+        
+        [self.controlView layoutIfNeeded];
     }];
     
-    [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
+    //    self.controlView.frame = CGRectMake(0, 0, kScreenHeight, 35);
+    
+    if (@available (iOS 11, *)) {
         
-        make.left.bottom.right.mas_offset(0);
-        make.height.mas_equalTo(35);
-        
-    }];
+        [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            
+            make.left.bottom.right.mas_offset(0);
+            make.height.mas_equalTo(35);
+            
+        }];
+    }
+
     
     // 弹幕库关闭
 
@@ -1057,24 +1074,38 @@
         
         self.videoView.transform = CGAffineTransformMakeRotation(M_PI_2);
         self.videoView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+        
     } completion:^(BOOL finished) {
-        // 显示顶部操作
-
+        // 显示顶部操
+        
         self.topShadowView.hidden = NO;
         self.controlView.hidden = NO;
 
         // 弹幕界面
-        self.danmuView.hidden = NO;
-        [self.danmuView play];
+//        self.danmuView.hidden = NO;
+//        [self.danmuView play];
         
+//        self.controlView.transform = CGAffineTransformMakeRotation(M_PI_2);
+        
+        self.controlView.frame = CGRectMake(0, kScreenWidth - 35, kScreenHeight, 35);
+        self.topShadowView.frame = CGRectMake(0, 0, kScreenHeight, 43);
+        [self.topShadowView layoutIfNeeded];
+
+        [self.controlView layoutIfNeeded];
     }];
     
-    [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
+//    self.controlView.frame = CGRectMake(0, 0, kScreenHeight, 35);
+    
+    if (@available (iOS 11, *)) {
         
-        make.left.bottom.right.mas_offset(0);
-        make.height.mas_equalTo(35);
-        
-    }];
+        [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            
+            make.left.bottom.right.mas_offset(0);
+            make.height.mas_equalTo(35);
+            
+        }];
+    }
+
     
 }
 
@@ -1176,7 +1207,7 @@
                         
                         return ^ASCellNode *{
                             
-                            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] init];
+                            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:nil];
                             
                             return node;
                             
@@ -1190,7 +1221,7 @@
                     
                     return ^ASCellNode *() {
                         
-                        XFStatusCommentCellNode *cell = [[XFStatusCommentCellNode alloc] init];
+                        XFStatusCommentCellNode *cell = [[XFStatusCommentCellNode alloc] initWithMode:nil];
                         
                         return cell;
                         

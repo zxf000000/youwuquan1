@@ -13,7 +13,7 @@ pod 'MJRefresh'
 pod 'YYKit'
 
 pod 'Texture'
-pod 'JPVideoPlayer'
+#pod 'JPVideoPlayer'
 
 pod 'RongCloudIM/IMLib', '~> 2.8.3'
 pod 'RongCloudIM/IMKit', '~> 2.8.3'  

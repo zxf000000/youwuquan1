@@ -17,6 +17,13 @@ typedef void(^completeBlock)(void);
 @interface XFToolManager : NSObject
 
 /**
+ 获取视频文件缩略图
+
+ @param videoURL 视频url
+ @return 缩略图
+ */
++ (UIImage *)getImage:(NSString *)videoURL;
+/**
  字典转字符串
 
  @param object 字典

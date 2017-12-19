@@ -12,6 +12,7 @@
 #import "XFCashViewController.m"
 #import "XFUserInfoNetWorkManager.h"
 #import "XFMoneyNetworkManager.h"
+#import "XFPayViewController.h"
 
 @interface XFMyMoneyViewController () <UITableViewDelegate,UITableViewDataSource>
 @property (nonatomic,strong) UITableView *tableView;
@@ -70,12 +71,28 @@
     
 }
 
+- (void)loadDataWithoutProgress {
+    
+    [XFUserInfoNetWorkManager getMyMoneyInfoWithsuccessBlock:^(NSDictionary *responseDic) {
+        
+        if (responseDic) {
+            
+            self.moneyInfo = responseDic[@"data"][0];
+            [self.tableView reloadData];
+        }
+    
+    } failedBlock:^(NSError *error) {
+        
+        
+    }];
+    
+}
+
 - (void)clickRightButton {
     
     XFTxViewController *txVC = [[XFTxViewController alloc] init];
     
     [self.navigationController pushViewController:txVC animated:YES];
-
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -86,7 +103,6 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
     return 1;
-    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -98,14 +114,19 @@
     cell.clickCashButtonBlock = ^{
         
         XFCashViewController *cashVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFCashViewController"];
-        
         [self.navigationController pushViewController:cashVC animated:YES];
+        
     };
     
     cell.clickPayButtonBlock = ^{
       
+        XFPayViewController *payVC = [[XFPayViewController alloc] init];
+        
+        [self.navigationController pushViewController:payVC animated:YES];
+        
+        return;
+        
         MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在充值"];
-
         // 充值
         [XFMoneyNetworkManager chargeDiamondWithNUm:@"1000" successBlock:^(NSDictionary *responseDic) {
             
@@ -113,9 +134,13 @@
                 
                 [XFToolManager changeHUD:HUD successWithText:@"充值成功"];
                 
-                [self loadData];
+                [self loadDataWithoutProgress];
+                
+            } else {
+                
+                [HUD hideAnimated:YES];
+
             }
-            [HUD hideAnimated:YES];
             
         } failedBlock:^(NSError *error) {
             

@@ -19,7 +19,7 @@
     _iconView.layer.cornerRadius = 22;
     _iconView.layer.masksToBounds = YES;
     
-    self.bgView.image = [[UIImage imageNamed:@"chat_qipao1"] stretchableImageWithLeftCapWidth:5 topCapHeight:35];
+    self.bgView.image = [[UIImage imageNamed:@"chat_qipao1"] stretchableImageWithLeftCapWidth:10 topCapHeight:15];
     
     self.acceptButton.layer.cornerRadius = 5;
     self.deButton.layer.cornerRadius = 5;
@@ -28,5 +28,20 @@
     self.deButton.layer.borderWidth = 1;
 }
 
+- (IBAction)clickAcceptButton:(id)sender {
+    
+    if (self.clickAcceptButtonBlock) {
+        
+        self.clickAcceptButtonBlock();
+    }
+}
+- (IBAction)clickRefuseButton:(id)sender {
+    
+    if (self.clickDenyButtonBlock) {
+        
+        self.clickDenyButtonBlock();
+    }
+    
+}
 
 @end

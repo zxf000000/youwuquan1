@@ -11,6 +11,7 @@
 
 typedef void(^RequestSuccessBlock)(NSDictionary *reponseDic);
 typedef void(^RequestFailedBlock)(NSError *error);
+typedef void(^ProgressBlock)(CGFloat progress);
 
 @interface XFStatusNetworkManager : NSObject
 
@@ -64,7 +65,7 @@ typedef void(^RequestFailedBlock)(NSError *error);
  @param success 成功
  @param failedBlock 失败
  */
-+ (void)publishStatusWithopenAlbumId:(NSString *)openAlbumId intimateAlbumId:(NSString *)intimateAlbumId opens:(NSArray *)opens intimates:(NSArray *)intimates type:(NSString *)type title:(NSString *)title unlockNum:(NSString *)unlockNum customLabel:(NSString *)customLabel labels:(NSString *)labels successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock;
++ (void)publishStatusWithopenAlbumId:(NSString *)openAlbumId intimateAlbumId:(NSString *)intimateAlbumId opens:(NSArray *)opens intimates:(NSArray *)intimates type:(NSString *)type title:(NSString *)title unlockNum:(NSString *)unlockNum customLabel:(NSString *)customLabel labels:(NSString *)labels successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock progress:(ProgressBlock)progressblock;
 
 /**
  不需要登录查看的动态
@@ -125,7 +126,7 @@ typedef void(^RequestFailedBlock)(NSError *error);
  @param success 成功
  @param failedBlock 失败
  */
-+ (void)commentStatusWithId:(NSString *)releaseId message:(NSString *)message successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock;
++ (void)commentStatusWithId:(NSString *)releaseId message:(NSString *)message userNoA:(NSString *)userNoA successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock;
 
 /**
  获取所有标签

@@ -7,7 +7,9 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+#import "XFStatusModel.h"
 @class XFStatusDetailCellNode;
+
 
 
 @interface XFStatusDetailCollectionCellnode : ASCellNode
@@ -29,10 +31,17 @@
 
 - (instancetype)initWithImages:(NSArray *)images likeImgs:(NSArray *)likeImgs;
 
+- (instancetype)initWithModel:(XFStatusModel *)status;
+
+@property (nonatomic,copy) NSArray *allImgs;
+@property (nonatomic,copy) NSArray *likeIcons;
+
 @property (nonatomic,strong) ASNetworkImageNode *iconNode;
 @property (nonatomic,strong) ASTextNode *nameNode;
 @property (nonatomic,strong) ASTextNode *timeNode;
 @property (nonatomic,strong) ASButtonNode *followButton;
+
+@property (nonatomic,strong) XFStatusModel *status;
 
 // 内容
 @property (nonatomic,strong) ASTextNode *commentNode;

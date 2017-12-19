@@ -86,7 +86,7 @@
 /**
  发布动态
  */
-+ (void)publishStatusWithopenAlbumId:(NSString *)openAlbumId intimateAlbumId:(NSString *)intimateAlbumId opens:(NSArray *)opens intimates:(NSArray *)intimates type:(NSString *)type title:(NSString *)title unlockNum:(NSString *)unlockNum customLabel:(NSString *)customLabel labels:(NSString *)labels successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock {
++ (void)publishStatusWithopenAlbumId:(NSString *)openAlbumId intimateAlbumId:(NSString *)intimateAlbumId opens:(NSArray *)opens intimates:(NSArray *)intimates type:(NSString *)type title:(NSString *)title unlockNum:(NSString *)unlockNum customLabel:(NSString *)customLabel labels:(NSString *)labels successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock  progress:(ProgressBlock)progressblock {
     
     NSMutableDictionary *jsonDic = [NSMutableDictionary dictionary];
     [jsonDic setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
@@ -107,7 +107,6 @@
     [para setObject:jsonString forKey:@"jsonString"];
     [para setObject:@"1,2" forKey:@"labels"];
     
-    
     [[XFNetWorkManager sharedManager] publishUploadWithUrl:[XFNetWorkApiTool pathUrlForPublish] Opens:opens secs:intimates paraments:para successHandle:^(NSDictionary *responseDic) {
        
         success(responseDic);
@@ -115,6 +114,10 @@
     } failedBlock:^(NSError *error) {
         
         failedBlock(error);
+    } progress:^(CGFloat progress) {
+        
+        progressblock(progress);
+        
     }];
     
 
@@ -200,7 +203,9 @@
     
     NSMutableDictionary *para = [NSMutableDictionary dictionary];
     [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
-    [para setObject:releaseId forKey:@"releaseId"];
+
+    
+    [para setObject:releaseId ? releaseId:@"147" forKey:@"releaseId"];
     
     [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForStatusDetail] paraments:para successHandle:^(NSDictionary *responseDic) {
         
@@ -272,11 +277,11 @@
  @param success 成功
  @param failedBlock 失败
  */
-+ (void)commentStatusWithId:(NSString *)releaseId message:(NSString *)message successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock {
++ (void)commentStatusWithId:(NSString *)releaseId message:(NSString *)message userNoA:(NSString *)userNoA successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock {
     
     NSMutableDictionary *para = [NSMutableDictionary dictionary];
     [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
-    [para setObject:releaseId forKey:@"releaseId"];
+    [para setObject:releaseId ? releaseId:@"147" forKey:@"releaseId"];
     [para setObject:message forKey:@"message"];
 
     [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForCommentSomeone] paraments:para successHandle:^(NSDictionary *responseDic) {
@@ -290,11 +295,6 @@
     
     
 }
-
-
-
-
-
 
 + (void)getMyStatusWithStart:(NSString *)start successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock {
     

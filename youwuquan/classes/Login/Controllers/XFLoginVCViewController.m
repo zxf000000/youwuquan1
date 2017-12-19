@@ -70,6 +70,8 @@
 // 登录
 - (void)clickLoginButton {
     
+    [self.view endEditing:YES];
+    
     if (![self.phoneTextField.text isPhoneNumber]) {
         
         [XFToolManager showProgressInWindowWithString:@"请输入正确的手机号"];
@@ -149,6 +151,8 @@
 // 忘记密码
 - (void)clickForgetButton {
     
+    [self.view endEditing:YES];
+    
     XFForgetViewController *forgetVC = [[XFForgetViewController alloc] init];
     
     [self.navigationController pushViewController:forgetVC animated:YES];
@@ -157,6 +161,9 @@
 
 // 点击注册按钮
 - (void)clickRegistButton {
+    
+    [self.view endEditing:YES];
+
     
     XFRegistViewController *registVC = [[XFRegistViewController alloc] init];
     

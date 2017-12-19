@@ -7,6 +7,7 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+#import "XFStatusModel.h"
 @class XFFindCellNode;
 
 typedef NS_ENUM(NSInteger,FindCellType) {
@@ -132,10 +133,12 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 @property (nonatomic,assign) BOOL isOpen;
 
-- (instancetype)initWithOpen:(BOOL)open pics:(NSArray *)pics;
+@property (nonatomic,strong) XFStatusModel *model;
+
+- (instancetype)initWithOpen:(BOOL)open pics:(NSArray *)pics model:(XFStatusModel *)model;
 
 @property (nonatomic,assign) FindCellType type;
 
-- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics open:(BOOL)isOpen;
+- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics open:(BOOL)isOpen model:(XFStatusModel *)model;
 
 @end

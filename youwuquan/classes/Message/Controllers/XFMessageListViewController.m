@@ -9,6 +9,7 @@
 #import "XFMessageListViewController.h"
 #import "XFMessageViewController.h"
 #import "XFChatViewController.h"
+#import "XFYueViewController.h"
 
 @interface XFMessageListViewController ()
 
@@ -35,7 +36,59 @@
                                           @(ConversationType_GROUP)]];
     
     [self setupHeaderView];
+    
+    // 系统消息
+    UIButton *rightButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
+    [rightButton setImage:[UIImage imageNamed:@"msg_ring"] forState:(UIControlStateNormal)];
+    
+    rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, 30, 0, 0);
+
+    if (@available (ios 11 , *)) {
+        
+        rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, -20, 0, 0);
+
+    }
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    UILabel *numberLabel  = [[UILabel alloc] init];
+    numberLabel.text = @"11";
+    numberLabel.font = [UIFont systemFontOfSize:10];
+    [rightButton addSubview:numberLabel];
+    numberLabel.backgroundColor = kMainRedColor;
+    numberLabel.textColor = [UIColor whiteColor];
+    [numberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.right.mas_offset(0);
+        make.top.mas_offset(-8);
+        make.height.width.mas_equalTo(20);
+    }];
+    numberLabel.layer.cornerRadius = 10;
+    numberLabel.layer.masksToBounds = YES;
+    numberLabel.textAlignment = NSTextAlignmentCenter;
+    
+    [rightButton addTarget:self action:@selector(clickRightButton) forControlEvents:(UIControlEventTouchUpInside)];
+    
+    
 }
+
+- (void)clickRightButton {
+    
+    
+    XFYueViewController *chatVC = [[XFYueViewController alloc] init];
+    chatVC.hidesBottomBarWhenPushed = YES;
+    chatVC.msgs = [NSMutableArray array];
+    [chatVC.msgs addObject:@(1)];
+    [chatVC.msgs addObject:@(1)];
+    [chatVC.msgs addObject:@(1)];
+    [chatVC.msgs addObject:@(1)];
+    [chatVC.msgs addObject:@(1)];
+
+    chatVC.title = @"系统通知";
+    chatVC.hasSeprator = NO;
+    [self.navigationController pushViewController:chatVC animated:YES];
+    
+}
+
 - (void)onSelectedTableRow:(RCConversationModelType)conversationModelType
          conversationModel:(RCConversationModel *)model
                atIndexPath:(NSIndexPath *)indexPath {
@@ -43,7 +96,7 @@
     XFChatViewController *conversationVC = [[XFChatViewController alloc]init];
     conversationVC.conversationType = model.conversationType;
     conversationVC.targetId = model.targetId;
-    conversationVC.title = @"想显示的会话标题";
+    conversationVC.title = @"小美同学";
     conversationVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:conversationVC animated:YES];
 }
@@ -62,7 +115,7 @@
 
     self.headerVC.view.frame = CGRectMake(0, 0, kScreenWidth, self.headerVC.headerHeight);
     self.conversationListTableView.tableHeaderView = self.headerVC.view;
-    
+    self.conversationListTableView.tableFooterView = [[UIView alloc] init];
     self.emptyConversationView = [[UIView alloc] init];
     
 }

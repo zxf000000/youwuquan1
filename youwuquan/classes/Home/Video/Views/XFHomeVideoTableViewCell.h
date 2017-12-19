@@ -23,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *iconVIew;
 @property (weak, nonatomic) IBOutlet UIButton *likeButton;
 @property (weak, nonatomic) IBOutlet XFInsertLabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *numberLabel;
 
 @property (nonatomic,strong) id <XFHomeVideoCellDelegate> delegate;
 

@@ -26,6 +26,7 @@
 #import <AFHTTPSessionManager.h>
 #import "XFStatusDetailViewController.h"
 #import "XFVideoDetailViewController.h"
+#import "XFHomeCacheManger.h"
 
 #define kHomeHeaderHeight (15 + 15 + 17 + 210 + 15 + 100 + 15 + 15 + 17)
 #define kSecondHeaderHeight (195 + 15 + 17 + 15)
@@ -62,8 +63,8 @@
 
 // 数据
 @property (nonatomic,copy) NSArray *homeData;
+@property (nonatomic,copy) NSArray *ywData;
 @property (nonatomic,copy) NSArray *whData;
-@property (nonatomic,copy) NSArray *yyData;
 @property (nonatomic,copy) NSArray *videoData;
 
 // 所有View数组
@@ -75,16 +76,35 @@
 
 @implementation XFHomeViewController
 
+
+- (instancetype)init {
+    
+    if (self = [super init]) {
+        
+        _homeData = [XFHomeCacheManger sharedManager].homeData;
+
+        
+    }
+    return self;
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = @"首页";
 
+    self.ywData = [XFHomeCacheManger sharedManager].ywData;
+    self.whData = [XFHomeCacheManger sharedManager].whData;
+    self.videoData = [XFHomeCacheManger sharedManager].videoData;
+
+    
+    [self setupTableNode];
+
     [self setupNavigationbar];
     
     [self setupVideos];
 
-    [self setupTableNode];
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -181,40 +201,27 @@
     self.CLManager = [[CLLocationManager alloc] init];
     self.CLManager.delegate = self;
     self.CLManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.CLManager.pausesLocationUpdatesAutomatically = YES;
+    
     
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
     
     [self.positionButton setTitle:@"正在定位" forState:(UIControlStateNormal)];
     
+    if ([self.CLManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        
+        [self.CLManager requestAlwaysAuthorization];
+        
+    }
+
     if (status == kCLAuthorizationStatusNotDetermined) {
         
         [self.CLManager requestWhenInUseAuthorization];
         
     }
-    
-    if (status == kCLAuthorizationStatusDenied || status == kCLAuthorizationStatusRestricted) {
-        
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"定位不可用" message:@"请开启定位权限" preferredStyle:(UIAlertControllerStyleAlert)];
-        
-        UIAlertAction *ok = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            
-            
-        }];
-        
-        [alert addAction:ok];
-        
-        [self presentViewController:alert animated:YES completion:nil];
-        
-        
-        
-    }
-    
-    // 请求授权
-    if ([self.CLManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        NSLog(@"requestAlwaysAuthorization");
-        [self.CLManager requestAlwaysAuthorization];
-    }
-    
+
+
+
     // 调用代理方法
     [self.CLManager startUpdatingLocation];
 }
@@ -222,6 +229,8 @@
 #pragma mark - locationDelegate
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     
+//    self.CLManager.allowsBackgroundLocationUpdates = YES;
+//    [self.CLManager allowDeferredLocationUpdatesUntilTraveled:100 timeout:10];
     // 用户位置对象
     CLLocation *location = [locations lastObject];
     CLLocationCoordinate2D coordinate = location.coordinate;
@@ -254,6 +263,8 @@
     
 }
 
+
+
 - (void)locationManager:(CLLocationManager *)manager
        didFailWithError:(NSError *)error
 {
@@ -266,7 +277,39 @@
 #pragma mark - 点击位置按钮重新获取位置
 - (void)clickPositionButton {
     
-    [self getLocation];
+    // 判断定位状态
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    
+    if (status == kCLAuthorizationStatusDenied || status == kCLAuthorizationStatusRestricted) {
+        
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"定位不可用" message:@"请开启定位权限" preferredStyle:(UIAlertControllerStyleAlert)];
+        
+        UIAlertAction *ok = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+            
+            NSURL * url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+            
+            if([[UIApplication sharedApplication] canOpenURL:url]) {
+                
+                NSURL*url =[NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                [[UIApplication sharedApplication] openURL:url];
+                
+            }
+            
+        }];
+        
+        UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:nil];
+        
+        [alert addAction:ok];
+        [alert addAction:cancel];
+        
+        [self presentViewController:alert animated:YES completion:nil];
+
+    } else {
+        
+        [self getLocation];
+
+    }
+    
     
 }
 
@@ -448,11 +491,11 @@
     
     self.tableNode.view.tableHeaderView = header;
     
-    self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-       
-        [self loaddata];
-        
-    }];
+//    self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+//
+//        [self loaddata];
+//
+//    }];
 }
 
 #pragma mark - nearbydelegate
@@ -556,7 +599,7 @@
 
 - (NSInteger)numberOfSectionsInTableNode:(ASTableNode *)tableNode {
     
-    return 3;
+    return 4;
     
 }
 
@@ -578,47 +621,52 @@
         }
             break;
             
+        case 0:{
+            
+            ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
+                
+                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[0][indexPath.row]];
+                
+                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
+                
+                node.delegate = self;
+                
+                return node;
+            };
+            
+            return cellNodeBlock;
+        }
+            break;
+            
+        case 1:
+        {
+            ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
+                
+                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[1][indexPath.row]];
+            
+                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
+
+                node.delegate = self;
+                
+                return node;
+            };
+            
+            return cellNodeBlock;
+        }
+            break;
         default:
         {
             ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
                 
-                XFHomeTableNode *node = [[XFHomeTableNode alloc] init];
+                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[3][indexPath.row]];
                 
-                switch (indexPath.section) {
-                    case 0:
-                    {
-                        
-                        node.shadowNode.image = [UIImage imageNamed:@"overlay-zise"];
-                        node.picNode.defaultImage = [UIImage imageNamed:[XFIconmanager sharedManager].homeImages[indexPath.item%2]];
-                        
-                    }
-                        break;
-                    case 1:
-                    {
-                        
-                        node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
-                        node.picNode.defaultImage = [UIImage imageNamed:kRandomPic];
-
-                    }
-                        break;
-                        
-                    default:
-                        break;
-                }
+                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
                 
                 node.delegate = self;
                 
-                if ([self.selectedIndexs containsObject:indexPath]) {
-                    
-                    node.likeNode.selected = YES;
-                } else {
-                    
-                    node.likeNode.selected = NO;
-
-                }
-                
                 return node;
             };
+            
             return cellNodeBlock;
         }
             break;
@@ -656,7 +704,7 @@
         case 1:
         {
             
-            header.titleLabel.text = @"新晋演员";
+            header.titleLabel.text = @"新晋尤物";
             
         }
             break;
@@ -667,6 +715,15 @@
             
         }
             break;
+            
+        case 3:
+        {
+            
+            header.titleLabel.text = @"最热尤物";
+            
+        }
+            break;
+            
         default:
             break;
     }
@@ -798,6 +855,7 @@
     self.netHotVC = [[XFNetHotViewController alloc] init];
     self.netHotVC.view.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
     self.netHotVC.type = XFNetHotVCTypeYW;
+    self.netHotVC.datas = self.ywData;
     [self addChildViewController:self.netHotVC];
     
     [self.scrollView addSubview:self.netHotVC.view];
@@ -805,14 +863,15 @@
     self.actorVC = [[XFNetHotViewController alloc] init];
     self.actorVC.view.frame = CGRectMake(kScreenWidth, 0, kScreenWidth, kScreenHeight - 64 - 49);
     self.actorVC.type = XFNetHotVCTypeWh;
-
+    self.actorVC.datas = self.whData;
     [self addChildViewController:self.actorVC];
     
     [self.scrollView addSubview:self.actorVC.view];
     
     self.videoVC = [[XFVideoViewController alloc] init];
     self.videoVC.view.frame = CGRectMake(kScreenWidth * 2, 0, kScreenWidth, kScreenHeight - 64 - 49);
-
+    self.videoVC.hightVides = self.videoData[0];
+    self.videoVC.vrVideos = self.videoData[1];
     __weak typeof(self) weakSelf = self;
     self.videoVC.selectedCellBlock = ^{
       
@@ -830,7 +889,7 @@
     [self addChildViewController:self.videoVC];
     [self.scrollView addSubview:self.videoVC.view];
     
-
+    self.scrollView.hidden = YES;
 }
 
 
@@ -903,33 +962,6 @@
     }];
     
     [super updateViewConstraints];
-}
-
-- (void)remakeButtons {
-    
-//    [self.yyButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.center.mas_offset(0);
-//        make.top.bottom.mas_offset(0);
-//        make.width.mas_equalTo(60);
-//
-//    }];
-//
-//    [self.whButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.left.top.bottom.mas_offset(0);
-//        make.width.mas_equalTo(60);
-//        make.right.mas_equalTo(self.yyButton.mas_left);
-//    }];
-//
-//    [self.spButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.left.mas_equalTo(self.yyButton.mas_right);
-//        make.width.mas_equalTo(60);
-//        make.right.mas_offset(0);
-//        make.top.bottom.mas_offset(0);
-//
-//    }];
 }
 
 

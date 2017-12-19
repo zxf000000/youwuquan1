@@ -15,4 +15,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
 
+@property (nonatomic,copy) void(^clickAcceptButtonBlock)(void);
+
+@property (nonatomic,copy) void(^clickDenyButtonBlock)(void);
+
 @end

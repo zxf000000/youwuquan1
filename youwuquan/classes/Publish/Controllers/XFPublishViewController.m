@@ -11,18 +11,19 @@
 #import "XFPublishVCTransation.h"
 #import "XFPreviewViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
-#if SDK_VERSION == SDK_VERSION_BASE
-#import <AliyunVideoSDK/AliyunVideoSDK.h>
-#else
-#import "AliyunMediator.h"
-#import "AliyunMediaConfig.h"
-#import "AliyunVideoBase.h"
-#import "AliyunVideoUIConfig.h"
-#import "AliyunVideoCropParam.h"
-#endif
+#import <Photos/Photos.h>
+//#if SDK_VERSION == SDK_VERSION_BASE
+//#import <AliyunVideoSDK/AliyunVideoSDK.h>
+//#else
+//#import "AliyunMediator.h"
+//#import "AliyunMediaConfig.h"
+//#import "AliyunVideoBase.h"
+//#import "AliyunVideoUIConfig.h"
+//#import "AliyunVideoCropParam.h"
+//#endif
 
 
-@interface XFPublishViewController () <UINavigationControllerDelegate,AliyunVideoBaseDelegate>
+@interface XFPublishViewController () <UINavigationControllerDelegate>
 
 @property (nonatomic,weak) UIButton *cancelButton;
 
@@ -44,41 +45,33 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     [self setupViews];
-    
-    
-    
-    AliyunVideoUIConfig *config = [[AliyunVideoUIConfig alloc] init];
-    
-    config.backgroundColor = UIColorHex(707070);
-    config.timelineBackgroundCollor = [UIColor yellowColor];
-    config.timelineDeleteColor = [UIColor redColor];
-    config.timelineTintColor = [UIColor redColor];
-    config.durationLabelTextColor = [UIColor redColor];
-    config.cutTopLineColor = [UIColor redColor];
-    config.cutBottomLineColor = [UIColor redColor];
-    config.noneFilterText = @"无滤镜";
-    config.hiddenDurationLabel = NO;
-    config.hiddenFlashButton = NO;
-    config.hiddenBeautyButton = NO;
-    config.hiddenCameraButton = NO;
-    config.hiddenImportButton = NO;
-    config.hiddenDeleteButton = NO;
-    config.hiddenFinishButton = NO;
-    config.recordOnePart = NO;
-    config.filterArray = @[@"炽黄",@"粉桃",@"海蓝",@"红润",@"灰白",@"经典",@"麦茶",@"浓烈",@"柔柔",@"闪耀",@"鲜果",@"雪梨",@"阳光",@"优雅",@"朝阳"];
-    config.imageBundleName = @"QPSDK";
-    config.filterBundleName = @"FilterResource";
-    config.recordType = AliyunVideoRecordTypeCombination;
-    config.showCameraButton = YES;
-    
-    [[AliyunVideoBase shared] registerWithAliyunIConfig:config];
-    
 
 //    AliyunVideoUIConfig *config = [[AliyunVideoUIConfig alloc] init];
+//
+//    config.backgroundColor = [UIColor clearColor];
+//    config.timelineBackgroundCollor = kBlueColor;
 //    config.timelineDeleteColor = [UIColor redColor];
+//    config.timelineTintColor = [UIColor redColor];
+//    config.durationLabelTextColor = [UIColor redColor];
+//    config.cutTopLineColor = [UIColor redColor];
+//    config.cutBottomLineColor = [UIColor redColor];
+//    config.noneFilterText = @"无滤镜";
+//    config.hiddenDurationLabel = NO;
 //    config.hiddenFlashButton = NO;
-//    config.imageBundleName = @"image";
+//    config.hiddenBeautyButton = NO;
+//    config.hiddenCameraButton = NO;
+//    config.hiddenImportButton = YES;
+//    config.hiddenDeleteButton = NO;
+//    config.hiddenFinishButton = NO;
+//    config.recordOnePart = NO;
+//    config.filterArray = @[@"炽黄",@"粉桃",@"海蓝",@"红润",@"灰白",@"经典",@"麦茶",@"浓烈",@"柔柔",@"闪耀",@"鲜果",@"雪梨",@"阳光",@"优雅",@"朝阳"];
+//    config.imageBundleName = @"QPSDK";
+//    config.filterBundleName = @"Resource";
+//    config.recordType = AliyunVideoRecordTypeHold;
+//    config.showCameraButton = YES;
+//
 //    [[AliyunVideoBase shared] registerWithAliyunIConfig:config];
+
 }
 
 - (nullable id <UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController
@@ -144,7 +137,9 @@
             case 3004:
             {
                 // 小视频
-                [self pushOutPreviewVC];
+//                [self pushOutPreviewVC];
+                [self pushOutAddImgVC];
+
             }
                 break;
             default:
@@ -157,25 +152,87 @@
 
 - (void)pushOutPreviewVC {
     
-    AliyunVideoRecordParam *quVideo = [[AliyunVideoRecordParam alloc] init];
-    quVideo.ratio = AliyunVideoVideoRatio3To4;
-    quVideo.size = AliyunVideoVideoSize540P;
-    quVideo.minDuration = 2;
-    quVideo.maxDuration = 30;
-    quVideo.position = AliyunCameraPositionFront;
-    quVideo.beautifyStatus = YES;
-    quVideo.beautifyValue = 100;
-    quVideo.torchMode = AliyunCameraTorchModeOff;
-    quVideo.outputPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/record_save.mp4"];
+    // 请求用户授权
     
-    UIViewController *recordViewController = [[AliyunVideoBase shared] createRecordViewControllerWithRecordParam:(AliyunVideoRecordParam*)quVideo];
-    [AliyunVideoBase shared].delegate = (id)self;
-    [self.navigationController pushViewController:recordViewController animated:YES];
+    switch (PHPhotoLibrary.authorizationStatus) {
+           /*
+            PHAuthorizationStatusNotDetermined = 0, // User has not yet made a choice with regards to this application
+            PHAuthorizationStatusRestricted,        // This application is not authorized to access photo data.
+            // The user cannot change this application’s status, possibly due to active restrictions
+            //   such as parental controls being in place.
+            PHAuthorizationStatusDenied,            // User has explicitly denied this application access to photos data.
+            PHAuthorizationStatusAuthorized
+            */
+            
+        case PHAuthorizationStatusNotDetermined:
+        {
+            // 请求授权
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                
+                if (status == AVQueuedSampleBufferRenderingStatusRendering) {
+                    
+                    // 成功
+                } else {
+                    
+//                    UIAlertController *alert = [UIAlertController xfalertControllerWithMsg:@"请进入 设置 -> 隐私 -> 相册 开启相册使用权限" doneBlock:^{
+//
+//
+//                        return;
+//                    }];
+//
+//                    [self presentViewController:alert animated:YES completion:nil];
+                }
+                
+            }];
+        }
+            break;
+        case PHAuthorizationStatusRestricted:
+        {
+            
+        }
+            break;
+        case PHAuthorizationStatusDenied:
+        {
+            UIAlertController *alert = [UIAlertController xfalertControllerWithMsg:@"请进入 设置 -> 隐私 -> 相册 开启相册使用权限" doneBlock:^{
+               
+                
+                return;
+            }];
+            
+            [self presentViewController:alert animated:YES completion:nil];
+            
+        }
+            break;
+        case PHAuthorizationStatusAuthorized:
+        {
+            // 可以使用
+        }
+            break;
+            
+            
+    }
     
-    //获取到状态栏
-    UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
-    //设置透明度为0
-    statusBar.alpha = 0;
+    
+//    AliyunVideoRecordParam *quVideo = [[AliyunVideoRecordParam alloc] init];
+//    quVideo.ratio = AliyunVideoVideoRatio9To16;
+//    quVideo.size = AliyunVideoVideoSize540P;
+//    quVideo.minDuration = 2;
+//    quVideo.maxDuration = 30;
+//    quVideo.position = AliyunCameraPositionFront;
+//    quVideo.beautifyStatus = YES;
+//    quVideo.beautifyValue = 100;
+//    quVideo.torchMode = AliyunCameraTorchModeOff;
+//    quVideo.outputPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/record_save.mp4"];
+//
+//    UIViewController *recordViewController = [[AliyunVideoBase shared] createRecordViewControllerWithRecordParam:(AliyunVideoRecordParam*)quVideo];
+//    [AliyunVideoBase shared].delegate = (id)self;
+//    recordViewController.view.backgroundColor = [UIColor whiteColor];
+//    [self.navigationController pushViewController:recordViewController animated:YES];
+//
+//    //获取到状态栏
+//    UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
+//    //设置透明度为0
+//    statusBar.alpha = 0;
     
 }
 
@@ -193,16 +250,73 @@
 
     }];
     
+    [self showStatusbar];
+
+    
+}
+
+- (void)showStatusbar {
+    
     [UIView animateWithDuration:0.2 animations:^{
-        
         //获取到状态栏
         UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
         //设置透明度为0
         statusBar.alpha = 1;
     }];
-
-    
 }
+
+
+//- (void)videoBase:(AliyunVideoBase *)base recordCompeleteWithRecordViewController:(UIViewController *)recordVC videoPath:(NSString *)videoPath {
+//
+//
+//    // 保存到相册
+//    PHPhotoLibrary *library = [PHPhotoLibrary sharedPhotoLibrary];
+//
+//    [library performChanges:^{
+//        // 根据路径创建一个资源-- 直接保存到相册
+//        [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:[NSURL URLWithString:videoPath]];
+//
+//
+//    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+//
+//        // 保存到相册失败
+//    }];
+//
+//    // 截图
+//    XFAddImageViewController *addImgVC = [[XFAddImageViewController alloc] init];
+//    addImgVC.videoImage = [XFToolManager getImage:videoPath];
+//    addImgVC.videoPath = videoPath;
+//    addImgVC.type = XFAddImgVCTypeVideo;
+//
+//    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"视频是否加密" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
+//    UIAlertAction *actionYES = [UIAlertAction actionWithTitle:@"私密" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+//
+//        addImgVC.isOpenVideo = NO;
+//        [self.navigationController pushViewController:addImgVC animated:YES];
+//
+//        [self showStatusbar];
+//    }];
+//
+//    UIAlertAction *actionNo = [UIAlertAction actionWithTitle:@"公开" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+//
+//        addImgVC.isOpenVideo = YES;
+//
+//        [self.navigationController pushViewController:addImgVC animated:YES];
+//
+//        [self showStatusbar];
+//
+//    }];
+//
+//    // 跳转到发布
+//
+//    [alertController addAction:actionYES];
+//    [alertController addAction:actionNo];
+//
+//    [self presentViewController:alertController animated:YES completion:nil];
+//
+//
+//
+//}
 
 - (void)pushOutAddImgVC {
     

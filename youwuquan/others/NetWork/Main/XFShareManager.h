@@ -12,6 +12,10 @@
 
 + (UIImage *)sharedImageWithBg:(NSString *)bgImg icon:(NSString *)icon name:(NSString *)name userid:(NSString *)userid address:(NSString *)address;
 
-+ (UIImage *)sharedUrl:(NSString *)urlStr;
++ (UIImage *)sharedUrlImageWithBg:(NSString *)bgImg icon:(UIImage *)icon url:(NSString *)url;
+
++ (UIImage *)sharedUrl:(NSString *)urlStr image:(UIImage *)pic title:(NSString *)title detail:(NSString *)detail;
+
++ (void)shareImageWith:(UIImage *)image;
 
 @end

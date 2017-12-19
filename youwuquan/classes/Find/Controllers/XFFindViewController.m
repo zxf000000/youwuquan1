@@ -23,6 +23,7 @@
 @interface XFFindViewController ()<UITableViewDelegate, UITableViewDataSource, WBStatusCellDelegate,XFFindCelldelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
+
 @property (nonatomic, strong) NSMutableArray *layouts;
 
 @property (nonatomic,copy) NSArray *models;

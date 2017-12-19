@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -40,21 +40,21 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_pic8" translatesAutoresizingMaskIntoConstraints="NO" id="N6z-ew-LYX">
-                                <rect key="frame" x="10" y="200" width="40" height="40"/>
+                                <rect key="frame" x="10" y="210" width="30" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="sPr-Cm-PGG"/>
-                                    <constraint firstAttribute="width" constant="40" id="yZ8-9N-wOD"/>
+                                    <constraint firstAttribute="height" constant="30" id="sPr-Cm-PGG"/>
+                                    <constraint firstAttribute="width" constant="30" id="yZ8-9N-wOD"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="莫小米" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mLu-Le-W74" customClass="XFInsertLabel">
-                                <rect key="frame" x="56" y="212" width="43" height="17"/>
+                                <rect key="frame" x="46" y="218.5" width="37" height="14.5"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.10000000000000001" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eyC-bW-YAN">
-                                <rect key="frame" x="377.5" y="211" width="20" height="18"/>
+                                <rect key="frame" x="377.5" y="216" width="20" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <state key="normal" image="home_like">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -65,7 +65,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="520" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e5c-Uq-cuB">
-                                <rect key="frame" x="407.5" y="211.5" width="25.5" height="17"/>
+                                <rect key="frame" x="407.5" y="216.5" width="25.5" height="17"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -116,16 +116,17 @@
                 <outlet property="iconVIew" destination="N6z-ew-LYX" id="iaF-5Q-qNz"/>
                 <outlet property="likeButton" destination="eyC-bW-YAN" id="b51-n2-xZG"/>
                 <outlet property="nameLabel" destination="mLu-Le-W74" id="Q0u-lS-d8c"/>
+                <outlet property="numberLabel" destination="e5c-Uq-cuB" id="gon-m8-g3F"/>
                 <outlet property="picView" destination="N88-Ns-gJM" id="yfJ-6B-Tlg"/>
             </connections>
-            <point key="canvasLocation" x="102" y="11"/>
+            <point key="canvasLocation" x="-71" y="26"/>
         </tableViewCell>
     </objects>
     <resources>
         <image name="home_like" width="20" height="18"/>
         <image name="home_liked" width="20" height="18"/>
         <image name="home_pic8" width="87" height="87"/>
-        <image name="overlay-zise" width="375" height="65"/>
+        <image name="overlay-zise" width="375" height="52"/>
         <image name="video_pic2" width="365" height="200"/>
         <image name="video_play" width="50" height="50"/>
     </resources>

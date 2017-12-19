@@ -17,6 +17,7 @@
 #import "XFShareManager.h"
 #import "XFChatViewController.h"
 #import "XFStatusDetailViewController.h"
+#import "XFFIndCacheManager.h"
 
 
 #define kHeaderHeight kScreenWidth
@@ -45,6 +46,8 @@
 
 @property (nonatomic,strong) NSIndexPath   *openIndexpath;
 
+@property (nonatomic,copy) NSArray *datas;
+
 @end
 
 @implementation XFFindDetailViewController
@@ -53,6 +56,9 @@
     [super viewDidLoad];
     self.title = @"小妹同学";
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    self.datas = [XFFIndCacheManager sharedManager].findData;
+
     
     [self setupNavigationBar];
 
@@ -68,6 +74,15 @@
         self.tableNode.view.estimatedSectionFooterHeight = 0;
     }
 
+}
+
+- (void)viewWillLayoutSubviews {
+    
+    [super viewWillLayoutSubviews];
+    
+    
+    [self.tableNode reloadData];
+    
 }
 
 #pragma mark - cellNodeDelegate点赞
@@ -287,7 +302,7 @@
                 }
                 
                 
-                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail pics:mutableArr open:isOpen];
+                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail pics:mutableArr open:isOpen model:self.datas[indexPath.row]];
                 
                 node.index = indexPath;
                 
@@ -488,6 +503,8 @@
 - (void)clickChatButton {
     
     XFChatViewController *chatVC = [[XFChatViewController alloc] initWithConversationType:(ConversationType_PRIVATE) targetId:@"13640886496"];
+    
+    chatVC.title = @"小美同学";
     
     [self.navigationController pushViewController:chatVC animated:YES];
 }

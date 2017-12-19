@@ -14,13 +14,15 @@
 
 @implementation XFHomeTableNode
 
-- (instancetype)init {
+- (instancetype)initWithModel:(XFHomeDataModel *)model {
     
     if (self = [super init]) {
         
+        _model = model;
+        
         _picNode = [[ASNetworkImageNode alloc] init];
         
-        [_picNode setDefaultImage:[UIImage imageNamed:@"zhanweitu22"]];
+        [_picNode setDefaultImage:[UIImage imageNamed:_model.userPic]];
         _picNode.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubnode:_picNode];
         
@@ -32,7 +34,27 @@
         
         _iconNode = [[ASNetworkImageNode alloc] init];
         
-        [_iconNode setDefaultImage:[UIImage imageNamed:kRandomIcon]];
+        [_iconNode setDefaultImage:[UIImage imageNamed:_model.userIcon]];
+        
+        _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
+            
+            UIGraphicsBeginImageContext(image.size);
+            
+            UIBezierPath *path = [UIBezierPath
+                                  bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height)
+                                  cornerRadius:MIN(image.size.width,image.size.height)/2];
+            
+            [path addClip];
+            
+            [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+            
+            UIImage *refinedImg = UIGraphicsGetImageFromCurrentImageContext();
+            
+            UIGraphicsEndImageContext();
+            
+            return refinedImg;
+            
+        };
         
         [self addSubnode:_iconNode];
         
@@ -40,9 +62,11 @@
         
         [_likeNode setImage:[UIImage imageNamed:@"home_like"] forState:(UIControlStateNormal)];
         [_likeNode setImage:[UIImage imageNamed:@"home_liked"] forState:(UIControlStateSelected)];
-        [_likeNode setTitle:@"520" withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+        [_likeNode setTitle:_model.likeNumer withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
         
         [_likeNode addTarget:self action:@selector(clickLikeNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        
+        _likeNode.selected = [_model.isLiked intValue] == 0 ? NO : YES;
         
         [self addSubnode:_likeNode];
         
@@ -53,7 +77,7 @@
         paragraphStyle.alignment = NSTextAlignmentCenter;
         
         
-        NSMutableAttributedString *priceStr =[[NSMutableAttributedString alloc] initWithString:@"200元起"];
+        NSMutableAttributedString *priceStr =[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@元起",_model.price]];
         
         priceStr.attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:11],
                                 
@@ -100,7 +124,7 @@
         nameStyle.alignment = NSTextAlignmentCenter;
         
         
-        NSMutableAttributedString *nameStr =[[NSMutableAttributedString alloc] initWithString:kRandomName];
+        NSMutableAttributedString *nameStr =[[NSMutableAttributedString alloc] initWithString:_model.userName];
         
         nameStr.attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:11],
                                 

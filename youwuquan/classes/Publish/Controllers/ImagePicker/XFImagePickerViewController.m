@@ -73,7 +73,6 @@
         
         [self.delegate XFImagePicker:self didSelectedImagesWith:self.selectedImages];
         
-        
         [self.navigationController popViewControllerAnimated:YES];
 
     }

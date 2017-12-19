@@ -75,6 +75,9 @@
  */
 - (void)clickLoginButton {
     
+    [self.view endEditing:YES];
+
+    
     [self.navigationController popViewControllerAnimated:YES];
     
 }
@@ -83,6 +86,8 @@
 // 点击注册
 - (void)clickRegistButton {
     
+    [self.view endEditing:YES];
+
 //    // 完善信息界面
 //    XFRegistInfoViewController *infoVC = [[UIStoryboard storyboardWithName:@"Login" bundle:nil] instantiateViewControllerWithIdentifier:@"XFRegistInfoViewController"];
 //
@@ -178,6 +183,8 @@
  */
 
 - (void)clickCodeButton:(UIButton *)sender {
+    
+    [self.view endEditing:YES];
     
     if (![self.phoneTextField.text isPhoneNumber]) {
 

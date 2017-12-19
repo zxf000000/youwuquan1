@@ -85,7 +85,7 @@
     self.title = @"交易记录";
     self.tableNode = [[ASTableNode alloc] init];
     self.tableNode.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
-    
+
     [self.view addSubnode:self.tableNode];
     self.tableNode.delegate = self;
     self.tableNode.dataSource = self;
@@ -102,8 +102,7 @@
     return ^ASCellNode *() {
         
         XFtxCellNode *node = [[XFtxCellNode alloc] init];
-        
-        
+
         return node;
     };
     

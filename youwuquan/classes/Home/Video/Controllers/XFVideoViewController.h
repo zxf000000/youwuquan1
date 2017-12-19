@@ -11,9 +11,11 @@
 
 @interface XFVideoViewController : UIViewController
 
-@property (nonatomic,copy) void(^selectedCellBlock)();
+@property (nonatomic,copy) void(^selectedCellBlock)(void);
 
 @property (nonatomic,assign) XFVideoVCType videoType;
 
+@property (nonatomic,copy) NSArray *hightVides;
+@property (nonatomic,copy) NSArray *vrVideos;
 
 @end

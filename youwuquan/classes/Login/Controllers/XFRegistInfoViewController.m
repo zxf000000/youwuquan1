@@ -75,6 +75,8 @@
 }
 - (IBAction)clickSexButton:(UIButton *)sender {
     
+    
+    
     if (sender == self.manButton) {
         
         self.manButton.selected = YES;
@@ -90,6 +92,8 @@
 }
 - (IBAction)clickNextStepButton:(id)sender {
     
+    [self.view endEditing:YES];
+
     
     if (![self.nickTextField.text isHasContent]) {
         

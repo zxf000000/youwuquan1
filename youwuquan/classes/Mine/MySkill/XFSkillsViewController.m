@@ -42,6 +42,18 @@
     
     [XFUserInfoNetWorkManager getAllSkillsWithSuccessBlock:^(NSDictionary *responseDic) {
         
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            if (!responseDic) {
+                
+                [self.navigationController popViewControllerAnimated:YES];
+                [HUD hideAnimated:YES];
+                
+            }
+            
+        });
+        
         if (responseDic) {
             
             NSArray *datas = responseDic[@"data"][0];
@@ -60,7 +72,6 @@
                 if (responseDic) {
                     
                  // 刷新信息
-                    
                     NSArray *selectedS = responseDic[@"data"][0];
                     
                     NSMutableArray *selectedSkill = [NSMutableArray array];
@@ -69,6 +80,7 @@
                         
                         [selectedSkill addObject:[XFSkillModel modelWithDictionary:selectedS[i]]];
                         [selectedIds addObject:selectedS[i][@"skillNo"]];
+                        
                     }
                     
                     self.skillNames = selectedIds.copy;
@@ -199,15 +211,7 @@
 - (NSArray *)skills {
     
     if (_skills == nil) {
-//
-//        _skills = @[[[XFSkillModel alloc] initWithIcon:@"yuepai" name:@"约拍" status:1],
-//                    [[XFSkillModel alloc] initWithIcon:@"kge" name:@"K歌" status:1],
-//                    [[XFSkillModel alloc] initWithIcon:@"meishi" name:@"吃美食" status:0],
-//                    [[XFSkillModel alloc] initWithIcon:@"heyibei" name:@"喝一杯" status:0],
-//                    [[XFSkillModel alloc] initWithIcon:@"kandianying" name:@"看电影" status:1],
-//                    [[XFSkillModel alloc] initWithIcon:@"xiawucha" name:@"下午茶" status:0],
-//                    [[XFSkillModel alloc] initWithIcon:@"yingchou" name:@"应酬饭局" status:0],
-//                    [[XFSkillModel alloc] initWithIcon:@"dayouxi" name:@"打游戏" status:0]];
+        
         _skills = [NSArray array];
     }
     return _skills;

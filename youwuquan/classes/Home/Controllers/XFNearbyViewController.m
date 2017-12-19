@@ -14,6 +14,8 @@
 
 @property (nonatomic,strong) UICollectionView *collectionView;
 
+@property (nonatomic,strong) UIImage *nearImg;
+
 @end
 
 @implementation XFNearbyViewController
@@ -30,6 +32,8 @@
         self.title = @"相关用户";
 
     }
+    
+    self.nearImg = [UIImage imageNamed:@"find12"];
     
     [self setupNavigationBar];
     
@@ -65,15 +69,20 @@
     
     UIAlertAction *actionBoy = [UIAlertAction actionWithTitle:@"只看男神" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
         
-        
+        self.nearImg = [UIImage imageNamed:@"find13"];
+        [self.collectionView reloadData];
     }];
     UIAlertAction *actionGirl = [UIAlertAction actionWithTitle:@"只看女神" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
         
-        
+        self.nearImg = [UIImage imageNamed:@"find7"];
+        [self.collectionView reloadData];
+
     }];
     UIAlertAction *actionAll = [UIAlertAction actionWithTitle:@"查看所有" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
         
-        
+        self.nearImg = [UIImage imageNamed:@"find21"];
+        [self.collectionView reloadData];
+
     }];
     UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
         
@@ -138,6 +147,8 @@
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     XFNearbyTableViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFNearbyTableViewCell" forIndexPath:indexPath];
+    
+    cell.picView.image = self.nearImg;
     
     return cell;
     

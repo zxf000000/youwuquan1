@@ -10,14 +10,16 @@
 
 @implementation XFStatusCommentCellNode
 
-- (instancetype)init {
+- (instancetype)initWithMode:(XFCommentModel *)model {
     
     if (self = [super init]) {
+        
+        _model = model;
         
         _iconNode = [ASNetworkImageNode new];
 //        _iconNode.delegate = self;
         _iconNode.defaultImage = [UIImage imageNamed:kRandomIcon];
-        
+        _iconNode.URL = [NSURL URLWithString:_model.headUrl];
         _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
             
             UIGraphicsBeginImageContext(image.size);
@@ -42,7 +44,7 @@
         
         _nameNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:kRandomName];
+        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:_model.userNike == nil? @"小魂淡":_model.userNike];
         
         str.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:15.0],
@@ -56,7 +58,7 @@
         
         _timeNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *timeStr = [[NSMutableAttributedString  alloc] initWithString:@"2017-09-19 14:20"];
+        NSMutableAttributedString *timeStr = [[NSMutableAttributedString  alloc] initWithString:_model.createTime== nil? @"小魂淡":_model.createTime];
         
         timeStr.attributes = @{
                                NSFontAttributeName : [UIFont systemFontOfSize:11],
@@ -70,7 +72,7 @@
         
         _commentNode = [[ASTextNode alloc] init];
 
-        NSMutableAttributedString *comment = [[NSMutableAttributedString  alloc] initWithString:kRandomPl];
+        NSMutableAttributedString *comment = [[NSMutableAttributedString  alloc] initWithString:_model.message== nil? @"小魂淡":_model.message];
         NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
         
         paraStyle.lineSpacing = 5;
@@ -98,7 +100,6 @@
     }
     return self;
 }
-
 
 - (void)clickCommentNode {
 

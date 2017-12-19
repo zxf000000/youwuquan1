@@ -10,6 +10,7 @@
 #import "XFMyStatusViewController.h"
 #import "XFUserInfoNetWorkManager.h"
 #import "XFWallImagePickerViewController.h"
+#import "XFmyPhotoModel.h"
 @implementation XFOpenPhotoCell
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -30,6 +31,14 @@
         [self setNeedsUpdateConstraints];
     }
     return self;
+}
+
+- (void)setModel:(XFmyPhotoModel *)model {
+    
+    _model = model;
+    
+    [self.picView setImageWithURL:_model.breviaryUrl options:(YYWebImageOptionSetImageWithFadeAnimation)];
+    
 }
 
 - (void)updateConstraints {
@@ -54,6 +63,8 @@
 @interface XFOpenPhotoViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFWallImagePickerDelegate>
 
 @property (nonatomic,strong) UICollectionView *collectionView;
+
+@property (nonatomic,copy) NSArray *photos;
 
 @end
 
@@ -84,7 +95,22 @@
         if (responseDic) {
             
             // :TODO 接口问题
+            NSArray *datas = responseDic[@"data"];
             
+            NSMutableArray *arr = [NSMutableArray array];
+            
+            for (NSInteger i = 0 ; i < datas.count ; i ++) {
+                
+                NSDictionary *info = datas[i];
+                XFmyPhotoModel *model = [XFmyPhotoModel modelWithDictionary:info];
+                XFStatusModel *status = [XFStatusModel modelWithDictionary:info[@"release"]];
+                model.status = status;
+                [arr addObject:model];
+            }
+            
+            self.photos = arr.copy;
+            
+            [self.collectionView reloadData];
         }
         
     } failedBlock:^(NSError *error) {
@@ -139,15 +165,18 @@
         return;
     }
     
+    XFmyPhotoModel *model = self.photos[indexPath.item];
+    
     XFMyStatusViewController *statusVC = [[XFMyStatusViewController alloc] init];
     statusVC.type = XFMyStatuVCTypeMine;
+    statusVC.model = model.status;
     [self.navigationController pushViewController:statusVC animated:YES];
     
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return 20;
+    return self.photos.count;
     
 }
 
@@ -155,7 +184,9 @@
     
     XFOpenPhotoCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFOpenPhotoCell" forIndexPath:indexPath];
     
-    cell.picView.image = [UIImage imageNamed:kRandomPhoto];
+//    cell.picView.image = [UIImage imageNamed:kRandomPhoto];
+    
+    cell.model = self.photos[indexPath.item];
     
     return cell;
     

@@ -19,5 +19,6 @@ typedef NS_ENUM(NSInteger,XFNetHotVCType) {
 
 @property (nonatomic,assign) XFNetHotVCType type;
 
+@property (nonatomic,copy) NSArray *datas;
 
 @end

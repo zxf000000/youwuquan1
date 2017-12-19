@@ -14,6 +14,8 @@
 #import "XFImagePickerViewController.h"
 #import "XFSelectLabelViewController.h"
 #import "XFStatusNetworkManager.h"
+#import <MobileCoreServices/MobileCoreServices.h>
+
 
 #define kImgInset 12
 #define kImgPadding 2
@@ -21,7 +23,7 @@
 #define KImgBottom 15
 
 
-@interface XFAddImageViewController () <UITextViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,XFImagePickerDelegate,XFSelectTagVCDelegate,XFpublishCollectionCellDelegate>
+@interface XFAddImageViewController () <UITextViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,XFImagePickerDelegate,XFSelectTagVCDelegate,XFpublishCollectionCellDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @property (nonatomic,strong) UIButton *publishButton;
 
@@ -83,7 +85,16 @@
     [self setupScrolLView];
     [self setupOtherView];
     
+    
     [self.view setNeedsUpdateConstraints];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    
 }
 
 //- (void)viewDidLayoutSubviews {
@@ -107,7 +118,7 @@
         
         if (self.secintentionImages.count > 0 && [self.diamondTextField.text integerValue] <= 0) {
             
-            [XFToolManager showProgressInWindowWithString:@"轻为私密相册设置解锁金额"];
+            [XFToolManager showProgressInWindowWithString:@"请为私密相册设置解锁金额"];
             
             return;
         }
@@ -119,13 +130,15 @@
             
         }
         
-        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在发布"];
-        
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        HUD.mode = MBProgressHUDModeAnnularDeterminate;
+        HUD.progress = 0;
         NSString *type;
         
         if ((self.openintentionImages.count + self.secintentionImages.count) > 0) {
             
             type =  @"2";
+            
         } else {
             
             type =  @"1";
@@ -140,33 +153,51 @@
 
             if (reponseDic) {
                 
-//                [XFToolManager changeHUD:HUD successWithText:@"发布成功"];
-                [XFToolManager showProgressInWindowWithString:@"发布成功"];
-                
+                [XFToolManager changeHUD:HUD successWithText:@"发布成功"];
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                     
                     [self dismissViewControllerAnimated:YES completion:^{
-                        
                         // 刷新动态页面通知
                         [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
-                        
                         
                     }];
                 });
 
-                
             }
-            
-            
+        
         } failedBlock:^(NSError *error) {
             
             [HUD hideAnimated:YES];
+            
+        } progress:^(CGFloat progress) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                HUD.progress = progress;
+                
+            });
             
         }];
         
     } else {
         
         // 上传视频
+        
+        
+        
+        
+        // 上传成功之后要删除本地数据
+        NSFileManager *fileMgr = [NSFileManager defaultManager];
+        NSError *err;
+        [fileMgr createDirectoryAtPath:self.videoPath withIntermediateDirectories:YES attributes:nil error:&err];
+        BOOL bRet = [fileMgr fileExistsAtPath:self.videoPath];
+        if (bRet) {
+            //
+            NSError *err;
+            [fileMgr removeItemAtPath:self.videoPath error:&err];
+        }
+    
+        
     }
     
 }
@@ -367,23 +398,38 @@
 #pragma mark - 图片选择collectionViewCellDelegate
 - (void)publishCollectionCell:(XFPublishAddImageViewCollectionViewCell *)cell didClickDeleteButtonWithIndexPath:(NSIndexPath *)indexPath {
     
-    if([self.openView.visibleCells containsObject:cell]) {
+    if (self.type == XFAddImgVCTypeVideo) {
         
-        // 公开的
-        [self.openintentionImages removeObjectAtIndex:indexPath.item];
+        self.videoImage = nil;
+        self.videoPath = nil;
+        [self.secretView reloadData];
         [self.openView reloadData];
-        
+
     } else {
         
-        // 私密的
-        [self.secintentionImages removeObjectAtIndex:indexPath.item];
-        [self.secretView reloadData];
+        if([self.openView.visibleCells containsObject:cell]) {
+            
+            // 公开的
+            [self.openintentionImages removeObjectAtIndex:indexPath.item];
+            [self.openView reloadData];
+            
+        } else {
+            
+            // 私密的
+            [self.secintentionImages removeObjectAtIndex:indexPath.item];
+            [self.secretView reloadData];
+            
+        }
         
     }
+    
+    
+
 
     [self reloadImageViewHeight];
     
 }
+#pragma mark - collectionViewDelegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -401,7 +447,69 @@
         
         [self.navigationController pushViewController:selectLabelVC animated:YES];
         
-    } else if (collectionView == self.openView) {
+        return;
+    } else {
+        
+        // 如果有视频,直接选择视频
+        
+        
+        // 如果有图片,直接选择图片
+        
+        // 选择图片还是视频
+        
+        if (self.videoImage == nil && self.openintentionImages.count == 0 && self.secintentionImages.count == 0) {
+            
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:(UIAlertControllerStyleActionSheet)];
+
+            UIAlertAction *actionPhoto = [UIAlertAction actionWithTitle:@"图片" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+                
+                self.type = XFAddImgVCTypeImg;
+                
+                // 图片选择
+                [self selectImageForCollectionView:collectionView];
+
+                
+            }];
+            
+            UIAlertAction *actionVideo = [UIAlertAction actionWithTitle:@"视频" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+                
+                self.type = XFAddImgVCTypeVideo;
+                // 视频选择
+                [self selectVideoForCollectionView:collectionView];
+                
+                
+            }];
+            
+            UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+                
+                
+            }];
+            
+            [alert addAction:actionPhoto];
+            [alert addAction:actionVideo];
+            [alert addAction:actionCancel];
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+        
+    }
+    
+    if (self.type == XFAddImgVCTypeVideo) {
+        
+        [self selectVideoForCollectionView:collectionView];
+        
+    } else {
+    
+        [self selectImageForCollectionView:collectionView];
+    }
+    
+ 
+    
+}
+
+- (void)selectImageForCollectionView:(UICollectionView *)collectionView {
+    
+    if (collectionView == self.openView) {
+        
         
         XFImagePickerViewController *imagePicker = [[XFImagePickerViewController alloc] init];
         
@@ -412,21 +520,70 @@
         imagePicker.selectedNumber = self.openintentionImages.count + self.secintentionImages.count;
         
         [self.navigationController pushViewController:imagePicker animated:YES];
-    
+        
     } else if (collectionView == self.secretView) {
         
         XFImagePickerViewController *imagePicker = [[XFImagePickerViewController alloc] init];
         
         imagePicker.delegate = self;
-
+        
         self.isOpenImage = NO;
         imagePicker.selectedNumber = self.openintentionImages.count + self.secintentionImages.count;
-
+        
         [self.navigationController pushViewController:imagePicker animated:YES];
+        
+    }
+}
+
+- (void)selectVideoForCollectionView:(UICollectionView *)collectionView {
+ 
+    
+    if (collectionView == self.openView) {
+
+        self.isOpenVideo = YES;
+    } else if (collectionView == self.secretView) {
+        
+        self.isOpenVideo = NO;
+
+        
+    }
+    
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.delegate = self;
+    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+    picker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeMovie, nil];
+    [self presentViewController:picker animated:YES completion:nil];
+    
+    
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
+    
+    if (![info objectForKey:UIImagePickerControllerMediaURL]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请选择视频"];
+        
+        return;
+        
+    } else {
+        
+        [picker dismissViewControllerAnimated:YES completion:^{
+           
+            NSURL *url = [info objectForKey:UIImagePickerControllerMediaURL];
+            
+            _videoPath = [url absoluteString];
+            
+            self.videoImage = [XFToolManager getImage:_videoPath];
+            
+            [self.secretView reloadData];
+            [self.openView reloadData];
+            
+        }];
         
     }
     
 }
+
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
     return 1;
@@ -446,24 +603,57 @@
         }
     } else if (collectionView == self.openView) {
         
-        if (self.openintentionImages.count == 9) {
+        // 判断是视频还是图片
+        if (self.type == XFAddImgVCTypeVideo) {
             
-            return self.openintentionImages.count;
+            if (self.isOpenVideo) {
+                
+                return self.videoImage ? 2:1;
+            } else {
+                
+                return 1;
+            }
+            
         } else {
             
-            return self.openintentionImages.count + 1;
-            
+            if (self.openintentionImages.count == 9) {
+                
+                return self.openintentionImages.count;
+            } else {
+                
+                return self.openintentionImages.count + 1;
+                
+            }
         }
+        
+
     } else  {
         
-        if (self.secintentionImages.count == 9) {
+        // 判断是视频还是图片
+        if (self.type == XFAddImgVCTypeVideo) {
             
-            return self.secintentionImages.count;
+            if (self.isOpenVideo) {
+                
+                return 1;
+                
+            } else {
+                
+                return self.videoImage ? 2 : 1;
+            }
+            
         } else {
-            
-            return self.secintentionImages.count + 1;
+            if (self.secintentionImages.count == 9) {
+                
+                return self.secintentionImages.count;
+            } else {
+                
+                return self.secintentionImages.count + 1;
+                
+            }
             
         }
+        
+ 
         
     }
     return 0;
@@ -496,8 +686,7 @@
           
             // 删除相应的标
             [self.labelsArr removeObjectAtIndex:indexpath.item];
-//            [self.centerView.collectionViewLayout invalidateLayout];
-//            [self.centerView deleteItemsAtIndexPaths:@[indexpath]];
+
             [self.centerView reloadSections:[NSIndexSet indexSetWithIndex:0]];
             
             // 计算高度
@@ -513,31 +702,51 @@
         
         XFPublishAddImageViewCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFPublishAddImageViewCollectionViewCell" forIndexPath:indexPath];
         
-        if (self.openintentionImages.count == 9) {
+        if (self.type == XFAddImgVCTypeVideo) {
             
-            cell.picView.image = self.openintentionImages[indexPath.item];
-            cell.deleteButton.hidden = NO;
-            
-            
-        } else {
-            
-            if (indexPath.item == self.openintentionImages.count) {
+            if (self.isOpenVideo && indexPath.item == 0 && self.videoImage != nil) {
+                
+                cell.picView.image = self.videoImage;
+                cell.deleteButton.hidden = NO;
+
+                
+            } else {
                 
                 cell.picView.image = [UIImage imageNamed:@"my_add"];
                 
                 cell.deleteButton.hidden = YES;
                 
                 [cell removeTap];
-                
-            } else {
+            }
+            
+        } else {
+            
+            if (self.openintentionImages.count == 9) {
                 
                 cell.picView.image = self.openintentionImages[indexPath.item];
                 cell.deleteButton.hidden = NO;
                 
+                
+            } else {
+                
+                if (indexPath.item == self.openintentionImages.count) {
+                    
+                    cell.picView.image = [UIImage imageNamed:@"my_add"];
+                    
+                    cell.deleteButton.hidden = YES;
+                    
+                    [cell removeTap];
+                    
+                } else {
+                    
+                    cell.picView.image = self.openintentionImages[indexPath.item];
+                    cell.deleteButton.hidden = NO;
+                    
+                }
+                
             }
-            
         }
-        
+    
         cell.delegate = self;
         
         cell.indexpath = indexPath;
@@ -547,29 +756,51 @@
         
         XFPublishAddImageViewCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFPublishAddImageViewCollectionViewCell" forIndexPath:indexPath];
         
-        if (self.secintentionImages.count == 9) {
+        if (self.type == XFAddImgVCTypeVideo) {
             
-            cell.picView.image = self.secintentionImages[indexPath.item];
-            cell.deleteButton.hidden = NO;
-            
-            
-        } else {
-            
-            if (indexPath.item == self.secintentionImages.count) {
+            if (!self.isOpenVideo && indexPath.item == 0 && self.videoImage != nil) {
+                
+                cell.picView.image = self.videoImage;
+                cell.deleteButton.hidden = NO;
+
+                
+            } else {
                 
                 cell.picView.image = [UIImage imageNamed:@"my_add"];
                 
                 cell.deleteButton.hidden = YES;
+                
                 [cell removeTap];
-
-            } else {
+            }
+            
+        } else {
+            
+            if (self.secintentionImages.count == 9) {
                 
                 cell.picView.image = self.secintentionImages[indexPath.item];
                 cell.deleteButton.hidden = NO;
                 
+                
+            } else {
+                
+                if (indexPath.item == self.secintentionImages.count) {
+                    
+                    cell.picView.image = [UIImage imageNamed:@"my_add"];
+                    
+                    cell.deleteButton.hidden = YES;
+                    [cell removeTap];
+                    
+                } else {
+                    
+                    cell.picView.image = self.secintentionImages[indexPath.item];
+                    cell.deleteButton.hidden = NO;
+                    
+                }
+                
             }
-            
         }
+        
+
         
         cell.delegate = self;
         

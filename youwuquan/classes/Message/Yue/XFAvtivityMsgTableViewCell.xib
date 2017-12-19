@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="150" id="KGk-i7-Jjw" customClass="XFAvtivityMsgTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="150"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="149.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hbP-I7-zlr">
+                        <rect key="frame" x="62" y="35" width="232" height="84.5"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="您已成功参加&quot;谁是脑残&quot;活动" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5dC-8R-Ra3">
+                        <rect key="frame" x="75" y="45" width="212" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="212" id="GN4-My-NrM"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="yuetou" translatesAutoresizingMaskIntoConstraints="NO" id="xQ8-qX-ujY">
+                        <rect key="frame" x="10" y="20" width="44" height="44"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="44" id="CMj-be-shE"/>
+                            <constraint firstAttribute="height" constant="44" id="GVG-Sg-d0p"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="活动通知" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LKi-l7-Dc8">
+                        <rect key="frame" x="62" y="20" width="49.5" height="14.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tln-wq-YBe">
+                        <rect key="frame" x="75" y="72" width="86" height="37.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="查看活动详情">
+                            <color key="titleColor" red="0.96862745098039216" green="0.18431372549019609" blue="0.36862745098039218" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                    </button>
+                </subviews>
+                <color key="backgroundColor" red="0.95686274509803915" green="0.95686274509803915" blue="0.95686274509803915" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                <constraints>
+                    <constraint firstItem="hbP-I7-zlr" firstAttribute="top" secondItem="5dC-8R-Ra3" secondAttribute="top" constant="-10" id="7dF-3E-rvY"/>
+                    <constraint firstItem="5dC-8R-Ra3" firstAttribute="top" secondItem="xQ8-qX-ujY" secondAttribute="top" constant="25" id="8yO-0J-maH"/>
+                    <constraint firstItem="xQ8-qX-ujY" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="DYc-Us-6BY"/>
+                    <constraint firstItem="5dC-8R-Ra3" firstAttribute="leading" secondItem="xQ8-qX-ujY" secondAttribute="trailing" constant="21" id="Oh9-yI-MWq"/>
+                    <constraint firstItem="tln-wq-YBe" firstAttribute="leading" secondItem="5dC-8R-Ra3" secondAttribute="leading" id="cBK-Lj-0Nx"/>
+                    <constraint firstAttribute="bottom" secondItem="tln-wq-YBe" secondAttribute="bottom" constant="40" id="g7f-lu-mNY"/>
+                    <constraint firstItem="LKi-l7-Dc8" firstAttribute="leading" secondItem="hbP-I7-zlr" secondAttribute="leading" id="gVQ-j8-DXh"/>
+                    <constraint firstItem="5dC-8R-Ra3" firstAttribute="width" secondItem="hbP-I7-zlr" secondAttribute="width" constant="-20" id="gVb-yb-klx"/>
+                    <constraint firstItem="LKi-l7-Dc8" firstAttribute="top" secondItem="xQ8-qX-ujY" secondAttribute="top" id="hg9-iF-f5O"/>
+                    <constraint firstItem="hbP-I7-zlr" firstAttribute="bottom" secondItem="tln-wq-YBe" secondAttribute="bottom" constant="10" id="kMb-mR-lBT"/>
+                    <constraint firstItem="xQ8-qX-ujY" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="ndZ-AQ-5bI"/>
+                    <constraint firstItem="hbP-I7-zlr" firstAttribute="leading" secondItem="5dC-8R-Ra3" secondAttribute="leading" constant="-13" id="wHp-LN-IKR"/>
+                    <constraint firstItem="tln-wq-YBe" firstAttribute="top" secondItem="5dC-8R-Ra3" secondAttribute="bottom" constant="10" id="xT8-yC-T8i"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="contentBg" destination="hbP-I7-zlr" id="DQO-JW-zEq"/>
+            </connections>
+            <point key="canvasLocation" x="172" y="13"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="yuetou" width="44" height="44"/>
+    </resources>
+</document>

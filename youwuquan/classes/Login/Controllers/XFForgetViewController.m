@@ -69,6 +69,8 @@
 // 点击确认按钮
 - (void)clickDoneButton {
     
+    [self.view endEditing:YES];
+    
     if (![self.phoneTextField.text isPhoneNumber]) {
         
         [XFToolManager showProgressInWindowWithString:@"请输入正确的手机号"];
@@ -118,6 +120,9 @@
 // 获取验证码
 - (void)clickCodeButton:(UIButton *)sender {
     
+    [self.view endEditing:YES];
+
+    
     if (![self.phoneTextField.text isPhoneNumber]) {
         
         [XFToolManager showProgressInWindowWithString:@"请输入正确的手机号"];
@@ -134,6 +139,8 @@
             [XFToolManager changeHUD:HUD successWithText:@"发送成功"];
             
             [XFToolManager countdownbutton:sender];
+            
+            [self.codeTextField becomeFirstResponder];
             
         } else {
             

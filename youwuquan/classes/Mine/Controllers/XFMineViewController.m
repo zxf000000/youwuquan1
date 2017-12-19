@@ -25,6 +25,8 @@
 #import "XFMyCaresViewController.h"
 #import "XFFansViewController.h"
 #import "XFAllMyStatusViewController.h"
+#import "XFShareUrlViewController.h"
+#import "XFShareCardViewController.h"
 
 
 #define kHeaderHeight (kScreenWidth * 170/375.f)
@@ -162,7 +164,7 @@
        
         if (reponseDic) {
             
-            NSDictionary *userInfo =  reponseDic[@"data"][0];
+            NSDictionary *userInfo = reponseDic[@"data"][0];
             
             //更新用户信息
             [[XFUserInfoManager sharedManager] updateUserInfo:userInfo];
@@ -170,6 +172,7 @@
             self.userInfo = userInfo;
             
             [self refreshData];
+            
         }
         
     } failedBlock:^(NSError *error) {
@@ -184,6 +187,7 @@
     self.nameLabel.text = self.userInfo[@"userNike"];
     [self.iconView setImageWithURL:[NSURL URLWithString:self.userInfo[@"headUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:(UITableViewRowAnimationFade)];
+    
 }
 
 #pragma mark - headerDelegate
@@ -220,7 +224,14 @@
     
     alert.doneBlock = ^{
       
-        [XFShareManager sharedUrl:self.userInfo[@"inviteUrl"]];
+//        [XFShareManager sharedUrl:self.userInfo[@"inviteUrl"]];
+        
+        
+        XFShareCardViewController *shareSelectVC = [[XFShareCardViewController alloc] init];
+        
+        shareSelectVC.hidesBottomBarWhenPushed = YES;
+        
+        [self.navigationController pushViewController:shareSelectVC animated:YES];
         
     };
     

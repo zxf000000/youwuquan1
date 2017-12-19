@@ -11,6 +11,8 @@
 #import "XFStatusCommentCellNode.h"
 #import <IQKeyboardManager.h>
 #import "XFMyStatusViewController.h"
+#import "XFStatusNetworkManager.h"
+#import "XFCommentModel.h"
 
 @implementation XFStatusCenterNode
 
@@ -40,8 +42,6 @@
     return self;
 }
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
-    
-    
     
     return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 10, 10, 0)) child:_titleNode];
     
@@ -73,8 +73,7 @@
         [_moreButton addTarget:self action:@selector(clickMoreButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
         
     }
-    
-    
+
     return self;
 }
 - (void)clickMoreButton {
@@ -106,16 +105,10 @@
 
 @property (nonatomic,assign) NSInteger count;
 
-
-@property (nonatomic,strong) UITextField *inputTextField;
-
 @property (nonatomic,strong) UIButton *sendButton;
 
 @property (nonatomic,assign) BOOL isOpen;
 @property (nonatomic,strong) UIView *inputView;
-
-@property (nonatomic,strong) UIView *shadowView;
-
 
 @end
 
@@ -134,11 +127,14 @@
     
     [backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
     
-    self.count = 12;
     
     self.isOpen = NO;
     
+    self.commentList = [NSArray array];
+    
     [self setupTableNode];
+    
+    [self loadDataWithInset:NO];
 //    [self setupCommentView];
 
     
@@ -146,6 +142,114 @@
 //                                                 name:UIKeyboardWillChangeFrameNotification object:nil];
 
 }
+// 发送评论
+- (void)clickSendButton {
+    
+    if (![self.inputTextField.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入内容"];
+        
+        return;
+    }
+    
+    [self hide];
+    
+    
+    [XFStatusNetworkManager commentStatusWithId:self.status.id message:self.inputTextField.text userNoA:self.status.userNo successBlock:^(NSDictionary *reponseDic) {
+       
+
+        if (reponseDic) {
+            
+            
+            [self loadDataWithInset:YES];
+            
+            self.inputTextField.text = nil;
+        }
+        
+        
+    } failedBlock:^(NSError *error) {
+        
+
+    }];
+    
+}
+
+- (void)loadDataWithInset:(BOOL)inset {
+    
+    [XFStatusNetworkManager getStatusDetailWithReleaseId:self.status.id successBlock:^(NSDictionary *reponseDic) {
+        
+        if (reponseDic) {
+            
+            NSArray *allData = reponseDic[@"data"];
+            
+            NSArray *coments = allData[0];
+            NSMutableArray *commentArr = [NSMutableArray array];
+            for (NSInteger i = 0 ; i < coments.count ; i ++ ) {
+                
+                [commentArr addObject:[XFCommentModel modelWithDictionary:coments[i]]];
+                
+            }
+            self.commentList = commentArr.copy;
+            
+            if (inset) {
+                
+//                if (self.commentList.count == 5) {
+//
+//                    [self.tableNode insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0],[NSIndexPath indexPathForRow:7 inSection:0]] withRowAnimation:(UITableViewRowAnimationTop)];
+//
+//
+//                } else {
+//
+//                    if (self.isOpen) {
+//
+//                        [self.tableNode insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:(UITableViewRowAnimationTop)];
+//                        [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
+//
+//                    } else {
+//
+//                        if (self.commentList.count == 1) {
+//
+//                            [self.tableNode insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:(UITableViewRowAnimationTop)];
+//                            [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
+//
+//
+//                        } else {
+//
+//                            [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0],[NSIndexPath indexPathForRow:3 inSection:0],[NSIndexPath indexPathForRow:4 inSection:0],[NSIndexPath indexPathForRow:5 inSection:0],[NSIndexPath indexPathForRow:6 inSection:0],] withRowAnimation:(UITableViewRowAnimationFade)];
+//                            [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
+//
+//                        }
+//
+//                    }
+                
+//                }
+                
+                self.tableNode.hidden = YES;
+
+                [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+                
+                self.tableNode.hidden = NO;
+                
+                [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
+            } else {
+                self.tableNode.hidden = YES;
+
+                [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+                self.tableNode.hidden = NO;
+
+            }
+            
+        }
+       
+        
+    } failedBlock:^(NSError *error) {
+        
+        
+    }];
+    
+    
+}
+
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
     
@@ -192,96 +296,162 @@
     
     XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
     photoVC.type = XFMyStatuVCTypeOther;
+    photoVC.model = self.status;
     [self.navigationController pushViewController:photoVC animated:YES];
     
 }
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
+    if (self.isOpen) {
+        
+        self.count = self.commentList.count + 2;
+        
+    } else {
+        
+        if (self.commentList.count < 5) {
+
+            self.count =  self.commentList.count + 2;
+
+        } else {
+
+            self.count =  8;
+
+        }        
+    }
+
     return self.count;
-    
-    
+
 }
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.row == 0) {
-        
-        return ^ASCellNode *{
+    
+    switch (indexPath.row) {
             
-            XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithImages:@[@"find_pic4",@"find_pic8",@"find_pic10",@"find_pic12"] likeImgs:@[@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2",@"find_icon2"]];
-            
-            if (self.type == Mine) {
-                
-                node.followButton.hidden = YES;
-            }
-            
-            node.detailDelegate = self;
-            
-            return node;
-            
-        };
-        
-    } else if (indexPath.row == 1) {
-        
-        
-        return ^ASCellNode *{
-            
-            XFStatusCenterNode *node = [[XFStatusCenterNode alloc] init];
-            
-            return node;
-            
-        };
-        
-    } else if (indexPath.row == self.count - 1) {
-        
-        if (!self.isOpen) {
+        case 0:
+        {
             
             return ^ASCellNode *{
                 
-                XFStatusBottomNode *node = [[XFStatusBottomNode alloc] init];
-                
-                // 加载更多评论
-                node.clickMoreButtonBlock = ^{
+                if (self.type == Mine) {
                     
-                    self.count = 20;
-                    self.isOpen = YES;
-                    [self.tableNode reloadData];
+                    XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithModel:self.status];
+                    node.followButton.hidden = YES;
+                    
+                    node.detailDelegate = self;
+                    
+                    return node;
+                    
+                } else {
+                    
+                    XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithImages:@[@"find4",@"find5",@"find6",@"find7"] likeImgs:@[@"icon1",@"icon2",@"icon3",@"icon4",@"icon2",@"icon6",@"icon7",@"icon9",@"icon8",@"icon10",@"icon11",@"icon12",@"icon13",@"icon14",@"icon15",@"icon16"]];
+                    
+                    if (self.type == Mine) {
+                        
+                        node.followButton.hidden = YES;
+                    }
+                    
+                    node.detailDelegate = self;
+                    
+                    return node;
+                    
+                }
+                
+                
+            };
+        }
+            break;
+        case 1:
+        {
+            return ^ASCellNode *{
+                
+                XFStatusCenterNode *node = [[XFStatusCenterNode alloc] init];
+                
+                return node;
+                
+            };
+            
+        }
+            break;
+        default:
+        {
+            // 没有评论
+            if (self.commentList.count == 0) {
+                
+                return ^ASCellNode *{
+                    
+                    XFStatusBottomNode *node = [[XFStatusBottomNode alloc] init];
+                    
+                    // 加载更多评论
+                    node.clickMoreButtonBlock = ^{
+                        
+                        self.isOpen = YES;
+                        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+                        
+                        
+                    };
+                    
+                    return node;
                     
                     
                 };
                 
-                return node;
-                
-                
-            };
+            }
             
-        } else {
             
-            return ^ASCellNode *{
+            if (self.isOpen) {
+            
+                return ^ASCellNode *{
+                    
+                    XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:self.commentList[indexPath.row - 2]];
+                    
+                    node.delegate = self;
+                    
+                    return node;
+                    
+                };
+            } else {
                 
-                XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] init];
+                if (self.count == 8 && indexPath.row == self.count - 1) {
+                    
+                    return ^ASCellNode *{
+                        
+                        XFStatusBottomNode *node = [[XFStatusBottomNode alloc] init];
+                        
+                        // 加载更多评论
+                        node.clickMoreButtonBlock = ^{
+                            
+                            self.isOpen = YES;
+                            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+                            
+                            
+                        };
+                        
+                        return node;
+                        
+                        
+                    };
+                    
+                } else {
+                    
+                    return ^ASCellNode *{
+                        
+                        XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:self.commentList[indexPath.row - 2]];
+                        
+                        node.delegate = self;
+                        
+                        return node;
+                        
+                    };
+                    
+                }
                 
-                node.delegate = self;
-                
-                return node;
-                
-            };
+            }
         }
-        
-    } else {
-        
-        return ^ASCellNode *{
+            break;
             
-            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] init];
             
-            node.delegate = self;
-
-            
-            return node;
-            
-        };
-        
     }
     
 }
@@ -292,48 +462,9 @@
     // 回复评论内容
     NSLog(@"开始回复");
     
+    
+    
 }
-
-//- (void)setupCommentView {
-//    
-//    self.inputView = [[UIView alloc] initWithFrame:(CGRectMake(0, kScreenHeight - 44 - 64, kScreenWidth, 44))];
-//    
-//    [self.view addSubview:self.inputView];
-//    self.inputView.backgroundColor = [UIColor redColor];
-//    
-//    self.inputTextField = [[UITextField alloc] init];
-//    
-//    self.inputTextField.frame = CGRectMake(0, 0, kScreenWidth * 58/75.f, 44);
-//    
-//    self.inputTextField.backgroundColor = [UIColor whiteColor];
-//    self.inputTextField.placeholder = @"客官,来了就留下点什么吧...";
-//    self.inputTextField.borderStyle = UITextBorderStyleNone;
-//    self.inputTextField.font = [UIFont systemFontOfSize:12];
-//    UIView *leftView = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, 13, 10))];
-//    self.inputTextField.leftView = leftView;
-//    self.inputTextField.leftViewMode = UITextFieldViewModeAlways;
-//    [self.inputView addSubview:self.inputTextField];
-//    
-//    self.sendButton = [[UIButton alloc] init];
-//    self.sendButton.frame = CGRectMake(kScreenWidth * 58/75.f, 0, kScreenWidth * 17/75.f, 44);
-//    self.sendButton.backgroundColor = kMainRedColor;
-//    [self.sendButton setTitle:@"发送" forState:(UIControlStateNormal)];
-//    self.sendButton.titleLabel.font = [UIFont systemFontOfSize:15];
-//    
-//    [self.inputView addSubview:self.sendButton];
-//    
-//    self.inputTextField.delegate = self;
-//    
-//    self.shadowView = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64))];
-//    
-//    self.shadowView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-//    [self.view insertSubview:self.shadowView belowSubview:self.inputView];
-//    self.shadowView.alpha = 0;
-//    
-//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapShadowView)];
-//    [self.shadowView addGestureRecognizer:tap];
-//    
-//}
 
 
 - (void)setupTableNode {
@@ -345,6 +476,13 @@
     self.tableNode.delegate = self;
     self.tableNode.dataSource = self;
     self.tableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    if (@available (ios 11 , * )) {
+        self.tableNode.view.estimatedRowHeight = 0;
+        self.tableNode.view.estimatedSectionHeaderHeight = 0;
+        self.tableNode.view.estimatedSectionFooterHeight = 0;
+    }
+    
     
 }
 - (void)clickBackButton {

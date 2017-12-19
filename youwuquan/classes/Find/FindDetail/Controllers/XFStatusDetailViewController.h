@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "XFStatusCommentViewController.h"
+#import "XFStatusModel.h"
 
 typedef NS_ENUM(NSInteger,XFStatusDetailVCType) {
     
@@ -35,6 +36,14 @@ typedef NS_ENUM(NSInteger,XFStatusDetailVCType) {
 @interface XFStatusDetailViewController : XFStatusCommentViewController
 
 @property (nonatomic,assign) XFStatusDetailVCType type;
+
+@property (nonatomic,copy) NSString *statusId;
+
+
+@property (nonatomic,strong) XFStatusModel *status;
+
+@property (nonatomic,copy) NSArray *commentList;
+@property (nonatomic,copy) NSArray *likeList;
 
 
 @end

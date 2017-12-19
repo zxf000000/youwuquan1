@@ -10,7 +10,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <AdSupport/ASIdentifierManager.h>
 #import <CoreText/CoreText.h>
-
+#import <Photos/Photos.h>
 
 @implementation XFToolManager
 
@@ -108,11 +108,22 @@
     HUD.mode = MBProgressHUDModeIndeterminate;
     HUD.animationType = MBProgressHUDAnimationZoom;
     HUD.removeFromSuperViewOnHide = YES;
-    HUD.contentColor = [UIColor whiteColor];
-    
+    HUD.contentColor = kMainRedColor;
+//    #881FD9 100%
     HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    HUD.bezelView.backgroundColor = [UIColor blackColor];
-    
+//    HUD.bezelView.backgroundColor = [UIColor colorWithRed:247/255.f green:47/255.f blue:94/255.f alpha:0.7];
+    HUD.bezelView.backgroundColor = [UIColor clearColor];
+//    HUD.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+//    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+//    gradientLayer.colors = @[(__bridge id)[UIColor whiteColor].CGColor, (__bridge id)kMainRedColor.CGColor];
+//    gradientLayer.locations = @[@0, @0.7];
+//    gradientLayer.startPoint = CGPointMake(0.3, 0);
+//    gradientLayer.endPoint = CGPointMake(1, 0.3);
+//
+//    gradientLayer.frame = CGRectMake(0, 0, 100, 100);
+//
+//    [HUD.bezelView.layer insertSublayer:gradientLayer atIndex:0];
+
     return HUD;
     
 }
@@ -127,7 +138,7 @@
     
     HUD.mode = MBProgressHUDModeText;
     HUD.label.text = text;
-    [HUD hideAnimated:YES afterDelay:0.3];
+    [HUD hideAnimated:YES afterDelay:0.5];
     
 }
 
@@ -414,6 +425,27 @@
     });
     
     dispatch_resume(_Timer);
+    
+}
+
++ (UIImage *)getImage:(NSString *)videoURL
+{
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:videoURL] options:nil];
+    AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    gen.appliesPreferredTrackTransform = YES;
+    CMTime time = CMTimeMakeWithSeconds(0.0, 600);
+    NSError *error = nil;
+    CMTime actualTime;
+    CGImageRef image = [gen copyCGImageAtTime:time actualTime:&actualTime error:&error];
+    UIImage *thumb = [[UIImage alloc] initWithCGImage:image];
+    CGImageRelease(image);
+    return thumb;
+}
+
++ (void)addVideoToAlbumWithVideoPath:(NSString *)videoPath {
+    
+    
+    
     
 }
 

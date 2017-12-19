@@ -11,6 +11,7 @@
 
 typedef void(^RequestSuccessBlock)(NSDictionary *responseDic);
 typedef void(^RequestFailedBlock)(NSError *error);
+typedef void(^ProgressBlock)(CGFloat progress);
 
 
 @interface XFNetWorkManager : NSObject
@@ -74,7 +75,7 @@ typedef void(^RequestFailedBlock)(NSError *error);
  @param successBlock 成功
  @param failedBlock 失败
  */
-- (void)publishUploadWithUrl:(NSString *)url Opens:(NSArray *)opens secs:(NSArray *)secs paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+- (void)publishUploadWithUrl:(NSString *)url Opens:(NSArray *)opens secs:(NSArray *)secs paraments:(NSDictionary *)paraments successHandle:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock progress:(ProgressBlock)progress;
 
 
 

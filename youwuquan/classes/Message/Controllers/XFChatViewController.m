@@ -28,7 +28,14 @@
     // 注册送钻石Cell
     [self registerClass:XFDiamondCollectionViewCell.class forMessageClass:XFDiamondMessageContent.class];
     
-    [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:nil title:@"钻石" tag:9007];
+    
+    [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:0 image:[UIImage imageNamed:@"msg_pic"] title:@"照片"];
+    [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:1 image:[UIImage imageNamed:@"msg_shot"] title:@"拍摄"];
+    [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:2 image:[UIImage imageNamed:@"msg_location"] title:@"位置"];
+    
+    [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_zuanshi"] title:@"钻石" tag:9004];
+
+    [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_dateher"] title:@"约她" tag:9005];
 
 }
 
@@ -36,11 +43,17 @@
     
     [super pluginBoardView:pluginBoardView clickedItemWithTag:tag];
     
-    if (tag == 9007) {
+    if (tag == 9004) {
         
         XFDiamondMessageContent *msg = [XFDiamondMessageContent messageWithContent:@"我送你了一打钻石"];
         
         [self sendMessage:msg pushContent:@"有送钻石消息"];
+    }
+    
+    if (tag == 9005) {
+        
+        
+        
     }
     
 }

@@ -14,4 +14,8 @@
 
 @property (nonatomic,strong) UITextField *inputTextField;
 
+- (void)clickSendButton;
+
+- (void)hide;
+
 @end

@@ -24,6 +24,36 @@
 
 }
 
+
++ (UIImage *)shareurlImgWithBgImage:(UIImage *)bgImage iconImage:(UIImage *)iconImage url:(NSString *)url {
+
+    CGSize size = CGSizeMake(375 , 580);
+    
+    UIGraphicsBeginImageContextWithOptions(size, YES, 0);
+    
+    UIView *whiteView = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, size.width, size.height))];
+    whiteView.backgroundColor = [UIColor colorWithRed:136/255.f green:31/255.f blue:217/255.f alpha:1];
+    [whiteView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    // 最底层背景
+    [iconImage drawInRect:CGRectMake(0, 0, size.width , size.height ) withContentMode:(UIViewContentModeScaleAspectFit) clipsToBounds:NO];
+    // 绘制背景图
+    [bgImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    
+    // 二维码
+    UIImage *QRCodeImg = [self creatQRcodeWithInfo:url withSize:(CGSizeMake(69, 69))];
+    
+    [QRCodeImg drawInRect:(CGRectMake(17, 459, 69, 69))];
+    
+    UIImage *resultingImage =UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+
+    
+    return resultingImage;
+    
+}
+
+
 + (UIImage *)shareImgWithBgImage:(UIImage *)bgImage iconImage:(UIImage *)iconImage name:(NSString *)name userId:(NSString *)userId address:(NSString *)address {
 
     CGSize size = CGSizeMake(375 , 580);

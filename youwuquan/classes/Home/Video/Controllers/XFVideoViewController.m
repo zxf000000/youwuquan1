@@ -9,7 +9,7 @@
 #import "XFVideoViewController.h"
 #import "XFHomeVideoTableViewCell.h"
 #import "XFFindDetailViewController.h"
-
+#import "XFHomeDataModel.h"
 
 
 @interface XFVideoViewController () <UITableViewDelegate,UITableViewDataSource,XFHomeVideoCellDelegate>
@@ -34,7 +34,7 @@
 @property (nonatomic,copy) NSArray *pics1;
 @property (nonatomic,copy) NSArray *pics2;
 
-
+@property (nonatomic,copy) NSArray *videos;
 
 @end
 
@@ -42,18 +42,26 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor blueColor];
-    
-    self.pics1 = @[kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic];
+
 
     [self setupTableView];
     
     [self setupHeaderView];
-     
-    [self.view setNeedsUpdateConstraints];
     
     self.videoType = Hightdefinition;
+    
+    [self.view setNeedsUpdateConstraints];
+
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    self.videos = self.hightVides;
+    
+    [self.tableView reloadData];
+    
 }
 
 - (void)clickTopButton:(UIButton *)sender {
@@ -63,13 +71,17 @@
         self.gqButton.selected = YES;
         self.vrButton.selected = NO;
         
+        self.videos = self.hightVides;
         self.videoType = Hightdefinition;
+
 
     } else {
         
         self.gqButton.selected = NO;
         self.vrButton.selected = YES;
+        self.videos = self.vrVideos;
         self.videoType = VRVideo;
+
 
     }
     
@@ -92,7 +104,6 @@
         
     }];
     
-    self.pics1 = @[kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic,kRandomPic];
     [self.tableView reloadData];
 
 }
@@ -125,7 +136,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return 10;
+    return self.videos.count;
     
 }
 
@@ -134,15 +145,19 @@
     
     XFHomeVideoTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFHomeVideoTableViewCell"];
     
-    
     if (cell == nil) {
         
         cell = [[[NSBundle mainBundle] loadNibNamed:@"XFHomeVideoTableViewCell" owner:nil options:nil] lastObject];
         
     }
     
-    cell.picView.image = [UIImage imageNamed:self.pics1[indexPath.row]];
+    XFHomeDataModel *model = self.videos[indexPath.row];
     
+    cell.picView.image = [UIImage imageNamed:model.userPic];
+    cell.nameLabel.text = model.userName;
+    cell.iconVIew.image = [UIImage imageNamed:model.userIcon];
+    cell.likeButton.selected = [model.isLiked intValue] == 0 ? NO : YES;
+    cell.numberLabel.text = model.likeNumer;
     cell.delegate = self;
     
     return cell;

@@ -134,6 +134,8 @@
         
         XFSearchManCollectioNCell *cell = [[XFSearchManCollectioNCell alloc] init];
         
+        cell.iconNode.defaultImage = [UIImage imageNamed:kRandomIcon];
+        
         return cell;
         
     };

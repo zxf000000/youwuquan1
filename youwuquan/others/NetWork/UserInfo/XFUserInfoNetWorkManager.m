@@ -16,7 +16,7 @@
     
     NSMutableDictionary *para = [NSMutableDictionary dictionary];
     [para setObject:[NSString stringWithFormat:@"%zd",start] forKey:@"start"];
-    [para setObject:@"3" forKey:@"rows"];
+    [para setObject:@"10" forKey:@"rows"];
     
     [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForGetMyStatus] paraments:para successHandle:^(NSDictionary *responseDic) {
         
