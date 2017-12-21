@@ -8,9 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+#define kGiftViewWidth (kScreenWidth - 20)
+#define kGiftViewHeight 44/35.f * kGiftViewWidth
+
 typedef void(^animationCompleteBlock)(void);
 
 @interface XFYwqAlertView : UIView
+
+
 
 - (instancetype)initWithTitle:(NSString *)title detail:(NSString *)detail;
 
@@ -42,14 +47,22 @@ typedef void(^animationCompleteBlock)(void);
 @property (nonatomic,strong) UIButton *rewardButton;
 @property (nonatomic,strong) UILabel *remainNum;
 
-// 弹出钻石
+// 送礼物
+@property (nonatomic,strong) UIButton *giftButton;
+@property (nonatomic,strong) UIView *slideView;
+@property (nonatomic,strong) UIScrollView *scrollView;
+@property (nonatomic,strong) UICollectionView *giftCollectionView;
+@property (nonatomic,strong) UIButton *addButton;
+@property (nonatomic,strong) UIButton *minusButton;
+@property (nonatomic,strong) UILabel *numberLabel;
 
 
 // 传统
 + (instancetype)showToView:(UIView *)view withTitle:(NSString *)title detail:(NSString *)detail;
 // 只有确认按钮
 + (instancetype)showToView:(UIView *)view withTitle:(NSString *)title detail:(NSString *)detail doneButtonTitle:(NSString *)done;
-
+// 礼物
++ (instancetype)showGiftViewToView:(UIView *)view withGifts:(NSArray *)gifts prices:(NSArray *)prices diamondsLeft:(NSString *)left realGifts:(NSArray *)realGifts realPrices:(NSArray *)realPrices name:(NSString *)name icon:(NSString *)icon;
 
 /**
  显示打赏成功

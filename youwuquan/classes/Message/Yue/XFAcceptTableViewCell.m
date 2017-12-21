@@ -12,12 +12,10 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.contentBg.image = [[UIImage imageNamed:@"chat_qipao1"] stretchableImageWithLeftCapWidth:10 topCapHeight:15];}
+    self.contentBg.image = [[UIImage imageNamed:@"chat_qipao1"] stretchableImageWithLeftCapWidth:10 topCapHeight:15];
+    
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
 @end

@@ -13,6 +13,9 @@
 #import "XFMyStatusViewController.h"
 #import "XFStatusNetworkManager.h"
 #import "XFCommentModel.h"
+#import "XFFindDetailViewController.h"
+#import "XFPayViewController.h"
+#import "XFYwqAlertView.h"
 
 @implementation XFStatusCenterNode
 
@@ -31,14 +34,11 @@
                            };
         
         _titleNode.attributedText = str;
-        
         _titleNode.maximumNumberOfLines = 1;
         [self addSubnode:_titleNode];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
 
     }
-    
-    
     return self;
 }
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
@@ -102,13 +102,13 @@
 @interface XFStatusDetailViewController () <ASTableDelegate,ASTableDataSource,UITextFieldDelegate,XFStatusCommentDelegate,XFStatusDetailCellDelegate>
 
 @property (nonatomic,strong) ASTableNode *tableNode;
-
 @property (nonatomic,assign) NSInteger count;
-
 @property (nonatomic,strong) UIButton *sendButton;
-
 @property (nonatomic,assign) BOOL isOpen;
 @property (nonatomic,strong) UIView *inputView;
+
+@property (nonatomic,assign) BOOL unlock;
+
 
 @end
 
@@ -127,7 +127,6 @@
     
     [backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
     
-    
     self.isOpen = NO;
     
     self.commentList = [NSArray array];
@@ -135,11 +134,7 @@
     [self setupTableNode];
     
     [self loadDataWithInset:NO];
-//    [self setupCommentView];
-
     
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrame:)
-//                                                 name:UIKeyboardWillChangeFrameNotification object:nil];
 
 }
 // 发送评论
@@ -294,10 +289,83 @@
 //    browser.pageindicatorStyle = KSPhotoBrowserPageIndicatorStyleText;
 //    [browser showFromViewController:self];
     
-    XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
-    photoVC.type = XFMyStatuVCTypeOther;
-    photoVC.model = self.status;
-    [self.navigationController pushViewController:photoVC animated:YES];
+    if (self.unlock) {
+        
+        XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
+        photoVC.type = XFMyStatuVCTypeOther;
+        photoVC.model = self.status;
+        [self.navigationController pushViewController:photoVC animated:YES];
+        
+        return;
+    }
+    
+    // 解锁
+    if (index > 1) {
+        
+        
+        
+        // TODO:
+        XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"请先解锁" detail:@"解锁本条动态需要66钻石,是否支付"];
+        
+        alertView.doneBlock = ^{
+            
+//            [XFToolManager showProgressInWindowWithString:@"余额不足,请充值"];
+//            // 充值页面
+//            XFPayViewController *payVC = [[XFPayViewController alloc] init];
+//            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+//            [self presentViewController:navi animated:YES completion:nil];
+            
+            // 充值成功,刷新页面
+            
+            self.unlock = YES;
+            
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+            
+            [HUD hideAnimated:YES afterDelay:0.8];
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                // 刷新页面
+                [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+                
+            });
+        };
+        
+        alertView.cancelBlock = ^{
+        
+                // 取消
+            
+        };
+        
+        [alertView showAnimation];
+        
+        
+//        [XFToolManager showProgressInWindowWithString:@"私密美图/视频需要解锁才能查看"];
+
+        
+    } else {
+        
+        XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
+        photoVC.type = XFMyStatuVCTypeOther;
+        photoVC.model = self.status;
+        [self.navigationController pushViewController:photoVC animated:YES];
+    }
+
+    
+}
+
+- (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    ASCellNode *node = [tableNode nodeForRowAtIndexPath:indexPath];
+    node.selected  = NO;
+    
+    if (indexPath.row > 1) {
+    
+        // 个人信息
+        XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+        
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }
     
 }
 
@@ -337,6 +405,7 @@
                 if (self.type == Mine) {
                     
                     XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithModel:self.status];
+                    
                     node.followButton.hidden = YES;
                     
                     node.detailDelegate = self;
@@ -345,7 +414,7 @@
                     
                 } else {
                     
-                    XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithImages:@[@"find4",@"find5",@"find6",@"find7"] likeImgs:@[@"icon1",@"icon2",@"icon3",@"icon4",@"icon2",@"icon6",@"icon7",@"icon9",@"icon8",@"icon10",@"icon11",@"icon12",@"icon13",@"icon14",@"icon15",@"icon16"]];
+                    XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithImages:@[@"find4",@"find5",@"find6",@"find7"] likeImgs:@[@"icon1",@"icon2",@"icon3",@"icon4",@"icon2",@"icon6",@"icon7",@"icon9",@"icon8",@"icon10",@"icon11",@"icon12",@"icon13",@"icon14",@"icon15",@"icon16"] unlock:self.unlock];
                     
                     if (self.type == Mine) {
                         
@@ -357,7 +426,6 @@
                     return node;
                     
                 }
-                
                 
             };
         }

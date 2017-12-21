@@ -261,6 +261,7 @@
             if (self.bottomIndex == self.picArr.count) {
                 
                 view.type = XFCardShareViewtypeAdd;
+                
                 self.addView = view;
                 self.bottomIndex = -1;
                 
@@ -333,6 +334,7 @@
             
             self.addView.picView.image = image;
             self.addView.type = XFCardShareViewtypePic;
+            self.addView.shadowView.hidden = NO;
         });
         
         

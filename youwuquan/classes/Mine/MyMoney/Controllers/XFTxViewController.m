@@ -7,74 +7,14 @@
 //
 
 #import "XFTxViewController.h"
+#import "XFTxTotalTableViewCell.h"
+#import "XFTxDiaTableViewCell.h"
+#import "XFTxListTableViewCell.h"
 
-@implementation XFtxCellNode
 
-- (instancetype)init {
-    
-    if (self = [super init]) {
-        _titleNode = [[ASTextNode alloc] init];
-        
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:@"提现"];
-        
-        str.attributes = @{
-                           NSFontAttributeName : [UIFont systemFontOfSize:14],
-                           NSForegroundColorAttributeName: [UIColor blackColor]
-                           };
-        
-        _titleNode.attributedText = str;
-        
-        _titleNode.maximumNumberOfLines = 1;
-        [self addSubnode:_titleNode];
-        
-        _timeNode = [[ASTextNode alloc] init];
-        
-        NSMutableAttributedString *timestr = [[NSMutableAttributedString  alloc] initWithString:@"2019-09-09 14:30"];
-        
-        timestr.attributes = @{
-                           NSFontAttributeName : [UIFont systemFontOfSize:11],
-                           NSForegroundColorAttributeName:UIColorHex(808080)
-                           };
-        
-        _timeNode.attributedText = timestr;
-        
-        _timeNode.maximumNumberOfLines = 1;
-        [self addSubnode:_timeNode];
-        
-        
-        _moneyNode = [[ASTextNode alloc] init];
-        
-        NSMutableAttributedString *money = [[NSMutableAttributedString  alloc] initWithString:@"-3333元"];
-        
-        str.attributes = @{
-                           NSFontAttributeName : [UIFont systemFontOfSize:14],
-                           NSForegroundColorAttributeName: [UIColor blackColor]
-                           };
-        
-        _moneyNode.attributedText = money;
-        
-        _moneyNode.maximumNumberOfLines = 1;
-        [self addSubnode:_moneyNode];
-    
-    }
-    return self;
-}
+@interface XFTxViewController () <UITableViewDelegate,UITableViewDataSource>
 
-- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
-    
-    ASStackLayoutSpec *layout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:10 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[_titleNode,_timeNode]];
-    
-    ASStackLayoutSpec *alllayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsCenter) children:@[layout,_moneyNode]];
-    
-    return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 10, 10, 10)) child:alllayout];
-    
-}
-
-@end
-
-@interface XFTxViewController () <ASTableDelegate,ASTableDataSource>
-
-@property (nonatomic,strong) ASTableNode *tableNode;
+@property (nonatomic,strong) UITableView *tableView;
 
 @end
 
@@ -83,29 +23,118 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"交易记录";
-    self.tableNode = [[ASTableNode alloc] init];
-    self.tableNode.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
 
-    [self.view addSubnode:self.tableNode];
-    self.tableNode.delegate = self;
-    self.tableNode.dataSource = self;
-
+    [self setuptableView];
 }
 
-- (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
+- (void)setuptableView {
+    
+    self.tableView = [[UITableView alloc] init];
+
+    self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+    [self.view addSubview:self.tableView];
+    
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
     return 20;
 }
 
-- (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    return ^ASCellNode *() {
-        
-        XFtxCellNode *node = [[XFtxCellNode alloc] init];
-
-        return node;
-    };
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    switch (indexPath.row) {
+            
+        case 0:
+        {
+            XFTxTotalTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFTxTotalTableViewCell"];
+            
+            if (cell == nil) {
+                
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFTxTotalTableViewCell" owner:nil options:nil] lastObject];
+                
+                
+            }
+            return cell;
+            
+        }
+            break;
+        case 1:
+        {
+            XFTxDiaTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFTxDiaTableViewCell"];
+            
+            if (cell == nil) {
+                
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFTxDiaTableViewCell" owner:nil options:nil] lastObject];
+                
+            }
+            return cell;
+        }
+            break;
+        case 2:
+        {
+            XFTxDiaTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFTxDiaTableViewCell"];
+            
+            if (cell == nil) {
+                
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFTxDiaTableViewCell" owner:nil options:nil] lastObject];
+                
+            }
+            
+            cell.iconView.image = [UIImage imageNamed:@"mingxi_gift"];
+            cell.titleLabel.text = @"礼物收入";
+            
+            return cell;
+        }
+            break;
+            
+            
+        default :
+        {
+            XFTxListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFTxListTableViewCell"];
+            
+            if (cell == nil) {
+                
+                cell = [[XFTxListTableViewCell alloc] initWithStyle:(UITableViewCellStyleSubtitle) reuseIdentifier:@"XFTxListTableViewCell"];
+                
+            }
+            
+            cell.textLabel.text = @"提现";
+            cell.detailTextLabel.text = @"2017-09-10 13:09:56";
+            
+            cell.moneyLabel.text = @"- 30000";
+            
+            return cell;
+        }
+            break;
+    }
+    return nil;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    
+    switch (indexPath.row) {
+            
+        case 0:
+        {
+            
+            return 89;
+        }
+            break;
+
+        default:
+        {
+            return 50;
+
+        }
+            break;
+    }
+    
+    return 0;
 }
 
 @end

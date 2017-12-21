@@ -149,7 +149,7 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return 11;
+    return self.icons.count;
     
 }
 
@@ -210,7 +210,7 @@
     
     if (_icons == nil) {
         
-        _icons = @[@"me_v",@"me_r",@"me_s",@"me_d",@"me_h",@"me_m",@"me_f",@"me_t",@"me_a",@"me_p",@"me_c"];
+        _icons = @[@"my_vip",@"me_v",@"me_r",@"me_s",@"me_d",@"me_h",@"me_m",@"me_f",@"me_t",@"me_a",@"me_p",@"me_c"];
     }
     return _icons;
     
@@ -220,7 +220,7 @@
     
     if (_unAuthIcons == nil) {
         
-        _unAuthIcons = @[@"me_v_none",@"me_r_none",@"me_s_none",@"me_d_none",@"me_h_none",@"me_m_none",@"me_f_none",@"me_t_none",@"me_a_none",@"me_p_none",@"me_c_none"];
+        _unAuthIcons = @[@"my_noVip",@"me_v_none",@"me_r_none",@"me_s_none",@"me_d_none",@"me_h_none",@"me_m_none",@"me_f_none",@"me_t_none",@"me_a_none",@"me_p_none",@"me_c_none"];
     }
     return _unAuthIcons;
     
@@ -230,7 +230,7 @@
     
     if (_titles == nil) {
         
-        _titles = @[@"尤物女神",@"网红",@"演员",@"精舞达人",@"嗨歌大人",@"美妆达人",@"美食达人",@"旅游达人",@"运动达人",@"摄影达人",@"穿搭达人"];
+        _titles = @[@"VIP",@"尤物女神",@"网红",@"演员",@"精舞达人",@"嗨歌大人",@"美妆达人",@"美食达人",@"旅游达人",@"运动达人",@"摄影达人",@"穿搭达人"];
     }
     return _titles;
     

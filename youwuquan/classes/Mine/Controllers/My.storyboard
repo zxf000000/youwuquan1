@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -1245,86 +1245,10 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection id="mXE-FD-fkr">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="50" id="pLJ-38-TQl">
-                                        <rect key="frame" x="0.0" y="506" width="375" height="50"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="pLJ-38-TQl" id="7c6-xh-Rng">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="转账流水号(必填):" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kKd-Wy-mRc">
-                                                    <rect key="frame" x="10" y="16" width="122.5" height="18"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="请填写转账流水号" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gvP-eD-hM6">
-                                                    <rect key="frame" x="142.5" y="16.5" width="217.5" height="17"/>
-                                                    <nil key="textColor"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                </textField>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="gvP-eD-hM6" firstAttribute="centerY" secondItem="kKd-Wy-mRc" secondAttribute="centerY" id="BD5-pT-KoS"/>
-                                                <constraint firstItem="kKd-Wy-mRc" firstAttribute="leading" secondItem="7c6-xh-Rng" secondAttribute="leading" constant="10" id="Obt-wI-ijA"/>
-                                                <constraint firstAttribute="trailing" secondItem="gvP-eD-hM6" secondAttribute="trailing" constant="15" id="Ocb-zd-Vrx"/>
-                                                <constraint firstItem="kKd-Wy-mRc" firstAttribute="centerY" secondItem="7c6-xh-Rng" secondAttribute="centerY" id="WSh-Tb-aEB"/>
-                                                <constraint firstItem="gvP-eD-hM6" firstAttribute="leading" secondItem="kKd-Wy-mRc" secondAttribute="trailing" constant="10" id="mHs-v4-wX7"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="185" id="dmL-gO-hAo">
-                                        <rect key="frame" x="0.0" y="556" width="375" height="185"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dmL-gO-hAo" id="hLK-gA-TLy">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="184.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="请上传转账凭证" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mnp-s0-CmI">
-                                                    <rect key="frame" x="10" y="10" width="93" height="16"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cik-mM-P3A">
-                                                    <rect key="frame" x="49" y="46" width="115" height="115"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="115" id="0b8-Yw-16c"/>
-                                                        <constraint firstAttribute="height" constant="115" id="tMH-UC-wfk"/>
-                                                    </constraints>
-                                                    <state key="normal" image="my_add"/>
-                                                    <connections>
-                                                        <action selector="clickcertificateButton:" destination="xEo-WP-asY" eventType="touchUpInside" id="vv5-xO-5QM"/>
-                                                    </connections>
-                                                </button>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oPN-hf-FiO">
-                                                    <rect key="frame" x="0.0" y="39" width="49" height="128"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="128" id="Rd7-vv-xxV"/>
-                                                    </constraints>
-                                                </view>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="mnp-s0-CmI" firstAttribute="leading" secondItem="hLK-gA-TLy" secondAttribute="leading" constant="10" id="2sR-Zm-Npk"/>
-                                                <constraint firstItem="oPN-hf-FiO" firstAttribute="leading" secondItem="hLK-gA-TLy" secondAttribute="leading" id="3Ah-Ju-Xxu"/>
-                                                <constraint firstItem="oPN-hf-FiO" firstAttribute="width" secondItem="hLK-gA-TLy" secondAttribute="width" multiplier="1/3" constant="-76" id="8sk-dU-jTe"/>
-                                                <constraint firstItem="cik-mM-P3A" firstAttribute="top" secondItem="mnp-s0-CmI" secondAttribute="bottom" constant="20" id="FaC-zc-quW"/>
-                                                <constraint firstItem="cik-mM-P3A" firstAttribute="leading" secondItem="oPN-hf-FiO" secondAttribute="trailing" id="UeJ-SH-A4Q"/>
-                                                <constraint firstItem="oPN-hf-FiO" firstAttribute="top" secondItem="mnp-s0-CmI" secondAttribute="bottom" constant="13" id="lLx-Bu-oZ7"/>
-                                                <constraint firstItem="mnp-s0-CmI" firstAttribute="top" secondItem="hLK-gA-TLy" secondAttribute="top" constant="10" id="yK2-hM-783"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
                             <tableViewSection id="Uv6-LX-4cy">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="235" id="LOc-8Z-tX5">
-                                        <rect key="frame" x="0.0" y="777" width="375" height="235"/>
+                                        <rect key="frame" x="0.0" y="506" width="375" height="235"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="LOc-8Z-tX5" id="HgZ-sE-zDX">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="234.5"/>
@@ -1394,7 +1318,6 @@
                     </tableView>
                     <connections>
                         <outlet property="addButton" destination="EJh-GB-KcT" id="bOs-dw-10p"/>
-                        <outlet property="certificateButton" destination="cik-mM-P3A" id="nXq-l6-9Qd"/>
                         <outlet property="detailLabel" destination="Y9d-iJ-5IC" id="QER-uf-H8X"/>
                         <outlet property="detailView" destination="teS-ya-Cy1" id="Kx3-cf-W5Z"/>
                         <outlet property="emailTextField" destination="KhZ-we-1aJ" id="fKB-5c-2zj"/>
@@ -1403,7 +1326,6 @@
                         <outlet property="idNumberTextFioeld" destination="Pn1-HA-nhe" id="VWM-fH-O64"/>
                         <outlet property="nameTextField" destination="VF5-qt-4ar" id="S3U-jy-4B7"/>
                         <outlet property="phoneTextField" destination="lm5-E4-Bv1" id="Bwh-RD-SyV"/>
-                        <outlet property="waterNumber" destination="gvP-eD-hM6" id="hE7-S6-WMQ"/>
                         <outlet property="wxTextField" destination="RZr-X1-zZ9" id="xmT-83-RWn"/>
                     </connections>
                 </tableViewController>

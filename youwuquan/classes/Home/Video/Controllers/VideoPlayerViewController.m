@@ -312,10 +312,10 @@
     
     [self.backButton mas_makeConstraints:^(MASConstraintMaker *make) {
         
-        make.top.mas_offset(12);
-        make.left.mas_offset(10);
-        make.width.mas_equalTo(60);
-        make.height.mas_equalTo(30);
+        make.top.mas_offset(0);
+        make.left.mas_offset(0);
+        make.width.mas_equalTo(70);
+        make.height.mas_equalTo(40);
         
     }];
     [self.totalTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {

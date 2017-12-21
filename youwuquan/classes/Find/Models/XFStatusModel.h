@@ -58,8 +58,8 @@
 
 @property (nonatomic,copy) NSString *isLiked;
 
+@property (nonatomic,assign) BOOL isVideo;
 
-
-+ (instancetype)modelWithName:(NSString *)userName icon:(NSString *)userIcon images:(NSArray *)images contents:(NSString *)contents isCares:(NSString *)isCared time:(NSString *)time isLiked:(NSString *)isLiked likeNumber:(NSString *)likeNumber commentNumber:(NSString *)commentNumber;
++ (instancetype)modelWithName:(NSString *)userName icon:(NSString *)userIcon images:(NSArray *)images contents:(NSString *)contents isCares:(NSString *)isCared time:(NSString *)time isLiked:(NSString *)isLiked likeNumber:(NSString *)likeNumber commentNumber:(NSString *)commentNumber isVideo:(BOOL)isVideo;
 
 @end

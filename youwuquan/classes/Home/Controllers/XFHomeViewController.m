@@ -27,6 +27,7 @@
 #import "XFStatusDetailViewController.h"
 #import "XFVideoDetailViewController.h"
 #import "XFHomeCacheManger.h"
+#import "XFYwqAlertView.h"
 
 #define kHomeHeaderHeight (15 + 15 + 17 + 210 + 15 + 100 + 15 + 15 + 17)
 #define kSecondHeaderHeight (195 + 15 + 17 + 15)
@@ -83,7 +84,7 @@
         
         _homeData = [XFHomeCacheManger sharedManager].homeData;
 
-        
+
     }
     return self;
 }
@@ -112,19 +113,13 @@
     
     [self getLocation];
     
-//    self.allMainViews = @[self.loadFaildView,self.tableNode.view,self.netHotVC.view,self.actorVC.view,self.videoVC.view];
-    
     [self.view setNeedsUpdateConstraints];
-
-    
 }
 
 
 - (void)viewDidDisappear:(BOOL)animated {
     
     [super viewDidDisappear:animated];
-    
-
     
 }
 
@@ -133,15 +128,12 @@
     self.scrollView.contentSize = CGSizeMake(kScreenWidth * 3, 0);
 }
 
-
-
 - (void)loaddata {
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self.tableNode.view.mj_header endRefreshing];
 
     });
-    
     
 }
 
@@ -219,9 +211,6 @@
         [self.CLManager requestWhenInUseAuthorization];
         
     }
-
-
-
     // 调用代理方法
     [self.CLManager startUpdatingLocation];
 }
@@ -235,7 +224,6 @@
     CLLocation *location = [locations lastObject];
     CLLocationCoordinate2D coordinate = location.coordinate;
     
-
     [XFUserInfoManager sharedManager].userLong = coordinate.longitude;
     [XFUserInfoManager sharedManager].userLati = coordinate.latitude;
 
@@ -483,7 +471,8 @@
     self.tableNode.view.contentInset = UIEdgeInsetsMake(0, 0, -49, 0);
     UIView *header = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, 190/375.f*kScreenWidth))];
     
-    UIImageView *headerImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"home_T1"]];
+    UIImageView *headerImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"home21"]];
+    headerImg.contentMode = UIViewContentModeScaleAspectFill;
     
     headerImg.frame = header.bounds;
     
@@ -491,11 +480,30 @@
     
     self.tableNode.view.tableHeaderView = header;
     
+    self.tableNode.view.tableFooterView = [[UIView alloc] init];
+    
+    
+    UITapGestureRecognizer *tapHeader = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHeaderAdView)];
+    
+    headerImg.userInteractionEnabled = YES;
+    [headerImg addGestureRecognizer:tapHeader];
 //    self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
 //
 //        [self loaddata];
 //
 //    }];
+}
+
+#pragma mark - headerTap
+- (void)tapHeaderAdView {
+
+    // 进入广告推荐页面
+    XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+    
+    detailVC.hidesBottomBarWhenPushed = YES;
+    
+    [self.navigationController pushViewController:detailVC animated:YES];
+    
 }
 
 #pragma mark - nearbydelegate
@@ -553,7 +561,7 @@
 
 #pragma mark - cellDelegate
 - (void)homeNode:(XFHomeTableNode *)node didClickLikeButtonWithIndex:(NSIndexPath *)indexPath {
-    
+
     node.likeNode.selected = !node.likeNode.selected;
     // 弹性动画
     [XFToolManager popanimationForLikeNode:node.likeNode.imageNode.layer complate:^{
@@ -561,16 +569,17 @@
         
     }];
     
-    if (node.likeNode.selected) {
-        
-        [self.selectedIndexs addObject:indexPath];
-
-    } else {
-        
-        [self.selectedIndexs removeObject:indexPath];
-
-    }
+    XFHomeDataModel *model = self.homeData[indexPath.section][indexPath.row];
     
+    model.isLiked = [model.isLiked intValue] == 0 ? @"1" : @"0";
+    NSString *liked = [NSString stringWithFormat:@"%zd",[model.likeNumer intValue] + 1] ;
+    NSString *unLiked = [NSString stringWithFormat:@"%zd",[model.likeNumer intValue] - 1] ;
+    
+    model.likeNumer = node.likeNode.selected ? liked : unLiked;
+    
+    [node.likeNode setTitle:model.likeNumer withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+
+
 }
 
 
@@ -584,7 +593,6 @@
         [self.navigationController pushViewController:nearVC animated:YES];
         
     } else {
-        
         // 查看详情
         XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
         
@@ -603,84 +611,149 @@
     
 }
 
-- (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (ASCellNode *)tableNode:(ASTableNode *)tableNode nodeForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     switch (indexPath.section) {
         case 2:
         {
             
-            return ^ASCellNode *() {
-                
-                XFHomeNearNode *node = [[XFHomeNearNode alloc] init];
-                
-                node.delegate = self;
-                
-                return node;
-            };
+            
+            XFHomeNearNode *node = [[XFHomeNearNode alloc] init];
+            
+            node.delegate = self;
+            
+            return node;
+            
             
         }
             break;
             
         case 0:{
             
-            ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
-                
-                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[0][indexPath.row]];
-                
-                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
-                
-                node.delegate = self;
-                
-                return node;
-            };
             
-            return cellNodeBlock;
+            XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[0][indexPath.row]];
+            
+            node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
+            
+            node.delegate = self;
+            
+            return node;
+            
         }
             break;
             
         case 1:
         {
-            ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
-                
-                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[1][indexPath.row]];
             
-                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
-
-                node.delegate = self;
-                
-                return node;
-            };
+            XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[1][indexPath.row]];
             
-            return cellNodeBlock;
+            node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
+            
+            node.delegate = self;
+            
+            return node;
+            
         }
             break;
         default:
         {
-            ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
-                
-                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[3][indexPath.row]];
-                
-                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
-                
-                node.delegate = self;
-                
-                return node;
-            };
             
-            return cellNodeBlock;
+            XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[3][indexPath.row]];
+            
+            node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
+            
+            node.delegate = self;
+            
+            return node;
+            
         }
             break;
     }
     
-
-    ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
-        
-        XFHomeTableNode *node = [[XFHomeTableNode alloc] init];
-        
-        return node;
-    };
-    return cellNodeBlock;
+    XFHomeTableNode *node = [[XFHomeTableNode alloc] init];
+    
+    return node;
+    
 }
+
+//- (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
+//
+//    switch (indexPath.section) {
+//        case 2:
+//        {
+//
+//            return ^ASCellNode *() {
+//
+//                XFHomeNearNode *node = [[XFHomeNearNode alloc] init];
+//
+//                node.delegate = self;
+//
+//                return node;
+//            };
+//
+//        }
+//            break;
+//
+//        case 0:{
+//
+//            ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
+//
+//                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[0][indexPath.row]];
+//
+//                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
+//
+//                node.delegate = self;
+//
+//                return node;
+//            };
+//
+//            return cellNodeBlock;
+//        }
+//            break;
+//
+//        case 1:
+//        {
+//            ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
+//
+//                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[1][indexPath.row]];
+//
+//                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
+//
+//                node.delegate = self;
+//
+//                return node;
+//            };
+//
+//            return cellNodeBlock;
+//        }
+//            break;
+//        default:
+//        {
+//            ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
+//
+//                XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:self.homeData[3][indexPath.row]];
+//
+//                node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
+//
+//                node.delegate = self;
+//
+//                return node;
+//            };
+//
+//            return cellNodeBlock;
+//        }
+//            break;
+//    }
+//
+//
+//    ASCellNode *(^cellNodeBlock)(void) = ^ASCellNode *() {
+//
+//        XFHomeTableNode *node = [[XFHomeTableNode alloc] init];
+//
+//        return node;
+//    };
+//    return cellNodeBlock;
+//}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     
@@ -836,7 +909,9 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:outsideView];
     
     // searchButton
-    UIButton *searchButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 20, 20))];
+    UIButton *searchButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 40))];
+    
+    searchButton.imageEdgeInsets = UIEdgeInsetsMake(0, 40, 0, 0);
     
     [searchButton setImage:[UIImage imageNamed:@"home_search"] forState:(UIControlStateNormal)];
     

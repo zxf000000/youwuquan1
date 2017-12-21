@@ -77,11 +77,11 @@
     XFYueViewController *chatVC = [[XFYueViewController alloc] init];
     chatVC.hidesBottomBarWhenPushed = YES;
     chatVC.msgs = [NSMutableArray array];
-    [chatVC.msgs addObject:@(1)];
-    [chatVC.msgs addObject:@(1)];
-    [chatVC.msgs addObject:@(1)];
-    [chatVC.msgs addObject:@(1)];
-    [chatVC.msgs addObject:@(1)];
+    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
+    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
+    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
+    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
+    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
 
     chatVC.title = @"系统通知";
     chatVC.hasSeprator = NO;

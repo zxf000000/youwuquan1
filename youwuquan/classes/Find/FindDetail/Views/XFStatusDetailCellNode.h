@@ -29,7 +29,7 @@
 @interface XFStatusDetailCellNode : ASCellNode <ASCollectionDelegate,ASCollectionDataSource>
 
 
-- (instancetype)initWithImages:(NSArray *)images likeImgs:(NSArray *)likeImgs;
+- (instancetype)initWithImages:(NSArray *)images likeImgs:(NSArray *)likeImgs unlock:(BOOL)unlock;
 
 - (instancetype)initWithModel:(XFStatusModel *)status;
 
@@ -67,5 +67,8 @@
 @property (nonatomic,strong) ASDisplayNode *bgNode;
 
 @property (nonatomic,strong) id <XFStatusDetailCellDelegate> detailDelegate;
+
+@property (nonatomic,assign) BOOL isUnlock;
+
 
 @end

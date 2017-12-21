@@ -175,7 +175,7 @@
     self.backButton = [[UIButton alloc] init];
     [self.backButton setImage:[UIImage imageNamed:@"find_back"] forState:(UIControlStateNormal)];
     [self.vrView addSubview:self.backButton];
-    self.backButton.imageEdgeInsets = UIEdgeInsetsMake(0, -40, 0, 0);
+    self.backButton.imageEdgeInsets = UIEdgeInsetsMake(0, -60, 0, 0);
     [self.backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
     
     [self.bgImgView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -239,8 +239,8 @@
         
         make.top.mas_offset(20);
         make.left.mas_offset(10);
-        make.width.mas_equalTo(60);
-        make.height.mas_equalTo(30);
+        make.width.mas_equalTo(100);
+        make.height.mas_equalTo(40);
         
     }];
     
@@ -873,7 +873,6 @@
             self.slider.minimumValue = 0;
             self.slider.maximumValue = self.aliPlayer.duration;
             
-            
             break;
         case AliyunVodPlayerEventPlay:
             //暂停后恢复播放时触发
@@ -1279,8 +1278,6 @@
     self.tableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubnode:self.tableNode];
     self.tableNode.frame = CGRectMake(0, kScreenWidth * 9 / 16.f, kScreenWidth, kScreenHeight - kScreenWidth * 9 / 16.f - 44);
-    
-    
     
 }
 

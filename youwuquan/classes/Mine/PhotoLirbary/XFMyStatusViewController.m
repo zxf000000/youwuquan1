@@ -8,6 +8,7 @@
 
 #import "XFMyStatusViewController.h"
 #import "XFStatusDetailViewController.h"
+#import "XFYwqAlertView.h"
 
 @implementation XFMyStatusCell
 
@@ -172,6 +173,9 @@
 
 @property (nonatomic,copy) NSArray *picArr;
 
+@property (nonatomic,assign) NSInteger number;
+
+
 @end
 
 @implementation XFMyStatusViewController
@@ -190,6 +194,7 @@
 
     }
     
+    self.number = 2;
     NSMutableArray *allImg = [NSMutableArray array];
     
     [allImg addObjectsFromArray:self.model.openImageList];
@@ -206,6 +211,7 @@
     
     UITapGestureRecognizer *tapView = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapView)];
     [self.view addGestureRecognizer:tapView];
+
 
 }
 
@@ -300,6 +306,58 @@
     
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
+    
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    
+    NSLog(@"%f---",scrollView.contentOffset.x);
+
+    if (self.number == 4) {
+        
+        return;
+    }
+    
+    if (scrollView.contentOffset.x > kScreenWidth) {
+        
+        // TODO:
+        XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"请先解锁" detail:@"解锁本条动态需要66钻石,是否支付"];
+        
+        alertView.doneBlock = ^{
+            
+            //            [XFToolManager showProgressInWindowWithString:@"余额不足,请充值"];
+            //            // 充值页面
+            //            XFPayViewController *payVC = [[XFPayViewController alloc] init];
+            //            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+            //            [self presentViewController:navi animated:YES completion:nil];
+            
+            // 充值成功,刷新页面
+            
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+            
+            [HUD hideAnimated:YES afterDelay:0.8];
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                // 刷新页面
+                self.number = 4;
+                [self.collectionView reloadData];
+                
+            });
+        };
+        
+        alertView.cancelBlock = ^{
+            
+            // 取消
+            
+        };
+        
+        [alertView showAnimation];
+    }
+}
+
 - (void)clickdeleteButton {
     
     
@@ -308,19 +366,33 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return self.picArr.count;
+    NSInteger count;
+    if (self.picArr.count > 0) {
+        
+        count = self.picArr.count;
+        
+    } else {
+        
+        count = self.number;
+    }
+    
+    return count;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     XFMyStatusCell *cell =  [collectionView dequeueReusableCellWithReuseIdentifier:@"XFMyStatusCell" forIndexPath:indexPath];
     
-//    cell.picView.image = [UIImage imageNamed:@"find_pic15"];
+    cell.picView.image = [UIImage imageNamed:[NSString stringWithFormat:@"find%zd",indexPath.row + 1]];
     
-    NSDictionary *imgInfo = self.picArr[indexPath.item];
     
-    cell.url = imgInfo[@"breviaryUrl"];
-    
+    if (self.picArr.count > 0) {
+        
+        NSDictionary *imgInfo = self.picArr[indexPath.item];
+        
+        cell.url = imgInfo[@"breviaryUrl"];
+    }
+
     return cell;
     
 }

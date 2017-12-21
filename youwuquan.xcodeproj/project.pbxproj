@@ -165,6 +165,15 @@
 		B79C76211FC40E7D0040B844 /* XFCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = B79C76201FC40E7D0040B844 /* XFCardView.m */; };
 		B79C76241FC42F4C0040B844 /* XFActorCardNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B79C76231FC42F4C0040B844 /* XFActorCardNode.m */; };
 		B79C76271FC434830040B844 /* XFCardSizeCache.m in Sources */ = {isa = PBXBuildFile; fileRef = B79C76261FC434830040B844 /* XFCardSizeCache.m */; };
+		B79F5A261FE9127600EFA843 /* XFCHouJiangViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B79F5A251FE9127600EFA843 /* XFCHouJiangViewController.m */; };
+		B79F5A291FE91FAF00EFA843 /* QuCore-ThirdParty.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B79F5A271FE91FAE00EFA843 /* QuCore-ThirdParty.framework */; };
+		B79F5A2A1FE91FAF00EFA843 /* AliyunVideoSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B79F5A281FE91FAF00EFA843 /* AliyunVideoSDK.framework */; };
+		B79F5A2B1FE9208B00EFA843 /* AliyunVideoSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B79F5A281FE91FAF00EFA843 /* AliyunVideoSDK.framework */; };
+		B79F5A2C1FE9208B00EFA843 /* AliyunVideoSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B79F5A281FE91FAF00EFA843 /* AliyunVideoSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B79F5A2D1FE9208B00EFA843 /* QuCore-ThirdParty.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B79F5A271FE91FAE00EFA843 /* QuCore-ThirdParty.framework */; };
+		B79F5A2E1FE9208B00EFA843 /* QuCore-ThirdParty.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B79F5A271FE91FAE00EFA843 /* QuCore-ThirdParty.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B79F5A711FE937C600EFA843 /* XFGiftView.m in Sources */ = {isa = PBXBuildFile; fileRef = B79F5A701FE937C600EFA843 /* XFGiftView.m */; };
+		B79F5A961FEA1C0F00EFA843 /* XFGiftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B79F5A951FEA1C0F00EFA843 /* XFGiftViewController.m */; };
 		B7AABEC01FC55A1D0031E0E8 /* XFChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7AABEBF1FC55A1D0031E0E8 /* XFChatViewController.m */; };
 		B7AABEC31FC567060031E0E8 /* XFEverydayMissionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7AABEC21FC567060031E0E8 /* XFEverydayMissionViewController.m */; };
 		B7AABEC71FC5671E0031E0E8 /* XFMissionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7AABEC51FC5671E0031E0E8 /* XFMissionTableViewCell.m */; };
@@ -241,6 +250,12 @@
 		B7E3FF3B1FC727F90086414F /* XFSelectLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E3FF3A1FC727F90086414F /* XFSelectLabelViewController.m */; };
 		B7E3FF3F1FC82C390086414F /* XFMutableTagsView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E3FF3E1FC82C390086414F /* XFMutableTagsView.m */; };
 		B7E3FF421FC97FE40086414F /* XFUserInfoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E3FF411FC97FE40086414F /* XFUserInfoManager.m */; };
+		B7EA92091FEB65DE0092EB8A /* XFTxTotalTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EA92071FEB65DE0092EB8A /* XFTxTotalTableViewCell.m */; };
+		B7EA920A1FEB65DE0092EB8A /* XFTxTotalTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7EA92081FEB65DE0092EB8A /* XFTxTotalTableViewCell.xib */; };
+		B7EA920E1FEB65ED0092EB8A /* XFTxDiaTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EA920C1FEB65ED0092EB8A /* XFTxDiaTableViewCell.m */; };
+		B7EA920F1FEB65ED0092EB8A /* XFTxDiaTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7EA920D1FEB65ED0092EB8A /* XFTxDiaTableViewCell.xib */; };
+		B7EA92181FEB687C0092EB8A /* XFTxListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EA92161FEB687C0092EB8A /* XFTxListTableViewCell.m */; };
+		B7EA921C1FEB6D540092EB8A /* XFActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EA921B1FEB6D540092EB8A /* XFActivityViewController.m */; };
 		B7EB67BC1FB153FF00AAD65D /* XFHomeTableNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67BB1FB153FF00AAD65D /* XFHomeTableNode.m */; };
 		B7EB67C81FB1995700AAD65D /* ASTextNode+XFSetTextAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67C71FB1995700AAD65D /* ASTextNode+XFSetTextAttributes.m */; };
 		B7EB67CD1FB199B700AAD65D /* XFHomeNearNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67C91FB199B600AAD65D /* XFHomeNearNode.m */; };
@@ -271,6 +286,8 @@
 				B757DACD1FCD787A002C0F3D /* AliyunVodPlayerViewSDK.framework in Embed Frameworks */,
 				B757DACB1FCD787A002C0F3D /* AliyunVodPlayerSDK.framework in Embed Frameworks */,
 				B757DAC91FCD787A002C0F3D /* AliyunPlayerSDK.framework in Embed Frameworks */,
+				B79F5A2E1FE9208B00EFA843 /* QuCore-ThirdParty.framework in Embed Frameworks */,
+				B79F5A2C1FE9208B00EFA843 /* AliyunVideoSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -568,6 +585,14 @@
 		B79C76231FC42F4C0040B844 /* XFActorCardNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFActorCardNode.m; sourceTree = "<group>"; };
 		B79C76251FC434830040B844 /* XFCardSizeCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFCardSizeCache.h; sourceTree = "<group>"; };
 		B79C76261FC434830040B844 /* XFCardSizeCache.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFCardSizeCache.m; sourceTree = "<group>"; };
+		B79F5A241FE9127600EFA843 /* XFCHouJiangViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFCHouJiangViewController.h; sourceTree = "<group>"; };
+		B79F5A251FE9127600EFA843 /* XFCHouJiangViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFCHouJiangViewController.m; sourceTree = "<group>"; };
+		B79F5A271FE91FAE00EFA843 /* QuCore-ThirdParty.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "QuCore-ThirdParty.framework"; sourceTree = "<group>"; };
+		B79F5A281FE91FAF00EFA843 /* AliyunVideoSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AliyunVideoSDK.framework; sourceTree = "<group>"; };
+		B79F5A6F1FE937C600EFA843 /* XFGiftView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFGiftView.h; sourceTree = "<group>"; };
+		B79F5A701FE937C600EFA843 /* XFGiftView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFGiftView.m; sourceTree = "<group>"; };
+		B79F5A941FEA1C0F00EFA843 /* XFGiftViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFGiftViewController.h; sourceTree = "<group>"; };
+		B79F5A951FEA1C0F00EFA843 /* XFGiftViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFGiftViewController.m; sourceTree = "<group>"; };
 		B7AABEBE1FC55A1D0031E0E8 /* XFChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFChatViewController.h; sourceTree = "<group>"; };
 		B7AABEBF1FC55A1D0031E0E8 /* XFChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFChatViewController.m; sourceTree = "<group>"; };
 		B7AABEC11FC567060031E0E8 /* XFEverydayMissionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFEverydayMissionViewController.h; sourceTree = "<group>"; };
@@ -703,6 +728,16 @@
 		B7E3FF3E1FC82C390086414F /* XFMutableTagsView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMutableTagsView.m; sourceTree = "<group>"; };
 		B7E3FF401FC97FE40086414F /* XFUserInfoManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFUserInfoManager.h; sourceTree = "<group>"; };
 		B7E3FF411FC97FE40086414F /* XFUserInfoManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFUserInfoManager.m; sourceTree = "<group>"; };
+		B7EA92061FEB65DE0092EB8A /* XFTxTotalTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFTxTotalTableViewCell.h; sourceTree = "<group>"; };
+		B7EA92071FEB65DE0092EB8A /* XFTxTotalTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFTxTotalTableViewCell.m; sourceTree = "<group>"; };
+		B7EA92081FEB65DE0092EB8A /* XFTxTotalTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = XFTxTotalTableViewCell.xib; sourceTree = "<group>"; };
+		B7EA920B1FEB65ED0092EB8A /* XFTxDiaTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFTxDiaTableViewCell.h; sourceTree = "<group>"; };
+		B7EA920C1FEB65ED0092EB8A /* XFTxDiaTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFTxDiaTableViewCell.m; sourceTree = "<group>"; };
+		B7EA920D1FEB65ED0092EB8A /* XFTxDiaTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = XFTxDiaTableViewCell.xib; sourceTree = "<group>"; };
+		B7EA92151FEB687C0092EB8A /* XFTxListTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFTxListTableViewCell.h; sourceTree = "<group>"; };
+		B7EA92161FEB687C0092EB8A /* XFTxListTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFTxListTableViewCell.m; sourceTree = "<group>"; };
+		B7EA921A1FEB6D540092EB8A /* XFActivityViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFActivityViewController.h; sourceTree = "<group>"; };
+		B7EA921B1FEB6D540092EB8A /* XFActivityViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFActivityViewController.m; sourceTree = "<group>"; };
 		B7EB67BA1FB153FF00AAD65D /* XFHomeTableNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFHomeTableNode.h; sourceTree = "<group>"; };
 		B7EB67BB1FB153FF00AAD65D /* XFHomeTableNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFHomeTableNode.m; sourceTree = "<group>"; };
 		B7EB67C61FB1995700AAD65D /* ASTextNode+XFSetTextAttributes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ASTextNode+XFSetTextAttributes.h"; sourceTree = "<group>"; };
@@ -740,17 +775,21 @@
 				B7F8AFA11FDA80C800C9173D /* libsqlite3.tbd in Frameworks */,
 				B7F8AF9F1FDA80B900C9173D /* libc++.tbd in Frameworks */,
 				B7F8AF9D1FDA80AF00C9173D /* OpenAL.framework in Frameworks */,
+				B79F5A291FE91FAF00EFA843 /* QuCore-ThirdParty.framework in Frameworks */,
 				B7F8AF9B1FDA80A600C9173D /* MediaPlayer.framework in Frameworks */,
 				B7F8AF991FDA809D00C9173D /* VideoToolbox.framework in Frameworks */,
+				B79F5A2B1FE9208B00EFA843 /* AliyunVideoSDK.framework in Frameworks */,
 				B7F8AF951FDA808A00C9173D /* CoreMedia.framework in Frameworks */,
 				B7F8AF931FDA807F00C9173D /* ImageIO.framework in Frameworks */,
 				B7F8AF911FDA807500C9173D /* libz.tbd in Frameworks */,
 				B7F8AFA31FDA80DD00C9173D /* libiconv.tbd in Frameworks */,
 				B7F8AF971FDA809400C9173D /* CoreVideo.framework in Frameworks */,
+				B79F5A2D1FE9208B00EFA843 /* QuCore-ThirdParty.framework in Frameworks */,
 				B757DAD51FCD87E8002C0F3D /* AliyunPlayerSDK.framework in Frameworks */,
 				B757DACC1FCD787A002C0F3D /* AliyunVodPlayerViewSDK.framework in Frameworks */,
 				B757DAC71FCD7850002C0F3D /* AliyunVodPlayerSDK.framework in Frameworks */,
 				418A0283D11842F202E2CD6F /* libPods-youwuquan.a in Frameworks */,
+				B79F5A2A1FE91FAF00EFA843 /* AliyunVideoSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1102,6 +1141,10 @@
 				B75362731FB5C74000EDFE94 /* XFFindDetailViewController.h */,
 				B75362741FB5C74000EDFE94 /* XFFindDetailViewController.m */,
 				B7E3AEAD1FD1586B008E11E2 /* Find.storyboard */,
+				B79F5A941FEA1C0F00EFA843 /* XFGiftViewController.h */,
+				B79F5A951FEA1C0F00EFA843 /* XFGiftViewController.m */,
+				B7EA921A1FEB6D540092EB8A /* XFActivityViewController.h */,
+				B7EA921B1FEB6D540092EB8A /* XFActivityViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1817,6 +1860,8 @@
 				B774597D1FE3EE9500BEC7F7 /* XFPayViewController.m */,
 				B70CCC4E1FE4F7D000F5B7F3 /* XFChargeSuccessViewController.h */,
 				B70CCC4F1FE4F7D000F5B7F3 /* XFChargeSuccessViewController.m */,
+				B79F5A241FE9127600EFA843 /* XFCHouJiangViewController.h */,
+				B79F5A251FE9127600EFA843 /* XFCHouJiangViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1838,6 +1883,7 @@
 		B7C1743C1FBAEAF00029ACDE /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B7EA92051FEB65BC0092EB8A /* 提现记录 */,
 				B7C174401FBAEB260029ACDE /* XFMyMoneyTableViewCell.h */,
 				B7C174411FBAEB260029ACDE /* XFMyMoneyTableViewCell.m */,
 				B7C174421FBAEB260029ACDE /* XFMyMoneyTableViewCell.xib */,
@@ -1924,6 +1970,8 @@
 			children = (
 				B7DDBC881FBD7A8400D53091 /* XFYwqAlertView.h */,
 				B7DDBC891FBD7A8400D53091 /* XFYwqAlertView.m */,
+				B79F5A6F1FE937C600EFA843 /* XFGiftView.h */,
+				B79F5A701FE937C600EFA843 /* XFGiftView.m */,
 			);
 			path = AlertView;
 			sourceTree = "<group>";
@@ -1950,6 +1998,8 @@
 		B7E1B2301FDEAC4900D242D6 /* ShortVideo */ = {
 			isa = PBXGroup;
 			children = (
+				B79F5A281FE91FAF00EFA843 /* AliyunVideoSDK.framework */,
+				B79F5A271FE91FAE00EFA843 /* QuCore-ThirdParty.framework */,
 				B7E1B4C51FDEBAA300D242D6 /* QPSDK.bundle */,
 			);
 			path = ShortVideo;
@@ -1965,6 +2015,21 @@
 				B7E3FF351FC6E8F30086414F /* XFImagePickerViewController.m */,
 			);
 			path = ImagePicker;
+			sourceTree = "<group>";
+		};
+		B7EA92051FEB65BC0092EB8A /* 提现记录 */ = {
+			isa = PBXGroup;
+			children = (
+				B7EA92061FEB65DE0092EB8A /* XFTxTotalTableViewCell.h */,
+				B7EA92071FEB65DE0092EB8A /* XFTxTotalTableViewCell.m */,
+				B7EA92081FEB65DE0092EB8A /* XFTxTotalTableViewCell.xib */,
+				B7EA920B1FEB65ED0092EB8A /* XFTxDiaTableViewCell.h */,
+				B7EA920C1FEB65ED0092EB8A /* XFTxDiaTableViewCell.m */,
+				B7EA920D1FEB65ED0092EB8A /* XFTxDiaTableViewCell.xib */,
+				B7EA92151FEB687C0092EB8A /* XFTxListTableViewCell.h */,
+				B7EA92161FEB687C0092EB8A /* XFTxListTableViewCell.m */,
+			);
+			path = "提现记录";
 			sourceTree = "<group>";
 		};
 		B7EB67B91FB153EE00AAD65D /* Nodes */ = {
@@ -2057,6 +2122,7 @@
 				B774596F1FE3B2DF00BEC7F7 /* XFAcceptTableViewCell.xib in Resources */,
 				B757DA9F1FCBFD1D002C0F3D /* XFLeaderboardTableViewCell.xib in Resources */,
 				B77459741FE3B75A00BEC7F7 /* XFAvtivityMsgTableViewCell.xib in Resources */,
+				B7EA920F1FEB65ED0092EB8A /* XFTxDiaTableViewCell.xib in Resources */,
 				B7C174271FBA896B0029ACDE /* XFMessageListTableViewCell.xib in Resources */,
 				B7C174341FBAABCA0029ACDE /* XFHistoryCollectionViewCell.xib in Resources */,
 				B774596A1FE3A98200BEC7F7 /* XFLikeMessageTableViewCell.xib in Resources */,
@@ -2084,6 +2150,7 @@
 				B757DAA81FCC095A002C0F3D /* XFSkillCollectionViewCell.xib in Resources */,
 				B7954EBB1FC26BE10016BD45 /* PGDatePicker.bundle in Resources */,
 				B74AE9A21FA306DC002BD4A6 /* Assets.xcassets in Resources */,
+				B7EA920A1FEB65DE0092EB8A /* XFTxTotalTableViewCell.xib in Resources */,
 				B77459831FE3FA6900BEC7F7 /* XFVipTableViewCell.xib in Resources */,
 				B7DF034D1FA87E9F0093022C /* XFActorInviteBottomTableViewCell.xib in Resources */,
 				B77459651FE3A96A00BEC7F7 /* XFCommentMessageTableViewCell.xib in Resources */,
@@ -2180,6 +2247,7 @@
 				B7954EBF1FC26BE10016BD45 /* PGPickerColumnView.m in Sources */,
 				B74AE9FD1FA30835002BD4A6 /* XFImageSizeCache.m in Sources */,
 				B73688891FDBE0F600483068 /* XFDiamondCollectionViewCell.m in Sources */,
+				B7EA921C1FEB6D540092EB8A /* XFActivityViewController.m in Sources */,
 				B77459781FE3CCA400BEC7F7 /* XFSendDiamondViewController.m in Sources */,
 				B7954EC21FC26BE10016BD45 /* UIColor+PGHex.m in Sources */,
 				B74AE9F51FA30835002BD4A6 /* XFCoreDataManager.m in Sources */,
@@ -2195,6 +2263,7 @@
 				B7954EC01FC26BE10016BD45 /* PGPickerTableView.m in Sources */,
 				B718C78B1FA8C4CF00DA470B /* XFFindLayout.m in Sources */,
 				B76EA5B41FB54B3B001673CC /* XFFIndHeaderCell.m in Sources */,
+				B7EA920E1FEB65ED0092EB8A /* XFTxDiaTableViewCell.m in Sources */,
 				B718C79C1FA8DC4200DA470B /* WBStatusHelper.m in Sources */,
 				B76EA5B71FB55801001673CC /* XFSlideView.m in Sources */,
 				B729E1291FBED3740045FF68 /* XFChooseLabelViewController.m in Sources */,
@@ -2226,6 +2295,7 @@
 				B75362751FB5C74000EDFE94 /* XFFindDetailViewController.m in Sources */,
 				B70CCC501FE4F7D000F5B7F3 /* XFChargeSuccessViewController.m in Sources */,
 				B74AEA041FA31844002BD4A6 /* XFMainTabbarViewController.m in Sources */,
+				B79F5A261FE9127600EFA843 /* XFCHouJiangViewController.m in Sources */,
 				B7F8AF831FDA241B00C9173D /* XFAllMyStatusViewController.m in Sources */,
 				B7C9EB391FCE8DFA0087C87E /* XFDownloadViewController.m in Sources */,
 				B7DF08FD1FE250FC00310B79 /* NullSafe.m in Sources */,
@@ -2240,6 +2310,7 @@
 				B77459731FE3B75A00BEC7F7 /* XFAvtivityMsgTableViewCell.m in Sources */,
 				B77459641FE3A96A00BEC7F7 /* XFCommentMessageTableViewCell.m in Sources */,
 				B757DAD41FCD8225002C0F3D /* UINavigationController+EnableAutorotate.m in Sources */,
+				B79F5A961FEA1C0F00EFA843 /* XFGiftViewController.m in Sources */,
 				B73933C21FD55B7F00F2B0DD /* XFTagsModel.m in Sources */,
 				B74AE99A1FA306DB002BD4A6 /* ViewController.m in Sources */,
 				B753628A1FB69D0000EDFE94 /* XFConnectNode.m in Sources */,
@@ -2268,6 +2339,7 @@
 				B718C79F1FA8DDFC00DA470B /* YYTableView.m in Sources */,
 				B78F632B1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m in Sources */,
 				B73933D01FD6892A00F2B0DD /* XFFansViewController.m in Sources */,
+				B7EA92181FEB687C0092EB8A /* XFTxListTableViewCell.m in Sources */,
 				B7E10FDC1FC506E1007FFCE0 /* XFActorCardInfoView.m in Sources */,
 				B723CBF11FBC1B7500DC25E9 /* XFStatusDetailCellNode.m in Sources */,
 				B75ECB3C1FB9A9FC00952713 /* XFPwdTextField.m in Sources */,
@@ -2280,6 +2352,7 @@
 				B7F8AF861FDA2BCF00C9173D /* XFMyStatusCellNode.m in Sources */,
 				B7E3FF271FC6BD5E0086414F /* XFLabelCollectionViewCell.m in Sources */,
 				B79C76151FC2DC7E0040B844 /* XFPublishVCTransation.m in Sources */,
+				B7EA92091FEB65DE0092EB8A /* XFTxTotalTableViewCell.m in Sources */,
 				B7DF034C1FA87E9F0093022C /* XFActorInviteBottomTableViewCell.m in Sources */,
 				B7DF03471FA879740093022C /* XFActorInviteTableViewCell.m in Sources */,
 				B7DB14EB1FCFA5840095AED0 /* XFDanmuModel.m in Sources */,
@@ -2339,6 +2412,7 @@
 				B757DABC1FCD4DDA002C0F3D /* XFInfoChooseLabelViewController.m in Sources */,
 				B7954EBD1FC26BE10016BD45 /* PGDatePickerView.m in Sources */,
 				B7EB67D11FB1ADCF00AAD65D /* XFNearbyCellNode.m in Sources */,
+				B79F5A711FE937C600EFA843 /* XFGiftView.m in Sources */,
 				B7E1108E1FDFE4B8006772E2 /* XFWallImagePickerViewController.m in Sources */,
 				B75362721FB59B4C00EDFE94 /* XFfindCellLayout.m in Sources */,
 				B7954EBA1FC26BE10016BD45 /* NSDate+PGCategory.m in Sources */,

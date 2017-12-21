@@ -127,6 +127,8 @@ typedef NS_ENUM(NSInteger,FindCellType) {
  */
 @property (nonatomic,copy) NSArray *authenticationIcons;
 
+@property (nonatomic,strong) ASButtonNode *playButton;
+
 @property (nonatomic,strong) id <XFFindCellDelegate> delegate;
 
 @property (nonatomic,strong) NSIndexPath *index;

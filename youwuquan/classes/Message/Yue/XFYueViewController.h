@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
+typedef NS_ENUM(NSInteger,XFSystemMsgType) {
+    
+    XFSystemMsgTypeActivity,
+    XFSystemMsgTypelikePic,
+    XFSystemMsgTypeLikeNoPic,
+    XFSystemMsgTypeCommentPic,
+    XFSystemMsgTypeCommentNoPic,
+    XFSystemMsgTypeSystem,
+    
+};
 
 @interface XFYueViewController : XFOtherMainViewController
 

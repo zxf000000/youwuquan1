@@ -34,7 +34,7 @@
 #import "XFMessageListViewController.h"
 
 #import "XFDiamondMessageContent.h"
-
+#import <IQKeyboardManager/IQKeyboardManager.h>
 #define kRongyunAppkey @"sfci50a7s4p0i"
 #define kJPUSHAppKey @"11ed157a69bc21bd93670005"
 
@@ -204,6 +204,8 @@
     
     [self.window makeKeyAndVisible];
     
+    [IQKeyboardManager sharedManager].enable = YES;
+    
     return YES;
 }
 
@@ -315,7 +317,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 }
 
 // iOS 10 Support
-- (void)jpushNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler {
+- (void)jpushNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
     // Required
     NSDictionary * userInfo = response.notification.request.content.userInfo;
     if([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {

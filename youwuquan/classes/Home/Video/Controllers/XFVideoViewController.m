@@ -164,6 +164,15 @@
     
 }
 
+- (void)tapHeaderView {
+    
+    if (self.selectedCellBlock) {
+        
+        self.selectedCellBlock();
+    }
+    
+}
+
 - (void)setupTableView {
     
     self.tableView = [[UITableView alloc] init];
@@ -196,6 +205,10 @@
     [self.headerView addSubview:self.headerPicView];
     self.headerPicView.layer.masksToBounds = YES;
     self.headerPicView.contentMode = UIViewContentModeScaleAspectFill;
+    
+    UITapGestureRecognizer *tapHeader = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHeaderView)];
+    self.headerPicView.userInteractionEnabled = YES;
+    [self.headerPicView addGestureRecognizer:tapHeader];
     
     self.gqButton = [[UIButton alloc] init];
     

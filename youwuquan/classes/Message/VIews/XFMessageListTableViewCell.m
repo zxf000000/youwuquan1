@@ -12,7 +12,6 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.countLabel.layer.cornerRadius = 10;
     self.countLabel.layer.masksToBounds = YES;
     

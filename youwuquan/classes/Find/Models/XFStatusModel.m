@@ -10,12 +10,12 @@
 
 @implementation XFStatusModel
 
-+ (instancetype)modelWithName:(NSString *)userName icon:(NSString *)userIcon images:(NSArray *)images contents:(NSString *)contents isCares:(NSString *)isCared time:(NSString *)time isLiked:(NSString *)isLiked likeNumber:(NSString *)likeNumber commentNumber:(NSString *)commentNumber {
++ (instancetype)modelWithName:(NSString *)userName icon:(NSString *)userIcon images:(NSArray *)images contents:(NSString *)contents isCares:(NSString *)isCared time:(NSString *)time isLiked:(NSString *)isLiked likeNumber:(NSString *)likeNumber commentNumber:(NSString *)commentNumber isVideo:(BOOL)isVideo {
     
-    return [[self alloc] initWithName:userName icon:userIcon images:images contents:contents isCares:isCared time:time isLiked:isLiked likeNumber:likeNumber commentNumber:commentNumber];
+    return [[self alloc] initWithName:userName icon:userIcon images:images contents:contents isCares:isCared time:time isLiked:isLiked likeNumber:likeNumber commentNumber:commentNumber isVideo:isVideo];
 }
 
-- (instancetype)initWithName:(NSString *)userName icon:(NSString *)userIcon images:(NSArray *)images contents:(NSString *)contents isCares:(NSString *)isCared time:(NSString *)time isLiked:(NSString *)isLiked likeNumber:(NSString *)likeNumber commentNumber:(NSString *)commentNumber {
+- (instancetype)initWithName:(NSString *)userName icon:(NSString *)userIcon images:(NSArray *)images contents:(NSString *)contents isCares:(NSString *)isCared time:(NSString *)time isLiked:(NSString *)isLiked likeNumber:(NSString *)likeNumber commentNumber:(NSString *)commentNumber isVideo:(BOOL)isVideo {
     
     if (self = [super init]) {
         
@@ -28,6 +28,7 @@
         _createTime = time;
         _greatNum = likeNumber;
         _messageNum = commentNumber;
+        _isVideo = isVideo;
         
     }
     return self;

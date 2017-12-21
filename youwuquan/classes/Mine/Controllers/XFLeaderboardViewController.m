@@ -9,6 +9,7 @@
 #import "XFLeaderboardViewController.h"
 #import "XFLeaderboardModel.h"
 #import "XFLeaderboardTableViewCell.h"
+#import "XFFindDetailViewController.h"
 
 #define kFirstheaderWidth 80
 #define kFirstheaderHeight 100
@@ -157,6 +158,18 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:NO];
 
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    
+    cell.selected = NO;
+    
+    XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+    
+    [self.navigationController pushViewController:detailVC animated:YES];
+    
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

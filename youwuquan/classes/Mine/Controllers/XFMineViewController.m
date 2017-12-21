@@ -27,6 +27,7 @@
 #import "XFAllMyStatusViewController.h"
 #import "XFShareUrlViewController.h"
 #import "XFShareCardViewController.h"
+#import "XFPayViewController.h"
 
 
 #define kHeaderHeight (kScreenWidth * 170/375.f)
@@ -105,6 +106,13 @@
 @property (nonatomic,copy) NSArray *imgs;
 
 @property (nonatomic,copy) NSDictionary *userInfo;
+
+@property (nonatomic,strong) UIButton *vipButton;
+
+@property (nonatomic,strong) UIButton *diamondsButton;
+@property (nonatomic,strong) UIButton *goldButton;
+@property (nonatomic,strong) UIButton *addDiamondsButton;
+@property (nonatomic,strong) UIButton *addGoldButton;
 
 @end
 
@@ -599,6 +607,14 @@
     
 }
 
+- (void)clickAddMoneyButton:(UIButton *)sender {
+    
+    XFPayViewController *payVC = [[XFPayViewController alloc] init];
+    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+    [self presentViewController:navi animated:YES completion:nil];
+    
+}
+
 - (void)setupInfoView {
     
     self.headerInfoView = [[UIView alloc] initWithFrame:(CGRectMake(0, -kHeaderHeight, kScreenWidth, kHeaderHeight))];
@@ -614,23 +630,92 @@
     self.nameLabel.font = [UIFont systemFontOfSize:16];
     self.nameLabel.textColor = [UIColor whiteColor];
     
+    self.vipButton = [[UIButton alloc] init];
+    [self.vipButton setImage:[UIImage imageNamed:@"vip_none"] forState:(UIControlStateNormal)];
+    [self.vipButton setImage:[UIImage imageNamed:@"vip"] forState:(UIControlStateSelected)];
+    [self.vipButton addTarget:self action:@selector(clickVipButton) forControlEvents:(UIControlEventTouchUpInside)];
+    [self.headerInfoView addSubview:self.vipButton];
+    
     self.locationLabel = [[UILabel alloc] init];
     [self.headerInfoView addSubview:self.locationLabel];
     self.locationLabel.text = @"福田区, 深圳";
 
     self.locationLabel.font = [UIFont systemFontOfSize:11];
     self.locationLabel.textColor = [UIColor whiteColor];
+
     
+    self.diamondsButton = [[UIButton alloc] init];
+    [self.diamondsButton setImage:[UIImage imageNamed:@"zuanshi"] forState:(UIControlStateNormal)];
+    [self.diamondsButton setTitle:@"12345" forState:(UIControlStateNormal)];
+    self.diamondsButton.titleLabel.font = [UIFont systemFontOfSize:12];
+    [self.headerInfoView addSubview:self.diamondsButton];
+    
+    self.goldButton = [[UIButton alloc] init];
+    [self.goldButton setImage:[UIImage imageNamed:@"money_jinbi"] forState:(UIControlStateNormal)];
+    [self.goldButton setTitle:@"12345" forState:(UIControlStateNormal)];
+    self.goldButton.titleLabel.font = [UIFont systemFontOfSize:12];
+
+    [self.headerInfoView addSubview:self.goldButton];
+    
+    self.addDiamondsButton = [[UIButton alloc] init];
+    [self.addDiamondsButton setImage:[UIImage imageNamed:@"money_addwhite"] forState:(UIControlStateNormal)];
+    [self.headerInfoView addSubview:self.addDiamondsButton];
+    
+    self.addGoldButton = [[UIButton alloc] init];
+    [self.addGoldButton setImage:[UIImage imageNamed:@"money_addwhite"] forState:(UIControlStateNormal)];
+    [self.headerInfoView addSubview:self.addGoldButton];
+    
+    [self.addGoldButton addTarget:self action:@selector(clickAddMoneyButton:) forControlEvents:(UIControlEventTouchUpInside)];
+    [self.addDiamondsButton addTarget:self action:@selector(clickAddMoneyButton:) forControlEvents:(UIControlEventTouchUpInside)];
+
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
        
         make.centerX.mas_offset(0);
         make.top.mas_offset(60);
         
     }];
+    
+    [self.vipButton mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.centerY.mas_equalTo(self.nameLabel);
+        make.left.mas_equalTo(self.nameLabel.mas_right);
+        make.width.height.mas_equalTo(50);
+    }];
+    
     [self.locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         
         make.centerX.mas_offset(0);
         make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(10);
+        
+    }];
+    
+    [self.addDiamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.bottom.mas_offset(-7);
+        make.right.mas_equalTo(self.headerInfoView.mas_centerX).offset(-70);
+        make.height.width.mas_equalTo(20);
+
+    }];
+    
+    [self.goldButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.bottom.mas_offset(-7);
+        make.left.mas_equalTo(self.headerInfoView.mas_centerX).offset(70);
+        
+    }];
+    
+    [self.addGoldButton mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.left.mas_equalTo(self.goldButton.mas_right).offset(10);
+        make.centerY.mas_equalTo(self.addDiamondsButton);
+        make.height.width.mas_equalTo(20);
+        
+    }];
+    
+    [self.diamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.right.mas_equalTo(self.addDiamondsButton.mas_left).offset(-10);
+        make.centerY.mas_equalTo(self.addDiamondsButton);
         
     }];
     
@@ -647,6 +732,12 @@
     UITapGestureRecognizer *tapHeader = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickTapImage)];
     self.iconView.userInteractionEnabled = YES;
     [self.iconView addGestureRecognizer:tapHeader];
+    
+}
+
+- (void)clickVipButton {
+    
+    self.vipButton.selected = !self.vipButton.selected;
     
 }
 

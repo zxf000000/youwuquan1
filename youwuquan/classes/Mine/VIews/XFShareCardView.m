@@ -28,9 +28,9 @@
         _picView.contentMode = UIViewContentModeScaleAspectFill;
         _picView.layer.cornerRadius = 10;
         _picView.layer.masksToBounds = YES;
+        _picView.backgroundColor = [UIColor whiteColor];
         
-        
-        _shadowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"share_shadow"]];
+        _shadowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"share_addshadow"]];
         [self addSubview:_shadowView];
         _shadowView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
         _shadowView.hidden = YES;
@@ -131,27 +131,16 @@
     
     if (type == XFCardShareViewtypePic) {
         
-        _QRCodeBg.hidden = NO;
-        _logoView.hidden = NO;
-        _textViewLeft.hidden = NO;
-        _textViewMiddle.hidden = NO;
-        _textViewRight.hidden = NO;
-        _picView.hidden = NO;
         _addButton.hidden = YES;
         _addLabel.hidden = YES;
         _shadowView.hidden = YES;
         
     } else {
         
-        _QRCodeBg.hidden = YES;
-        _logoView.hidden = YES;
-        _textViewLeft.hidden = YES;
-        _textViewMiddle.hidden = YES;
-        _textViewRight.hidden = YES;
-        _picView.hidden = YES;
         _addButton.hidden = NO;
         _addLabel.hidden = NO;
         _shadowView.hidden = NO;
+        _picView.image = nil;
         
     }
     

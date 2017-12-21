@@ -133,6 +133,22 @@
         [_followButton setTitle:@"+ 关注" withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
         [_followButton setTitle:@"已关注" withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateSelected)];
         
+        if (_followButton.selected) {
+            
+            [_followButton setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+            
+            _followButton.backgroundColor = [UIColor lightGrayColor];
+            
+        } else {
+            [_followButton setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
+            
+            _followButton.backgroundColor = kMainRedColor;
+            
+        }
+
+        
+        [_followButton addTarget:self action:@selector(clickFollowButton:) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        
         _followButton.backgroundColor = UIColorHex(F72F5E);
         
         [self addSubnode:_followButton];
@@ -217,6 +233,7 @@
         [self addSubnode:_collectionNode];
         
         self.selectionStyle = UITableViewCellSelectionStyleNone;
+        
 
     }
     
@@ -224,12 +241,51 @@
 }
 
 
-- (instancetype)initWithImages:(NSArray *)images likeImgs:(NSArray *)likeImgs {
+
+#pragma mark - 点击事件
+- (void)clickFollowButton:(ASButtonNode *)button {
+    
+    _followButton.selected = !_followButton.selected;
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        
+        if (_followButton.selected) {
+            
+            [_followButton setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+            
+            _followButton.backgroundColor = [UIColor lightGrayColor];
+            
+        } else {
+            [_followButton setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
+            
+            _followButton.backgroundColor = kMainRedColor;
+            
+        }
+        
+    }];
+    
+
+    
+}
+
+- (void)clickLikeButton {
+    
+    self.likeNode.selected = !self.likeNode.selected;
+    
+    NSString *liked = [NSString stringWithFormat:@"%zd",[[self.likeNode.titleNode.attributedText string] intValue] + 1] ;
+    NSString *unLiked = [NSString stringWithFormat:@"%zd",[[self.likeNode.titleNode.attributedText string] intValue] - 1] ;
+    
+    [_likeNode setTitle:self.likeNode.selected ? liked : unLiked withFont:[UIFont systemFontOfSize:13] withColor:[UIColor blackColor] forState:(UIControlStateNormal)];
+    
+}
+
+
+- (instancetype)initWithImages:(NSArray *)images likeImgs:(NSArray *)likeImgs unlock:(BOOL)unlock {
     if (self = [super init]) {
         
         _images = images;
         _likeimgs = likeImgs;
-        
+        _isUnlock = unlock;
         self.backgroundColor = UIColorHex(f4f4f4);
         
         self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -302,7 +358,21 @@
         
         _followButton.backgroundColor = UIColorHex(F72F5E);
         [self addSubnode:_followButton];
+        if (_followButton.selected) {
+            
+            [_followButton setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+            
+            _followButton.backgroundColor = [UIColor lightGrayColor];
+            
+        } else {
+            [_followButton setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
+            
+            _followButton.backgroundColor = kMainRedColor;
+            
+        }
         
+        
+        [_followButton addTarget:self action:@selector(clickFollowButton:) forControlEvents:(ASControlNodeEventTouchUpInside)];
         // 动态内容
         _commentNode = [[ASTextNode alloc] init];
         
@@ -338,6 +408,19 @@
             [self addSubnode:imageNode];
             [noteImgs addObject:imageNode];
             
+            // 设置几张模糊图片
+            // TODO:
+            if (i > 1) {
+                
+                // 模糊
+                if (!self.isUnlock) {
+                    
+                    UIImage *filterImage = [XFToolManager boxblurImage:[UIImage imageNamed:_images[i]] withBlurNumber:40];
+                    imageNode.defaultImage = filterImage;
+                }
+
+            }
+            
         }
         _imageNodes = noteImgs.copy;
         
@@ -362,6 +445,8 @@
         [_likeNode setImage:[UIImage imageNamed:@"find_like"] forState:(UIControlStateNormal)];
         [_likeNode setImage:[UIImage imageNamed:@"home_liked"] forState:(UIControlStateSelected)];
         [self addSubnode:_likeNode];
+        
+        [_likeNode addTarget:self action:@selector(clickLikeButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
         
         _contentNode = [[ASButtonNode alloc] init];
         [_contentNode setTitle:@"520" withFont:[UIFont systemFontOfSize:13] withColor:[UIColor blackColor] forState:(UIControlStateNormal)];
@@ -464,6 +549,8 @@
             imgNode.cornerRadius = 20;
             imgNode.clipsToBounds = YES;
             
+
+            
         }
         
         // 名字和时间
@@ -542,6 +629,7 @@
         
         imgNode.cornerRadius = 20;
         imgNode.clipsToBounds = YES;
+        
         
     }
     

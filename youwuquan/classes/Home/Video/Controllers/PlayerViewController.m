@@ -89,9 +89,6 @@ typedef void(^PickerDoneBlock)(int key);
     self.mDisplayBtn.hidden = YES;
     self.mProjectionBtn.hidden = YES;
     self.mAntiBtn.hidden = YES;
-
-
-    
    
 }
 
@@ -139,11 +136,7 @@ typedef void(^PickerDoneBlock)(int key);
     
     [self.vrLibrary switchInteractiveMode:(MDModeInteractiveMotionWithTouch)];
     [self.vrLibrary switchProjectionMode:MDModeProjectionSphere];
-//    self.mInteractivePicker = [[PickerHelper alloc] init];
-//    [self.mInteractivePicker setData:interactiveDic button:self.mInteractiveBtn defaultKey:[self.vrLibrary getInteractiveMdoe]];
-//    [self.mInteractivePicker setDoneBlock:^(int key){
-//        [blockVRLib switchInteractiveMode:key];
-//    }];
+
     
     self.mDisplayPicker = [[PickerHelper alloc] init];
     [self.mDisplayPicker setData:displayDic button:self.mDisplayBtn defaultKey:[self.vrLibrary getDisplayMdoe]];
@@ -151,18 +144,7 @@ typedef void(^PickerDoneBlock)(int key);
         [blockVRLib switchDisplayMode:key];
     }];
     
-//    self.mProjectionPicker = [[PickerHelper alloc] init];
-//    [self.mProjectionPicker setData:projectionDic button:self.mProjectionBtn defaultKey:[self.vrLibrary getProjectionMode]];
-//    [self.mProjectionPicker setDoneBlock:^(int key){
-//        [blockVRLib switchProjectionMode:key];
-//    }];
-    
-//    self.mAntiPicker = [[PickerHelper alloc] init];
-    
-//    [self.mAntiPicker setData:antiDic button:self.mAntiBtn defaultKey:[self.vrLibrary isAntiDistortionEnabled] ? 1 : 0];
-//    [self.mAntiPicker setDoneBlock:^(int key){
-//        [blockVRLib setAntiDistortionEnabled: key == 1];
-//    }];
+
 }
 
 - (void) initPlayer{}

@@ -10,16 +10,6 @@
 #import "XFOtherMainViewController.h"
 
 
-@interface XFtxCellNode : ASCellNode
-
-@property (nonatomic,strong) ASTextNode *titleNode;
-
-@property (nonatomic,strong) ASTextNode *timeNode;
-
-@property (nonatomic,strong) ASTextNode *moneyNode;
-
-@end
-
 @interface XFTxViewController : XFOtherMainViewController
 
 

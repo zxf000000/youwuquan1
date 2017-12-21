@@ -546,7 +546,9 @@
 - (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
     
     // 分享
-    [XFShareManager sharedImageWithBg:@"" icon:kRandomPic name:kRandomName userid:@"ID:12234213" address:@"深圳南山区"];
+    
+    XFStatusModel *model = self.datas[inexPath.row];
+    [XFShareManager sharedUrl:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"] image:[UIImage imageNamed:model.headUrl] title:model.userNike detail:@"我在尤物圈等你哦"];
     
 }
 

@@ -10,8 +10,9 @@
 #import <IQKeyboardManager/IQKeyboardManager.h>
 #import "XFDiamondCollectionViewCell.h"
 #import "XFDiamondMessageContent.h"
+#import "XFGiftViewController.h"
 
-@interface XFChatViewController ()
+@interface XFChatViewController () <XFGiftVCDelegate>
 
 @end
 
@@ -33,7 +34,7 @@
     [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:1 image:[UIImage imageNamed:@"msg_shot"] title:@"拍摄"];
     [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:2 image:[UIImage imageNamed:@"msg_location"] title:@"位置"];
     
-    [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_zuanshi"] title:@"钻石" tag:9004];
+    [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_sendgift"] title:@"送礼物" tag:9004];
 
     [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_dateher"] title:@"约她" tag:9005];
 
@@ -45,9 +46,16 @@
     
     if (tag == 9004) {
         
-        XFDiamondMessageContent *msg = [XFDiamondMessageContent messageWithContent:@"我送你了一打钻石"];
+//        XFDiamondMessageContent *msg = [XFDiamondMessageContent messageWithContent:@"我送你了一打钻石"];
+//
+//        [self sendMessage:msg pushContent:@"有送钻石消息"];
         
-        [self sendMessage:msg pushContent:@"有送钻石消息"];
+        // 送礼物
+        XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
+        giftVC.delegate = self;
+        [self presentViewController:giftVC animated:YES completion:nil];
+        
+        [[IQKeyboardManager sharedManager] setEnable:YES];
     }
     
     if (tag == 9005) {
@@ -56,6 +64,16 @@
         
     }
     
+}
+
+- (void)xfGiftVC:(XFGiftViewController *)giftVC didSuccessSendGift:(NSDictionary *)info {
+    
+        XFDiamondMessageContent *msg = [XFDiamondMessageContent messageWithContent:@"我送你了一打礼物"];
+    
+        [self sendMessage:msg pushContent:@"有送钻石消息"];
+    
+        [[IQKeyboardManager sharedManager] setEnable:NO];
+
 }
 
 

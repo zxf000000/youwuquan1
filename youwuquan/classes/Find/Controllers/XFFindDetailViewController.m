@@ -18,6 +18,7 @@
 #import "XFChatViewController.h"
 #import "XFStatusDetailViewController.h"
 #import "XFFIndCacheManager.h"
+#import "XFGiftViewController.h"
 
 
 #define kHeaderHeight kScreenWidth
@@ -37,6 +38,9 @@
 // 星座
 @property (nonatomic,strong) UIButton *xzButton;
 @property (nonatomic,strong) UIButton *distabceButton;
+@property (nonatomic,strong) UILabel *idLabel;
+@property (nonatomic,strong) UILabel *careLabel;
+@property (nonatomic,strong) UILabel *fansLabel;
 
 @property (nonatomic,strong) UIButton *followButton;
 
@@ -44,7 +48,7 @@
 
 @property (nonatomic,strong) UIView *bottomView;
 
-@property (nonatomic,strong) NSIndexPath   *openIndexpath;
+@property (nonatomic,strong) NSIndexPath  *openIndexpath;
 
 @property (nonatomic,copy) NSArray *datas;
 
@@ -80,9 +84,6 @@
     
     [super viewWillLayoutSubviews];
     
-    
-    [self.tableNode reloadData];
-    
 }
 
 #pragma mark - cellNodeDelegate点赞
@@ -105,6 +106,12 @@
 }
 
 - (void)findCellNode:(XFFindCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath {
+    
+    XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
+    
+    [self presentViewController:giftVC animated:YES completion:nil];
+    
+    return;
     
     XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"打赏用户" icon:@"" remainNUmber:@"100"];
     
@@ -327,6 +334,20 @@
 
     return nil;
 }
+#pragma mark - 点击关注
+- (void)clickFollowButton:(UIButton *)sender {
+    
+    sender.selected = !sender.selected;
+    
+    if (sender.selected) {
+        
+        sender.backgroundColor = UIColorHex(808080);
+        
+    } else {
+        
+    }
+    
+}
 
 #pragma mark - 马上约
 - (void)clickYueButton {
@@ -388,10 +409,10 @@
     [self.infoView addSubview:_xzButton];
     
     _distabceButton = [[UIButton alloc] init];
-    [_distabceButton setTitle:@"1.63km" forState:(UIControlStateNormal)];
+    [_distabceButton setTitle:@"  1.63km" forState:(UIControlStateNormal)];
     [_distabceButton setImage:[UIImage imageNamed:@"定位"] forState:(UIControlStateNormal)];
     _distabceButton.titleLabel.font = [UIFont systemFontOfSize:11];
-    _distabceButton.imageEdgeInsets = UIEdgeInsetsMake(0, -10, 0, 0);
+//    _distabceButton.imageEdgeInsets = UIEdgeInsetsMake(0, -10, 0, 0);
 
     [_distabceButton setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
 
@@ -399,9 +420,14 @@
     
     _followButton = [[UIButton alloc] init];
     [_followButton setTitle:@"+ 关注" forState:(UIControlStateNormal)];
+    [_followButton setTitle:@"已关注" forState:(UIControlStateSelected)];
+
     _followButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [_followButton setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
+    [_followButton setBackgroundImage:[UIImage imageNamed:@"care_huibg"] forState:(UIControlStateSelected)];
 
     _followButton.backgroundColor = kMainRedColor;
+    [_followButton addTarget:self action:@selector(clickFollowButton:) forControlEvents:(UIControlEventTouchUpInside)];
     [self.infoView addSubview:_followButton];
     [_followButton setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
 
@@ -409,19 +435,59 @@
     
     [self.infoView addSubview:self.wheelPageControl];
     
-    [_xzButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+    _idLabel = [[UILabel alloc] init];
+    _idLabel.textColor = [UIColor whiteColor];
+    _idLabel.font = [UIFont systemFontOfSize:11];
+    _idLabel.text = @"ID: 1122334455";
+    
+    [_infoView addSubview:_idLabel];
+    
+    _careLabel = [[UILabel alloc] init];
+    _careLabel.textColor = [UIColor whiteColor];
+    _careLabel.font = [UIFont systemFontOfSize:14];
+    _careLabel.text = @"关注 666";
+    
+    [_infoView addSubview:_careLabel];
+    
+    _fansLabel = [[UILabel alloc] init];
+    _fansLabel.textColor = [UIColor whiteColor];
+    _fansLabel.font = [UIFont systemFontOfSize:14];
+    _fansLabel.text = @"粉丝 666";
+    
+    [_infoView addSubview:_fansLabel];
+    
+    [_careLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(10);
         make.bottom.mas_offset(-13);
-        make.width.mas_equalTo(50);
-        
     }];
+    
+    [_fansLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.left.mas_equalTo(_careLabel.mas_right).offset(10);
+        make.bottom.mas_equalTo(_careLabel);
+    }];
+    
     [_distabceButton mas_makeConstraints:^(MASConstraintMaker *make) {
        
         make.left.mas_offset(10);
-        make.bottom.mas_equalTo(_xzButton.mas_top).offset(-10);
-        make.width.mas_equalTo(50);
-
+        make.bottom.mas_equalTo(_careLabel.mas_top).offset(-8);
+//        make.width.mas_equalTo(50);
+        
+    }];
+    
+    
+    [_xzButton mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.left.mas_equalTo(_distabceButton.mas_right).offset(10);
+        make.bottom.mas_equalTo(_xzButton);
+//        make.width.mas_equalTo(50);
+    }];
+    
+    [_idLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.bottom.mas_equalTo(_distabceButton.mas_top).offset(-10);
+        make.left.mas_equalTo(_distabceButton);
+        
     }];
     
     [_followButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -621,6 +687,9 @@
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+    [self.tableNode reloadData];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

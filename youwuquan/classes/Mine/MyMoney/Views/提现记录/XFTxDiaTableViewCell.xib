@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="XFTxDiaTableViewCell" rowHeight="102" id="KGk-i7-Jjw" customClass="XFTxDiaTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="447" height="102"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="447" height="101.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="minggxi_qingtie" translatesAutoresizingMaskIntoConstraints="NO" id="ZMy-Yy-ABf">
+                        <rect key="frame" x="10" y="39" width="22" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="22" id="mEf-tR-D42"/>
+                            <constraint firstAttribute="height" constant="22" id="v8Y-ty-qXh"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="相册收入" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="beQ-Hs-Oqv">
+                        <rect key="frame" x="37" y="43" width="57.5" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="zuanshi" translatesAutoresizingMaskIntoConstraints="NO" id="cES-Ga-xby">
+                        <rect key="frame" x="367" y="40.5" width="22" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="22" id="54m-2V-kjE"/>
+                            <constraint firstAttribute="height" constant="22" id="YEd-XH-bdR"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="300" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XrK-qO-hKl">
+                        <rect key="frame" x="399" y="42.5" width="28" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="XrK-qO-hKl" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="E40-Eb-pso"/>
+                    <constraint firstItem="XrK-qO-hKl" firstAttribute="leading" secondItem="cES-Ga-xby" secondAttribute="trailing" constant="10" id="Gd7-9C-hgo"/>
+                    <constraint firstItem="cES-Ga-xby" firstAttribute="centerY" secondItem="XrK-qO-hKl" secondAttribute="centerY" id="HKn-Ec-RzH"/>
+                    <constraint firstItem="beQ-Hs-Oqv" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Pxv-cX-SZa"/>
+                    <constraint firstItem="ZMy-Yy-ABf" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="R1f-Nw-TPV"/>
+                    <constraint firstAttribute="trailing" secondItem="XrK-qO-hKl" secondAttribute="trailing" constant="20" id="ViE-4G-mzJ"/>
+                    <constraint firstItem="beQ-Hs-Oqv" firstAttribute="leading" secondItem="ZMy-Yy-ABf" secondAttribute="trailing" constant="5" id="lIR-Ln-auT"/>
+                    <constraint firstItem="ZMy-Yy-ABf" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="mtx-th-f39"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="iconView" destination="ZMy-Yy-ABf" id="2rk-CQ-vob"/>
+                <outlet property="titleLabel" destination="beQ-Hs-Oqv" id="Sy9-dr-H4I"/>
+            </connections>
+            <point key="canvasLocation" x="38" y="-37"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="minggxi_qingtie" width="22" height="22"/>
+        <image name="zuanshi" width="22" height="22"/>
+    </resources>
+</document>

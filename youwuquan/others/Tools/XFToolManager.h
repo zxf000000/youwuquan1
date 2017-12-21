@@ -17,6 +17,32 @@ typedef void(^completeBlock)(void);
 @interface XFToolManager : NSObject
 
 /**
+ j加装个加载成一个
+
+ @param view view
+ @param text 内容
+ @return HUD
+ */
++ (MBProgressHUD *)showJiaHUDToView:(UIView *)view string:(NSString *)text;
+/**
+ 模糊
+
+ @param image 图片
+ @param blur 程度
+ @return 模糊图
+ */
++(UIImage *)boxblurImage:(UIImage *)image withBlurNumber:(CGFloat)blur;
+
+
+/**
+ 模糊图片
+
+ @param image 图片
+ @return 模糊
+ */
++ (UIImage *)filterImageWith:(UIImage *)image;
+
+/**
  获取视频文件缩略图
 
  @param videoURL 视频url

@@ -12,6 +12,7 @@
 #import "XFChatViewController.h"
 #import "XFYueViewController.h"
 
+
 @interface XFMessageViewController () <UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic,strong) UITableView *tableView;
@@ -44,40 +45,40 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    
+    cell.selected = NO;
+    
     if (indexPath.section == 0) {
         
         XFYueViewController *chatVC = [[XFYueViewController alloc] init];
         chatVC.hidesBottomBarWhenPushed = YES;
         chatVC.msgs = [NSMutableArray array];
-        [chatVC.msgs addObject:@(0)];
-        [chatVC.msgs addObject:@(2)];
-        [chatVC.msgs addObject:@(2)];
-        [chatVC.msgs addObject:@(0)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeActivity)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeActivity)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeActivity)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeActivity)];
         chatVC.title = @"综合消息";
         chatVC.hasSeprator = NO;
         [self.navigationController pushViewController:chatVC animated:YES];
         
     } else {
         
-        
         XFYueViewController *chatVC = [[XFYueViewController alloc] init];
         chatVC.hidesBottomBarWhenPushed = YES;
         chatVC.msgs = [NSMutableArray array];
-        [chatVC.msgs addObject:@(4)];
-        [chatVC.msgs addObject:@(3)];
-        [chatVC.msgs addObject:@(4)];
-        [chatVC.msgs addObject:@(3)];
-        [chatVC.msgs addObject:@(5)];
-        [chatVC.msgs addObject:@(5)];
-        [chatVC.msgs addObject:@(6)];
-        [chatVC.msgs addObject:@(6)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeLikeNoPic)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypelikePic)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeLikeNoPic)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentPic)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentNoPic)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentNoPic)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentPic)];
+        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentPic)];
         chatVC.title = @"动态互动";
         chatVC.hasSeprator = YES;
         [self.navigationController pushViewController:chatVC animated:YES];
     }
-
-
-
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

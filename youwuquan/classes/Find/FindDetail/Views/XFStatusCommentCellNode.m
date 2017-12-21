@@ -95,7 +95,6 @@
         _lineNode.backgroundColor = UIColorHex(f4f4f4);
         [self addSubnode:_lineNode];
         
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
 
     }
     return self;
@@ -122,7 +121,7 @@
     
     _nameNode.style.spacingBefore = 5;
     _nameNode.style.flexShrink = YES;
-    _nameNode.style.preferredSize = CGSizeMake(100, 20);
+    _nameNode.style.preferredSize = CGSizeMake(200, 20);
     
     _commentNode.style.width = ASDimensionMake(kScreenWidth - 45 - 10 - 10 - 20);
     _lineNode.style.preferredSize = CGSizeMake(kScreenWidth - 30, 1);

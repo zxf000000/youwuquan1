@@ -48,4 +48,11 @@
     
 }
 
+- (IBAction)clickChoujiangButton:(UIButton *)sender {
+    
+    if (self.clickChouJiangBlock) {
+        self.clickChouJiangBlock();
+    }
+    
+}
 @end

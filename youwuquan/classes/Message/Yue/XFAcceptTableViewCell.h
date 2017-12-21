@@ -10,5 +10,6 @@
 
 @interface XFAcceptTableViewCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UIImageView *contentBg;
+@property (weak, nonatomic) IBOutlet UILabel *commentLabel;
 
 @end

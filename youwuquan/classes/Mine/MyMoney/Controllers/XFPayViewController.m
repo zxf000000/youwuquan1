@@ -44,6 +44,14 @@
     [self.view setNeedsUpdateConstraints];
 }
 
+- (void)clickBackButton {
+    
+    [super clickBackButton];
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+    
+}
+
 
 - (void)clickTopButton:(UIButton *)sender {
     

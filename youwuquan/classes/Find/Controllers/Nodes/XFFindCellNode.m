@@ -36,21 +36,59 @@
         _backNode.cornerRadius = 4;
         [self addSubnode:_backNode];
         
+        _playButton = [[ASButtonNode alloc] init];
+        [_playButton setImage:[UIImage imageNamed:@"video_play"] forState:(UIControlStateNormal)];
+        [self addSubnode:_playButton];
         // 图像
-        NSMutableArray *nodes = [NSMutableArray array];
-        for (NSInteger i = 0 ; i < _model.imageList.count ; i ++ ) {
+        if (_model.isVideo) {
             
             ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
-            picNode.defaultImage = [UIImage imageNamed:_model.imageList[i]];
+            picNode.defaultImage = [UIImage imageNamed:@"home21"];
             
             picNode.cornerRadius = 10;
             picNode.clipsToBounds = YES;
             
             [self addSubnode:picNode];
-            [nodes addObject:picNode];
+            _picNodes = @[picNode];
+            
+        } else {
+            
+            NSMutableArray *nodes = [NSMutableArray array];
+            for (NSInteger i = 0 ; i < _model.imageList.count ; i ++ ) {
+                
+                ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
+                picNode.defaultImage = [UIImage imageNamed:_model.imageList[i]];
+                
+                picNode.cornerRadius = 10;
+                picNode.clipsToBounds = YES;
+                
+                [self addSubnode:picNode];
+                [nodes addObject:picNode];
+                
+            }
+            _picNodes = nodes.copy;
+
+            
         }
         
-        _picNodes = nodes.copy;
+        
+        
+        _playButton = [[ASButtonNode alloc] init];
+        [_playButton setImage:[UIImage imageNamed:@"video_play"] forState:(UIControlStateNormal)];
+        [self addSubnode:_playButton];
+        
+        if (_model.isVideo) {
+            
+            _playButton.hidden = NO;
+            
+        } else {
+            
+            _playButton.hidden = YES;
+            
+            
+        }
+        
+
         
         // 图像遮罩
         _imgShadowNode = [[ASImageNode alloc] init];
@@ -229,6 +267,22 @@
 
         _approveButton.backgroundColor = UIColorHex(F72F5E);
         _approveButton.selected = [_model.isLiked integerValue] == 0 ? NO : YES;
+        
+        if (_approveButton.selected) {
+            
+            [_approveButton setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+            
+            _approveButton.backgroundColor = [UIColor lightGrayColor];
+            
+        } else {
+            [_approveButton setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
+            
+            _approveButton.backgroundColor = kMainRedColor;
+            
+        }
+
+        
+        
         [self addSubnode:_approveButton];
         
         // 分享
@@ -243,23 +297,78 @@
 //
 //        [self addSubnode:_picNode];
         
-        NSMutableArray *nodes = [NSMutableArray array];
-        for (NSInteger i = 0 ; i < _model.imageList.count ; i ++ ) {
+
+        // 图像
+        if (_model.isVideo) {
             
             ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
-            picNode.defaultImage = [UIImage imageNamed:_model.imageList[i]];
+            picNode.defaultImage = [UIImage imageNamed:@"home21"];
+            
             picNode.cornerRadius = 10;
             picNode.clipsToBounds = YES;
+            
             [self addSubnode:picNode];
-            [nodes addObject:picNode];
+            _picNodes = @[picNode];
+            _playButton.hidden = NO;
+            
+        } else {
+            
+            NSMutableArray *nodes = [NSMutableArray array];
+            for (NSInteger i = 0 ; i < _model.imageList.count ; i ++ ) {
+                
+                ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
+                picNode.defaultImage = [UIImage imageNamed:_model.imageList[i]];
+                
+                picNode.cornerRadius = 10;
+                picNode.clipsToBounds = YES;
+                
+                [self addSubnode:picNode];
+                [nodes addObject:picNode];
+                
+                if (i > 3) {
+                    
+                   picNode.defaultImage = [XFToolManager boxblurImage:[UIImage imageNamed:_model.imageList[i]] withBlurNumber:0.9];
+                }
+                
+                
+            }
+            _picNodes = nodes.copy;
+            _playButton.hidden = YES;
+            
         }
         
-        _picNodes = nodes.copy;
+        _playButton = [[ASButtonNode alloc] init];
+        [_playButton setImage:[UIImage imageNamed:@"video_play"] forState:(UIControlStateNormal)];
+        _playButton.contentMode = UIViewContentModeScaleToFill;
+        [self addSubnode:_playButton];
+        
+        if (_model.isVideo) {
+        
+            _playButton.hidden = NO;
+            
+        } else {
+            
+            _playButton.hidden = YES;
+            
+            
+        }
+//
+//        NSMutableArray *nodes = [NSMutableArray array];
+//        for (NSInteger i = 0 ; i < _model.imageList.count ; i ++ ) {
+//
+//            ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
+//            picNode.defaultImage = [UIImage imageNamed:_model.imageList[i]];
+//            picNode.cornerRadius = 10;
+//            picNode.clipsToBounds = YES;
+//            [self addSubnode:picNode];
+//            [nodes addObject:picNode];
+//        }
+//
+//        _picNodes = nodes.copy;
         
         
         // 图像遮罩
         _imgShadowNode = [[ASImageNode alloc] init];
-//        _imgShadowNode.image = [UIImage imageNamed:@"overlay-zise"];
         [self addSubnode:_imgShadowNode];
         
         // 打赏
@@ -585,7 +694,13 @@
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:picShadowLayout];
             
-            ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, -leftInset, 0, 0)) child:picLayout];
+            _playButton.style.preferredSize = CGSizeMake(80, 80);
+            
+            ASInsetLayoutSpec *insetPlay = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake((picHeight - 80)/2, (picWidth - 80)/2, (picHeight - 80)/2, (picWidth - 80)/2)) child:_playButton];
+            
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:insetPlay];
+            
+            ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, -leftInset, 0, 0)) child:picPlayLayout];
             
             ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picInset,_rewardButton]];
             
@@ -610,9 +725,13 @@
             
             ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
             
+            
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
             
@@ -631,7 +750,10 @@
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
             
@@ -652,7 +774,10 @@
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
             
@@ -684,7 +809,10 @@
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
             
@@ -724,7 +852,10 @@
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
         }
@@ -848,7 +979,11 @@
             
             ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, -leftInset, 0, 0)) child:picLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picInset,_rewardButton]];
+            ASInsetLayoutSpec *insetPlay = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake((picHeight - 80)/2, (picWidth - 80)/2, (picHeight - 80)/2, (picWidth - 80)/2)) child:_playButton];
+            
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picInset overlay:insetPlay];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
             
@@ -889,11 +1024,21 @@
             
             ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  0, 0,0)) child:picsLayout];
             
+            
             ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+            
+            
+            
+//            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+//
+//            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
+//
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
             
@@ -908,11 +1053,22 @@
             
             ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth * (3 - _picNodes.count), 0,0)) child:upPicLayout];
             
-            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
+            
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+            
+            
+//
+//            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+//
+//            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
+//
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
             
@@ -944,7 +1100,15 @@
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+
+            
+//
+//            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+//
+//            ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
+            
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
             
@@ -980,16 +1144,16 @@
             ASStackLayoutSpec *picsLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[upPicLayout,centerPicLayout,downPicLayout]];
             
             
-            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 3 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
+            ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth * 2 - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
             
             ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picsLayout overlay:picShadowLayout];
             
-            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picLayout,_rewardButton]];
+            ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+//
+            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
             
             picButtonLayout = picButtonLayou;
         }
-        
-
         
         // 文字
         // 文字

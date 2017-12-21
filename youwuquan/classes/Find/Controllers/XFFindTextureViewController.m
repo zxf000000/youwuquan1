@@ -18,6 +18,9 @@
 #import "XFShareManager.h"
 #import "XFFIndCacheManager.h"
 #import "XFFindModel.h"
+#import "XFGiftViewController.h"
+#import "XFVideoDetailViewController.h"
+#import "XFActivityViewController.h"
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
 
@@ -131,7 +134,11 @@
 {
     self.scrollView.contentSize = CGSizeMake(kScreenWidth * 2, 0);
     
+    self.tableNode.hidden = YES;
+    
     [self.tableNode reloadData];
+    self.tableNode.hidden = NO;
+
 }
 
 
@@ -142,13 +149,32 @@
         
         if (indexPath.section == 0) {
             
+            // 活动页面
+            // TODO:
+            XFActivityViewController *activityVC = [[XFActivityViewController alloc] init];
+            activityVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:activityVC animated:YES];
             
         } else {
             
-            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
-            statusVC.hidesBottomBarWhenPushed = YES;
+            XFStatusModel *model = self.datas[indexPath.row];
             
-            [self.navigationController pushViewController:statusVC animated:YES];
+            if (model.isVideo) {
+                
+                XFVideoDetailViewController *detailVC = [[XFVideoDetailViewController alloc] init];
+                detailVC.type = Hightdefinition;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+                
+            } else {
+                
+                XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
+                statusVC.hidesBottomBarWhenPushed = YES;
+                
+                [self.navigationController pushViewController:statusVC animated:YES];
+            }
+            
+
         }
         
     } else {
@@ -158,11 +184,8 @@
         
         [self.navigationController pushViewController:statusVC animated:YES];
     }
-    
 
-    
 }
-
 
 - (NSInteger)numberOfSectionsInTableNode:(ASTableNode *)tableNode {
     
@@ -248,6 +271,16 @@
 
 - (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
     
+    XFStatusModel *model = self.datas[indexPath.row];
+    
+    model.isLiked = [model.isLiked intValue] == 0 ? @"1" : @"0";
+    NSString *liked = [NSString stringWithFormat:@"%zd",[model.greatNum intValue] + 1] ;
+    NSString *unLiked = [NSString stringWithFormat:@"%zd",[model.greatNum intValue] - 1] ;
+    
+    model.greatNum = node.likeButton.selected ? liked : unLiked;
+    
+    [node.likeButton setTitle:model.greatNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+
     node.likeButton.selected = !node.likeButton.selected;
     
     [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
@@ -268,6 +301,12 @@
 }
 
 - (void)findCellNode:(XFFindCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath {
+    
+    XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
+    
+    [self presentViewController:giftVC animated:YES completion:nil];
+    
+    return;
     
     XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"打赏用户" icon:@"" remainNUmber:@"100"];
     
@@ -449,7 +488,6 @@
                 isOpen = NO;
             }
             
-            
             XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.datas[indexPath.row]];
             
             node.index = indexPath;
@@ -462,9 +500,7 @@
             } else {
                 node.shadowNode.hidden = NO;
             }
-            
-
-            
+        
             return node;
         };
         

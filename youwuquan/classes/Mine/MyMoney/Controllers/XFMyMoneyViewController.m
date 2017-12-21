@@ -13,6 +13,7 @@
 #import "XFUserInfoNetWorkManager.h"
 #import "XFMoneyNetworkManager.h"
 #import "XFPayViewController.h"
+#import "XFCHouJiangViewController.h"
 
 @interface XFMyMoneyViewController () <UITableViewDelegate,UITableViewDataSource>
 @property (nonatomic,strong) UITableView *tableView;
@@ -35,7 +36,7 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
-    UIButton *rightButton = [[UIButton alloc] init];
+    UIButton *rightButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 40))];
     [rightButton setTitle:@"交易记录" forState:(UIControlStateNormal)];
     [rightButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
     rightButton.titleLabel.font = [UIFont systemFontOfSize:13];
@@ -61,7 +62,6 @@
             self.moneyInfo = responseDic[@"data"][0];
             [self.tableView reloadData];
         }
-        
         
     } failedBlock:^(NSError *error) {
         
@@ -147,6 +147,16 @@
             [HUD hideAnimated:YES];
 
         }];
+        
+    };
+    
+    cell.clickChouJiangBlock = ^{
+      
+        XFCHouJiangViewController *choujiangVC = [[XFCHouJiangViewController alloc] init];
+        
+        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:choujiangVC];
+        
+        [self presentViewController:navi animated:YES completion:nil];
         
     };
     
