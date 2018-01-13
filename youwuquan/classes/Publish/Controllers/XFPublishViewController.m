@@ -12,18 +12,19 @@
 #import "XFPreviewViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
-#if SDK_VERSION == SDK_VERSION_BASE
-#import <AliyunVideoSDK/AliyunVideoSDK.h>
-#else
-#import "AliyunMediator.h"
-#import "AliyunMediaConfig.h"
-#import "AliyunVideoBase.h"
-#import "AliyunVideoUIConfig.h"
-#import "AliyunVideoCropParam.h"
-#endif
+#import "XFShortVideoViewController.h"
+//#if SDK_VERSION == SDK_VERSION_BASE
+//#import <AliyunVideoSDK/AliyunVideoSDK.h>
+//#else
+//#import "AliyunMediator.h"
+//#import "AliyunMediaConfig.h"
+//#import "AliyunVideoBase.h"
+//#import "AliyunVideoUIConfig.h"
+//#import "AliyunVideoCropParam.h"
+//#endif
 
 
-@interface XFPublishViewController () <UINavigationControllerDelegate,AliyunVideoBaseDelegate>
+@interface XFPublishViewController () <UINavigationControllerDelegate>
 
 @property (nonatomic,weak) UIButton *cancelButton;
 
@@ -46,31 +47,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self setupViews];
 
-    AliyunVideoUIConfig *config = [[AliyunVideoUIConfig alloc] init];
 
-    config.backgroundColor = [UIColor clearColor];
-    config.timelineBackgroundCollor = kBlueColor;
-    config.timelineDeleteColor = [UIColor redColor];
-    config.timelineTintColor = [UIColor redColor];
-    config.durationLabelTextColor = [UIColor redColor];
-    config.cutTopLineColor = [UIColor redColor];
-    config.cutBottomLineColor = [UIColor redColor];
-    config.noneFilterText = @"无滤镜";
-    config.hiddenDurationLabel = NO;
-    config.hiddenFlashButton = NO;
-    config.hiddenBeautyButton = NO;
-    config.hiddenCameraButton = NO;
-    config.hiddenImportButton = YES;
-    config.hiddenDeleteButton = NO;
-    config.hiddenFinishButton = NO;
-    config.recordOnePart = NO;
-    config.filterArray = @[@"炽黄",@"粉桃",@"海蓝",@"红润",@"灰白",@"经典",@"麦茶",@"浓烈",@"柔柔",@"闪耀",@"鲜果",@"雪梨",@"阳光",@"优雅",@"朝阳"];
-    config.imageBundleName = @"QPSDK";
-    config.filterBundleName = @"Resource";
-    config.recordType = AliyunVideoRecordTypeHold;
-    config.showCameraButton = YES;
-
-    [[AliyunVideoBase shared] registerWithAliyunIConfig:config];
 
 }
 
@@ -123,7 +100,6 @@
                 break;
             case 3002:
             {
-                // 拍摄
                 [self pushOutPreviewVC];
             }
                 break;
@@ -212,27 +188,15 @@
             
     }
     
-    
-    AliyunVideoRecordParam *quVideo = [[AliyunVideoRecordParam alloc] init];
-    quVideo.ratio = AliyunVideoVideoRatio9To16;
-    quVideo.size = AliyunVideoVideoSize540P;
-    quVideo.minDuration = 2;
-    quVideo.maxDuration = 30;
-    quVideo.position = AliyunCameraPositionFront;
-    quVideo.beautifyStatus = YES;
-    quVideo.beautifyValue = 100;
-    quVideo.torchMode = AliyunCameraTorchModeOff;
-    quVideo.outputPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/record_save.mp4"];
 
-    UIViewController *recordViewController = [[AliyunVideoBase shared] createRecordViewControllerWithRecordParam:(AliyunVideoRecordParam*)quVideo];
-    [AliyunVideoBase shared].delegate = (id)self;
-    recordViewController.view.backgroundColor = [UIColor whiteColor];
+    XFShortVideoViewController *recordViewController = [[XFShortVideoViewController alloc] init];;
+   
     [self.navigationController pushViewController:recordViewController animated:YES];
 
-    //获取到状态栏
-    UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
-    //设置透明度为0
-    statusBar.alpha = 0;
+//    //获取到状态栏
+//    UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
+//    //设置透明度为0
+//    statusBar.alpha = 0;
     
 }
 
@@ -266,57 +230,57 @@
 }
 
 
-- (void)videoBase:(AliyunVideoBase *)base recordCompeleteWithRecordViewController:(UIViewController *)recordVC videoPath:(NSString *)videoPath {
-
-
-    // 保存到相册
-    PHPhotoLibrary *library = [PHPhotoLibrary sharedPhotoLibrary];
-
-    [library performChanges:^{
-        // 根据路径创建一个资源-- 直接保存到相册
-        [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:[NSURL URLWithString:videoPath]];
-
-
-    } completionHandler:^(BOOL success, NSError * _Nullable error) {
-
-        // 保存到相册失败
-    }];
-
-    // 截图
-    XFAddImageViewController *addImgVC = [[XFAddImageViewController alloc] init];
-    addImgVC.videoImage = [XFToolManager getImage:videoPath];
-    addImgVC.videoPath = videoPath;
-    addImgVC.type = XFAddImgVCTypeVideo;
-
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"视频是否加密" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
-    UIAlertAction *actionYES = [UIAlertAction actionWithTitle:@"私密" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-
-        addImgVC.isOpenVideo = NO;
-        [self.navigationController pushViewController:addImgVC animated:YES];
-
-        [self showStatusbar];
-    }];
-
-    UIAlertAction *actionNo = [UIAlertAction actionWithTitle:@"公开" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
-
-        addImgVC.isOpenVideo = YES;
-
-        [self.navigationController pushViewController:addImgVC animated:YES];
-
-        [self showStatusbar];
-
-    }];
-
-    // 跳转到发布
-
-    [alertController addAction:actionYES];
-    [alertController addAction:actionNo];
-
-    [self presentViewController:alertController animated:YES completion:nil];
-
-
-
-}
+//- (void)videoBase:(AliyunVideoBase *)base recordCompeleteWithRecordViewController:(UIViewController *)recordVC videoPath:(NSString *)videoPath {
+//
+//
+//    // 保存到相册
+//    PHPhotoLibrary *library = [PHPhotoLibrary sharedPhotoLibrary];
+//
+//    [library performChanges:^{
+//        // 根据路径创建一个资源-- 直接保存到相册
+//        [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:[NSURL URLWithString:videoPath]];
+//
+//
+//    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+//
+//        // 保存到相册失败
+//    }];
+//
+//    // 截图
+//    XFAddImageViewController *addImgVC = [[XFAddImageViewController alloc] init];
+//    addImgVC.videoImage = [XFToolManager getImage:videoPath];
+//    addImgVC.videoPath = videoPath;
+//    addImgVC.type = XFAddImgVCTypeVideo;
+//
+//    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"视频是否加密" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
+//    UIAlertAction *actionYES = [UIAlertAction actionWithTitle:@"私密" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+//
+//        addImgVC.isOpenVideo = NO;
+//        [self.navigationController pushViewController:addImgVC animated:YES];
+//
+//        [self showStatusbar];
+//    }];
+//
+//    UIAlertAction *actionNo = [UIAlertAction actionWithTitle:@"公开" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+//
+//        addImgVC.isOpenVideo = YES;
+//
+//        [self.navigationController pushViewController:addImgVC animated:YES];
+//
+//        [self showStatusbar];
+//
+//    }];
+//
+//    // 跳转到发布
+//
+//    [alertController addAction:actionYES];
+//    [alertController addAction:actionNo];
+//
+//    [self presentViewController:alertController animated:YES completion:nil];
+//
+//
+//
+//}
 
 - (void)pushOutAddImgVC {
     

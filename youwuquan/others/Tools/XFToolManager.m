@@ -15,6 +15,33 @@
 
 @implementation XFToolManager
 
++ (void)statusBarHidhen:(BOOL)hidden {
+    [UIView animateWithDuration:0.2 animations:^{
+        //获取到状态栏
+        UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
+        //设置透明度为0
+        if (hidden) {
+            statusBar.alpha = 0;
+
+        } else {
+            statusBar.alpha = 1;
+
+        }
+    }];
+    
+}
+
++ (NSString *)changeLongToDateWith:(id)dateObj {
+    
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[dateObj longValue]/1000];
+    
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    format.dateFormat = @"yyyy-MM-dd HH:mm";
+    
+    return [format stringFromDate:date];
+    
+}
+
 + (MBProgressHUD *)showJiaHUDToView:(UIView *)view string:(NSString *)text {
     
     MBProgressHUD *HUD = [self showProgressHUDtoView:view];
@@ -67,7 +94,7 @@
 #pragma mark - 计算星座
 + (NSString *)getAstroWithMonth:(NSInteger)m day:(NSInteger)d{
     
-    NSString *astroString = @"魔羯水瓶双鱼白羊金牛双子巨蟹狮子处女天秤天蝎射手魔羯";
+    NSString *astroString = @"摩羯水瓶双鱼白羊金牛双子巨蟹狮子处女天秤天蝎射手魔羯";
     NSString *astroFormat = @"102123444543";
     NSString *result;
     
@@ -159,9 +186,21 @@
  */
 + (void)changeHUD:(MBProgressHUD *)HUD successWithText:(NSString *)text {
     
-    HUD.mode = MBProgressHUDModeText;
-    HUD.label.text = text;
+    HUD.mode = MBProgressHUDModeCustomView;
+    HUD.detailsLabel.text = text;
+    UIImageView *img = [[UIImageView alloc] init];
+    img.image = [UIImage imageNamed:@"ds_ok"];
+    HUD.customView = img;
+    HUD.tintColor = [UIColor blackColor];
+    HUD.animationType = MBProgressHUDAnimationZoom;
+    HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+    HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
+    HUD.contentColor = [UIColor whiteColor];
+//    HUD.mode = MBProgressHUDModeText;
+//    HUD.label.text = text;
     [HUD hideAnimated:YES afterDelay:0.5];
+    
+    
     
 }
 
@@ -264,7 +303,7 @@
     
     HUD.mode = MBProgressHUDModeText;
     
-    HUD.label.text = string;
+    HUD.detailsLabel.text = string;
     HUD.contentColor = [UIColor whiteColor];
 
     HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
@@ -285,21 +324,19 @@
     
 }
 
-
-
-+ (NSString *) md5:(NSString *) input {
++ (NSString *) md5:(NSString *)input {
     
     const char *cStr = [input UTF8String];
-
     unsigned char digest[CC_MD5_DIGEST_LENGTH];
-    CC_MD5( cStr, (CC_LONG)strlen(cStr), digest ); // This is the md5 call
     
-    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    CC_MD5(cStr, (CC_LONG)strlen(cStr), digest);
     
-    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
-        [output appendFormat:@"%02x", digest[i]];
+    NSMutableString *result = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [result appendFormat:@"%02X", digest[i]];
+    }
     
-    return  output;
+    return result;
 }
 
 
@@ -545,10 +582,12 @@
     //设置filter
     CIFilter *filter = [CIFilter filterWithName:@"CIGaussianBlur"];
     [filter setValue:inputImage forKey:kCIInputImageKey];
-    [filter setValue:@(0.8) forKey: @"inputRadius"];
+    [filter setValue:@(30) forKey: @"inputRadius"];
     //模糊图片
     CIImage *result=[filter valueForKey:kCIOutputImageKey];
-    CGImageRef outImage=[context createCGImage:result fromRect:[result extent]];
+//    CGImageRef outImage=[context createCGImage:result fromRect:[result extent]];
+    
+    CGImageRef outImage = [context createCGImage:result fromRect:[inputImage extent]];
     UIImage *blurImage=[UIImage imageWithCGImage:outImage];
     CGImageRelease(outImage);
     return blurImage;
@@ -556,6 +595,18 @@
     
 //    return blurImage;
     
+}
+
+
++ (NSDictionary *)getVideoInfoWithSourcePath:(NSString *)path {
+    AVURLAsset * asset = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:path]];
+    CMTime   time = [asset duration];
+    int seconds = ceil(time.value/time.timescale);
+    
+    NSInteger   fileSize = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil].fileSize;
+    
+    return @{@"size" : @(fileSize),
+             @"duration" : @(seconds)};
 }
 
 

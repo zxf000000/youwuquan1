@@ -20,24 +20,28 @@
 
 #import "XFSnapShotViewController.h"
 
-// shareSDK
-#import <ShareSDK/ShareSDK.h>
-#import <ShareSDKConnector/ShareSDKConnector.h>
+// youmnen
+#import <UMSocialCore/UMSocialCore.h>
+
 //腾讯开放平台（对应QQ和QQ空间）SDK头文件
-#import <TencentOpenAPI/TencentOAuth.h>
-#import <TencentOpenAPI/QQApiInterface.h>
+//#import <TencentOpenAPI/TencentOAuth.h>
+//#import <TencentOpenAPI/QQApiInterface.h>
 //微信SDK头文件
-#import <WXApi.h>
+//#import <WXApi.h>
 
 #import "XFMessageViewController.h"
 #import "XFMineViewController.h"
 #import "XFMessageListViewController.h"
 
+#import "XFLoginNetworkManager.h"
+#import "XFMessageCacheManager.h"
+
+#import <Bugly/Bugly.h>
 #import "XFDiamondMessageContent.h"
 #import <IQKeyboardManager/IQKeyboardManager.h>
-#define kRongyunAppkey @"sfci50a7s4p0i"
-#define kJPUSHAppKey @"11ed157a69bc21bd93670005"
-
+#define kRongyunAppkey @"mgb7ka1nmwztg"
+#define kJPUSHAppKey @"1b12000e632a36af7363f2c7"
+#define USHARE_DEMO_APPKEY @"5a559d19b27b0a4556000275"
 
 
 @interface AppDelegate () <JPUSHRegisterDelegate,UITabBarControllerDelegate,RCIMUserInfoDataSource>
@@ -48,62 +52,31 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // bugly
+    [Bugly startWithAppId:@"2a434deb91"];
 
     #pragma mark - 捕获
     // app接受通知之后开启
     // 捕获通知
     NSDictionary *remoteNotificationUserInfo = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
 
-    NSLog(@"%@-----通知",remoteNotificationUserInfo);
-
+    if (remoteNotificationUserInfo) {
+        
+        [[XFMessageCacheManager sharedManager] updateCacheWith:remoteNotificationUserInfo];
+        
+    }
     
-    // 初始化shareSDK
-    /**初始化ShareSDK应用
-     @param activePlatforms
-     使用的分享平台集合
-     @param importHandler (onImport)
-     导入回调处理，当某个平台的功能需要依赖原平台提供的SDK支持时，需要在此方法中对原平台SDK进行导入操作
-     @param configurationHandler (onConfiguration)
-     配置回调处理，在此方法中根据设置的platformType来填充应用配置信息
-     */
-    [ShareSDK registerActivePlatforms:@[
-                                        @(SSDKPlatformTypeWechat),
-                                        @(SSDKPlatformTypeQQ),
-                                        ]
-                             onImport:^(SSDKPlatformType platformType)
-     {
-         switch (platformType)
-         {
-             case SSDKPlatformTypeWechat:
-                 [ShareSDKConnector connectWeChat:[WXApi class]];
-                 break;
-             case SSDKPlatformTypeQQ:
-                 [ShareSDKConnector connectQQ:[QQApiInterface class] tencentOAuthClass:[TencentOAuth class]];
-                 break;
-                 
-             default:
-                 break;
-         }
-     }
-                      onConfiguration:^(SSDKPlatformType platformType, NSMutableDictionary *appInfo)
-     {
-         switch (platformType)
-         {
-                 
-             case SSDKPlatformTypeWechat:
-                 [appInfo SSDKSetupWeChatByAppId:@"wx48c1f096be6cf592"
-                                       appSecret:@"f448bf514ad77303e176e48e908dae23"];
-                 break;
-             case SSDKPlatformTypeQQ:
-                 [appInfo SSDKSetupQQByAppId:@"1106111931"
-                                      appKey:@"BpMW8r0euEUKhazs"
-                                    authType:SSDKAuthTypeBoth];
-                 break;
-                 
-             default:
-                 break;
-         }
-     }];
+    /* 打开调试日志 */
+    [[UMSocialManager defaultManager] openLog:YES];
+    
+    /* 设置友盟appkey */
+    [[UMSocialManager defaultManager] setUmSocialAppkey:USHARE_DEMO_APPKEY];
+    
+    [self configUSharePlatforms];
+    
+    [self confitUShareSettings];
+    
+
 
     // 初始化融云
     [[RCIM sharedRCIM] initWithAppKey:kRongyunAppkey];
@@ -170,19 +143,9 @@
                  apsForProduction:NO
             advertisingIdentifier:advertisingId];
     
-    
-    [JPUSHService setAlias:@"1" completion:^(NSInteger iResCode, NSString *iAlias, NSInteger seq) {
-        
-        
-    } seq:123];
-    
     // 自定义推送消息通知
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self selector:@selector(networkDidReceiveMessage:) name:kJPFNetworkDidReceiveMessageNotification object:nil];
-    
-    
-    
-    
     
     // rootVC
     self.window = [[UIWindow alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight))];
@@ -202,7 +165,47 @@
     
     self.window.rootViewController = self.mainTabbar;
     
+    if ([XFUserInfoManager sharedManager].userName) {
+        
+//        [XFLoginNetworkManager loginWithPhone:[XFUserInfoManager sharedManager].userName pwd:[XFUserInfoManager sharedManager].pwd longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
+//
+//
+//        } successBlock:^(id responseObj) {
+//
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//
+//                [self.window makeKeyAndVisible];
+//
+//            });
+//
+//
+//        } failBlock:^(NSError *error) {
+//
+//        }];
+        
+//        [XFUserInfoManager sharedManager].userName = @"13040886496";
+//        [XFUserInfoManager sharedManager].pwd = @"1234567a";
+ 
+        [XFLoginNetworkManager loginWithPhone:[XFUserInfoManager sharedManager].userName pwd:[XFUserInfoManager sharedManager].pwd longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
+            
+            
+        } successBlock:^(id responseObj) {
+            
+            NSLog(@"重新登录成功");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                
+            });
+            
+            
+        } failBlock:^(NSError *error) {
+            
+        }];
+        
+    }
+    
     [self.window makeKeyAndVisible];
+
     
     [IQKeyboardManager sharedManager].enable = YES;
     
@@ -249,11 +252,9 @@
     
     NSInteger index = [tabBarController.childViewControllers indexOfObject:viewController];
     
-//    UINavigationController *navi = (UINavigationController *)viewController;
-    
     if (index == 2 || index == 3) {
         
-        if ([XFUserInfoManager sharedManager].token == nil || [XFUserInfoManager sharedManager].token.length == 0) {
+        if ([XFUserInfoManager sharedManager].userName == nil || [XFUserInfoManager sharedManager].userName.length == 0) {
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"presentLoginVCNotification" object:nil];
             
@@ -265,10 +266,15 @@
 
 // 收到自定义消息
 - (void)networkDidReceiveMessage:(NSNotification *)notification {
+    // 极光
     NSDictionary * userInfo = [notification userInfo];
     NSString *content = [userInfo valueForKey:@"content"];
     NSDictionary *extras = [userInfo valueForKey:@"extras"];
-    NSString *customizeField1 = [extras valueForKey:@"customizeField1"]; //服务端传递的Extras附加字段，key是自己定义的
+    NSString *customizeField1 = [extras valueForKey:@"customizeField1"];
+    
+    //服务端传递的Extras附加字段，key是自己定义的
+    NSLog(@"收到推送--------%@",userInfo);
+    [[XFMessageCacheManager sharedManager] updateCacheWith:userInfo[@"content"]];
     
 }
 
@@ -346,6 +352,64 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
 }
+
+#pragma mark - 友盟配置
+- (void)confitUShareSettings
+{
+    /*
+     * 打开图片水印
+     */
+    //[UMSocialGlobal shareInstance].isUsingWaterMark = YES;
+    
+    /*
+     * 关闭强制验证https，可允许http图片分享，但需要在info.plist设置安全域名
+     <key>NSAppTransportSecurity</key>
+     <dict>
+     <key>NSAllowsArbitraryLoads</key>
+     <true/>
+     </dict>
+     */
+    //[UMSocialGlobal shareInstance].isUsingHttpsWhenShareContent = NO;
+    
+}
+
+- (void)configUSharePlatforms
+{
+    /*
+     设置微信的appKey和appSecret
+     [微信平台从U-Share 4/5升级说明]http://dev.umeng.com/social/ios/%E8%BF%9B%E9%98%B6%E6%96%87%E6%A1%A3#1_1
+     */
+    [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_WechatSession appKey:@"wx48c1f096be6cf592" appSecret:@"f448bf514ad77303e176e48e908dae23" redirectURL:nil];
+    /*
+     * 移除相应平台的分享，如微信收藏
+     */
+    //[[UMSocialManager defaultManager] removePlatformProviderWithPlatformTypes:@[@(UMSocialPlatformType_WechatFavorite)]];
+    
+    /* 设置分享到QQ互联的appID
+     * U-Share SDK为了兼容大部分平台命名，统一用appKey和appSecret进行参数设置，而QQ平台仅需将appID作为U-Share的appKey参数传进即可。
+     100424468.no permission of union id
+     [QQ/QZone平台集成说明]http://dev.umeng.com/social/ios/%E8%BF%9B%E9%98%B6%E6%96%87%E6%A1%A3#1_3
+     */
+    [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_QQ appKey:@"1106475423"/*设置QQ平台的appID*/  appSecret:nil redirectURL:@"http://mobile.umeng.com/social"];
+    
+    /*
+     设置新浪的appKey和appSecret
+     [新浪微博集成说明]http://dev.umeng.com/social/ios/%E8%BF%9B%E9%98%B6%E6%96%87%E6%A1%A3#1_2
+     */
+    [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_Sina appKey:@"894460001"  appSecret:@"be21a2fc174295f968f8b951d935a05a" redirectURL:@"https://sns.whalecloud.com/sina2/callback"];
+    
+}
+// 支持所有iOS系统
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    //6.3的新的API调用，是为了兼容国外平台(例如:新版facebookSDK,VK等)的调用[如果用6.2的api调用会没有回调],对国内平台没有影响
+    BOOL result = [[UMSocialManager defaultManager] handleOpenURL:url sourceApplication:sourceApplication annotation:annotation];
+    if (!result) {
+        // 其他如支付等SDK的回调
+    }
+    return result;
+}
+
 
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {

@@ -45,5 +45,9 @@ typedef NS_ENUM(NSInteger,XFStatusDetailVCType) {
 @property (nonatomic,copy) NSArray *commentList;
 @property (nonatomic,copy) NSArray *likeList;
 
+@property (nonatomic,copy) void(^followedBlock)(XFStatusModel *model ,BOOL followed);
+
+@property (nonatomic,copy) void(^likeBlock)(XFStatusModel *model, BOOL liked);
+
 
 @end

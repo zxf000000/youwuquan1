@@ -19,7 +19,7 @@
         _iconNode = [ASNetworkImageNode new];
 //        _iconNode.delegate = self;
         _iconNode.defaultImage = [UIImage imageNamed:kRandomIcon];
-        _iconNode.URL = [NSURL URLWithString:_model.headUrl];
+        _iconNode.URL = [NSURL URLWithString:_model.headIconUrl];
         _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
             
             UIGraphicsBeginImageContext(image.size);
@@ -44,7 +44,7 @@
         
         _nameNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:_model.userNike == nil? @"小魂淡":_model.userNike];
+        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:_model.username == nil? @"小魂淡":_model.username];
         
         str.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:15.0],
@@ -58,7 +58,9 @@
         
         _timeNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *timeStr = [[NSMutableAttributedString  alloc] initWithString:_model.createTime== nil? @"小魂淡":_model.createTime];
+        ;
+        
+        NSMutableAttributedString *timeStr = [[NSMutableAttributedString  alloc] initWithString:_model.commentDate == nil? @"数据错误":[XFToolManager changeLongToDateWith:_model.commentDate]];
         
         timeStr.attributes = @{
                                NSFontAttributeName : [UIFont systemFontOfSize:11],
@@ -72,7 +74,7 @@
         
         _commentNode = [[ASTextNode alloc] init];
 
-        NSMutableAttributedString *comment = [[NSMutableAttributedString  alloc] initWithString:_model.message== nil? @"小魂淡":_model.message];
+        NSMutableAttributedString *comment = [[NSMutableAttributedString  alloc] initWithString:_model.text == nil? @"数据错误":_model.text];
         NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
         
         paraStyle.lineSpacing = 5;

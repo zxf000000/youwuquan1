@@ -41,6 +41,14 @@
 
 
 -(void) setupWithArray:(NSArray *)array{
+//    self.wheelScrollView.scrollEnabled = YES;
+//    self.mask.hidden = YES;
+//    self.isLocal = NO;
+//    self.imageArray = array;
+//    self.imageNum = self.imageArray.count;
+//    self.currentImageIndex = 0;
+    
+    self.isLocal = NO;
     self.wheelScrollView.scrollEnabled = YES;
     self.mask.hidden = YES;
     self.imageArray = array;
@@ -57,8 +65,6 @@
 
 -(void) setup{
 
-    
-
     [self setupTimer];
     [self updateImage];
 }
@@ -71,7 +77,7 @@
 
 -(void) setupTimer{
     if (self.interval == 0) {
-        self.interval = 3;
+        self.interval = 2;
     }
     self.timer = [NSTimer scheduledTimerWithTimeInterval:self.interval target:self selector:@selector(updateWheel) userInfo:nil repeats:YES];
     [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
@@ -95,9 +101,13 @@
         self.image3.image = [UIImage imageNamed:self.imageArray[right]];
     }else{
         
-        [self.image1 setImageWithURL:[NSURL URLWithString:self.imageArray[left]]  placeholder:self.placeHolder];
-        [self.image2 setImageWithURL:[NSURL URLWithString:self.imageArray[self.currentImageIndex]] placeholder:self.placeHolder];
-        [self.image3 setImageWithURL:[NSURL URLWithString:self.imageArray[right]] placeholder:self.placeHolder];
+//        [self.image1 setImageWithURL:[NSURL URLWithString:self.imageArray[left]]  placeholder:self.placeHolder];
+//        [self.image2 setImageWithURL:[NSURL URLWithString:self.imageArray[self.currentImageIndex]] placeholder:self.placeHolder];
+//        [self.image3 setImageWithURL:[NSURL URLWithString:self.imageArray[right]] placeholder:self.placeHolder];
+        
+        [self.image1 setImageWithURL:[NSURL URLWithString:self.imageArray[left]]  options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        [self.image2 setImageWithURL:[NSURL URLWithString:self.imageArray[self.currentImageIndex]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        [self.image3 setImageWithURL:[NSURL URLWithString:self.imageArray[right]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
 
     }
     
@@ -145,14 +155,13 @@
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     
     [self.timer invalidate];
-
+    self.timer = nil;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     
     [self setupTimer];
 
-    
 }
 
 - (UIScrollView *)wheelScrollView {

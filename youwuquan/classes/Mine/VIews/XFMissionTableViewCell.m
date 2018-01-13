@@ -19,12 +19,12 @@
     
     _model = model;
     
-    _coinLabel.text = [NSString stringWithFormat:@"%@金币",_model.coin];
-    _numberLabel.text = [NSString stringWithFormat:@"已完成(%@/%@)",_model.number,_model.total];
-    _titleLabel.text = _model.title;
-    _desLabel.text = _model.detail;
+    _coinLabel.text = [NSString stringWithFormat:@"%@金币",_model.category[@"coin"]];
+    _numberLabel.text = [NSString stringWithFormat:@"已完成(%@/%@)",_model.currentProgress,_model.totalProgress];
+    _titleLabel.text = _model.category[@"title"];
+    _desLabel.text = _model.category[@"subTitle"];
     
-    if ([_model.number isEqualToString:_model.total]) {
+    if ([_model.currentProgress isEqualToString:_model.totalProgress]) {
         
         _numberLabel.text = @"√ 已完成该任务";
         

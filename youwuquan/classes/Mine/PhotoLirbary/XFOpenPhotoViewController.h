@@ -11,6 +11,7 @@
 @class XFmyPhotoModel;
 
 
+
 @interface XFOpenPhotoCell : UICollectionViewCell
 
 @property (nonatomic,strong) XFmyPhotoModel *model;
@@ -19,14 +20,27 @@
 
 @property (nonatomic,strong) UIImageView *picView;
 
+@property (nonatomic,strong) UIButton *deleteButton;
+
 @end
 
+
+typedef NS_ENUM(NSInteger, OPenPhotoVCType) {
+    
+    OPenPhotoVCTypeWall,
+    OPenPhotoVCTypeOpen,
+    OPenPhotoVCTypeClose,
+    
+    
+};
 
 @interface XFOpenPhotoViewController : XFOtherMainViewController
 
 @property (nonatomic,copy) NSString *albumId;
 
 @property (nonatomic,assign) BOOL iswall;
+
+@property (nonatomic,assign)  OPenPhotoVCType type;
 
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+#import "XFVideoModel.h"
 
 @interface XFVideoNameCell : ASCellNode
 
@@ -15,5 +16,9 @@
 @property (nonatomic,strong) ASImageNode *playImgNode;
 
 @property (nonatomic,strong) ASTextNode *numberNode;
+
+- (instancetype)initWithInfo:(XFVideoModel *)info;
+
+@property (nonatomic,strong) XFVideoModel *model;
 
 @end

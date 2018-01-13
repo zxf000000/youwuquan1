@@ -95,12 +95,20 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
 
     // 获取原图
+//
+//    __block PHAsset *asset;
+//    [self.assets enumerateObjectsWithOptions:(NSEnumerationReverse) usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        if (idx == indexPath.item) {
+//            asset = [self.assets objectAtIndex:idx];
+//
+//        }
+//
+//    }];
     
-    PHAsset *asset = [self.assets objectAtIndex:indexPath.item];
+    PHAsset *asset = [self.assets objectAtIndex:self.assets.count - indexPath.item - 1];
     
     // 原图尺寸
     CGSize size = CGSizeMake(asset.pixelWidth, asset.pixelHeight);
-    
     
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     // 同步获得图片, 只会返回1张图片
@@ -224,11 +232,10 @@
         NSIndexPath *indexPath = arr[i];
         
         // 获取原图
-        PHAsset *asset = [self.assets objectAtIndex:indexPath.item];
+        PHAsset *asset = [self.assets objectAtIndex:self.assets.count - indexPath.item - 1];
         
         // 原图尺寸
         CGSize size = CGSizeMake(asset.pixelWidth, asset.pixelHeight);
-        
         
         PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
         // 同步获得图片, 只会返回1张图片
@@ -276,32 +283,37 @@
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     // 同步获得图片, 只会返回1张图片
     options.synchronous = YES;
-    
     // 获得某个相簿中的所有PHAsset对象
     PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
     
     NSMutableArray *array = [NSMutableArray array];
     
-    for (PHAsset *asset in assets) {
+    [assets enumerateObjectsWithOptions:(NSEnumerationReverse) usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         // 是否要原图
-        CGSize size = original ? CGSizeMake(asset.pixelWidth, asset.pixelHeight) : CGSizeZero;
+        CGSize size = original ? CGSizeMake(obj.pixelWidth, obj.pixelHeight) : CGSizeZero;
         
         // 从asset中获得图片
-        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        [[PHImageManager defaultManager] requestImageForAsset:obj targetSize:size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
             
             [array addObject:result];
         }];
-    }
+        
+    }];
+    
+//    for (PHAsset *asset in assets) {
+//
+//    }
     
     self.assets = assets;
     
     self.images = array.copy;
     
+//    self.images = [[self.images reverseObjectEnumerator] allObjects];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         
         [self.collectionView reloadData];
 
-        
     });
     
     
@@ -318,6 +330,7 @@
     // 获得相机胶卷
     PHAssetCollection *cameraRoll = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil].lastObject;
     [self enumerateAssetsInAssetCollection:cameraRoll original:NO];
+    
 }
 
 - (void)setupBottomView {

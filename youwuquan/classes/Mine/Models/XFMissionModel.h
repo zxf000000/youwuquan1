@@ -10,13 +10,15 @@
 
 @interface XFMissionModel : NSObject
 
-@property (nonatomic,copy) NSString *coin;
+@property (nonatomic,copy) NSDictionary *category;
 
-@property (nonatomic,copy) NSString *number;
+@property (nonatomic,copy) NSString *currentProgress;
 
-@property (nonatomic,copy) NSString *total;
+@property (nonatomic,copy) NSString *day;
 
-@property (nonatomic,copy) NSString *title;
+@property (nonatomic,copy) NSString *totalProgress;
+
+@property (nonatomic,copy) NSString *updateTime;
 
 @property (nonatomic,copy) NSString *detail;
 

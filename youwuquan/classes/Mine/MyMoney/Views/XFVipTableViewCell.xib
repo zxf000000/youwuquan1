@@ -45,7 +45,7 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OFm-gF-1bu">
+                    <button opaque="NO" tag="1012" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OFm-gF-1bu">
                         <rect key="frame" x="134.5" y="285" width="120" height="60"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="60" id="9dL-z9-zm6"/>
@@ -61,7 +61,7 @@
                             <action selector="clickCardButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="JGe-VZ-nVp"/>
                         </connections>
                     </button>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lio-Ve-vwI">
+                    <button opaque="NO" tag="1011" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lio-Ve-vwI">
                         <rect key="frame" x="6.5" y="285" width="120" height="60"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <state key="normal" title="VIP月卡   30天" backgroundImage="my_weixuanze">
@@ -74,7 +74,7 @@
                             <action selector="clickCardButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="msQ-3K-jey"/>
                         </connections>
                     </button>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VHY-eJ-0Uf">
+                    <button opaque="NO" tag="1013" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VHY-eJ-0Uf">
                         <rect key="frame" x="262.5" y="285" width="120" height="60"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <state key="normal" title="VIP年卡  365天" backgroundImage="my_weixuanze">
@@ -102,7 +102,7 @@
                         <state key="normal" title="  支付宝" image="date_zhifubao" backgroundImage="my_weixuanze">
                             <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </state>
-                        <state key="selected" title="支付宝" image="date_zhifubao" backgroundImage="my_xuanze"/>
+                        <state key="selected" title="  支付宝" image="date_zhifubao" backgroundImage="my_xuanze"/>
                         <connections>
                             <action selector="clickPayTypeButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="eAT-gp-ba0"/>
                         </connections>
@@ -113,7 +113,7 @@
                         <state key="normal" title="  微信" image="date_wechat" backgroundImage="my_weixuanze">
                             <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </state>
-                        <state key="selected" title="微信" image="date_wechat" backgroundImage="my_xuanze"/>
+                        <state key="selected" title="  微信" image="date_wechat" backgroundImage="my_xuanze"/>
                         <connections>
                             <action selector="clickPayTypeButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="XPV-wU-Yk1"/>
                         </connections>
@@ -124,7 +124,7 @@
                         <state key="normal" title="  钻石" image="my_zuanshi" backgroundImage="my_weixuanze">
                             <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </state>
-                        <state key="selected" title="钻石" image="my_zuanshi" backgroundImage="my_xuanze"/>
+                        <state key="selected" title="  钻石" image="my_zuanshi" backgroundImage="my_xuanze"/>
                         <connections>
                             <action selector="clickPayTypeButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="jli-fo-LD8"/>
                         </connections>
@@ -186,6 +186,7 @@
             <connections>
                 <outlet property="aliButton" destination="cUS-bc-LOQ" id="EYC-8w-04O"/>
                 <outlet property="card" destination="o9H-Ok-jea" id="ACE-wN-Vmu"/>
+                <outlet property="daysLeftLabel" destination="LIH-IZ-URb" id="mOo-vJ-adt"/>
                 <outlet property="jikaMonthCard" destination="OFm-gF-1bu" id="gjg-bM-H6P"/>
                 <outlet property="monthCardbutton" destination="lio-Ve-vwI" id="B1V-5g-7mJ"/>
                 <outlet property="payButton" destination="AVw-gq-rAT" id="ImH-Gl-rPM"/>
@@ -193,7 +194,7 @@
                 <outlet property="yearCardButton" destination="VHY-eJ-0Uf" id="Jc4-xs-mHS"/>
                 <outlet property="zuanButton" destination="iqT-ty-K8M" id="R0s-BZ-Uoc"/>
             </connections>
-            <point key="canvasLocation" x="116.5" y="4.5"/>
+            <point key="canvasLocation" x="-205" y="29"/>
         </tableViewCell>
     </objects>
     <resources>

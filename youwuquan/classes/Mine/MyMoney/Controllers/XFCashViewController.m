@@ -7,6 +7,7 @@
 //
 
 #import "XFCashViewController.h"
+#import "XFMineNetworkManager.h"
 
 @interface XFCashViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *totalLabel;
@@ -29,6 +30,48 @@
     self.title = @"提现";
     
     [self setupViews];
+    
+    self.totalLabel.text = self.canCashMoney;
+    
+    
+}
+- (IBAction)clickCashButton:(id)sender {
+    
+    if (![self.alipayTextField.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入支付宝账户"];
+        
+        return;
+    }
+    
+    if (![self.nameTextField.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入姓名"];
+        
+        return;
+    }
+    
+    if (![self.numberLabel.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入提现金额"];
+        
+        return;
+    }
+    
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+    
+    [XFMineNetworkManager txWithNumber:self.numberLabel.text method:@"" payId:self.alipayTextField.text name:self.nameTextField.text successBlock:^(id responseObj) {
+        
+        [XFToolManager changeHUD:HUD successWithText:@"申请成功,审核通过之后会将金额转账到您的支付宝账户"];
+        
+    } failedBlock:^(NSError *error) {
+//        [XFToolManager changeHUD:HUD successWithText:@"申请失败"];
+        [HUD hideAnimated:YES];
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
     
 }
 

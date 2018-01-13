@@ -25,7 +25,12 @@
 @property (weak, nonatomic) IBOutlet UIButton *zuanButton;
 @property (weak, nonatomic) IBOutlet UIButton *payButton;
 @property (weak, nonatomic) IBOutlet UIImageView *card;
+@property (weak, nonatomic) IBOutlet UILabel *daysLeftLabel;
 
 @property (nonatomic,strong) id <XFVipTableViewCellDelegate> delegate;
+
+@property (nonatomic,copy) void(^selectedVipCardBlock)(NSInteger index);
+@property (nonatomic,copy) void(^selectedPayTypeBlock)(NSInteger index);
+
 
 @end

@@ -202,9 +202,14 @@
 + (void)getStatusDetailWithReleaseId:(NSString *)releaseId successBlock:(RequestSuccessBlock)success failedBlock:(RequestFailedBlock)failedBlock {
     
     NSMutableDictionary *para = [NSMutableDictionary dictionary];
-    [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
-
     
+    if ([XFUserInfoManager sharedManager].userName) {
+        
+        [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
+
+    }
+    
+
     [para setObject:releaseId ? releaseId:@"147" forKey:@"releaseId"];
     
     [[XFNetWorkManager sharedManager] postWithTokenWithUrl:[XFNetWorkApiTool pathUrlForStatusDetail] paraments:para successHandle:^(NSDictionary *responseDic) {

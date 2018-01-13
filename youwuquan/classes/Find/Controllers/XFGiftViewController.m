@@ -8,6 +8,8 @@
 
 #import "XFGiftViewController.h"
 #import "XFPublishVCTransation.h"
+#import "XFGiftManager.h"
+#import "XFFindNetworkManager.h"
 
 #define kGiftViewWidth (kScreenWidth - 20)
 #define kRatio kScreenWidth/375.f
@@ -77,7 +79,7 @@
 
 @end
 
-@interface XFGiftViewController () <UIViewControllerTransitioningDelegate,UICollectionViewDelegate,UICollectionViewDataSource>
+@interface XFGiftViewController () <UIViewControllerTransitioningDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UITextFieldDelegate>
 
 @property (nonatomic,strong) UIImageView *iconView;
 
@@ -119,7 +121,7 @@
         
         self.transitioningDelegate = self;
         
-        self.gifts = @[@{@"icon":@"hua1",@"icons":@"hua1none",@"price":@"88"},@{@"icon":@"hua2",@"icons":@"hua2none",@"price":@"100"},@{@"icon":@"hua3",@"icons":@"hua3none",@"price":@"99"},@{@"icon":@"hua4",@"icons":@"hua4none",@"price":@"120"},@{@"icon":@"hua5",@"icons":@"hua5none",@"price":@"999"}];
+//        _gifts = @[@{@"icon":@"hua1",@"icons":@"hua1none",@"price":@"88"},@{@"icon":@"hua2",@"icons":@"hua2none",@"price":@"100"},@{@"icon":@"hua3",@"icons":@"hua3none",@"price":@"99"},@{@"icon":@"hua4",@"icons":@"hua4none",@"price":@"120"},@{@"icon":@"hua5",@"icons":@"hua5none",@"price":@"999"}];
         
     }
     return self;
@@ -131,8 +133,83 @@
     self.view.backgroundColor = [UIColor whiteColor];
 
     self.view.layer.cornerRadius = 15;
-
+    
     [self setupGiftView];
+    
+    [self loadGifts];
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    
+    NSInteger number = [textField.text integerValue];
+    
+    // 更新金额
+    
+    if (!self.giftSelectedIndex) {
+        
+        return;
+    }
+    
+    XFGiftModel *model = self.gifts[self.giftSelectedIndex.item];
+    
+    NSInteger singlePrice = [model.diamonds integerValue];
+    
+    [self setTotalNumberWith:[NSString stringWithFormat:@"%zd",singlePrice * number]];
+    
+    return;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    [textField endEditing:YES];
+
+    NSInteger number = [textField.text integerValue];
+    
+    // 更新金额
+    
+    if (!self.giftSelectedIndex) {
+        
+        return YES;
+    }
+    
+    XFGiftModel *model = self.gifts[self.giftSelectedIndex.item];
+    
+    NSInteger singlePrice = [model.diamonds integerValue];
+    
+    [self setTotalNumberWith:[NSString stringWithFormat:@"%zd",singlePrice * number]];
+    
+    
+    return YES;
+}
+
+- (void)loadGifts {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view];
+    
+    [XFFindNetworkManager getGiftListWithSuccessBlock:^(id responseObj) {
+        
+        [HUD hideAnimated:YES];
+        
+        NSDictionary *info = (NSDictionary *)responseObj;
+        NSArray *datas = info[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < datas.count ;i ++) {
+            
+            [arr addObject:[XFGiftModel modelWithDictionary:datas[i]]];
+            
+        }
+        
+        self.gifts = arr.copy;
+        
+        [self.giftCollectionView reloadData];
+        
+    } failBlock:^(NSError *error) {
+        [HUD hideAnimated:YES];
+
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -169,13 +246,14 @@
     
     _iconView = [[UIImageView alloc] init];
     _iconView.frame = CGRectMake((width - 44)/2, 34 * kRatio, 44, 44);
-    _iconView.image = [UIImage imageNamed:@"icon2"];
+//    _iconView.image = [UIImage imageNamed:@"icon2"];
+    [_iconView setImageWithURL:[NSURL URLWithString:self.iconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     _iconView.layer.masksToBounds = YES;
     _iconView.layer.cornerRadius = 22;
     [self.view addSubview:_iconView];
     
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.text = [NSString stringWithFormat:@"打赏%@",@"小魂淡"];
+    _titleLabel.text = [NSString stringWithFormat:@"打赏%@",self.userName];
     _titleLabel.font = [UIFont systemFontOfSize:15];
     _titleLabel.textColor = [UIColor blackColor];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -236,6 +314,8 @@
     _numberTextField.font = [UIFont systemFontOfSize:36];
     _numberTextField.text = @"99";
     _numberTextField.keyboardType = UIKeyboardTypeNumberPad;
+    _numberTextField.returnKeyType = UIReturnKeyDone;
+    _numberTextField.delegate = self;
     [self.view addSubview:_numberTextField];
     
     _numberLabel = [[UILabel alloc] init];
@@ -340,32 +420,69 @@
 
 - (void)clickDoneButton {
     
+    if (!self.giftSelectedIndex) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请选择礼物"];
+        
+        return;
+    }
+    
+    if ([self.numberTextField.text intValue] <= 0) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入正确的数量"];
+        
+        return;
+    }
+    
     [self dismissViewControllerAnimated:YES completion:^{
         
         MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:[UIApplication sharedApplication].keyWindow];
-        HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-        HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
-        HUD.contentColor = [UIColor whiteColor];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        XFGiftModel *model = self.gifts[self.giftSelectedIndex.item];
+        
+        [XFFindNetworkManager rewardSomeoneWithUid:self.uid rewardResourceId:[model.id integerValue] amount:[self.numberTextField.text longValue] successBlock:^(id responseObj) {
+            // 打赏成功
+            [XFToolManager changeHUD:HUD successWithText:@"打赏成功"];
             
-            HUD.mode = MBProgressHUDModeCustomView;
-            HUD.detailsLabel.text = @"打赏成功!";
-            UIImageView *img = [[UIImageView alloc] init];
-            img.image = [UIImage imageNamed:@"ds_ok"];
-            HUD.customView = img;
-            HUD.tintColor = [UIColor blackColor];
-            HUD.animationType = MBProgressHUDAnimationZoom;
-            [HUD hideAnimated:YES afterDelay:0.4];
+        } failBlock:^(NSError *error) {
+            [HUD hideAnimated:YES];
+            
+        } progress:^(CGFloat progress) {
             
             
-            if ([self.delegate respondsToSelector:@selector(xfGiftVC:didSuccessSendGift:)]) {
-                
-                [self.delegate xfGiftVC:self didSuccessSendGift:nil];
-            }
-        });
+        }];
         
     }];
+    
+
+    
+    
+//    [self dismissViewControllerAnimated:YES completion:^{
+//
+//        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:[UIApplication sharedApplication].keyWindow];
+//        HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+//        HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
+//        HUD.contentColor = [UIColor whiteColor];
+//
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//
+//            HUD.mode = MBProgressHUDModeCustomView;
+//            HUD.detailsLabel.text = @"打赏成功!";
+//            UIImageView *img = [[UIImageView alloc] init];
+//            img.image = [UIImage imageNamed:@"ds_ok"];
+//            HUD.customView = img;
+//            HUD.tintColor = [UIColor blackColor];
+//            HUD.animationType = MBProgressHUDAnimationZoom;
+//            [HUD hideAnimated:YES afterDelay:0.4];
+//
+//
+//            if ([self.delegate respondsToSelector:@selector(xfGiftVC:didSuccessSendGift:)]) {
+//
+//                [self.delegate xfGiftVC:self didSuccessSendGift:nil];
+//            }
+//        });
+//
+//    }];
     
 
     
@@ -403,10 +520,11 @@
         _descriptLabel.hidden = YES;
         self.numberTextField.text = @"99";
         
-        NSDictionary *info = self.gifts[self.giftSelectedIndex.row];
+//        NSDictionary *info = self.gifts[self.giftSelectedIndex.item];
         
-        NSInteger singlePrice = [info[@"price"] intValue];
-        
+        XFGiftModel *model = self.gifts[self.giftSelectedIndex.item];
+//        NSInteger singlePrice = [info[@"price"] intValue];
+        NSInteger singlePrice = [model.diamonds intValue];
         NSInteger number = [self.numberTextField.text intValue];
         
         [self setTotalNumberWith:[NSString stringWithFormat:@"%zd",singlePrice * number]];
@@ -449,10 +567,14 @@
         
         if (self.giftSelectedIndex) {
             
-            NSDictionary *info = self.gifts[self.giftSelectedIndex.row];
+            XFGiftModel *model = self.gifts[self.giftSelectedIndex.row];
             
-            NSInteger singlePrice = [info[@"price"] intValue];
             
+//            NSDictionary *info = self.gifts[self.giftSelectedIndex.row];
+            
+//            NSInteger singlePrice = [info[@"price"] intValue];
+            NSInteger singlePrice = [model.diamonds intValue];
+
             NSInteger number = [self.numberTextField.text intValue];
             
             [self setTotalNumberWith:[NSString stringWithFormat:@"%zd",singlePrice * number]];
@@ -482,11 +604,16 @@
     
     XFGiftCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFGiftCell" forIndexPath:indexPath];
     
-    NSDictionary *info = self.gifts[indexPath.item];
+    XFGiftModel *model = self.gifts[indexPath.item];
     
-    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icons"]] forState:(UIControlStateNormal)];
-    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icon"]] forState:(UIControlStateSelected)];
-    cell.numberLabel.text = info[@"price"];
+//    NSDictionary *info = self.gifts[indexPath.item];
+    
+//    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icons"]] forState:(UIControlStateNormal)];
+//    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icon"]] forState:(UIControlStateSelected)];
+    [cell.flowerButton setImageWithURL:[NSURL URLWithString:model.iconUrl] forState:(UIControlStateNormal) options:(YYWebImageOptionSetImageWithFadeAnimation)];
+    [cell.flowerButton setBackgroundImage:[UIImage imageNamed:@"hua1none"] forState:(UIControlStateNormal)];
+    [cell.flowerButton setBackgroundImage:[UIImage imageNamed:@"hua1"] forState:(UIControlStateSelected)];
+    cell.numberLabel.text = model.diamonds;
     
     cell.indexpath = indexPath;
     
@@ -516,9 +643,11 @@
         
         self.giftSelectedIndex = indexPath;
         
-        NSDictionary *info = self.gifts[indexPath.row];
+//        NSDictionary *info = self.gifts[indexPath.row];
         
-        NSInteger singlePrice = [info[@"price"] intValue];
+        XFGiftModel *model = self.gifts[indexPath.item];
+        
+        NSInteger singlePrice = [model.diamonds integerValue];
         
         NSInteger number = [self.numberTextField.text intValue];
         

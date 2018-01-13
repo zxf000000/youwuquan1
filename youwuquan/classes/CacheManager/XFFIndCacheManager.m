@@ -47,6 +47,9 @@
 
 - (NSArray *)findData {
     
+    return nil;
+
+    
     NSArray *array = @[[XFStatusModel modelWithName:@"小灰猫" icon:@"icon1" images:[self arrFrom:10 count:1] contents:@"" isCares:@"0" time:@"2018-09-12 12:23:43" isLiked:@"1" likeNumber:@"110" commentNumber:@"120" isVideo:YES],
                        [XFStatusModel modelWithName:@"小黄猫" icon:@"icon2" images:[self arrFrom:1 count:2] contents:@"" isCares:@"0" time:@"2018-09-12 12:23:43" isLiked:@"1" likeNumber:@"110" commentNumber:@"120" isVideo:NO],
                        [XFStatusModel modelWithName:@"小白猫" icon:@"icon3" images:[self arrFrom:3 count:3] contents:@"" isCares:@"0" time:@"2018-09-12 12:23:43" isLiked:@"1" likeNumber:@"110" commentNumber:@"120" isVideo:NO],
@@ -61,7 +64,7 @@
                        [XFStatusModel modelWithName:@"小灰猫" icon:@"icon12" images:[self arrFrom:24 count:6] contents:@"" isCares:@"0" time:@"2018-09-12 12:23:43" isLiked:@"1" likeNumber:@"110" commentNumber:@"120" isVideo:NO],
                        [XFStatusModel modelWithName:@"小灰猫" icon:@"icon13" images:[self arrFrom:30 count:5] contents:@"" isCares:@"0" time:@"2018-09-12 12:23:43" isLiked:@"1" likeNumber:@"110" commentNumber:@"120" isVideo:NO],];
 
-    return array;
+    return nil;
     
 }
 

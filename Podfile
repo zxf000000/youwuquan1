@@ -20,23 +20,29 @@ pod 'RongCloudIM/IMKit', '~> 2.8.3'
 pod 'JPush'
 pod 'HJDanmaku'
 
+# U-Share SDK UI模块（分享面板，建议添加）
+pod 'UMengUShare/UI'
 
-pod 'mob_sharesdk'
+# 集成微信(精简版0.2M)
+pod 'UMengUShare/Social/ReducedWeChat'
 
-# UI模块(非必须，需要用到ShareSDK提供的分享菜单栏和分享编辑页面需要以下1行)
-pod 'mob_sharesdk/ShareSDKUI'
+# 集成微信(完整版14.4M)
+#pod 'UMengUShare/Social/WeChat'
 
-# 平台SDK模块(对照一下平台，需要的加上。如果只需要QQ、微信、新浪微博，只需要以下3行)
-pod 'mob_sharesdk/ShareSDKPlatforms/QQ'
-pod 'mob_sharesdk/ShareSDKPlatforms/SinaWeibo'
-pod 'mob_sharesdk/ShareSDKPlatforms/WeChat'
-# pod 'mob_sharesdk/ShareSDKPlatforms/WeChatFull’ //（微信sdk带支付的命令，和上面不带支付的不能共存，只能选择一个）
+# 集成QQ/QZone/TIM(精简版0.5M)
+pod 'UMengUShare/Social/ReducedQQ'
 
-# 使用配置文件分享模块（非必需）
-pod 'mob_sharesdk/ShareSDKConfigurationFile'
+# 集成QQ/QZone/TIM(完整版7.6M)
+#pod 'UMengUShare/Social/QQ'
 
-# 扩展模块（在调用可以弹出我们UI分享方法的时候是必需的）
-pod 'mob_sharesdk/ShareSDKExtension'
+# 集成新浪微博(精简版1M)
+pod 'UMengUShare/Social/ReducedSina'
+
+# 集成新浪微博(完整版25.3M)
+#pod 'UMengUShare/Social/Sina'
+
+# 加入IDFA获取
+pod 'UMengUShare/Plugin/IDFA'
 
 # VR
 pod 'MD360Player4iOS', '~> 1.0.0'
@@ -45,6 +51,12 @@ pod 'VIMVideoPlayer', '~> 6.0.1'
 
 pod 'ActionSheetPicker-3.0'
 
+# 七牛云短视频
+pod 'PLShortVideoKit'
+pod 'Qiniu'
+pod 'PLPlayerKit'
+
+pod 'Bugly'
 
 end
 

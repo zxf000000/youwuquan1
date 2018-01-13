@@ -20,9 +20,8 @@
         
         _model = model;
         
-        _picNode = [[ASNetworkImageNode alloc] init];
-        
-        [_picNode setDefaultImage:[UIImage imageNamed:_model.userPic]];
+        _picNode = [[XFNetworkImageNode alloc] init];
+        _picNode.url = [NSURL URLWithString:_model.coverImage[@"thumbImage500pxUrl"]];
         _picNode.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubnode:_picNode];
         
@@ -32,29 +31,10 @@
         
         [self addSubnode:_shadowNode];
         
-        _iconNode = [[ASNetworkImageNode alloc] init];
-        
-        [_iconNode setDefaultImage:[UIImage imageNamed:_model.userIcon]];
-        
-        _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
-            
-            UIGraphicsBeginImageContext(image.size);
-            
-            UIBezierPath *path = [UIBezierPath
-                                  bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height)
-                                  cornerRadius:MIN(image.size.width,image.size.height)/2];
-            
-            [path addClip];
-            
-            [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-            
-            UIImage *refinedImg = UIGraphicsGetImageFromCurrentImageContext();
-            
-            UIGraphicsEndImageContext();
-            
-            return refinedImg;
-            
-        };
+        _iconNode = [[XFNetworkImageNode alloc] init];
+        _iconNode.url = [NSURL URLWithString:_model.headIconUrl];
+        _iconNode.cornerRadius = 15;
+        _iconNode.clipsToBounds = YES;
         
         [self addSubnode:_iconNode];
         
@@ -62,7 +42,7 @@
         
         [_likeNode setImage:[UIImage imageNamed:@"home_like"] forState:(UIControlStateNormal)];
         [_likeNode setImage:[UIImage imageNamed:@"home_liked"] forState:(UIControlStateSelected)];
-        [_likeNode setTitle:_model.likeNumer withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+        [_likeNode setTitle:[NSString stringWithFormat:@"%zd",[_model.likeNum integerValue]] withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
         
         [_likeNode addTarget:self action:@selector(clickLikeNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
         
@@ -99,19 +79,21 @@
         [self addSubnode:_priceNode];
 
         // 小图标们
+        NSArray *identifications = _model.identifications;
+        
         NSMutableArray *icons = [NSMutableArray array];
-        for (NSInteger i= 0 ; i < 5 ; i ++ ) {
+        for (NSInteger i= 0 ; i < identifications.count ; i ++ ) {
             
-            ASImageNode *iconNode = [[ASImageNode alloc] init];
-            
-            iconNode.image = [UIImage imageNamed:[XFIconmanager sharedManager].authIcons[i]];
-            
-//            iconNode.backgroundColor = [UIColor redColor];
-            
-            [self addSubnode:iconNode];
-            
-            [icons addObject:iconNode];
-
+            if ([[XFAuthManager sharedManager].ids containsObject:[NSString stringWithFormat:@"%@",identifications[i]]]) {
+                
+                NSInteger index = [[XFAuthManager sharedManager].ids indexOfObject:[NSString stringWithFormat:@"%@",identifications[i]]];
+                
+                XFNetworkImageNode *imgNode = [[XFNetworkImageNode alloc] init];
+                imgNode.url = [NSURL URLWithString:[XFAuthManager sharedManager].icons[index]];
+                [self addSubnode:imgNode];
+                
+                [icons addObject:imgNode];
+            }
         }
         
         _authenticationIcons = icons.copy;
@@ -123,8 +105,7 @@
         
         nameStyle.alignment = NSTextAlignmentCenter;
         
-        
-        NSMutableAttributedString *nameStr =[[NSMutableAttributedString alloc] initWithString:_model.userName];
+        NSMutableAttributedString *nameStr =[[NSMutableAttributedString alloc] initWithString:_model.nickname];
         
         nameStr.attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:11],
                                 

@@ -50,6 +50,8 @@
 //
 //        [self sendMessage:msg pushContent:@"有送钻石消息"];
         
+        // TODO:
+        
         // 送礼物
         XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
         giftVC.delegate = self;

@@ -49,7 +49,7 @@
         _QRCodeBg.layer.cornerRadius = 10;
         [self addSubview:_QRCodeBg];
         
-        _QRCodeView = [[UIImageView alloc] initWithImage:[self creatQRcodeWithInfo:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"] withSize:(CGSizeMake(180, 180))]];
+        _QRCodeView = [[UIImageView alloc] initWithImage:[self creatQRcodeWithInfo:self.inviteUrl withSize:(CGSizeMake(180, 180))]];
         [_QRCodeBg addSubview:_QRCodeView];
         
         _logoView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"share_logo"]];
@@ -100,9 +100,17 @@
         _addLabel.height = 21;
         _addLabel.width = 120;
         
-        
+
     }
     return self;
+}
+
+- (void)setInviteUrl:(NSString *)inviteUrl {
+    
+    _inviteUrl = inviteUrl;
+    
+    self.QRCodeView.image = [self creatQRcodeWithInfo:self.inviteUrl withSize:(CGSizeMake(180, 180))];
+    
 }
 
 - (UIImage *)creatQRcodeWithInfo:(NSString *)path withSize:(CGSize)imageSize {

@@ -10,9 +10,11 @@
 
 @implementation XFFinddetailInfoTableViewCell
 
-- (instancetype)init {
-    
+- (instancetype)initWithUserInfo:(NSDictionary *)userInfo {
+
     if (self = [super init]) {
+        
+        _userInfo = userInfo;
         
         self.backgroundColor = kBgGrayColor;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -31,17 +33,23 @@
         [_swNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"三围" lineSpace:2 kern:0];
         
         _heiNUmberNode = [[ASTextNode alloc] init];
-        [_heiNUmberNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:@"197CM" lineSpace:2 kern:0];
+        [_heiNUmberNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:[NSString stringWithFormat:@"%@cm",_userInfo[@"height"]?_userInfo[@"height"]:@"0"] lineSpace:2 kern:0];
         _wightNumberNode = [[ASTextNode alloc] init];
-        [_wightNumberNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:@"98KG" lineSpace:2 kern:0];
+        [_wightNumberNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:[NSString stringWithFormat:@"%@KG",_userInfo[@"weight"]?_userInfo[@"weight"]:@"0"] lineSpace:2 kern:0];
         _swNumberNode = [[ASTextNode alloc] init];
-        [_swNumberNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:@"90/80/99" lineSpace:2 kern:0];
+        
+        NSString *bust = _userInfo[@"bust"]?_userInfo[@"bust"]:@"0";
+        NSString *waist = _userInfo[@"waist"]?_userInfo[@"waist"]:@"0";
+        NSString *hip = _userInfo[@"hip"]?_userInfo[@"hip"]:@"0";
+
+        
+        [_swNumberNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:[NSString stringWithFormat:@"%@/%@/%@",bust,waist,hip] lineSpace:2 kern:0];
         
         // 简介
         _desNode = [[ASTextNode alloc] init];
         [_desNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"简介" lineSpace:2 kern:0];
         _desDetailNode = [[ASTextNode alloc] init];
-        [_desDetailNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:UIColorHex(808080) offset:0 text:kRandomComment lineSpace:4 kern:2];
+        [_desDetailNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:UIColorHex(808080) offset:0 text:_userInfo[@"introduce"]?_userInfo[@"introduce"]:@"这个人很懒" lineSpace:4 kern:2];
         [self addSubnode:_bgNode];
         [self addSubnode:_heightNode];
         [self addSubnode:_wightNode];

@@ -8,6 +8,8 @@
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFStatusModel.h"
+#import "XFNetworkImageNode.h"
+
 @class XFFindCellNode;
 
 typedef NS_ENUM(NSInteger,FindCellType) {
@@ -29,6 +31,9 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 - (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath;
 
+- (void)findCellNode:(XFFindCellNode *)node didClickFollowButtonWithIndex:(NSIndexPath *)inexPath;
+
+
 @end
 
 
@@ -42,7 +47,7 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 /**
  头像
  */
-@property (nonatomic,strong) ASNetworkImageNode *iconNode;
+@property (nonatomic,strong) XFNetworkImageNode *iconNode;
 
 /**
  昵称

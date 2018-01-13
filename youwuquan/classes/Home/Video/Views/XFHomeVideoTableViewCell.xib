@@ -71,10 +71,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="video_play" translatesAutoresizingMaskIntoConstraints="NO" id="fcC-rO-UA1">
-                                <rect key="frame" x="195.5" y="137" width="55" height="55"/>
+                                <rect key="frame" x="190.5" y="144.5" width="65" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="55" id="Erd-9S-7NM"/>
-                                    <constraint firstAttribute="height" constant="55" id="KH0-jp-n44"/>
+                                    <constraint firstAttribute="width" constant="65" id="Erd-9S-7NM"/>
+                                    <constraint firstAttribute="height" constant="40" id="KH0-jp-n44"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -128,6 +128,6 @@
         <image name="home_pic8" width="87" height="87"/>
         <image name="overlay-zise" width="375" height="52"/>
         <image name="video_pic2" width="365" height="200"/>
-        <image name="video_play" width="50" height="50"/>
+        <image name="video_play" width="65" height="40"/>
     </resources>
 </document>

@@ -16,7 +16,8 @@
 #import <YYCache.h>
 
 #import "XFStatusNetworkManager.h"
-
+#import "XFLoginNetworkManager.h"
+#import "XFTagsModel.h"
 
 @interface XFSelectLabelViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UISearchBarDelegate,UICollectionViewDelegateFlowLayout,ASTableDelegate,ASTableDataSource,XFHomeNodedelegate,UITextFieldDelegate>
 
@@ -45,7 +46,6 @@
 @property (nonatomic,strong) YYCache *historyCache;
 
 @property (nonatomic,strong) UIButton *doneButton;
-
 
 @end
 
@@ -108,40 +108,32 @@
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
     // 获取标签
-    [XFStatusNetworkManager getAllTagsWithsuccessBlock:^(NSDictionary *reponseDic) {
+    [XFLoginNetworkManager getAllTagsWithprogress:^(CGFloat progress) {
         
+    } successBlock:^(id responseObj) {
         [HUD hideAnimated:YES];
+        NSArray *tags = (NSArray *)responseObj;
         
-        if (reponseDic) {
+        NSMutableArray *tagsArr = [NSMutableArray array];
+        
+        for (NSInteger i = 0 ; i < tags.count; i ++ ) {
             
-            NSArray *datas = reponseDic[@"data"][0];
+            XFTagsModel *model = [XFTagsModel modelWithDictionary:tags[i]];
             
-            NSMutableArray *arr = [NSMutableArray array];
-            
-            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
-                
-                [arr addObject:datas[i][@"labelName"]];
-                
-            }
-            
-            self.titleArr = arr.copy;
-            
-            [self.historyView reloadData];
-            
-        } else {
-            
-            [self.navigationController popViewControllerAnimated:YES];
+            [tagsArr addObject:model];
             
         }
         
-    } failedBlock:^(NSError *error) {
-        [HUD hideAnimated:YES];
+        self.hotDatas = tagsArr.copy;
         
-        [self.navigationController popViewControllerAnimated:YES];
+        [self.historyView reloadData];
+        
+    } failBlock:^(NSError *error) {
+        [HUD hideAnimated:YES];
+
         
     }];
-    
-    
+
 }
 
 - (void)getHistoryData {
@@ -209,7 +201,6 @@
     
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         
-        
         if (indexPath.section == 0) {
             
             if (self.historyArr.count > 0) {
@@ -273,12 +264,12 @@
             
         } else {
             
-            return self.titleArr.count;
+            return self.hotDatas.count;
         }
         
     }
     
-    return self.titleArr.count;
+    return self.hotDatas.count;
     
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -296,15 +287,18 @@
                     break;
                 case 1:
                 {
-                    cell.titleLabel.text = self.titleArr[indexPath.item];
+                    XFTagsModel *model = self.hotDatas[indexPath.item];
+                    
+                    cell.titleLabel.text = model.tagName;
                     
                 }
                     break;
             }
         } else {
             
-            cell.titleLabel.text = self.titleArr[indexPath.item];
+            XFTagsModel *model = self.hotDatas[indexPath.item];
             
+            cell.titleLabel.text = model.tagName;
         }
         
         return cell;
@@ -326,15 +320,18 @@
                 break;
             case 1:
             {
-                text = self.titleArr[indexPath.item];
+                XFTagsModel *model = self.hotDatas[indexPath.item];
+                
+                text = model.tagName;
                 
             }
                 break;
         }
     } else {
         
-        text = self.titleArr[indexPath.item];
+        XFTagsModel *model = self.hotDatas[indexPath.item];
         
+        text = model.tagName;
     }
     
     // 添加标签

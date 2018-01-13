@@ -7,6 +7,7 @@
 //
 
 #import "XFDownloadViewController.h"
+#import "XFMineNetworkManager.h"
 
 @implementation XFDownloadPicCell
 
@@ -47,7 +48,7 @@
         
         _numberLabel = [[UILabel alloc] init];
         [_numberLabel setFont:[UIFont systemFontOfSize:30] textColor:[UIColor blackColor] aligment:(NSTextAlignmentCenter)];
-        _numberLabel.text = @"30";
+        _numberLabel.text = @"0";
         [_headerView addSubview:_numberLabel];
         
         _daylabel = [[UILabel alloc] init];
@@ -97,6 +98,8 @@
 
 @property (nonatomic,strong) UIButton *downloadButton;
 
+@property (nonatomic,copy) NSArray *datas;
+
 @end
 
 @implementation XFDownloadViewController
@@ -111,6 +114,38 @@
     
     [self setupdownloadButton];
     [self.view setNeedsUpdateConstraints];
+    
+    [self loadData];
+}
+
+- (void)loadData {
+    
+    MBProgressHUD *HUD  = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    [XFMineNetworkManager getMyDownloadPicsWithsuccessBlock:^(id responseObj) {
+        
+        [HUD hideAnimated:YES];
+        // TODO:
+        // 处理数据
+        
+        
+    } failedBlock:^(NSError *error) {
+        
+        [HUD hideAnimated:YES];
+        
+        if (error == nil) {
+            
+            self.datas = [NSArray array];
+            [self.picView reloadData];
+            
+        }
+
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
+    
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
@@ -131,7 +166,7 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return 20;
+    return self.datas.count;
     
 }
 
@@ -139,7 +174,7 @@
     
     XFDownloadPicCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFDownloadPicCell" forIndexPath:indexPath];
     
-    cell.picView.image = [UIImage imageNamed:kRandomPhoto];
+    cell.picView.image = [UIImage imageNamed:self.datas[indexPath.item]];
     
     return cell;
 }

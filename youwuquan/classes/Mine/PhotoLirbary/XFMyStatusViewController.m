@@ -9,6 +9,9 @@
 #import "XFMyStatusViewController.h"
 #import "XFStatusDetailViewController.h"
 #import "XFYwqAlertView.h"
+#import "XFAlertViewController.h"
+#import "XFPayViewController.h"
+#import "XFFindNetworkManager.h"
 
 @implementation XFMyStatusCell
 
@@ -173,8 +176,7 @@
 
 @property (nonatomic,copy) NSArray *picArr;
 
-@property (nonatomic,assign) NSInteger number;
-
+@property (nonatomic,assign) NSInteger unlockNumber;
 
 @end
 
@@ -187,20 +189,32 @@
     if (self.type == XFMyStatuVCTypeMine) {
         
         self.title = @"日期";
-
+        
+//        self.number = 10;
     } else {
         
         self.title = @"名字";
 
+//        self.number = 2;
+
     }
-    
-    self.number = 2;
+
+    self.unlockNumber = 0;
     NSMutableArray *allImg = [NSMutableArray array];
     
-    [allImg addObjectsFromArray:self.model.openImageList];
-    [allImg addObjectsFromArray:self.model.intimateImageList];
+    [allImg addObjectsFromArray:self.model.pictures];
+//    [allImg addObjectsFromArray:self.model.intimateImageList];
 
     self.picArr = allImg.copy;
+    
+    // 判断多少张需要解锁图片
+    for (NSInteger i = 0 ; i < self.picArr.count ; i++ ) {
+        NSDictionary *picINfo = self.picArr[i];
+        if ([picINfo[@"albumType"] isEqualToString:@"open"]) {
+            
+            self.unlockNumber += 1;
+        }
+    }
     
     [self initCollectionView];
     [self initBottomView];
@@ -218,9 +232,9 @@
 // 初始化数据
 - (void)setDatas {
     
-    self.contentLabel.text = self.model.title;
-    [self.commentButton setTitle:self.model.messageNum forState:(UIControlStateNormal)];
-    [self.likeButton setTitle:self.model.greatNum forState:(UIControlStateNormal)];
+    self.contentLabel.text = self.model.text;
+    [self.commentButton setTitle:[NSString stringWithFormat:@"%@",self.model.commentNum] forState:(UIControlStateNormal)];
+    [self.likeButton setTitle:[NSString stringWithFormat:@"%@",self.model.likeNum] forState:(UIControlStateNormal)];
     
 }
 
@@ -297,6 +311,8 @@
         XFStatusDetailViewController *statusDetail = [[XFStatusDetailViewController alloc] init];
         statusDetail.type = Mine;
         statusDetail.status = self.model;
+        
+        
         [self.navigationController pushViewController:statusDetail animated:YES];
         
     } else {
@@ -313,27 +329,31 @@
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     
-    NSLog(@"%f---",scrollView.contentOffset.x);
-
-    if (self.number == 4) {
+    if (self.type == XFMyStatuVCTypeMine) {
         
         return;
     }
+
+    NSInteger index = scrollView.contentOffset.x / kScreenWidth;
     
-    if (scrollView.contentOffset.x > kScreenWidth) {
+    // 判断第几页,是否超过了未解锁数量
+    if (index >= self.unlockNumber) {
         
         // TODO:
-        XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"请先解锁" detail:@"解锁本条动态需要66钻石,是否支付"];
+        XFAlertViewController *alertVC = [[XFAlertViewController alloc] init];
+        alertVC.type = XFAlertViewTypeUnlockStatus;
+        alertVC.clickOtherButtonBlock = ^(XFAlertViewController *alert) {
+            // 充值页面
+            XFPayViewController *payVC = [[XFPayViewController alloc] init];
+            
+            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+            
+            [self presentViewController:navi animated:YES completion:nil];
+            
+            
+        };
         
-        alertView.doneBlock = ^{
-            
-            //            [XFToolManager showProgressInWindowWithString:@"余额不足,请充值"];
-            //            // 充值页面
-            //            XFPayViewController *payVC = [[XFPayViewController alloc] init];
-            //            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
-            //            [self presentViewController:navi animated:YES completion:nil];
-            
-            // 充值成功,刷新页面
+        alertVC.clickDoneButtonBlock = ^(XFAlertViewController *alert) {
             
             MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
             
@@ -342,55 +362,71 @@
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 
                 // 刷新页面
-                self.number = 4;
                 [self.collectionView reloadData];
                 
             });
         };
+        [self presentViewController:alertVC animated:YES completion:nil];
         
-        alertView.cancelBlock = ^{
-            
-            // 取消
-            
-        };
-        
-        [alertView showAnimation];
     }
 }
-
+#pragma mark - 删除
 - (void)clickdeleteButton {
     
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"确认删除本条动态?" preferredStyle:(UIAlertControllerStyleAlert)];
     
+    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+    }];
     
+    UIAlertAction *actionDone = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        
+        // 删除本条
+        [XFFindNetworkManager deleteStatusWithStatusId:self.model.id successBlock:^(id responseObj) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"删除成功"];
+            
+            self.deleteSuccessBlock();
+            
+            [self.navigationController popViewControllerAnimated:YES];
+            
+        } failBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+    }];
+    
+    [alert addAction:actionCancel];
+    [alert addAction:actionDone];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    NSInteger count;
-    if (self.picArr.count > 0) {
-        
-        count = self.picArr.count;
-        
-    } else {
-        
-        count = self.number;
-    }
-    
-    return count;
+    return self.unlockNumber;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     XFMyStatusCell *cell =  [collectionView dequeueReusableCellWithReuseIdentifier:@"XFMyStatusCell" forIndexPath:indexPath];
     
-    cell.picView.image = [UIImage imageNamed:[NSString stringWithFormat:@"find%zd",indexPath.row + 1]];
-    
+//    cell.picView.image = [UIImage imageNamed:[NSString stringWithFormat:@"find%zd",indexPath.row + 1]];
     
     if (self.picArr.count > 0) {
         
         NSDictionary *imgInfo = self.picArr[indexPath.item];
         
-        cell.url = imgInfo[@"breviaryUrl"];
+        cell.url = imgInfo[@"image"][@"imageUrl"];
+        
     }
 
     return cell;
@@ -477,7 +513,7 @@
 
 - (void)initContnetView {
     
-    NSString *content  = @"我只想写首对于我来说有意思的诗,可总是被所有必须要理会的事打扰,回微信看邮件定计划收快递接电话,唯独任何一句牛逼的话语都没写下";
+    NSString *content  = @"这货很懒";
     
     CGRect stringFrame = [content boundingRectWithSize:(CGSizeMake(kScreenWidth - 27, MAXFLOAT)) options:(NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin) attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:15]} context:nil];
     
@@ -540,6 +576,11 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:deleteButton];
     [deleteButton addTarget:self action:@selector(clickdeleteButton) forControlEvents:(UIControlEventTouchUpInside)];
     [self.myNavigationbar addSubview:deleteButton];
+    
+    if (self.type == XFMyStatuVCTypeOther) {
+        
+        deleteButton.hidden = YES;
+    }
     [deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(titleLabel);
         make.right.mas_offset(-10);

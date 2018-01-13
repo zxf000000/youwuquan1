@@ -7,8 +7,9 @@
 //
 
 #import "XFChooseLabelViewController.h"
-#import "XFLoginManager.h"
+//#import "XFLoginManager.h"
 #import "XFTagsModel.h"
+#import "XFMineNetworkManager.h"
 
 @implementation XFChooseLabelcell
 
@@ -77,20 +78,19 @@
         
         if (i == 0) {
             
-            string = [string stringByAppendingString:model.labelName];
+            string = [string stringByAppendingString:model.id];
         } else {
             
-            string = [string stringByAppendingString:[NSString stringWithFormat:@",%@",model.labelName]];
+            string = [string stringByAppendingString:[NSString stringWithFormat:@",%@",model.id]];
         }
         
     }
     
-    [[XFLoginManager sharedInstance] registSaveUserInfoWithUserName:[XFUserInfoManager sharedManager].userName nickName:self.nickName birthday:self.birthday sex:self.sex tags:string successBlock:^(NSDictionary *reponseDic) {
+    if ([self.sex isEqualToString:@"male"]) {
         
         
-        if (reponseDic) {
+        [XFMineNetworkManager followTagsWithTags:string successBlock:^(id responseObj) {
             
-            // 保存信息成功
             [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
@@ -98,18 +98,66 @@
             // 完成,直接跳转
             [self dismissViewControllerAnimated:YES completion:nil];
             
+        } failedBlock:^(NSError *error) {
             
-        } else {
-            
-            [HUD hideAnimated:YES];
-            
-        }
-        
-    } failedBlock:^(NSError *error) {
-        
-        [HUD hideAnimated:YES];
+            [XFToolManager changeHUD:HUD successWithText:@"保存失败,请检查网络设置"];
 
-    }];
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+    } else {
+        
+        [XFMineNetworkManager setTagsWithTags:string successBlock:^(id responseObj) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+            
+            // 完成,直接跳转
+            [self dismissViewControllerAnimated:YES completion:nil];
+            
+        } failedBlock:^(NSError *error) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"保存失败,请检查网络设置"];
+            
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+    }
+    
+
+    
+//    [[XFLoginManager sharedInstance] registSaveUserInfoWithUserName:[XFUserInfoManager sharedManager].userName nickName:self.nickName birthday:self.birthday sex:self.sex tags:string successBlock:^(NSDictionary *reponseDic) {
+//
+//
+//        if (reponseDic) {
+//
+//            // 保存信息成功
+//            [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
+//
+//            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+//
+//            // 完成,直接跳转
+//            [self dismissViewControllerAnimated:YES completion:nil];
+//
+//
+//        } else {
+//
+//            [HUD hideAnimated:YES];
+//
+//        }
+//
+//    } failedBlock:^(NSError *error) {
+//
+//        [HUD hideAnimated:YES];
+//
+//    }];
     
 
 }
@@ -157,7 +205,7 @@
     
     XFTagsModel *model = self.tags[indexPath.item];
     
-    cell.titleLabel.text = model.labelName;
+    cell.titleLabel.text = model.tagName;
     
     if ([self.selectedlabels containsObject:self.tags[indexPath.item]]) {
         

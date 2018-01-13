@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "XFInsertLabel.h"
-
+#import "XFVideoModel.h"
 @class XFHomeVideoTableViewCell;
 
 @protocol XFHomeVideoCellDelegate <NSObject>
@@ -24,6 +24,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *likeButton;
 @property (weak, nonatomic) IBOutlet XFInsertLabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *numberLabel;
+
+@property (nonatomic,strong) XFVideoModel *model;
 
 @property (nonatomic,strong) id <XFHomeVideoCellDelegate> delegate;
 

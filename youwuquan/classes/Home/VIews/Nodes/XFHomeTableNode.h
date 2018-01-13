@@ -8,6 +8,7 @@
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFHomeDataModel.h"
+#import "XFNetworkImageNode.h"
 @class XFHomeTableNode;
 
 @protocol XFHomeNodedelegate <NSObject>
@@ -20,9 +21,9 @@
 
 @interface XFHomeTableNode : ASCellNode
 
-@property (nonatomic,strong) ASNetworkImageNode *picNode;
+@property (nonatomic,strong) XFNetworkImageNode *picNode;
 
-@property (nonatomic,strong) ASNetworkImageNode *iconNode;
+@property (nonatomic,strong) XFNetworkImageNode *iconNode;
 
 @property (nonatomic,strong) ASTextNode *nameNode;
 

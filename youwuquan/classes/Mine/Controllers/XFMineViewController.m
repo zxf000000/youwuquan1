@@ -28,6 +28,8 @@
 #import "XFShareUrlViewController.h"
 #import "XFShareCardViewController.h"
 #import "XFPayViewController.h"
+#import "XFAlertViewController.h"
+#import "XFMineNetworkManager.h"
 
 
 #define kHeaderHeight (kScreenWidth * 170/375.f)
@@ -138,10 +140,28 @@
     
     [self loadData];
     
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshUserInfo) name:kRefreshUserInfoKey object:nil];
     
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
+    
+    //    [self loadData];
+    [self refreshUserInfo];
+    [self loadBalanceInfo];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    
+}
 
 - (void)dealloc {
     
@@ -165,37 +185,64 @@
     
 }
 
-- (void)refreshUserInfo {
+- (void)loadBalanceInfo {
     
-    // 获取用户信息
-    [[XFLoginManager sharedInstance] getUserInfoWithsuccessBlock:^(id reponseDic) {
-       
-        if (reponseDic) {
-            
-            NSDictionary *userInfo = reponseDic[@"data"][0];
-            
-            //更新用户信息
-            [[XFUserInfoManager sharedManager] updateUserInfo:userInfo];
-            
-            self.userInfo = userInfo;
-            
-            [self refreshData];
-            
-        }
+    [XFMineNetworkManager getMyWalletDetailWithsuccessBlock:^(id responseObj) {
         
+        XFMyMoneyModel *model = [XFMyMoneyModel modelWithDictionary:(NSDictionary *)responseObj];
+        
+        [self.diamondsButton setTitle:[NSString stringWithFormat:@"%zd",[model.balance integerValue]] forState:(UIControlStateNormal)];
+        [self.goldButton setTitle:[NSString stringWithFormat:@"%zd",[model.coin integerValue]] forState:(UIControlStateNormal)];
+
     } failedBlock:^(NSError *error) {
+        
+        
+    } progressBlock:^(CGFloat progress) {
         
         
     }];
     
 }
+
+- (void)refreshUserInfo {
+    
+    // 获取用户信息
+    [XFMineNetworkManager getAllInfoWithsuccessBlock:^(id responseObj) {
+        
+        [[XFUserInfoManager sharedManager] updateUserInfo:responseObj];
+        
+        self.userInfo = responseObj;
+        
+        [self refreshData];
+        
+    } failedBlock:^(NSError *error) {
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
+    
+}
 // 更新用户数据
 - (void)refreshData {
     
-    self.nameLabel.text = self.userInfo[@"userNike"];
-    [self.iconView setImageWithURL:[NSURL URLWithString:self.userInfo[@"headUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
-    [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:(UITableViewRowAnimationFade)];
+    self.nameLabel.text = self.userInfo[@"basicInfo"][@"nickname"];
+    [self.iconView setImageWithURL:[NSURL URLWithString:self.userInfo[@"basicInfo"][@"headIconUrl"]] placeholder:[UIImage imageNamed:@"logo"]];
+    [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
+    // vip
+    if ([self.userInfo[@"vip"][@"vipLevel"] isEqualToString:@"none"]) {
+        
+        self.vipButton.selected = NO;
+        
+    } else {
+        
+        self.vipButton.selected = YES;
+
+    }
     
+    [[XFUserInfoManager sharedManager] updateUserInfo:self.userInfo];
+
 }
 
 #pragma mark - headerDelegate
@@ -274,11 +321,14 @@
         case 2:
         {
             // 我的技能
-            XFSkillsViewController *skillVC = [[XFSkillsViewController alloc] init];
+            [XFToolManager showProgressInWindowWithString:@"敬请期待"];
             
-            skillVC.hidesBottomBarWhenPushed = YES;
-            
-            [self.navigationController pushViewController:skillVC animated:YES];
+            return;
+//            XFSkillsViewController *skillVC = [[XFSkillsViewController alloc] init];
+//
+//            skillVC.hidesBottomBarWhenPushed = YES;
+//
+//            [self.navigationController pushViewController:skillVC animated:YES];
             
         }
             break;
@@ -309,7 +359,6 @@
             photoVC.photoAlbums = self.userInfo[@"albums"];
             [self.navigationController pushViewController:photoVC animated:YES];
             
-
         }
             break;
     }
@@ -350,9 +399,6 @@
             break;
         case 2:
         {
-//            XFMyActorCardViewController *actorVC = [[XFMyActorCardViewController alloc] init];
-//            actorVC.hidesBottomBarWhenPushed = YES;
-//            [self.navigationController pushViewController:actorVC animated:YES];
             // 下载页面
             XFDownloadViewController *downLoadVC = [[XFDownloadViewController alloc] init];
             downLoadVC.hidesBottomBarWhenPushed = YES;
@@ -371,72 +417,54 @@
             [self.navigationController pushViewController:setVC animated:YES];
         }
             break;
-            
     }
     
-    
 }
-
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
     return 1 + self.titles.count;
 }
 
-- (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (ASCellNode *)tableNode:(ASTableNode *)tableNode nodeForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (indexPath.row == 0) {
         
-        return ^ASCellNode*() {
-            
-            XFMyHeaderNode *node = [[XFMyHeaderNode alloc] initWithUserinfo:self.userInfo];
-            
-            node.delegate = self;
-
-            return node;
-            
-        };
+        XFMyHeaderNode *node = [[XFMyHeaderNode alloc] initWithUserinfo:self.userInfo];
+        
+        node.delegate = self;
+        
+        node.neverShowPlaceholders = YES;
+        
+        return node;
         
     } else {
         
         if (indexPath.row == self.titles.count) {
             
-            return ^ASCellNode*() {
-                
-                XFMyTableCellNode *node = [[XFMyTableCellNode alloc] initWithEnd:YES];
-                
-                node.iconNode.image = [UIImage imageNamed:self.imgs[indexPath.row - 1]];
-                
-                [node.titleNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:self.titles[indexPath.row - 1] lineSpace:2 kern:0];
-                
-                return node;
-                
-            };
+            XFMyTableCellNode *node = [[XFMyTableCellNode alloc] initWithEnd:YES];
+            
+            node.iconNode.image = [UIImage imageNamed:self.imgs[indexPath.row - 1]];
+            
+            [node.titleNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:self.titles[indexPath.row - 1] lineSpace:2 kern:0];
+            node.neverShowPlaceholders = YES;
+            
+            return node;
             
         } else {
             
-            return ^ASCellNode*() {
-                
-                XFMyTableCellNode *node = [[XFMyTableCellNode alloc] initWithEnd:NO];
-                
-                node.iconNode.image = [UIImage imageNamed:self.imgs[indexPath.row - 1]];
-                
-                [node.titleNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:self.titles[indexPath.row - 1] lineSpace:2 kern:0];
-                
-                return node;
-                
-            };
+            XFMyTableCellNode *node = [[XFMyTableCellNode alloc] initWithEnd:NO];
             
+            node.iconNode.image = [UIImage imageNamed:self.imgs[indexPath.row - 1]];
+            
+            [node.titleNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:self.titles[indexPath.row - 1] lineSpace:2 kern:0];
+            node.neverShowPlaceholders = YES;
+            
+            return node;
         }
-        
-
     }
-    
     return nil;
 }
-
-
-
 
 - (void)setupTableView {
     
@@ -525,54 +553,27 @@
         MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在保存"];
         
         // 上传头像
-        [[XFLoginManager sharedInstance] saveUserIconWithfiles:image successBlock:^(id reponseDic) {
-           
-            if (reponseDic) {
-                
-                
-                NSString *headUrl = reponseDic[@"data"][0];
-                
-                // 上传
-                [[XFLoginManager sharedInstance] saveUserInfoWithUserName:[XFUserInfoManager sharedManager].userName nickName:nil birthday:nil sex:nil tags:nil roleNos:nil headUrl:headUrl height:nil weight:nil bwh:nil weixin:nil synopsis:nil successBlock:^(id reponseDic) {
-                    
-                    if (reponseDic) {
-                        [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
-
-                        self.iconView.image = image;
-
-                    }
-                    [HUD hideAnimated:YES];
-
-                } failedBlock:^(NSError *error) {
-                    
-                    [HUD hideAnimated:YES];
-
-                }];
-            } else {
-                
-                
-                [HUD hideAnimated:YES];
-
-            }
+        
+        [XFMineNetworkManager uploadIconWithImage:image successBlock:^(id responseObj) {
             
+            [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
+            self.iconView.image = image;
+
             
         } failedBlock:^(NSError *error) {
             
             [HUD hideAnimated:YES];
 
+        } progressBlock:^(CGFloat progress) {
+            
+            
         }];
-        
+
     }];
     
 }
 
 - (void)clickTapImage {
-//
-//    XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
-//    UINavigationController *loginNavi = [[UINavigationController alloc] initWithRootViewController:loginVC];
-//    loginNavi.hidesBottomBarWhenPushed = YES;
-//
-//    [self presentViewController:loginNavi animated:YES completion:nil];
     
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.allowsEditing = YES;
@@ -609,9 +610,45 @@
 
 - (void)clickAddMoneyButton:(UIButton *)sender {
     
-    XFPayViewController *payVC = [[XFPayViewController alloc] init];
-    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
-    [self presentViewController:navi animated:YES completion:nil];
+    if (sender == self.addDiamondsButton) {
+        
+        XFPayViewController *payVC = [[XFPayViewController alloc] init];
+        payVC.type = XFPayVCTypeCharge;
+        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+        [self presentViewController:navi animated:YES completion:nil];
+        
+    } else {
+        
+        XFAlertViewController *alertVC = [[XFAlertViewController alloc] init];
+        alertVC.type = XFAlertViewTypeChangeCoin;
+        
+        __weak typeof(alertVC) weakAlert = alertVC;
+        alertVC.clickDoneButtonBlock = ^(XFAlertViewController *alert) {
+          
+            // 点击兑换
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:[UIApplication sharedApplication].keyWindow];
+            [XFMineNetworkManager exchangeCoinsNumForDiamonds:[weakAlert.numberTextField.text longValue] successBlock:^(id responseObj) {
+                
+                [XFToolManager changeHUD:HUD successWithText:@"兑换成功"];
+                
+                [self loadBalanceInfo];
+                
+            } failedBlock:^(NSError *error) {
+                
+                [HUD hideAnimated:YES];
+                
+            } progressBlock:^(CGFloat progress) {
+                
+                
+            }];
+            
+        };
+        
+        [self presentViewController:alertVC animated:YES completion:nil];
+        
+    }
+    
+
     
 }
 
@@ -631,9 +668,12 @@
     self.nameLabel.textColor = [UIColor whiteColor];
     
     self.vipButton = [[UIButton alloc] init];
-    [self.vipButton setImage:[UIImage imageNamed:@"vip_none"] forState:(UIControlStateNormal)];
-    [self.vipButton setImage:[UIImage imageNamed:@"vip"] forState:(UIControlStateSelected)];
+    [self.vipButton setImage:[UIImage imageNamed:@"mine_vip"] forState:(UIControlStateNormal)];
+    [self.vipButton setImage:[UIImage imageNamed:@"mine_vip"] forState:(UIControlStateSelected)];
+    [self.vipButton setTitle:@"会员" forState:(UIControlStateNormal)];
+    self.vipButton.titleLabel.font = [UIFont systemFontOfSize:12];
     [self.vipButton addTarget:self action:@selector(clickVipButton) forControlEvents:(UIControlEventTouchUpInside)];
+    self.vipButton.contentMode = UIViewContentModeScaleToFill;
     [self.headerInfoView addSubview:self.vipButton];
     
     self.locationLabel = [[UILabel alloc] init];
@@ -675,13 +715,14 @@
         
     }];
     
-    [self.vipButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.centerY.mas_equalTo(self.nameLabel);
-        make.left.mas_equalTo(self.nameLabel.mas_right);
-        make.width.height.mas_equalTo(50);
-    }];
-    
+//    [self.vipButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.centerY.mas_equalTo(self.nameLabel);
+////        make.left.mas_equalTo(self.nameLabel.mas_right);
+//        make.right.mas_offset(-10);
+//        make.width.height.mas_equalTo(50);
+//    }];
+//
     [self.locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         
         make.centerX.mas_offset(0);
@@ -689,35 +730,72 @@
         
     }];
     
-    [self.addDiamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.bottom.mas_offset(-7);
-        make.right.mas_equalTo(self.headerInfoView.mas_centerX).offset(-70);
-        make.height.width.mas_equalTo(20);
+//    [self.addDiamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.bottom.mas_offset(-7);
+//        make.right.mas_equalTo(self.headerInfoView.mas_centerX).offset(-70);
+//        make.height.width.mas_equalTo(20);
+//
+//    }];
+//
+//    [self.goldButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.bottom.mas_offset(-7);
+//        make.left.mas_equalTo(self.headerInfoView.mas_centerX).offset(70);
+//
+//    }];
+//
+//    [self.addGoldButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.left.mas_equalTo(self.goldButton.mas_right).offset(10);
+//        make.centerY.mas_equalTo(self.addDiamondsButton);
+//        make.height.width.mas_equalTo(20);
+//
+//    }];
+//
+//    [self.diamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.right.mas_equalTo(self.addDiamondsButton.mas_left).offset(-10);
+//        make.centerY.mas_equalTo(self.addDiamondsButton);
+//
+//    }];
+    
+        [self.addGoldButton mas_makeConstraints:^(MASConstraintMaker *make) {
 
-    }];
-    
-    [self.goldButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.bottom.mas_offset(-7);
-        make.left.mas_equalTo(self.headerInfoView.mas_centerX).offset(70);
-        
-    }];
-    
-    [self.addGoldButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.left.mas_equalTo(self.goldButton.mas_right).offset(10);
-        make.centerY.mas_equalTo(self.addDiamondsButton);
-        make.height.width.mas_equalTo(20);
-        
-    }];
-    
-    [self.diamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.right.mas_equalTo(self.addDiamondsButton.mas_left).offset(-10);
-        make.centerY.mas_equalTo(self.addDiamondsButton);
-        
-    }];
+            make.bottom.mas_offset(-7);
+            make.right.mas_equalTo(self.headerInfoView.mas_centerX).offset(-70);
+            make.height.width.mas_equalTo(20);
+
+        }];
+
+        [self.goldButton mas_makeConstraints:^(MASConstraintMaker *make) {
+
+            make.right.mas_equalTo(self.addGoldButton.mas_left).offset(-10);
+            make.centerY.mas_equalTo(self.addGoldButton);
+
+        }];
+
+            [self.diamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
+
+                make.bottom.mas_equalTo(self.goldButton.mas_top).offset(-7);
+                make.right.mas_equalTo(self.goldButton);
+
+            }];
+
+            [self.addDiamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
+
+                make.right.height.width.mas_equalTo(self.addGoldButton);
+                make.centerY.mas_equalTo(self.diamondsButton);
+
+            }];
+
+        [self.vipButton mas_makeConstraints:^(MASConstraintMaker *make) {
+
+            make.right.mas_offset(-20);
+            make.width.height.mas_equalTo(70);
+            make.centerY.mas_equalTo(self.goldButton.mas_top).offset(-3);
+
+        }];
     
     self.iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"me_tou1"]];
     
@@ -737,25 +815,12 @@
 
 - (void)clickVipButton {
     
-    self.vipButton.selected = !self.vipButton.selected;
+    XFPayViewController *payVC = [[XFPayViewController alloc] init];
+    
+    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+    
+    [self presentViewController:navi animated:YES completion:nil];
     
 }
-
-- (void)viewWillAppear:(BOOL)animated {
-    
-    [super viewWillAppear:animated];
-    
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
-    
-    [self loadData];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    
-    [super viewWillDisappear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-
-}
-
 
 @end

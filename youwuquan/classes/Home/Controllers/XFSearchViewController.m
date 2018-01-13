@@ -168,7 +168,7 @@
 
 - (void)loadData {
     
-    self.datas = [XFFIndCacheManager sharedManager].searchData;
+//    self.datas = [XFFIndCacheManager sharedManager].searchData;
     
     [self.resultNode reloadData];
 }
@@ -548,7 +548,7 @@
     // 分享
     
     XFStatusModel *model = self.datas[inexPath.row];
-    [XFShareManager sharedUrl:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"] image:[UIImage imageNamed:model.headUrl] title:model.userNike detail:@"我在尤物圈等你哦"];
+//    [XFShareManager sharedUrl:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"] image:[UIImage imageNamed:model.headUrl] title:model.userNike detail:@"我在尤物圈等你哦"];
     
 }
 

@@ -14,11 +14,7 @@
     
     if (self = [super init]) {
         
-        _coin = coin;
-        _number = number;
-        _total = total;
-        _title = title;
-        _detail = detail;
+
         
     }
     return self;

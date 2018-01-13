@@ -44,7 +44,7 @@
 - (IBAction)clickCardButton:(UIButton *)sender {
     
     if (sender == self.monthCardbutton) {
-        
+
         self.monthCardbutton.selected = YES;
         self.jikaMonthCard.selected = NO;
         self.yearCardButton.selected = NO;
@@ -61,26 +61,45 @@
         
     }
     
+    // tag : 月卡 1011 季卡 1012 年卡 1013
+    
+    if (self.selectedVipCardBlock) {
+        
+        self.selectedVipCardBlock(sender.tag - 1011);
+    }
+
+    
+    
 }
 - (IBAction)clickPayTypeButton:(UIButton *)sender {
+    
+    NSInteger type;
     
     if (sender == self.weButton) {
         
         self.weButton.selected = YES;
         self.aliButton.selected = NO;
         self.zuanButton.selected = NO;
+        type = 1;
         
     } else if (sender == self.aliButton) {
         self.weButton.selected = NO;
         self.aliButton.selected = YES;
         self.zuanButton.selected = NO;
-        
+        type = 2;
+
     } else {
         self.weButton.selected = NO;
         self.aliButton.selected = NO;
         self.zuanButton.selected = YES;
-        
+        type = 3;
+
     }
+    
+    if (self.selectedPayTypeBlock) {
+        self.selectedPayTypeBlock(type);
+    }
+    
     
 }
 

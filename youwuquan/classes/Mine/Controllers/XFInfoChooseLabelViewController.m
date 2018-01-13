@@ -9,6 +9,8 @@
 #import "XFInfoChooseLabelViewController.h"
 #import "XFTagsModel.h"
 #import "XFStatusNetworkManager.h"
+#import "XFLoginNetworkManager.h"
+#import "XFMineNetworkManager.h"
 
 @implementation XFInfoChooseLabelcell
 
@@ -43,8 +45,7 @@
 
 @property (nonatomic,copy) NSArray *labels;
 
-
-
+@property (nonatomic,copy) NSArray *myTags;
 
 @end
 
@@ -67,54 +68,125 @@
 
 - (void)getTags {
     
+    // 获取自己的标签
+    NSArray *myTags = [XFUserInfoManager sharedManager].userInfo[@"tags"];
+    
+    NSLog(@"%@",[XFUserInfoManager sharedManager].userInfo);
+    
+    NSMutableArray *allMyTags = [NSMutableArray array];
+    for (NSInteger i = 0 ; i < myTags.count ; i ++ ) {
+        
+        [allMyTags addObject:[XFTagsModel modelWithDictionary:myTags[i]]];
+        
+    }
+    
+    self.myTags = allMyTags.copy;
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
     // 获取标签
-    [XFStatusNetworkManager getAllTagsWithsuccessBlock:^(NSDictionary *reponseDic) {
+    [XFLoginNetworkManager getAllTagsWithprogress:^(CGFloat progress) {
+        
+        
+    } successBlock:^(id responseObj) {
         
         [HUD hideAnimated:YES];
+
+        NSArray *datas = (NSArray *)responseObj;
+
+        NSMutableArray *arr = [NSMutableArray array];
         
-        if (reponseDic) {
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
             
-            NSArray *datas = reponseDic[@"data"][0];
-            
-            NSMutableArray *arr = [NSMutableArray array];
-            
-            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
-                
-                [arr addObject:[XFTagsModel modelWithJSON:datas[i]]];
-                
-            }
-            
-            self.tags = arr.copy;
-            
-            [self.collectionView reloadData];
-            
-        } else {
-            
-            [self.navigationController popViewControllerAnimated:YES];
+            [arr addObject:[XFTagsModel modelWithJSON:datas[i]]];
             
         }
         
-    } failedBlock:^(NSError *error) {
+        self.tags = arr.copy;
+        
+        [self.collectionView reloadData];
+        
+    } failBlock:^(NSError *error) {
         [HUD hideAnimated:YES];
 
-        [self.navigationController popViewControllerAnimated:YES];
-
     }];
+    
+
     
     
 }
 
 - (void)clickDoneButton {
     
-    if (self.refreshTagsBlock) {
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view withText:@"正在保存"];
+    
+    NSString *string = @"";
+    
+    for (NSInteger i = 0 ; i < self.selectedlabels.count ; i ++ ) {
         
-        self.refreshTagsBlock(self.selectedlabels);
+        XFTagsModel *model = self.selectedlabels[i];
+        
+        if (i == 0) {
+            
+            string = [string stringByAppendingString:model.id];
+        } else {
+            
+            string = [string stringByAppendingString:[NSString stringWithFormat:@",%@",model.id]];
+        }
+        
     }
     
-    // 完成,直接跳转
-    [self.navigationController popViewControllerAnimated:YES];
+    if ([[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"gender"] isEqualToString:@"male"]) {
+        
+        
+        [XFMineNetworkManager followTagsWithTags:string successBlock:^(id responseObj) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+            
+            // 完成,直接跳转
+            [self.navigationController popViewControllerAnimated:YES];
+            
+        } failedBlock:^(NSError *error) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"保存失败,请检查网络设置"];
+            
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+    } else {
+        
+        [XFMineNetworkManager setTagsWithTags:string successBlock:^(id responseObj) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+            
+            // 完成,直接跳转
+            [self.navigationController popViewControllerAnimated:YES];
+            
+        } failedBlock:^(NSError *error) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"保存失败,请检查网络设置"];
+            
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+    }
+    
+    
+//
+//    if (self.refreshTagsBlock) {
+//
+//        self.refreshTagsBlock(self.selectedlabels);
+//    }
+
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -130,9 +202,9 @@
         cell.titleLabel.backgroundColor = [UIColor whiteColor];
         cell.titleLabel.layer.borderColor = UIColorHex(808080).CGColor;
         cell.titleLabel.textColor = [UIColor blackColor];
-
+        
         [self.selectedlabels removeObject:self.tags[indexPath.item]];
-
+        
     }
     
     if (self.selectedlabels.count > 0) {
@@ -158,8 +230,29 @@
     
     XFTagsModel *model = self.tags[indexPath.item];
     
-    cell.titleLabel.text = model.labelName;
+    cell.titleLabel.text = model.tagName;
     
+    XFTagsModel *tag = self.tags[indexPath.item];
+    
+    for (XFTagsModel *myTag in self.myTags) {
+        
+        if ([myTag.id isEqualToString:tag.id]) {
+            
+            cell.titleLabel.backgroundColor = kMainRedColor;
+            cell.titleLabel.textColor = [UIColor whiteColor];
+            cell.titleLabel.layer.borderColor = [UIColor whiteColor].CGColor;
+            [self.selectedlabels addObject:self.tags[indexPath.item]];
+            
+        } else {
+            
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            cell.titleLabel.layer.borderColor = UIColorHex(808080).CGColor;
+            cell.titleLabel.textColor = [UIColor blackColor];
+            
+        }
+        
+    }
+
     if ([self.selectedlabels containsObject:self.tags[indexPath.item]]) {
         
         cell.titleLabel.backgroundColor = kMainRedColor;
@@ -269,15 +362,6 @@
     }];
     
     [super updateViewConstraints];
-}
-
-- (NSArray *)labels {
-    
-    if (_labels == nil) {
-        
-        _labels = @[@"大长腿",@"大波浪",@"小蛮腰",@"萝莉",@"御姐",@"翘臀",@"玉足",@"美胸",@"美背",@"制服",@"甜美",@"成熟"];
-    }
-    return _labels;
 }
 
 - (NSMutableArray *)selectedlabels {

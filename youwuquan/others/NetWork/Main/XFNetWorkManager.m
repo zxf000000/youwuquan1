@@ -57,13 +57,17 @@
     self.sessionManager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
     
     self.sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript",@"text/html",@"text/plain", nil];
-
     
     NSMutableDictionary *para = [NSMutableDictionary dictionaryWithDictionary:paraments];
     
-    [para setObject:[XFUserInfoManager sharedManager].token forKey:@"token"];
+    if ([XFUserInfoManager sharedManager].token && [XFUserInfoManager sharedManager].userName) {
+        
+        [para setObject:[XFUserInfoManager sharedManager].token forKey:@"token"];
+        
+        [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
+        
+    }
 
-    [para setObject:[XFUserInfoManager sharedManager].userName forKey:@"userNo"];
 
     [self.sessionManager POST:urlString parameters:para progress:^(NSProgress * _Nonnull uploadProgress) {
         

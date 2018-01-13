@@ -23,6 +23,12 @@
 
 - (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didSelectedPicWithIndex:(NSInteger)index pics:(NSArray *)pics picnodes:(NSArray *)picNodes;
 
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickFollowButton:(ASButtonNode *)followButton;
+
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickLikeButton:(ASButtonNode *)followButton;
+
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickIconNode:(ASButtonNode *)iconNode;
+
 @end
 
 
@@ -31,7 +37,7 @@
 
 - (instancetype)initWithImages:(NSArray *)images likeImgs:(NSArray *)likeImgs unlock:(BOOL)unlock;
 
-- (instancetype)initWithModel:(XFStatusModel *)status;
+- (instancetype)initWithModel:(XFStatusModel *)status likeDatas:(NSArray *)likeDatas;
 
 @property (nonatomic,copy) NSArray *allImgs;
 @property (nonatomic,copy) NSArray *likeIcons;
@@ -43,6 +49,7 @@
 
 @property (nonatomic,strong) XFStatusModel *status;
 
+@property (nonatomic,strong) ASButtonNode *playButton;
 // 内容
 @property (nonatomic,strong) ASTextNode *commentNode;
 
@@ -69,6 +76,7 @@
 @property (nonatomic,strong) id <XFStatusDetailCellDelegate> detailDelegate;
 
 @property (nonatomic,assign) BOOL isUnlock;
+
 
 
 @end

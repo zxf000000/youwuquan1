@@ -7,6 +7,11 @@
 //
 
 #import "XFMyCaresViewController.h"
+#import "XFMineNetworkManager.h"
+
+@implementation XFMyCareModel
+
+@end
 
 @implementation XFMyCareViewCell
 
@@ -55,6 +60,18 @@
         [self setNeedsUpdateConstraints];
     }
     return self;
+}
+
+- (void)setModel:(XFMyCareModel *)model {
+    
+    _model = model;
+    
+    _nameLabel.text = _model.nickname;
+    [_iconView setImageWithURL:[NSURL URLWithString:_model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+    
+    _statusLabel.text = _model.introduce;
+//    _careButton.selected = [_model.followEach isEqualToString:@"single"]? YES;
+    _careButton.selected = YES;
 }
 
 - (void)updateConstraints {
@@ -116,6 +133,11 @@
 
 @property (nonatomic,strong) UISearchBar *searchBar;
 
+@property (nonatomic,strong) NSMutableArray *datas;
+
+@property (nonatomic,assign) NSInteger page;
+
+
 @end
 
 @implementation XFMyCaresViewController
@@ -130,7 +152,83 @@
     [self setupSearchBar];
     
     [self setupTableView];
+    
+    [self.tableView.mj_header beginRefreshing];
+    
+}
 
+- (void)endrefresh {
+    
+    [self.tableView.mj_footer endRefreshing];
+    [self.tableView.mj_header endRefreshing];
+    
+}
+
+- (void)loadMoreData {
+    
+    self.page += 1;
+
+    [XFMineNetworkManager getMyCaresWithPage:self.page rows:20 successBlock:^(id responseObj) {
+        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFMyCareModel modelWithDictionary:datas[i]]];
+            
+            
+        }
+        
+        [self.datas addObjectsFromArray:arr.copy];
+        
+        [self.tableView reloadData];
+        
+        [self endrefresh];
+    } failedBlock:^(NSError *error) {
+        
+        [self endrefresh];
+
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+}
+
+- (void)loadData {
+    
+    self.page = 0;
+    
+    [XFMineNetworkManager getMyCaresWithPage:self.page rows:20 successBlock:^(id responseObj) {
+        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFMyCareModel modelWithDictionary:datas[i]]];
+            
+            
+        }
+        
+        self.datas = arr;
+        
+        [self.tableView reloadData];
+        
+        [self endrefresh];
+
+        
+    } failedBlock:^(NSError *error) {
+        
+        [self endrefresh];
+
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -140,7 +238,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return 10;
+    return self.datas.count;
     
 }
 
@@ -153,9 +251,7 @@
         cell  = [[XFMyCareViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"XFMyCareViewCell"];
     }
     
-    cell.iconView.image = [UIImage imageNamed:@"22"];
-    cell.nameLabel.text = @"小混蛋";
-    cell.statusLabel.text = @"最新动态的文字，就是霸气就是狂......";
+    cell.model = self.datas[indexPath.row];
     
     return cell;
 }
@@ -178,6 +274,20 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
+    
+    self.tableView.tableFooterView = [[UIView alloc] init];
+    
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        
+        [self loadData];
+        
+    }];
+    
+    self.tableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
+        
+        [self loadMoreData];
+        
+    }];
     
 }
 

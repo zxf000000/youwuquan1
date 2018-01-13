@@ -16,12 +16,11 @@
     
 }
 
-
 - (instancetype)initWithUserName:(NSString *)name userIcon:(NSString *)userIcon price:(NSString *)price likeNumer:(NSString *)likeNumer isLiked:(NSString *)isLiked userPic:(NSString *)userPic {
     
     if (self = [super init]) {
         
-        _userName = name;
+        _nickname = name;
         _userIcon = userIcon;
         _userPic = userPic;
         _price = price;

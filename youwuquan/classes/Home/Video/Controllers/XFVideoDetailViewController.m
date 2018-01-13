@@ -12,7 +12,7 @@
 #import "XFVideoMoreCell.h"
 #import "XFStatusDetailViewController.h"
 #import "XFStatusCommentCellNode.h"
-#import <AliyunVodPlayerViewSDK/AliyunVodPlayerViewSDK.h>
+//#import <AliyunVodPlayerViewSDK/AliyunVodPlayerViewSDK.h>
 
 #import <MDVRLibrary.h>
 
@@ -22,9 +22,15 @@
 
 #import "VideoPlayerViewController.h"
 
+#import <PLPlayerKit.h>
+#import <CoreMedia/CoreMedia.h>
+#import "XFHomeNetworkManager.h"
+#import "XFCommentModel.h"
+#import "XFMineNetworkManager.h"
+
 #define kVideoVideHeight (9/16.f * kScreenWidth)
 
-@interface XFVideoDetailViewController () <ASTableDelegate,ASTableDataSource,AliyunVodPlayerDelegate,HJDanmakuViewDateSource,HJDanmakuViewDelegate,MD360DirectorFactory>
+@interface XFVideoDetailViewController () <ASTableDelegate,ASTableDataSource,HJDanmakuViewDateSource,HJDanmakuViewDelegate,MD360DirectorFactory,PLPlayerDelegate>
 
 @property (nonatomic,strong) UIButton *backButton;
 
@@ -37,10 +43,6 @@
 @property (nonatomic,assign) NSInteger count;
 
 @property (nonatomic, assign)BOOL isLock;
-
-@property (nonatomic,strong) AliyunVodPlayerView *playerView;
-
-@property (nonatomic,strong) AliyunVodPlayer *aliPlayer;
 
 @property (nonatomic,strong) UIView *controlView;
 
@@ -81,6 +83,15 @@
 @property (nonatomic,strong) UIImageView *rightImgView;
 @property (nonatomic,strong) UIImageView *bgImgView;
 
+@property (nonatomic, strong) PLPlayer  *plPlayer;
+
+@property (nonatomic,copy) NSDictionary *videoSuggestion;
+
+@property (nonatomic,copy) NSArray *comments;
+
+@property (nonatomic,copy) NSDictionary *userInfo;
+
+@property (nonatomic,copy) NSDictionary *allInfo;
 
 @end
 
@@ -91,11 +102,18 @@
 
     self.view.backgroundColor = [UIColor whiteColor];
     
+    if ([self.model.category isEqualToString:@"hd"]) {
+        
+        self.type = Hightdefinition;
+    } else {
+        
+        self.type = VRVideo;
+
+    }
     
     if (self.type == Hightdefinition) {
+        
         [self setupVideoView];
-        [self setupDanmu];
-
         
     } else {
         
@@ -103,6 +121,7 @@
     }
 
     [self setupTableNode];
+    
     
     
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
@@ -116,7 +135,91 @@
     
     [self.view bringSubviewToFront:self.inputView];
     self.inputView.frame = CGRectMake(0, kScreenHeight - 44, kScreenWidth, 44);
+    
+    [self loadData];
 }
+
+- (void)loadCommentData {
+    
+    [XFHomeNetworkManager getVideoCommentListWithID:self.model.id successBlock:^(id responseObj) {
+        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0; i < datas.count; i ++ ) {
+            
+            [arr addObject:[XFCommentModel modelWithDictionary:datas[i]]];
+        }
+        
+        self.comments = arr.copy;
+        
+        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationNone)];
+        
+    } failBlock:^(NSError *error) {
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
+}
+
+- (void)clickSendButton {
+    
+    if (![self.inputTextField.text isHasContent]) {
+        
+        [XFToolManager showProgressInWindowWithString:@"请输入内容"];
+        
+        return;
+    }
+    
+    [self hide];
+
+    
+    [XFHomeNetworkManager commentVideWithVideoId:self.model.id text:self.inputTextField.text successBlock:^(id responseObj) {
+        
+        [self loadCommentData];
+        self.inputTextField.text = nil;
+        
+    } failBlock:^(NSError *error) {
+        
+        NSLog(@"%@",error);
+        
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
+}
+
+- (void)loadData {
+    
+    [XFHomeNetworkManager getVideoDetailWithID:self.model.id successBlock:^(id responseObj) {
+        
+        NSDictionary *info = (NSDictionary *)responseObj;
+        self.allInfo = info;
+        self.videoSuggestion = info[@"videoSuggestion"];
+        self.userInfo = info[@"user"];
+        NSArray *comments = info[@"comments"][@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (NSInteger i = 0; i < comments.count; i ++ ) {
+            
+            [arr addObject:[XFCommentModel modelWithDictionary:comments[i]]];
+            
+        }
+        self.comments = arr.copy;
+        
+        [self.tableNode reloadData];
+        
+    } failBlock:^(NSError *error) {
+        
+        
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
+}
+
 #pragma mark - 初始化VR占位区域
 - (void)setupVrView {
     
@@ -129,7 +232,7 @@
 
     
     self.bgImgView = [[UIImageView alloc] init];
-    self.bgImgView.image = [UIImage imageNamed:@"find_pic5"];
+    [self.bgImgView setImageWithURL:[NSURL URLWithString:self.model.video[@"coverUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     //设置UIVisualEffectView
     
     UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
@@ -149,19 +252,20 @@
     
     // 缩略图
     self.littleImgView = [[UIImageView alloc] init];
-    self.littleImgView.image = [UIImage imageNamed:@"find_pic5"];
+//    self.littleImgView.image = [UIImage imageNamed:@"find_pic5"];
+    [self.littleImgView setImageWithURL:[NSURL URLWithString:self.model.video[@"coverUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     self.littleImgView.contentMode = UIViewContentModeScaleAspectFill;
     self.littleImgView.layer.masksToBounds = YES;
     [self.vrView addSubview:self.littleImgView];
     
     self.leftImgView = [[UIImageView alloc] init];
-    self.leftImgView.image = [UIImage imageNamed:@"find_pic5"];
+    [self.leftImgView setImageWithURL:[NSURL URLWithString:self.model.video[@"coverUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     self.leftImgView.contentMode = UIViewContentModeScaleAspectFill;
     self.leftImgView.layer.masksToBounds = YES;
     [self.vrView addSubview:self.leftImgView];
     
     self.rightImgView = [[UIImageView alloc] init];
-    self.rightImgView.image = [UIImage imageNamed:@"find_pic5"];
+    [self.rightImgView setImageWithURL:[NSURL URLWithString:self.model.video[@"coverUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     self.rightImgView.contentMode = UIViewContentModeScaleAspectFill;
     self.rightImgView.layer.masksToBounds = YES;
     [self.vrView addSubview:self.rightImgView];
@@ -273,7 +377,7 @@
     PlayerViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"VideoPlayerViewController"];
     
     [self presentViewController:vc animated:YES completion:^{
-        [vc initParams:[NSURL URLWithString:@"http://cdn.hotcast.cn/import/201708161/hd/bijini.mp4"]];
+        [vc initParams:[NSURL URLWithString:self.model.video[@"srcUrl"]]];
     }];
 }
 
@@ -339,7 +443,6 @@
      *  @param device.orientation
      *
      */
-
     switch (device.orientation) {
 
         case UIDeviceOrientationUnknown:
@@ -349,7 +452,12 @@
         case UIDeviceOrientationLandscapeLeft:
         {
             NSLog(@"屏幕向左横置");
-            [self setLadscapeVideoVideControlViewFrame];
+            
+            if (self.type == Hightdefinition) {
+                
+                [self setLadscapeVideoVideControlViewFrame];
+            }
+            
         }
             break;
 
@@ -390,7 +498,7 @@
 // 返回按钮
 - (void)clickBackButton {
 
-    [self.aliPlayer stop];
+    [self.plPlayer stop];
     
     [self.navigationController popViewControllerAnimated:YES];
 
@@ -419,14 +527,14 @@
 // 开始/暂停
 - (void)clickBeginButton {
     
-    if (self.aliPlayer.playerState == AliyunVodPlayerStatePlay) {
+    if ([self.plPlayer isPlaying]) {
         
-        [self.aliPlayer pause];
+        [self.plPlayer pause];
         [self invalidateTimer];
         self.beginButton.selected = NO;
 
     } else {
-        [self.aliPlayer start];
+        [self.plPlayer play];
         [self setupTimer];
         self.beginButton.selected = YES;
 
@@ -472,8 +580,16 @@
         }
             break;
         default:
-            [self.aliPlayer seekToTime:self.aliPlayer.duration * self.progressView.progress];
-//            [self setupTimer];
+        {
+            
+            CMTime totalDuration = self.plPlayer.totalDuration;
+            CGFloat seconds = totalDuration.value / totalDuration.timescale;
+            CMTime time = CMTimeMake(seconds * self.progressView.progress, totalDuration.timescale);
+            [self.plPlayer seekTo:time];
+
+        }
+            
+            
             break;
     }
     
@@ -497,17 +613,20 @@
 #pragma mark - 设置弹幕
 - (void)setupDanmu {
     
-    HJDanmakuConfiguration *config = [[HJDanmakuConfiguration alloc] initWithDanmakuMode:(HJDanmakuModeVideo)];
+//    HJDanmakuConfiguration *config = [[HJDanmakuConfiguration alloc] initWithDanmakuMode:HJDanmakuModeVideo];
+//    HJDanmakuView *danmakuView = [[HJDanmakuView alloc] initWithFrame:self.view.bounds configuration:config];
     
-    self.danmuView = [[HJDanmakuView alloc] initWithFrame:(CGRectZero) configuration:config];
+//    [self.danmakuView sendDanmaku:danmaku forceRender:YES];
     
-    self.danmuView.delegate = self;
-    self.danmuView.dataSource = self;
-    
-    [self.danmuView registerClass:[XFDanmuCell class] forCellReuseIdentifier:@"danmu"];
-    
+//    HJDanmakuConfiguration *config = [[HJDanmakuConfiguration alloc] initWithDanmakuMode:(HJDanmakuModeVideo)];
+//
+//    self.danmuView = [[HJDanmakuView alloc] initWithFrame:(CGRectZero) configuration:config];
+//
+//    self.danmuView.delegate = self;
+//    self.danmuView.dataSource = self;
+//
+//    [self.danmuView registerClass:[XFDanmuCell class] forCellReuseIdentifier:@"danmu"];
 //    [self.videoView insertSubview:self.danmuView belowSubview:self.controlView];
-    
 //
 //    [self.danmuView mas_makeConstraints:^(MASConstraintMaker *make) {
 //
@@ -515,23 +634,22 @@
 //
 //    }];
     
+//    NSString *danmakufile = [[NSBundle mainBundle] pathForResource:@"danmakufile" ofType:nil];
+//    NSArray *danmakus = [NSArray arrayWithContentsOfFile:danmakufile];
+//    NSMutableArray *danmakuModels = [NSMutableArray arrayWithCapacity:danmakus.count];
+//    for (NSDictionary *danmaku in danmakus) {
+//        NSArray *pArray = [danmaku[@"p"] componentsSeparatedByString:@","];
+//        HJDanmakuType type = [pArray[1] integerValue] % 3;
+//        XFDanmuModel *danmakuModel = [[XFDanmuModel alloc] initWithType:type];
+//        danmakuModel.time = [pArray[0] floatValue] / 1000.0f;
+//        danmakuModel.text = danmaku[@"m"];
+//        danmakuModel.textFont = [pArray[2] integerValue] == 1 ? [UIFont systemFontOfSize:20]: [UIFont systemFontOfSize:18];
+//        danmakuModel.textColor = [UIColor redColor];
+//        [danmakuModels addObject:danmakuModel];
+//    }
+//    [self.danmuView prepareDanmakus:danmakuModels];
     
-    NSString *danmakufile = [[NSBundle mainBundle] pathForResource:@"danmakufile" ofType:nil];
-    NSArray *danmakus = [NSArray arrayWithContentsOfFile:danmakufile];
-    NSMutableArray *danmakuModels = [NSMutableArray arrayWithCapacity:danmakus.count];
-    for (NSDictionary *danmaku in danmakus) {
-        NSArray *pArray = [danmaku[@"p"] componentsSeparatedByString:@","];
-        HJDanmakuType type = [pArray[1] integerValue] % 3;
-        XFDanmuModel *danmakuModel = [[XFDanmuModel alloc] initWithType:type];
-        danmakuModel.time = [pArray[0] floatValue] / 1000.0f;
-        danmakuModel.text = danmaku[@"m"];
-        danmakuModel.textFont = [pArray[2] integerValue] == 1 ? [UIFont systemFontOfSize:20]: [UIFont systemFontOfSize:18];
-        danmakuModel.textColor = [UIColor redColor];
-        [danmakuModels addObject:danmakuModel];
-    }
-    [self.danmuView prepareDanmakus:danmakuModels];
-    
-    self.danmuView.hidden = YES;
+//    self.danmuView.hidden = YES;
 
 }
 
@@ -596,39 +714,28 @@
 - (void)setupVideoView {
     
     #pragma mark - 阿里云播放器
-//    //创建播放器对象，AliyunVodPlayerView继承自UIView，可以创建多实例，提供4套皮肤可设置
-//    self.playerView = [[AliyunVodPlayerView alloc] initWithFrame:CGRectMake(0,0, kScreenWidth, 9/16.f * kScreenWidth) andSkin:AliyunVodPlayerViewSkinOrange];
-//    //    self.playerView = [[AliyunVodPlayerView alloc] initWithFrame:CGRectMake(0,0, kScreenWidth, kScreenHeight) andSkin:AliyunVodPlayerViewSkinOrange];
-//
+
+    NSString *path = [[NSBundle mainBundle] pathForResource:kRandomVideo ofType:@"mp4"];
+    
+    NSURL *url = [NSURL fileURLWithPath:path];//网络视频，填写网络url地址
+    // 七牛播放器
+    PLPlayerOption *option = [PLPlayerOption defaultOption];
+    [option setOptionValue:@15 forKey:PLPlayerOptionKeyTimeoutIntervalForMediaPackets];
+    self.plPlayer = [PLPlayer playerWithURL:[NSURL URLWithString:self.model.video[@"srcUrl"]] option:option];
+    self.plPlayer.delegate = self;
+//    //创建播放器对象，可以创建多个示例
+//    self.aliPlayer = [[AliyunVodPlayer alloc] init];
 //    //设置播放器代理
-//    [self.playerView setDelegate:self];
-//    //将播放器添加到需要展示的界面上
-//    [self.view addSubview:self.playerView];
-//    [self.playerView setAutoPlay:YES];
-//
-//        //旋转锁屏
-//    self.playerView.isLockScreen = NO;
-//    self.playerView.isLockPortrait = NO;
-//    self.isLock = self.playerView.isLockScreen||self.playerView.isLockPortrait?YES:NO;
-    
-    
-    
-    //创建播放器对象，可以创建多个示例
-    self.aliPlayer = [[AliyunVodPlayer alloc] init];
-    //设置播放器代理
-    self.aliPlayer.delegate = self;
-    self.aliPlayer.autoPlay = YES;
+//    self.aliPlayer.delegate = self;
+//    self.aliPlayer.autoPlay = YES;
     //获取播放器视图
-    self.videoView = self.aliPlayer.playerView;
+    self.videoView = self.plPlayer.playerView;
     self.videoView.frame = CGRectMake(0, 0, kScreenWidth, kScreenWidth * 9/16.f);
     //添加播放器视图到需要展示的界面上
     [self.view addSubview:self.videoView];
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:kRandomVideo ofType:@"mp4"];
-
-    NSURL *url = [NSURL fileURLWithPath:path];//网络视频，填写网络url地址
-    
-    [self.aliPlayer prepareWithURL:url];
+    [self.plPlayer play];
+//    [self.aliPlayer prepareWithURL:url];
 
     // 添加点按事件
     
@@ -636,10 +743,11 @@
     [self.videoView addGestureRecognizer:tapVideo];
     
     //设置缓存目录路径
-    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docDir = [pathArray objectAtIndex:0];
+//    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    NSString *docDir = [pathArray objectAtIndex:0];
     //在创建播放器类,并在调用prepare方法之前设置。比如：maxSize设置500M时缓存文件超过500M后会优先覆盖最早缓存的文件。maxDuration设置为300秒时表示超过300秒的视频不会启用缓存功能。
-    [self.aliPlayer setPlayingCache:YES saveDir:docDir maxSize:500 maxDuration:300];
+
+//    [self.aliPlayer setPlayingCache:YES saveDir:docDir maxSize:500 maxDuration:300];
     
     // 返回按钮
     self.backButton = [[UIButton alloc] init];
@@ -854,61 +962,76 @@
 #pragma mark - 拖动滑块
 - (void)changeSlider:(UISlider *)slider {
     
-    [self.aliPlayer seekToTime:slider.value];
+    CGFloat progress = self.slider.value / self.slider.maximumValue;
+    
+    CGFloat totalTime = self.plPlayer.totalDuration.value / self.plPlayer.totalDuration.timescale;
+    
+    [self.plPlayer seekTo:CMTimeMake((int64_t)(totalTime * progress), self.plPlayer.totalDuration.timescale)];
     
 }
 
-
-- (void)vodPlayer:(AliyunVodPlayer *)vodPlayer onEventCallback:(AliyunVodPlayerEvent)event{
-    //这里监控播放事件回调
-    //主要事件如下：
-    switch (event) {
-        case AliyunVodPlayerEventPrepareDone:
+- (void)player:(PLPlayer *)player statusDidChange:(PLPlayerStatus)state {
+    
+    switch (state) {
+        case PLPlayerStatusReady:
+        {
             //播放准备完成时触发
             [self setupTimer];
             
-            self.totalTimeLabel.text = [self timeStringWithTime:self.aliPlayer.duration];
+            self.totalTimeLabel.text = [self timeStringWithTime:self.plPlayer.totalDuration.value/self.plPlayer.totalDuration.timescale];
             self.beginButton.selected = YES;
             
             self.slider.minimumValue = 0;
-            self.slider.maximumValue = self.aliPlayer.duration;
+            self.slider.maximumValue = self.plPlayer.totalDuration.value/self.plPlayer.totalDuration.timescale;
+        }
+            break;
+        case PLPlayerStatusPaused:
+        {
             
+        }
             break;
-        case AliyunVodPlayerEventPlay:
-            //暂停后恢复播放时触发
-
-            break;
-        case AliyunVodPlayerEventFirstFrame:
-            //播放视频首帧显示出来时触发
-
-            break;
-        case AliyunVodPlayerEventPause:
-            //视频暂停时触发
-            break;
-        case AliyunVodPlayerEventStop:
-            //主动使用stop接口时触发
-            break;
-        case AliyunVodPlayerEventFinish:
-            //视频正常播放完成时触发
-            break;
-        case AliyunVodPlayerEventBeginLoading:
-            //视频开始载入时触发
-            break;
-        case AliyunVodPlayerEventEndLoading:
-            //视频加载完成时触发
-            break;
-        case AliyunVodPlayerEventSeekDone:
-            //视频Seek完成时触发
+        case PLPlayerStatusCaching:
+        {
             
+        }
             break;
+        case PLPlayerStatusPlaying:
+        {
+            
+        }
+            break;
+        case PLPlayerStatusError:
+        {
+            
+        }
+            break;
+        case PLPlayerStatusUnknow:
+        {
+            
+        }
+            break;
+        case PLPlayerStatusStopped:
+        {
+            
+        }
+            break;
+        case PLPlayerStatusCompleted:
+        {
+            
+        }
+            break;
+        case PLPlayerStatusPreparing:
+        {
+            
+        }
+            break;
+            
         default:
             break;
     }
+    
 }
 
-- (void)vodPlayer:(AliyunVodPlayer *)vodPlayer playBackErrorModel:(ALPlayerVideoErrorModel *)errorModel{
-    //播放出错时触发，通过errorModel可以查看错误码、错误信息、视频ID、视频地址和requestId。
-}
 
 - (void)invalidateTimer {
     
@@ -920,13 +1043,14 @@
 - (void)timerChange {
     
     //获取播放的当前时间，单位为秒
-    NSTimeInterval currentTime = self.aliPlayer.currentTime;
+    CGFloat currentTime = self.plPlayer.currentTime.value / self.plPlayer.currentTime.timescale;
     //获取视频的总时长，单位为秒
-    NSTimeInterval duration = self.aliPlayer.duration;
+    CGFloat duration = self.plPlayer.totalDuration.value / self.plPlayer.totalDuration.timescale;
+    
     // 设置当前时间
     self.currntTimeLabel.text = [self timeStringWithTime:currentTime];
     
-    self.slider.value = self.aliPlayer.currentTime;
+    self.slider.value = currentTime;
     
     [self.dotView mas_remakeConstraints:^(MASConstraintMaker *make) {
         
@@ -952,7 +1076,7 @@
     
 }
 
-- (NSString *)timeStringWithTime:(NSTimeInterval)time {
+- (NSString *)timeStringWithTime:(CGFloat)time {
     
     NSInteger currentSec = (NSInteger)time % 60;
     NSInteger currentMin = (NSInteger)time / 60;
@@ -966,6 +1090,7 @@
 
 #pragma mark - 设置播放器横屏的元素位置
 - (void)setPortraitVideoPlayerControlViewFrame {
+    
     //获取到状态栏
     UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
     //设置透明度为0
@@ -1038,12 +1163,16 @@
 
 - (void)setLadscapeVideoVideControlViewFrame {
     
+    if (self.type == VRVideo) {
+        
+        return;
+    }
+    
     //获取到状态栏
     UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
     //设置透明度为0
     statusBar.alpha = 0.0f;
     
-    [self.view.window addSubview:self.videoView];
     self.fullScreenButton.selected = YES;
     self.backButton.hidden = YES;
 
@@ -1068,32 +1197,36 @@
         make.width.mas_equalTo(40);
         
     }];
+    
+    CGRect rectInWindow = [self.videoView convertRect:self.videoView.bounds toView:[UIApplication sharedApplication].keyWindow];
+    [self.videoView removeFromSuperview];
+    self.videoView.frame = rectInWindow;
+    [[UIApplication sharedApplication].keyWindow addSubview:self.videoView];
 
     [UIView animateWithDuration:0.3 animations:^{
         
         self.videoView.transform = CGAffineTransformMakeRotation(M_PI_2);
-        self.videoView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+        
+        self.videoView.bounds = CGRectMake(0, 0, CGRectGetHeight(self.videoView.superview.bounds), CGRectGetWidth(self.videoView.superview.bounds));
+        self.videoView.center = CGPointMake(CGRectGetMidX(self.videoView.superview.bounds), CGRectGetMidY(self.videoView.superview.bounds));
         
     } completion:^(BOOL finished) {
         // 显示顶部操
         
         self.topShadowView.hidden = NO;
         self.controlView.hidden = NO;
-
-        // 弹幕界面
-//        self.danmuView.hidden = NO;
-//        [self.danmuView play];
         
-//        self.controlView.transform = CGAffineTransformMakeRotation(M_PI_2);
+        // 弹幕界面
+        //        self.danmuView.hidden = NO;
+        //        [self.danmuView play];
         
         self.controlView.frame = CGRectMake(0, kScreenWidth - 35, kScreenHeight, 35);
         self.topShadowView.frame = CGRectMake(0, 0, kScreenHeight, 43);
         [self.topShadowView layoutIfNeeded];
-
+        
         [self.controlView layoutIfNeeded];
     }];
-    
-//    self.controlView.frame = CGRectMake(0, 0, kScreenHeight, 35);
+
     
     if (@available (iOS 11, *)) {
         
@@ -1126,7 +1259,7 @@
             return 1;
             break;
         case 2:
-            return 10;
+            return self.comments.count + 1;
             break;
         default:
             break;
@@ -1143,7 +1276,7 @@
         {
             return ^ASCellNode *() {
                 
-                XFVideoNameCell *cell = [[XFVideoNameCell alloc] init];
+                XFVideoNameCell *cell = [[XFVideoNameCell alloc] initWithInfo:self.model];
                 
                 return cell;
                 
@@ -1154,7 +1287,40 @@
         {
             return ^ASCellNode *() {
                 
-                XFVideoMoreCell *cell = [[XFVideoMoreCell alloc] init];
+                XFVideoMoreCell *cell = [[XFVideoMoreCell alloc] initWithInfo:self.allInfo];
+                
+                cell.clickFollowButtonBlock = ^(ASButtonNode *button) {
+                  
+                    if (button.selected) {
+                        
+                        [XFMineNetworkManager unCareSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
+                            
+                            button.selected = NO;
+                            
+                        } failedBlock:^(NSError *error) {
+                            
+                            
+                        } progressBlock:^(CGFloat progress) {
+                            
+                            
+                        }];
+                    } else {
+                        
+                        [XFMineNetworkManager careSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
+                            
+                            button.selected = YES;
+
+                            
+                        } failedBlock:^(NSError *error) {
+                            
+                        } progressBlock:^(CGFloat progress) {
+                            
+                        }];
+
+                    }
+                    
+                    
+                };
                 
                 return cell;
                 
@@ -1206,7 +1372,7 @@
                         
                         return ^ASCellNode *{
                             
-                            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:nil];
+                            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:self.comments[indexPath.row - 1]];
                             
                             return node;
                             
@@ -1220,7 +1386,7 @@
                     
                     return ^ASCellNode *() {
                         
-                        XFStatusCommentCellNode *cell = [[XFStatusCommentCellNode alloc] initWithMode:nil];
+                        XFStatusCommentCellNode *cell = [[XFStatusCommentCellNode alloc] initWithMode:self.comments[indexPath.row - 1]];
                         
                         return cell;
                         

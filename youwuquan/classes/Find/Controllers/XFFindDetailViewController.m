@@ -20,6 +20,10 @@
 #import "XFFIndCacheManager.h"
 #import "XFGiftViewController.h"
 
+#import "XFFindNetworkManager.h"
+#import "XFMineNetworkManager.h"
+#import "SDCycleScrollView.h"
+#import "XFPayViewController.h"
 
 #define kHeaderHeight kScreenWidth
 
@@ -31,7 +35,7 @@
 
 @property (nonatomic,strong) UIView *headerView;
 
-@property (nonatomic,strong) XFCarouselView *headerImage;
+@property (nonatomic,strong) SDCycleScrollView *headerImage;
 
 @property (nonatomic,strong) UIView *infoView;
 
@@ -51,6 +55,16 @@
 @property (nonatomic,strong) NSIndexPath  *openIndexpath;
 
 @property (nonatomic,copy) NSArray *datas;
+
+@property (nonatomic,copy) NSDictionary *userInfo;
+
+@property (nonatomic,copy) NSArray *photoWallDatas;
+
+@property (nonatomic,weak) UILabel *titleLabbel;
+
+@property (nonatomic,copy) NSDictionary *relation;
+
+@property (nonatomic,strong) MBProgressHUD *HUD;
 
 @end
 
@@ -77,24 +91,246 @@
         self.tableNode.view.estimatedSectionHeaderHeight = 0;
         self.tableNode.view.estimatedSectionFooterHeight = 0;
     }
+    
+    self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    self.tableNode.alpha = 0;
+    [self network];
+}
+
+- (void)network {
+    
+    // 获取广告
+    NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
+        [self loadPicWall];
+    }];
+    // 获取认证信息列表
+    NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
+        [self loadInfo];
+    }];
+    
+    // 获取首页数据
+    NSBlockOperation *operation3 = [NSBlockOperation blockOperationWithBlock:^{
+        [self loadStatusData];
+    }];
+    
+    [operation3 addDependency:operation2];      //任务二依赖任务一
+
+    //创建队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperations:@[operation3, operation2, operation1] waitUntilFinished:NO];
+    
+}
+
+- (void)loadPicWall {
+
+    
+    [XFMineNetworkManager getOtherPhotoWallWithUserId:self.userId successBlock:^(id responseObj) {
+        
+        NSArray *datas = (NSArray *)responseObj;
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (NSInteger i = 0 ; i < datas.count; i ++ ) {
+            
+            NSDictionary *info = datas[i];
+            
+            [arr addObject:info[@"image"][@"imageUrl"]];
+            
+        }
+        
+        self.photoWallDatas = arr.copy;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self refreshPhotoWall];
+
+        });
+        
+
+    } failedBlock:^(NSError *error) {
+        
+
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
 
 }
 
-- (void)viewWillLayoutSubviews {
+- (void)loadInfo {
     
-    [super viewWillLayoutSubviews];
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+
+    [XFMineNetworkManager getOtherInfoWithUid:self.userId successBlock:^(id responseObj) {
+        
+        self.userInfo = ((NSDictionary *)responseObj)[@"info"];
+        
+        self.relation = ((NSDictionary *)responseObj)[@"relation"];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self refreshHeaderData];
+
+        });
+        
+        
+        dispatch_semaphore_signal(sema);
+
+        
+    } failedBlock:^(NSError *error) {
+        dispatch_semaphore_signal(sema);
+
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+
+}
+
+- (void)loadStatusData {
+
+    [XFFindNetworkManager getOtherStatusListWithUserId:self.userId successBlock:^(id responseObj) {
+        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (NSInteger i = 0 ; i< datas.count ; i ++ ) {
+            
+            [arr addObject:[XFStatusModel modelWithDictionary:datas[i]]];
+            
+        }
+        self.datas = arr.copy;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self.tableNode reloadDataWithCompletion:^{
+                [UIView animateWithDuration:0.2 animations:^{
+                    
+                    self.tableNode.alpha = 1;
+                    
+                }];
+                [self.HUD hideAnimated:YES];
+            }];
+        });
+        
+
+        
+
+        
+    } failBlock:^(NSError *error) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self.HUD hideAnimated:YES];
+
+        });
+
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
+}
+
+- (void)refreshHeaderData {
+    
+    [self.xzButton setTitle:self.userInfo[@"starSign"] forState:(UIControlStateNormal)];
+
+    _idLabel.text = [NSString stringWithFormat:@"ID: %@",_userInfo[@"uid"]];
+    _careLabel.text = [NSString stringWithFormat:@"关注 %@",_userInfo[@"followNum"]?_userInfo[@"followNum"]:@"0"];
+    _fansLabel.text = [NSString stringWithFormat:@"粉丝 %@",_userInfo[@"fansNum"]?_userInfo[@"fansNum"]:@"0"];
+//    _titleLabbel.text = self.userInfo[@"nickname"];
+    _followButton.selected = [self.relation[@"followed"] boolValue];
+    
+}
+
+- (void)refreshPhotoWall {
+    
+    if (self.photoWallDatas.count == 0) {
+        
+        
+    } else {
+        
+        self.headerImage.imageURLStringsGroup = self.photoWallDatas;
+
+    }
     
 }
 
 #pragma mark - cellNodeDelegate点赞
 // 分享
 - (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
-    // 分享
-    [XFShareManager sharedImageWithBg:@"" icon:@"find_pic3" name:kRandomName userid:@"ID:12234213" address:@"深圳南山区"];
+    
+    XFStatusModel *status = self.datas[inexPath.row - 4];
+    
+    [[YYWebImageManager sharedManager] requestImageWithURL:[NSURL URLWithString:status.user[@"headIconUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        
+    } transform:^UIImage * _Nullable(UIImage * _Nonnull image, NSURL * _Nonnull url) {
+        
+        return image;
+    } completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
+        
+        // 分享
+        [XFShareManager sharedImageWithBg:@"" icon:image name:status.user[@"nickname"] userid:[NSString stringWithFormat:@"ID:%@",status.user[@"uid"]] address:@"深圳南山区"];
+    }];
+    
+
     
 }
 
 - (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
+    
+    XFStatusModel *model = self.datas[indexPath.row - 4];
+    
+    if (model.likedIt) {
+        
+        [XFFindNetworkManager unlikeWithStatusId:model.id successBlock:^(id responseObj) {
+            
+            [self refreshlikeStatusWithModel:model witfFollowed:NO];
+            [node.likeButton setTitle:model.likeNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+            
+            node.likeButton.selected = NO;
+            
+            [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
+                
+                
+            }];
+            
+        } failBlock:^(NSError *error) {
+            
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+        
+    } else {
+        
+        [XFFindNetworkManager likeWithStatusId:model.id successBlock:^(id responseObj) {
+            
+            [self refreshlikeStatusWithModel:model witfFollowed:YES];
+            
+            [node.likeButton setTitle:model.likeNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+            
+            node.likeButton.selected = YES;
+            
+            [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
+                
+                
+            }];
+            
+        } failBlock:^(NSError *error) {
+            
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+    }
+    
     
     node.likeButton.selected = !node.likeButton.selected;
     
@@ -105,52 +341,69 @@
     
 }
 
+- (void)refreshlikeStatusWithModel:(XFStatusModel *)model witfFollowed:(BOOL)liked {
+    
+    model.likedIt = liked;
+    if (liked) {
+        
+        model.likeNum = [NSString stringWithFormat:@"%zd",[model.likeNum integerValue] + 1];
+        
+    } else {
+        
+        model.likeNum = [NSString stringWithFormat:@"%zd",[model.likeNum integerValue] - 1];
+        
+    }
+    
+}
+
 - (void)findCellNode:(XFFindCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath {
     
+    XFStatusModel *model = self.datas[inexPath.row - 4];
+    
     XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
+    giftVC.userName = model.user[@"nickname"];
+    giftVC.uid = model.uid;
+    giftVC.iconUrl = model.user[@"headIconUrl"];
     
     [self presentViewController:giftVC animated:YES completion:nil];
     
     return;
-    
-    XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"打赏用户" icon:@"" remainNUmber:@"100"];
-    
-    [alertView dsShowanimation];
-    
-    alertView.doneBlock = ^{
-        
-        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-        HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-        HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
-        HUD.contentColor = [UIColor whiteColor];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            HUD.mode = MBProgressHUDModeCustomView;
-            HUD.detailsLabel.text = @"打赏成功!";
-            UIImageView *img = [[UIImageView alloc] init];
-            img.image = [UIImage imageNamed:@"ds_ok"];
-            HUD.customView = img;
-            HUD.tintColor = [UIColor blackColor];
-            HUD.animationType = MBProgressHUDAnimationZoom;
-            [HUD hideAnimated:YES afterDelay:0.4];
-        });
-        
-        
-        
-    };
-    
-    alertView.cancelBlock = ^{
-        
-        
-    };
+//
+//    XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"打赏用户" icon:@"" remainNUmber:@"100"];
+//
+//    [alertView dsShowanimation];
+//
+//    alertView.doneBlock = ^{
+//
+//        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+//        HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+//        HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
+//        HUD.contentColor = [UIColor whiteColor];
+//
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
+//        });
+//
+//
+//
+//    };
+//
+//    alertView.cancelBlock = ^{
+//
+//
+//    };
     
 }
 
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+
     if (indexPath.row > 3) {
         
         XFStatusDetailViewController *statusDetailVC = [[XFStatusDetailViewController alloc] init];
+        
+        statusDetailVC.type = Other;
+        statusDetailVC.status = self.datas[indexPath.row - 4];
         
         [self.navigationController pushViewController:statusDetailVC animated:YES];
         
@@ -169,16 +422,13 @@
         
     }
     
-    self.tableNode.hidden = YES;
-    
     [self.tableNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationNone)];
-    self.tableNode.hidden = NO;
 
 }
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
-    return 10;
+    return self.datas.count + 4;
 }
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -190,7 +440,7 @@
             
             return ^ASCellNode *{
                 
-                XFFinddetailInfoTableViewCell *node = [[XFFinddetailInfoTableViewCell alloc] init];
+                XFFinddetailInfoTableViewCell *node = [[XFFinddetailInfoTableViewCell alloc] initWithUserInfo:self.userInfo];
                 
                 return node;
             };
@@ -201,7 +451,7 @@
             
             return ^ASCellNode *{
                 
-                XFFindApproveNode *node = [[XFFindApproveNode alloc] initWithType:Approve];
+                XFFindApproveNode *node = [[XFFindApproveNode alloc] initWithType:Approve auths:self.userInfo[@"identifications"]];
                 
                 return node;
             };
@@ -212,7 +462,7 @@
             
             return ^ASCellNode *{
                 
-                XFFindApproveNode *node = [[XFFindApproveNode alloc] initWithType:Skill];
+                XFFindApproveNode *node = [[XFFindApproveNode alloc] initWithType:Skill auths:self.userInfo[@"identifications"]];
                 
                 [node.titleNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:@"技能" lineSpace:2 kern:0];
 
@@ -235,21 +485,42 @@
                     
                     alertView.doneBlock = ^{
                         
-                        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.tabBarController.view];
-                        HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-                        HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
-                        HUD.contentColor = [UIColor whiteColor];
+//                        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.tabBarController.view];
+//                        HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+//                        HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
+//                        HUD.contentColor = [UIColor whiteColor];
+//
+//                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                            HUD.mode = MBProgressHUDModeCustomView;
+//                            HUD.detailsLabel.text = @"支付成功!";
+//                            UIImageView *img = [[UIImageView alloc] init];
+//                            img.image = [UIImage imageNamed:@"ds_ok"];
+//                            HUD.customView = img;
+//                            HUD.tintColor = [UIColor blackColor];
+//                            HUD.animationType = MBProgressHUDAnimationZoom;
+//                            [HUD hideAnimated:YES afterDelay:0.4];
+//                        });
+                        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
                         
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                            HUD.mode = MBProgressHUDModeCustomView;
-                            HUD.detailsLabel.text = @"支付成功!";
-                            UIImageView *img = [[UIImageView alloc] init];
-                            img.image = [UIImage imageNamed:@"ds_ok"];
-                            HUD.customView = img;
-                            HUD.tintColor = [UIColor blackColor];
-                            HUD.animationType = MBProgressHUDAnimationZoom;
-                            [HUD hideAnimated:YES afterDelay:0.4];
-                        });
+                        [XFFindNetworkManager getUserWechatWithUid:self.userId successBlock:^(id responseObj) {
+                            [XFToolManager changeHUD:HUD successWithText:@"支付成功!微信/手机会以短信形式发送给您的绑定手机"];
+                            // 成功提示
+                            
+                        } failBlock:^(NSError *error) {
+                            [HUD hideAnimated:YES];
+                            if (!error) {
+                                // 充值页面
+                                XFPayViewController *payVC = [[XFPayViewController alloc] init];
+                                
+                                UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+                                
+                                [self presentViewController:navi animated:YES completion:nil];
+                            }
+                            
+                        } progress:^(CGFloat progress) {
+                            
+                            
+                        }];
                         
                     };
                     
@@ -309,7 +580,7 @@
                 }
                 
                 
-                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail pics:mutableArr open:isOpen model:self.datas[indexPath.row]];
+                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail pics:mutableArr open:isOpen model:self.datas[indexPath.row - 4]];
                 
                 node.index = indexPath;
                 
@@ -323,8 +594,6 @@
                     node.shadowNode.hidden = NO;
                 }
                 
-                
-                
                 return node;
             };
         }
@@ -337,15 +606,70 @@
 #pragma mark - 点击关注
 - (void)clickFollowButton:(UIButton *)sender {
     
-    sender.selected = !sender.selected;
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
     if (sender.selected) {
-        
-        sender.backgroundColor = UIColorHex(808080);
+        [XFMineNetworkManager unCareSomeoneWithUid:self.userId successBlock:^(id responseObj) {
+            // 取消关注成功
+            XFStatusModel *model = [[XFStatusModel alloc] init];
+            model.uid = self.userId;
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshCareStatusNotification object:@{@"status":model,
+                                                                                                               @"followed":@(NO)
+                                                                                                               }];
+
+            sender.selected = NO;
+            
+            if (sender.selected) {
+                
+                sender.backgroundColor = UIColorHex(808080);
+                
+            } else {
+                
+            }
+            
+            [HUD hideAnimated:YES];
+            
+        } failedBlock:^(NSError *error) {
+            [HUD hideAnimated:YES];
+
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
         
     } else {
         
+        [XFMineNetworkManager careSomeoneWithUid:self.userId successBlock:^(id responseObj) {
+            [HUD hideAnimated:YES];
+
+            // 关注成功
+            XFStatusModel *model = [[XFStatusModel alloc] init];
+            model.uid = self.userId;
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshCareStatusNotification object:@{@"status":model,
+                                                                                                               @"followed":@(YES)
+                                                                                                               }];
+            
+            sender.selected = YES;
+            
+            if (sender.selected) {
+                
+                sender.backgroundColor = UIColorHex(808080);
+                
+            } else {
+                
+            }
+        } failedBlock:^(NSError *error) {
+            [HUD hideAnimated:YES];
+
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
     }
+    
+
     
 }
 
@@ -364,18 +688,22 @@
     
     self.headerView.backgroundColor = [UIColor whiteColor];
 
-    self.headerImage = [[XFCarouselView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeaderHeight)];
-    self.headerImage.wheelPageControl = self.wheelPageControl;
-    self.wheelPageControl.numberOfPages = 5;
-    [self.headerImage setupWithLocalArray:@[@"find_T2",@"find_T3",@"find_pic7",@"find_pic17",@"find_pic19"]];
+//    self.headerImage = [[XFCarouselView alloc] initWithFrame:];
+//    self.headerImage.wheelPageControl = self.wheelPageControl;
+//    self.wheelPageControl.numberOfPages = 5;
+//    [self.headerImage setupWithLocalArray:@[@"find_T2",@"find_T3",@"find_pic7",@"find_pic17",@"find_pic19"]];
+//
+    // 网络加载图片的轮播器
+//    self.headerImage = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 0, kScreenWidth, kHeaderHeight) delegate:self placeholderImage:nil];
+//    cycleScrollView.imageURLStringsGroup = imagesURLStrings;
+    
+    // 本地加载图片的轮播器
+    
+    self.headerImage = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 0, kScreenWidth, kHeaderHeight) imageNamesGroup:@[]];
+    
+    self.headerImage.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;
     
     [self.headerView addSubview:self.headerImage];
-    
-//    [self.headerImage mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.top.left.right.bottom.mas_offset(0);
-//
-//    }];
     
     self.tableNode.view.contentInset = UIEdgeInsetsMake(kHeaderHeight, 0, 0, 0);
     self.headerView.frame = CGRectMake(0, -kHeaderHeight, kScreenWidth, kHeaderHeight);
@@ -529,7 +857,7 @@
     // title
     UILabel *titleLabel = [[UILabel alloc] init];
     
-    titleLabel.text = self.title;
+    titleLabel.text = self.userName;
     
     titleLabel.font = [UIFont systemFontOfSize:16];
     titleLabel.textColor = [UIColor whiteColor];
@@ -541,6 +869,7 @@
         make.height.mas_equalTo(44);
         
     }];
+    self.titleLabbel = titleLabel;
     
     // 分享
     UIButton *shareButton = [[UIButton alloc] init];
@@ -561,16 +890,31 @@
 #pragma mark - 分享海报
 - (void)clickShareButton {
     
-    [XFShareManager sharedImageWithBg:@"backgroundImage" icon:@"find_pic3" name:kRandomName userid:@"ID:2334530" address:@"福田区,深圳"];
+
+    
+    [[YYWebImageManager sharedManager] requestImageWithURL:[NSURL URLWithString:self.iconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        
+        
+    } transform:^UIImage * _Nullable(UIImage * _Nonnull image, NSURL * _Nonnull url) {
+        
+        return image;
+        
+        
+    } completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
+        
+            [XFShareManager sharedImageWithBg:@"backgroundImage" icon:image name:self.userInfo[@"nickname"] userid:[NSString stringWithFormat:@"ID:%@",self.userInfo[@"uid"]] address:@"福田区,深圳"];
+    }];
+    
+
     
 }
 
 // 聊天
 - (void)clickChatButton {
     
-    XFChatViewController *chatVC = [[XFChatViewController alloc] initWithConversationType:(ConversationType_PRIVATE) targetId:@"13640886496"];
+    XFChatViewController *chatVC = [[XFChatViewController alloc] initWithConversationType:(ConversationType_PRIVATE) targetId:self.userId];
     
-    chatVC.title = @"小美同学";
+    chatVC.title = self.userName;
     
     [self.navigationController pushViewController:chatVC animated:YES];
 }

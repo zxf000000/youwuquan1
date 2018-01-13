@@ -12,8 +12,6 @@
 
 @property (nonatomic,copy) NSString *id;
 
-@property (nonatomic,copy) NSString *labelName;
-
-@property (nonatomic,copy) NSString *labelNo;
+@property (nonatomic,copy) NSString *tagName;
 
 @end

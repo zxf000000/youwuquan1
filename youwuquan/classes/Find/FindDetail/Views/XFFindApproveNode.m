@@ -7,6 +7,7 @@
 //
 
 #import "XFFindApproveNode.h"
+#import "XFMyAuthViewController.h"
 
 #define kUnSelectedColor  UIColorHex(717171)
 
@@ -60,11 +61,22 @@
 
 @implementation XFFindApproveNode
 
-- (instancetype)initWithType:(CellType)type {
+- (instancetype)initWithType:(CellType)type auths:(NSArray *)auths{
     
     if (self = [super init]) {
         
         _type = type;
+        _auths = auths;
+        
+        NSMutableArray *authIDs = [NSMutableArray array];
+        for (NSDictionary *dic in _auths) {
+            
+            [authIDs addObject:[NSString stringWithFormat:@"%@",dic[@"identificationId"]]];
+            
+        }
+        
+        self.authIds = authIDs.copy;
+        
         self.backgroundColor = kBgGrayColor;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         _bgNode = [[ASDisplayNode alloc] init];
@@ -115,7 +127,7 @@
     
     if (self.type == Approve) {
         
-        return self.titles.count;
+        return [XFAuthManager sharedManager].authList.count;
 
     } else {
         
@@ -130,16 +142,22 @@
         
         return ^ASCellNode*() {
             
+            XFMyAuthModel *model = [XFAuthManager sharedManager].authList[indexPath.item];
+        
             XFFindCollectionCellNode *node = [[XFFindCollectionCellNode alloc] init];
             
-            [node.button setTitle:self.titles[indexPath.item] withFont:[UIFont systemFontOfSize:12] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-            [node.button setImage:[UIImage imageNamed:self.titleImgs[indexPath.item]] forState:(UIControlStateNormal)];
+            [node.button setTitle:model.identificationName withFont:[UIFont systemFontOfSize:12] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+//            [node.button setImage:[UIImage imageNamed:self.titleImgs[indexPath.item]] forState:(UIControlStateNormal)];
             [node.button setBackgroundImage:[UIImage imageNamed:@"find_rzred"] forState:(UIControlStateNormal)];
             
-            if (indexPath.item > 6) {
+            if (![self.authIds containsObject:model.id])  {
                 
                 node.button.backgroundColor = UIColorHex(717171);
                 [node.button setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+
+            } else {
+                
+                [node.button setBackgroundImage:[UIImage imageNamed:@"find_rzred"] forState:(UIControlStateNormal)];
 
             }
             

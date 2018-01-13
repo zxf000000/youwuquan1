@@ -14,6 +14,8 @@
 #import <MJRefresh.h>
 #import "XFStatusModel.h"
 #import "XFStatusNetworkManager.h"
+#import "XFFindNetworkManager.h"
+#import "XFVideoDetailViewController.h"
 
 @interface XFAllMyStatusViewController () <ASTableDelegate,ASTableDataSource,XFMyStatusCellDelegate>
 
@@ -23,7 +25,7 @@
 
 @property (nonatomic,strong) NSMutableArray *datas;
 
-@property (nonatomic,assign) NSInteger start;
+@property (nonatomic,assign) NSInteger page;
 
 @end
 
@@ -41,8 +43,8 @@
     
     [self.tableNode.view.mj_header beginRefreshing];
     
-    self.tableNode.hidden = YES;
 
+    self.page = 0;
 }
 
 
@@ -59,7 +61,45 @@
     self.tableNode.hidden = YES;
     self.noneDataView.hidden = NO;
     
+}
+
+- (void)loadMoreData {
     
+    self.page += 1;
+
+    [XFFindNetworkManager getAllMyStatusWithPage:self.page rows:10 successBlock:^(id responseObj) {
+        [self.tableNode.view.mj_footer endRefreshing];
+    
+        self.noneDataView.hidden = YES;
+        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+            
+            NSDictionary *dic = datas[i];
+            
+            XFStatusModel *model = [XFStatusModel modelWithDictionary:dic];
+            
+            [arr addObject:model];
+            
+        }
+        
+        [self.datas addObjectsFromArray:arr.copy];
+        
+//        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+        [self.tableNode reloadData];
+
+    } failBlock:^(NSError *error) {
+        
+        [self.tableNode.view.mj_footer endRefreshing];
+        self.noneDataView.hidden = NO;
+        self.tableNode.hidden = YES;
+        
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
 }
 
 #pragma mark - 加载数据
@@ -69,16 +109,15 @@
     // 直接更改模型中的数据
     XFStatusModel *model = self.datas[indexPath.row];
     
-    model.greatNum  = [NSString stringWithFormat:@"%zd",[model.greatNum intValue] + 1];
+    model.likeNum  = [NSString stringWithFormat:@"%zd",[model.likeNum intValue] + 1];
     
-    [self.tableNode reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:(UITableViewRowAnimationFade)];
+    [self.tableNode reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:(UITableViewRowAnimationNone)];
     
 }
 
 - (void)loadDataWithProgress:(BOOL)progress indexpath:(NSIndexPath *)indexPath {
     
-    self.start = 0;
-    
+    self.page = 0;
     UIActivityIndicatorView *indicatorView;
     
     if (progress) {
@@ -87,91 +126,91 @@
 
     }
     
-    [XFUserInfoNetWorkManager getAllMyStatusWithStart:self.start successBlock:^(NSDictionary *responseDic) {
-        
+    [XFFindNetworkManager getAllMyStatusWithPage:self.page rows:10 successBlock:^(id responseObj) {
         [self.tableNode.view.mj_header endRefreshing];
+
         [indicatorView setHidden:YES];
         [indicatorView removeFromSuperview];
         
-        if (responseDic) {
-            
-            self.noneDataView.hidden = YES;
-            
-            NSArray *datas = responseDic[@"data"];
-            
-            NSMutableArray *arr = [NSMutableArray array];
-            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
-                
-                NSDictionary *dic = datas[i];
-                
-                XFStatusModel *model = [XFStatusModel modelWithDictionary:dic];
-              
-                
-                [arr addObject:model];
-                
-            }
-            
-            self.datas = arr;
-            
-            [self.tableNode reloadDataWithCompletion:^{
-                    
-
-                self.tableNode.hidden = NO;
-            }];
-                
+        self.noneDataView.hidden = YES;
         
-        } else {
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
             
-            self.noneDataView.hidden = NO;
-            self.tableNode.hidden = YES;
+            NSDictionary *dic = datas[i];
+            
+            XFStatusModel *model = [XFStatusModel modelWithDictionary:dic];
+            
+            [arr addObject:model];
             
         }
         
-    } failedBlock:^(NSError *error) {
+        if (![self.datas modelIsEqual:arr]) {
+            self.datas = arr;
+            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationNone)];
+            
+        }
+        
+    } failBlock:^(NSError *error) {
+        
         [indicatorView setHidden:YES];
         [indicatorView removeFromSuperview];
         
         [self.tableNode.view.mj_header endRefreshing];
         self.noneDataView.hidden = NO;
         self.tableNode.hidden = YES;
+        
+    } progress:^(CGFloat progress) {
+        
+        
     }];
-    
-    
+
 }
 
 #pragma mark - 插入更多数据----智能预加载
 - (void)retrieveNextPageWithCompletion:(void (^)(NSArray *))block {
 
-    self.start += 10;
+    self.page += 1;
     
-    [XFUserInfoNetWorkManager getAllMyStatusWithStart:self.start successBlock:^(NSDictionary *responseDic) {
+    [XFFindNetworkManager getAllMyStatusWithPage:self.page rows:10 successBlock:^(id responseObj) {
         
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            self.noneDataView.hidden = YES;
+
+        });
         [self.tableNode.view.mj_header endRefreshing];
+    
         
-        if (responseDic) {
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
             
-            NSArray *datas = responseDic[@"data"];
+            NSDictionary *dic = datas[i];
             
-            NSMutableArray *arr = [NSMutableArray array];
-            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
-                
-                NSDictionary *dic = datas[i];
-                
-                XFStatusModel *model = [XFStatusModel modelWithDictionary:dic];
-                
-                [arr addObject:model];
-                
-            }
+            XFStatusModel *model = [XFStatusModel modelWithDictionary:dic];
             
-            block(arr.copy);
+            [arr addObject:model];
             
         }
         
-    } failedBlock:^(NSError *error) {
+        if (arr.count > 0) {
+            
+            block(arr.copy);
+
+        }
         
-        [self.tableNode.view.mj_header endRefreshing];
+    } failBlock:^(NSError *error) {
+    
+        
+    } progress:^(CGFloat progress) {
+        
         
     }];
+
     
 }
 
@@ -215,26 +254,34 @@
     
     XFStatusModel *model = self.datas[indexPath.row];
     
-    [XFStatusNetworkManager likeStatusWithStatusId:model.id userNo:nil successBlock:^(NSDictionary *reponseDic) {
+    if ([model.user[@"liked"] boolValue]) {
         
-        if (reponseDic) {
+        [XFFindNetworkManager unlikeWithStatusId:model.id successBlock:^(id responseObj) {
             
-            [self refreshDataForIndexPath:indexPath];
             
-            if ([reponseDic[@"sign"] intValue] == 303) {
-                
-                return;
-            }
+        } failBlock:^(NSError *error) {
             
-        }
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+    } else {
         
-    } failedBlock:^(NSError *error) {
-        
-        
-    }];
-    
+        [XFFindNetworkManager likeWithStatusId:model.id successBlock:^(id responseObj) {
+            
+            
+        } failBlock:^(NSError *error) {
+            
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
 
-    
+        
+    }
+
 }
 
 - (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
@@ -259,13 +306,18 @@
 
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    
+    XFStatusModel *model = self.datas[indexPath.row];
+
+    
     XFStatusDetailViewController *statusDetailVC = [[XFStatusDetailViewController alloc] init];
-    
+        
     statusDetailVC.type = Mine;
-    
-    statusDetailVC.status = self.datas[indexPath.row];
-    
+        
+    statusDetailVC.status = model;
+        
     [self.navigationController pushViewController:statusDetailVC animated:YES];
+
 }
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -294,6 +346,8 @@
         node.index = indexPath;
         
         node.delegate = self;
+        
+        NSLog(@"%@",node.description);
         
         return node;
     };
@@ -340,9 +394,15 @@
     
     self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
 
-        [self loadDataWithProgress:YES indexpath:nil];
+        [self loadDataWithProgress:NO indexpath:nil];
 
     }];
+    
+//    self.tableNode.view.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
+//
+//        [self loadMoreData];
+//
+//    }];
     
 }
 - (void)setupNavigationBar {

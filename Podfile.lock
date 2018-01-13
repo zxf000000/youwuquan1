@@ -15,6 +15,8 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
+  - Bugly (2.5.0)
+  - HappyDNS (0.3.12)
   - HJDanmaku (2.0.1)
   - IQKeyboardManager (4.0.13)
   - JCore (1.1.6)
@@ -24,24 +26,6 @@ PODS:
   - MBProgressHUD (1.0.0)
   - MD360Player4iOS (1.0.0)
   - MJRefresh (3.1.12)
-  - mob_sharesdk (4.0.4):
-    - mob_sharesdk/ShareSDK (= 4.0.4)
-    - MOBFoundation
-  - mob_sharesdk/ShareSDK (4.0.4):
-    - MOBFoundation
-  - mob_sharesdk/ShareSDKConfigurationFile (4.0.4):
-    - MOBFoundation
-  - mob_sharesdk/ShareSDKExtension (4.0.4):
-    - MOBFoundation
-  - mob_sharesdk/ShareSDKPlatforms/QQ (4.0.4):
-    - MOBFoundation
-  - mob_sharesdk/ShareSDKPlatforms/SinaWeibo (4.0.4):
-    - MOBFoundation
-  - mob_sharesdk/ShareSDKPlatforms/WeChat (4.0.4):
-    - MOBFoundation
-  - mob_sharesdk/ShareSDKUI (4.0.4):
-    - MOBFoundation
-  - MOBFoundation (3.0.6)
   - PINCache (3.0.1-beta.5):
     - PINCache/Arc-exception-safe (= 3.0.1-beta.5)
     - PINCache/Core (= 3.0.1-beta.5)
@@ -57,7 +41,20 @@ PODS:
   - PINRemoteImage/PINCache (3.0.0-beta.11):
     - PINCache (= 3.0.1-beta.5)
     - PINRemoteImage/Core
+  - PLPlayerKit (3.1.0):
+    - HappyDNS (~> 0.3.10)
+  - PLShortVideoKit (1.7.0):
+    - PLShortVideoKit/ex-libMuseProcessor (= 1.7.0)
+    - PLShortVideoKit/libMuseProcessor (= 1.7.0)
+    - Qiniu (= 7.1.7)
+  - PLShortVideoKit/ex-libMuseProcessor (1.7.0):
+    - Qiniu (= 7.1.7)
+  - PLShortVideoKit/libMuseProcessor (1.7.0):
+    - Qiniu (= 7.1.7)
   - pop (1.0.10)
+  - Qiniu (7.1.7):
+    - AFNetworking (~> 3)
+    - HappyDNS (~> 0.3)
   - RongCloudIM/IMKit (2.8.20):
     - RongCloudIM/IMLib
   - RongCloudIM/IMLib (2.8.20)
@@ -68,6 +65,19 @@ PODS:
     - PINRemoteImage/iOS (= 3.0.0-beta.11)
     - PINRemoteImage/PINCache
     - Texture/Core
+  - UMengUShare/Core (6.4.8):
+    - UMengUShare/Network
+  - UMengUShare/Network (6.4.8)
+  - UMengUShare/Plugin/IDFA (6.4.8):
+    - UMengUShare/Core
+  - UMengUShare/Social/ReducedQQ (6.4.8):
+    - UMengUShare/Core
+  - UMengUShare/Social/ReducedSina (6.4.8):
+    - UMengUShare/Core
+  - UMengUShare/Social/ReducedWeChat (6.4.8):
+    - UMengUShare/Core
+  - UMengUShare/UI (6.4.8):
+    - UMengUShare/Core
   - VIMVideoPlayer (6.0.1)
   - YYKit (1.0.9):
     - YYKit/no-arc (= 1.0.9)
@@ -76,6 +86,7 @@ PODS:
 DEPENDENCIES:
   - ActionSheetPicker-3.0
   - AFNetworking
+  - Bugly
   - HJDanmaku
   - IQKeyboardManager
   - JPush
@@ -83,23 +94,26 @@ DEPENDENCIES:
   - MBProgressHUD
   - MD360Player4iOS (~> 1.0.0)
   - MJRefresh
-  - mob_sharesdk
-  - mob_sharesdk/ShareSDKConfigurationFile
-  - mob_sharesdk/ShareSDKExtension
-  - mob_sharesdk/ShareSDKPlatforms/QQ
-  - mob_sharesdk/ShareSDKPlatforms/SinaWeibo
-  - mob_sharesdk/ShareSDKPlatforms/WeChat
-  - mob_sharesdk/ShareSDKUI
+  - PLPlayerKit
+  - PLShortVideoKit
   - pop
+  - Qiniu
   - RongCloudIM/IMKit (~> 2.8.3)
   - RongCloudIM/IMLib (~> 2.8.3)
   - Texture
+  - UMengUShare/Plugin/IDFA
+  - UMengUShare/Social/ReducedQQ
+  - UMengUShare/Social/ReducedSina
+  - UMengUShare/Social/ReducedWeChat
+  - UMengUShare/UI
   - VIMVideoPlayer (~> 6.0.1)
   - YYKit
 
 SPEC CHECKSUMS:
   ActionSheetPicker-3.0: eef157d75e151f255c5333d26656c7fbfe905a51
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  Bugly: 3ca9f255c01025582df26f9222893b383c7e4b4e
+  HappyDNS: 691a3041128055d09866f86e6e9ca90f24da1f18
   HJDanmaku: d36112c97b085b0b1b518590eeb0d5fcef0c93b4
   IQKeyboardManager: 8eab4d8111418414619d1df8e4779ce5d0f8d7e2
   JCore: 18fc8725124f26e55625eaf224659b3a999dcf63
@@ -108,17 +122,19 @@ SPEC CHECKSUMS:
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   MD360Player4iOS: a53e27ee79c1bb728bda9361cddcd15238b5ad76
   MJRefresh: b96cdb21c4aa75a7b07654311ab2f315c497e806
-  mob_sharesdk: b3ac49261b0e56d9e305d473c70bcde2e3a6e8ff
-  MOBFoundation: 6f6ec1c2513278551f1a808b5692e983d99e5069
   PINCache: 98e7b1ef782824ad231ade51987c218b758c30d8
   PINOperation: ac23db44796d4a564ecf9b5ea7163510f579b71d
   PINRemoteImage: d71988f11914a050d6d4cf51efc4ad1de8c0a9d8
+  PLPlayerKit: e5c6c32b63ca674e3f31278f1a5be7e9f02022d8
+  PLShortVideoKit: cbb47dd5ab0721900d3b5a04840c0b826246cf4c
   pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
+  Qiniu: 56ea8b9d785326e45e3a6fdd45bdbc84f78d0eff
   RongCloudIM: fbb835e78844cb11f3f279467dea0fc962905002
   Texture: a5526314780eab35f642d956627f09316b9514e8
+  UMengUShare: 7a0ab762ccd445ccfcf11bde8e7f81b29b9f5e1c
   VIMVideoPlayer: f4ed0a9986294ec3684a2e6bdc738e30051ef4ef
   YYKit: 7cda43304a8dc3696c449041e2cb3107b4e236e7
 
-PODFILE CHECKSUM: a93de3d92d1a30de73016bdabf7be97bea865f4d
+PODFILE CHECKSUM: e01c6fe5799d5894bf9a3b33c4b2423dcda873c8
 
 COCOAPODS: 1.3.1

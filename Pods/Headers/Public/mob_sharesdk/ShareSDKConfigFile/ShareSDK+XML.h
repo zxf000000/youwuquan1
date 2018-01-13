@@ -1,1 +1,0 @@
-../../../../mob_sharesdk/SDK/ShareSDK/Support/Optional/ShareSDKConfigFile.framework/Headers/ShareSDK+XML.h

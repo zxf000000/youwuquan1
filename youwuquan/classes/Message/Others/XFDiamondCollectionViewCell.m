@@ -184,7 +184,7 @@
 
 + (CGSize)sizeForMessageModel:(RCMessageModel *)model withCollectionViewWidth:(CGFloat)collectionViewWidth referenceExtraHeight:(CGFloat)extraHeight {
     
-    return CGSizeMake(kScreenWidth, 70);
+    return CGSizeMake(kScreenWidth, 70 + extraHeight);
     
 }
 

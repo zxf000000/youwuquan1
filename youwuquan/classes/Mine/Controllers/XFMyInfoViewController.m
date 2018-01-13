@@ -11,6 +11,7 @@
 #import "PGDatePicker.h"
 #import "XFLoginManager.h"
 #import "XFTagsModel.h"
+#import "XFMineNetworkManager.h"
 
 @interface XFMyInfoViewController () <PGDatePickerDelegate>
 
@@ -32,40 +33,68 @@
     self.phoneTexTField.userInteractionEnabled = NO;
     self.tableView.backgroundColor = UIColorHex(f4f4f4);
     
-    NSString *sanwei = self.userInfo[@"bwh"];
-    
-    if (sanwei != nil && sanwei != NULL  && sanwei.length > 0) {
+//    NSString *sanwei = self.userInfo[@"bwh"];
+//
+//    if (sanwei != nil && sanwei != NULL  && sanwei.length > 0) {
+//
+//        NSArray *saneriArr = [sanwei componentsSeparatedByString:@","];
+//        self.xwTextField.text = saneriArr[0];
+//        self.yyTextField.text = saneriArr[1];
+//        self.tyTextField.text = saneriArr[2];
+//
+//    }
+    // 三围
+    if (self.userInfo[@"info"][@"bust"]) {
         
-        NSArray *saneriArr = [sanwei componentsSeparatedByString:@","];
-        self.xwTextField.text = saneriArr[0];
-        self.yyTextField.text = saneriArr[1];
-        self.tyTextField.text = saneriArr[2];
+        self.xwTextField.text = [NSString stringWithFormat:@"%@",self.userInfo[@"info"][@"bust"]];
+    }
+    if (self.userInfo[@"info"][@"hip"]) {
+        
+        self.yyTextField.text = [NSString stringWithFormat:@"%@",self.userInfo[@"info"][@"hip"]];
+    }
+    if (self.userInfo[@"info"][@"waist"]) {
+        
+        self.tyTextField.text = [NSString stringWithFormat:@"%@",self.userInfo[@"info"][@"waist"]];
+    }
+    
+    NSLog(@"%zd",[self.userInfo[@"info"][@"birthDay"] integerValue]);
+    
+
+    NSDate *birthday = [NSDate dateWithTimeIntervalSince1970:[self.userInfo[@"info"][@"birthDay"] integerValue]/1000];
+    
+    NSDateFormatter *dataformatter = [[NSDateFormatter alloc] init];
+    
+    dataformatter.dateFormat = @"yyyy-MM-dd";
+    
+    NSString *dateStr = [dataformatter stringFromDate:birthday];
+    
+    // 刷新个人信息
+    self.nameTextField.text = self.userInfo[@"basicInfo"][@"nickname"];
+    self.dateTextField.text = dateStr;
+    if (self.userInfo[@"info"][@"height"]) {
+        self.heightTextField.text = [NSString stringWithFormat:@"%@",self.userInfo[@"info"][@"height"]];
+    }
+    if (self.userInfo[@"info"][@"wechat"]) {
+        self.wxTextField.text = self.userInfo[@"info"][@"wechat"];
+    }
+    
+    self.phoneTexTField.text = [XFUserInfoManager sharedManager].userName;
+    
+    if (self.userInfo[@"info"][@"starSign"]) {
+        self.xzTextField.text = self.userInfo[@"info"][@"starSign"];
 
     }
     
-    // 刷新个人信息
-    self.nameTextField.text = self.userInfo[@"userNike"];
-    self.dateTextField.text = self.userInfo[@"birthday"];
-    self.heightTextField.text = [NSString stringWithFormat:@"%@",self.userInfo[@"height"]];
-    self.wxTextField.text = self.userInfo[@"weixin"];
-    self.phoneTexTField.text = [XFUserInfoManager sharedManager].userName;
-    self.xzTextField.text = self.userInfo[@"constellation"];
-    self.desTextField.text = self.userInfo[@"synopsis"];
+    if (self.userInfo[@"info"][@"introduce"]) {
+        self.desTextField.text = self.userInfo[@"info"][@"introduce"];
+
+    }
     
 }
 - (IBAction)clickSaveButton:(id)sender {
     
-    NSString *name = self.nameTextField.text;
-    NSString *birthday = self.dateTextField.text;
-//    NSString *xingzuo = self.xzTextField.text;
-    NSString *xw = self.xwTextField.text;
-    NSString *yw = self.yyTextField.text;
-    NSString *tw = self.tyTextField.text;
-    NSString *height = self.heightTextField.text;
-    NSString *wx = self.wxTextField.text;
-    NSString *des = self.desTextField.text;
-    
-    
+    NSString *birthday = [NSString stringWithFormat:@"%@ 00:00",self.dateTextField.text];
+
     NSString *string = @"";
     
     for (NSInteger i = 0 ; i < self.tags.count ; i ++ ) {
@@ -74,34 +103,29 @@
         
         if (i == 0) {
             
-            string = [string stringByAppendingString:model.labelNo];
+            string = [string stringByAppendingString:model.id];
         } else {
             
-            string = [string stringByAppendingString:[NSString stringWithFormat:@",%@",model.labelNo]];
+            string = [string stringByAppendingString:[NSString stringWithFormat:@",%@",model.id]];
         }
         
     }
-    
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在保存"];
     
-    [[XFLoginManager sharedInstance] saveUserInfoWithUserName:[XFUserInfoManager sharedManager].userName nickName:name birthday:birthday sex:nil tags:string roleNos:nil headUrl:nil height:height weight:nil bwh:[NSString stringWithFormat:@"%@,%@,%@",xw,yw,tw] weixin:wx synopsis:des successBlock:^(id reponseDic) {
+    [XFMineNetworkManager updateUserInfoWithBirthday:birthday height:self.heightTextField.text weight:@"180" bust:self.xwTextField.text waist:self.yyTextField.text hip:self.tyTextField.text starSign:self.xzTextField.text introduce:self.desTextField.text wechat:self.wxTextField.text nickname:self.nameTextField.text successBlock:^(id responseObj) {
         
-        if (reponseDic) {
+        // 保存成功
+        [XFToolManager changeHUD:HUD successWithText:@"修改成功"];
         
-            [XFToolManager changeHUD:HUD successWithText:@"修改成功"];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
-            [self.navigationController popViewControllerAnimated:YES];
-
-        }
-        
-        [HUD hideAnimated:YES];
-        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+        [self.navigationController popViewControllerAnimated:YES];
         
     } failedBlock:^(NSError *error) {
-        [HUD hideAnimated:YES];
         
-        NSLog(@"%@---",error.description);
+        [HUD hideAnimated:YES];
+
+    } progressBlock:^(CGFloat progress) {
+        
         
     }];
     
@@ -133,13 +157,38 @@
     //
     //    NSString *dateStr = [formatter stringFromDate:[dateComponents date]];
     
-    self.dateTextField.text =  [NSString stringWithFormat:@"%zd-%zd-%zd",dateComponents.year,dateComponents.month,dateComponents.day];
+    
+    NSString *monthStr = @"";
+    if (dateComponents.month > 9) {
+        
+        monthStr = [NSString stringWithFormat:@"%zd",dateComponents.month];
+    } else {
+        
+        monthStr = [NSString stringWithFormat:@"0%zd",dateComponents.month];
+        
+    }
+    NSString *dayStr = @"";
+    if (dateComponents.day > 9) {
+        
+        dayStr = [NSString stringWithFormat:@"%zd",dateComponents.day];
+    } else {
+        
+        dayStr = [NSString stringWithFormat:@"0%zd",dateComponents.day];
+        
+    }
+    
+    self.dateTextField.text = [NSString stringWithFormat:@"%zd-%@-%@",dateComponents.year,monthStr,dayStr];
+    self.dateTextField.textColor = [UIColor blackColor];
+    
+//    self.dateTextField.text =  [NSString stringWithFormat:@"%zd-%zd-%zd",dateComponents.year,dateComponents.month,dateComponents.day];
     
     // 计算星座
     
     NSString *AstroW = [XFToolManager getAstroWithMonth:dateComponents.month day:dateComponents.day];
     
     self.xzTextField.text = [NSString stringWithFormat:@"%@座",AstroW];
+    
+    
     
 }
 

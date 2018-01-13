@@ -263,7 +263,7 @@
                 <outletCollection property="numberButtons" destination="5cZ-Z4-tao" id="7an-J7-Af2"/>
                 <outletCollection property="numberButtons" destination="XU0-YV-IbV" id="UIl-yu-YKL"/>
             </connections>
-            <point key="canvasLocation" x="-29.5" y="23"/>
+            <point key="canvasLocation" x="50" y="-215"/>
         </tableViewCell>
     </objects>
     <resources>

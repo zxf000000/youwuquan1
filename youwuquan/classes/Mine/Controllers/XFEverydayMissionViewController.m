@@ -9,6 +9,7 @@
 #import "XFEverydayMissionViewController.h"
 #import "XFMissionTableViewCell.h"
 #import "XFMissionModel.h"
+#import "XFMineNetworkManager.h"
 
 @interface XFEverydayMissionViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -27,7 +28,55 @@
 
     self.title = @"每日任务";
     [self setuptableView];
+    
+    [self loadData];
 
+}
+
+- (void)loadData {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    [XFMineNetworkManager getEverydayTaskWithsuccessBlock:^(id responseObj) {
+        
+        NSArray *datas = (NSArray *)responseObj;
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFMissionModel modelWithDictionary:datas[i]]];
+        }
+        [XFMineNetworkManager getLongTaskWithsuccessBlock:^(id responseObj) {
+            [HUD hideAnimated:YES];
+
+            NSArray *longdatas = (NSArray *)responseObj;
+            for (int i = 0 ; i < longdatas.count ; i ++ ) {
+                
+                [arr addObject:[XFMissionModel modelWithDictionary:longdatas[i]]];
+                
+            }
+            self.models = arr.copy;
+            
+            [self.tableView reloadData];
+
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+        
+    } failedBlock:^(NSError *error) {
+        
+        [HUD hideAnimated:YES];
+
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -73,7 +122,7 @@
     
     if (_models == nil) {
         
-        _models = [XFMissionModel missionModels];
+//        _models = [XFMissionModel missionModels];
         
     }
     return _models;

@@ -68,6 +68,14 @@
     
     [rightButton addTarget:self action:@selector(clickRightButton) forControlEvents:(UIControlEventTouchUpInside)];
     
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRecieveNotification) name:kJPFNetworkDidReceiveMessageNotification object:nil];
+    
+    [self loadData];
+}
+
+- (void)loadData {
+    
+    
     
 }
 

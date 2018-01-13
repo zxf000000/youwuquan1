@@ -47,6 +47,8 @@ typedef NS_ENUM(NSInteger,XFCardShareViewtype) {
 
 @property (nonatomic,strong) id <XFShareCardViewDelegate> delegate;
 
+@property (nonatomic,copy) NSString *inviteUrl;
+
 - (UIImage *)shotImage;
 
 @end

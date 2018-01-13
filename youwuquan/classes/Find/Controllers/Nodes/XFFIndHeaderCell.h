@@ -7,7 +7,7 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
-
+#import "XFNetworkImageNode.h"
 @protocol XFFindHeaderdelegate <NSObject>
 
 - (void)didClickMoreButton;
@@ -20,7 +20,7 @@
 
 @property (nonatomic,strong) ASDisplayNode *backNode;
 
-@property (nonatomic,strong) ASNetworkImageNode *picNode;
+@property (nonatomic,strong) XFNetworkImageNode *picNode;
 
 @property (nonatomic,strong) ASTextNode *titleNode;
 

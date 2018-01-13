@@ -10,4 +10,7 @@
 
 @interface XFAddAuthTableViewController : XFMainTableViewController
 
+@property (nonatomic,copy) NSString *authId;
+
+
 @end

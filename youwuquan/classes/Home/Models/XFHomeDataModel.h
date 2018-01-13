@@ -10,7 +10,13 @@
 
 @interface XFHomeDataModel : NSObject
 
-@property (nonatomic,copy) NSString *userName;
+@property (nonatomic,copy) NSDictionary *coverImage;
+@property (nonatomic,copy) NSString *headIconUrl;
+@property (nonatomic,copy) NSArray *identifications;
+@property (nonatomic,copy) NSString *likeNum;
+@property (nonatomic,copy) NSString *nickname;
+@property (nonatomic,copy) NSString *uid;
+
 
 @property (nonatomic,copy) NSString *userIcon;
 

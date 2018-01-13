@@ -19,13 +19,14 @@
 
 }
 
-- (void)setModel:(XFLeaderboardModel *)model {
+- (void)setModel:(XFRichlistModel *)model {
     
     _model = model;
     
-    _nameLabel.text = _model.name;
-    _countLabel.text = _model.number;
-    _iconView.image = [UIImage imageNamed:_model.icon];
+    _nameLabel.text = _model.nickname;
+    _countLabel.text = _model.balance;
+
+    [_iconView setImageWithURL:[NSURL URLWithString:_model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     
     
 }

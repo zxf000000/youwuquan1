@@ -11,6 +11,8 @@
 #import "XFChooseLabelViewController.h"
 #import "XFStatusNetworkManager.h"
 #import "XFTagsModel.h"
+#import "XFLoginNetworkManager.h"
+#import "XFMineNetworkManager.h"
 
 @interface XFRegistInfoViewController () <PGDatePickerDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *nickTextField;
@@ -54,7 +56,26 @@
 //
 //    NSString *dateStr = [formatter stringFromDate:[dateComponents date]];
     
-    [self.birthButton setTitle:[NSString stringWithFormat:@"%zd-%zd-%zd",dateComponents.year,dateComponents.month,dateComponents.day] forState:(UIControlStateNormal)];
+    NSString *monthStr = @"";
+    if (dateComponents.month > 9) {
+        
+        monthStr = [NSString stringWithFormat:@"%zd",dateComponents.month];
+    } else {
+        
+        monthStr = [NSString stringWithFormat:@"0%zd",dateComponents.month];
+
+    }
+    NSString *dayStr = @"";
+    if (dateComponents.day > 9) {
+        
+        dayStr = [NSString stringWithFormat:@"%zd",dateComponents.day];
+    } else {
+        
+        dayStr = [NSString stringWithFormat:@"0%zd",dateComponents.day];
+        
+    }
+    
+    [self.birthButton setTitle:[NSString stringWithFormat:@"%zd-%@-%@",dateComponents.year,monthStr,dayStr] forState:(UIControlStateNormal)];
     [self.birthButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
     
 }
@@ -117,38 +138,86 @@
         return;
     }
     
-    // 获取标签
-    [XFStatusNetworkManager getAllTagsWithsuccessBlock:^(NSDictionary *reponseDic) {
-       
-        if (reponseDic) {
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    dateFormatter.dateFormat = @"yyyy-MM-dd";
+//    NSDate *birthday = [dateFormatter dateFromString:self.birthButton.currentTitle];
+    
+    NSString *dateStr = [NSString stringWithFormat:@"%@ 00:00",self.birthButton.currentTitle];
+    
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    // 保存信息
+    [XFLoginNetworkManager saveUserInfoWithnickName:self.nickTextField.text birthday:dateStr sex:self.manButton.selected?@"male":@"female" progress:^(CGFloat progress) {
+        
+    } successBlock:^(id responseObj) {
+        
+        // 成功,进入下个页面
+        // 获取所有标签
+        
+        [XFMineNetworkManager getAllTagsWithSuccessBlock:^(id responseObj) {
             
-            NSArray *datas = reponseDic[@"data"][0];
+            [HUD hideAnimated:YES];
+            NSArray *tags = (NSArray *)responseObj;
             
-            NSMutableArray *arr = [NSMutableArray array];
+            NSMutableArray *tagsArr = [NSMutableArray array];
             
-            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+            for (NSInteger i = 0 ; i < tags.count; i ++ ) {
                 
-                [arr addObject:[XFTagsModel modelWithJSON:datas[i]]];
+                XFTagsModel *model = [XFTagsModel modelWithDictionary:tags[i]];
+                
+                [tagsArr addObject:model];
                 
             }
             
-            self.tags = arr.copy;
-            
             //   直接跳到下个界面
             XFChooseLabelViewController *chooseLabelVC = [[XFChooseLabelViewController alloc] init];
-            
-            chooseLabelVC.sex = self.manButton.selected ? @"1" : @"0";
-            chooseLabelVC.nickName = self.nickTextField.text;
-            chooseLabelVC.birthday = self.birthButton.currentTitle;
-            
-            chooseLabelVC.tags = self.tags;
+            chooseLabelVC.sex = self.manButton.selected?@"male":@"female";
+            chooseLabelVC.tags = tagsArr.copy;
             [self.navigationController pushViewController:chooseLabelVC animated:YES];
-        }
+            return;
+            
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
         
-    } failedBlock:^(NSError *error) {
+    } failBlock:^(NSError *error) {
         
+        [HUD hideAnimated:YES];
+
         
     }];
+    
+    
+//    // 获取标签
+//    [XFStatusNetworkManager getAllTagsWithsuccessBlock:^(NSDictionary *reponseDic) {
+//
+//        if (reponseDic) {
+//
+//            NSArray *datas = reponseDic[@"data"][0];
+//
+//            NSMutableArray *arr = [NSMutableArray array];
+//
+//            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+//
+//                [arr addObject:[XFTagsModel modelWithJSON:datas[i]]];
+//
+//            }
+//
+//            self.tags = arr.copy;
+//
+
+//        }
+//
+//    } failedBlock:^(NSError *error) {
+//
+//
+//    }];
     
 
     

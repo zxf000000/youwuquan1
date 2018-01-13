@@ -11,7 +11,7 @@
 #import "XFRewardedTableViewCell.h"
 #import "XFChatViewController.h"
 #import "XFYueViewController.h"
-
+#import "XFMessageCacheManager.h"
 
 @interface XFMessageViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -43,7 +43,34 @@
 
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+        NSDictionary *info = (NSDictionary *)[[XFMessageCacheManager sharedManager].msgCache objectForKey:@"msgCache"];
+    
+    if (!info) {
+        
+        return;
+    }
+    
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:nil];
+    
+        NSString *infoStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:infoStr preferredStyle:(UIAlertControllerStyleAlert)];
+    
+    UIAlertAction *actionCacnel = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:nil];
+    [alert addAction:actionCacnel];
+        [self presentViewController:alert animated:YES completion:nil];
+        
+
+    
+    return;
     
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     

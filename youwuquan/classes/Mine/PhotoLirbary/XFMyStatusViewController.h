@@ -26,14 +26,16 @@ typedef NS_ENUM(NSInteger,XFMyStatuVCType) {
 @property (nonatomic,strong) MBProgressHUD *HUD;
 @property (nonatomic,copy) NSString *url;
 
+
 @end
 
 @interface XFMyStatusViewController : XFOtherMainViewController
 
 @property (nonatomic,assign) XFMyStatuVCType type;
 
-
 @property (nonatomic,strong) XFStatusModel *model;
+
+@property (nonatomic,copy) void(^deleteSuccessBlock)(void);
 
 
 

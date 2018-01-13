@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "XFLeaderboardModel.h"
+#import "XFLeaderboardViewController.h"
 
 @interface XFLeaderboardTableViewCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *numberLabel;
@@ -15,6 +16,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *countLabel;
 
-@property (nonatomic,strong) XFLeaderboardModel *model;
+@property (nonatomic,strong) XFRichlistModel *model;
 
 @end

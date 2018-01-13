@@ -18,8 +18,9 @@
 #import "XFPublishNaviViewController.h"
 #import "XFLoginManager.h"
 #import "XFMessageListViewController.h"
+#import <UShareUI/UShareUI.h>
 
-@interface XFMainTabbarViewController () <XFTabBarDelegate>
+@interface XFMainTabbarViewController () <XFTabBarDelegate,UMSocialShareMenuViewDelegate>
 
 @property (nonatomic,assign) NSInteger index;
 
@@ -30,6 +31,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    [UMSocialUIManager setShareMenuViewDelegate:self];
+    
     XFTabBar *tabbar = [[XFTabBar alloc] init];
 
     tabbar.delegate = self;
@@ -97,14 +100,7 @@
 
 - (void)autoLoginRongyun {
     
-    [[XFLoginManager sharedInstance] loginRongyunWithRongtoken:[XFUserInfoManager sharedManager].rongToken successBlock:^(id reponseDic) {
-       
-        NSLog(@"登录融云失败");
-        
-    } failedBlock:^(NSError *error) {
-        
-        
-    }];
+
     
 }
 
@@ -127,7 +123,7 @@
 // 退出登录页面的时候自动跳到首页
 - (void)dismissLoginVC {
     
-//    self.selectedIndex = 0;
+    self.selectedIndex = 0;
 }
 
 - (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
@@ -142,7 +138,7 @@
 
 - (void)tabbarDidClickPlusButton:(XFTabBar *)tabbar {
     
-    if ([XFUserInfoManager sharedManager].token != nil && [XFUserInfoManager sharedManager].token.length > 0) {
+    if ([XFUserInfoManager sharedManager].userName != nil && [XFUserInfoManager sharedManager].userName.length > 0) {
         
         XFPublishViewController *publishVC = [[XFPublishViewController alloc] init];
         XFPublishNaviViewController *navi = [[XFPublishNaviViewController alloc] initWithRootViewController:publishVC];

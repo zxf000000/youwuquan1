@@ -43,7 +43,10 @@ typedef NS_ENUM(NSInteger,CellType) {
 
 @property (nonatomic,copy) NSArray *skillImgs;
 
-- (instancetype)initWithType:(CellType)type;
+- (instancetype)initWithType:(CellType)type auths:(NSArray *)auths;
 
+@property (nonatomic,copy) NSArray *auths;
+
+@property (nonatomic,copy) NSArray *authIds;
 
 @end

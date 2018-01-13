@@ -19,6 +19,5 @@
 
 - (void) initParams:(NSURL*)url;
 
-
 @property (weak, nonatomic) IBOutlet UIView *videoBack;
 @end

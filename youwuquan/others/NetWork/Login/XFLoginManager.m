@@ -20,14 +20,15 @@
         
         success(userId);
         
+        // TODO:
         
         // 个人信息
         // 设置当前登录用户信息
-        NSDictionary *userInfo = [XFUserInfoManager sharedManager].userInfo;
-        
-        RCUserInfo *info = [[RCUserInfo alloc] initWithUserId:[XFUserInfoManager sharedManager].userName name:userInfo[kUserNickKey] portrait:userInfo[kUserIconKey]];
-        
-        [RCIM sharedRCIM].currentUserInfo = info;
+//        NSDictionary *userInfo = [XFUserInfoManager sharedManager].userInfo;
+//
+//        RCUserInfo *info = [[RCUserInfo alloc] initWithUserId:[XFUserInfoManager sharedManager].userName name:userInfo[kUserNickKey] portrait:userInfo[kUserIconKey]];
+//
+//        [RCIM sharedRCIM].currentUserInfo = info;
 
         
         NSLog(@"登陆成功。当前登录的用户ID：%@", userId);

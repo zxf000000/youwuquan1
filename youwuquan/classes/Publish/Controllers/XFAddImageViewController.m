@@ -15,6 +15,9 @@
 #import "XFSelectLabelViewController.h"
 #import "XFStatusNetworkManager.h"
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "XFFindNetworkManager.h"
+
+#import "PLShortVideoKit/PLShortVideoKit.h"
 
 
 #define kImgInset 12
@@ -23,7 +26,7 @@
 #define KImgBottom 15
 
 
-@interface XFAddImageViewController () <UITextViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,XFImagePickerDelegate,XFSelectTagVCDelegate,XFpublishCollectionCellDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface XFAddImageViewController () <UITextViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,XFImagePickerDelegate,XFSelectTagVCDelegate,XFpublishCollectionCellDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,PLShortVideoUploaderDelegate>
 
 @property (nonatomic,strong) UIButton *publishButton;
 
@@ -71,7 +74,16 @@
 
 @property (nonatomic,strong) NSMutableArray *video;
 
+@property (strong, nonatomic) PLShortVideoUploader *shortVideoUploader;
+
+// 上传进度
+@property (nonatomic,strong) MBProgressHUD *uploadProgressHUD;
+
 @end
+
+
+static NSString *const kUploadToken = @"MqF35-H32j1PH8igh-am7aEkduP511g-5-F7j47Z:clOQ5Y4gJ15PnfZciswh7mQbBJ4=:eyJkZWxldGVBZnRlckRheXMiOjMwLCJzY29wZSI6InNob3J0LXZpZGVvIiwiZGVhZGxpbmUiOjE2NTUyNjAzNTd9";
+static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
 
 @implementation XFAddImageViewController
 
@@ -84,9 +96,28 @@
     [self setupnavigationButton];
     [self setupScrolLView];
     [self setupOtherView];
+    [self prepareUpload];
     
+    PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+
     
     [self.view setNeedsUpdateConstraints];
+}
+
+- (void)prepareUpload {
+ 
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyyMMddHHmmss";
+    NSString *key;
+//    if (self.actionType == PLSActionTypePlayer) {
+        key = [NSString stringWithFormat:@"short_video_%@.mp4", [formatter stringFromDate:[NSDate date]]];
+//    }
+//    if (self.actionType == PLSActionTypeGif) {
+//        key = [NSString stringWithFormat:@"short_video_%@.gif", [formatter stringFromDate:[NSDate date]]];
+//    }
+    PLSUploaderConfiguration * uploadConfig = [[PLSUploaderConfiguration alloc] initWithToken:kUploadToken videoKey:key https:YES recorder:nil];
+    self.shortVideoUploader = [[PLShortVideoUploader alloc] initWithConfiguration:uploadConfig];
+    self.shortVideoUploader.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -114,7 +145,8 @@
 
 - (void)clickPublishButton {
     
-    if (self.video.count == 0 || self.video == nil) {
+    
+    if (self.videoPath == nil) {
         
         if (self.secintentionImages.count > 0 && [self.diamondTextField.text integerValue] <= 0) {
             
@@ -130,72 +162,185 @@
             
         }
         
-        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-        HUD.mode = MBProgressHUDModeAnnularDeterminate;
-        HUD.progress = 0;
+
+        
         NSString *type;
         
         if ((self.openintentionImages.count + self.secintentionImages.count) > 0) {
-            
-            type =  @"2";
-            
+
+            type =  @"picture";
+
         } else {
-            
-            type =  @"1";
+
+            type =  @"word";
 
         }
         
-        NSArray *albums = [XFUserInfoManager sharedManager].userInfo[@"albums"];
+        NSString *labels = @"";
         
-        // 上传图片文字
-        [XFStatusNetworkManager publishStatusWithopenAlbumId:albums[1][@"id"] intimateAlbumId:albums[2][@"id"] opens:self.openintentionImages intimates:self.secintentionImages type:type title:self.textView.text unlockNum:self.diamondTextField.text customLabel:@"好" labels:@"1,2" successBlock:^(NSDictionary *reponseDic) {
-            [HUD hideAnimated:YES];
+        if (self.labelsArr.count > 1) {
+            
+            for (NSInteger i = 0 ; i < self.labelsArr.count - 1; i ++) {
+                
+                if (i == 0) {
+                    
+                    labels = [labels stringByAppendingString:self.labelsArr[i]];
+                    
+                } else {
+                    labels = [labels stringByAppendingString:[NSString stringWithFormat:@",%@",self.labelsArr[i]]];
+                    
+                }
+            }
+            
+        } else {
+            
+            labels = nil;
+            
+        }
+        
 
-            if (reponseDic) {
+        
+        NSMutableArray *srcTypes = [NSMutableArray array];
+        
+        for (NSInteger i = 0 ; i < self.openintentionImages.count; i ++ ) {
+            
+            [srcTypes addObject:@"open"];
+            
+        }
+        
+        for (NSInteger i = 0 ; i < self.secintentionImages.count; i ++ ) {
+            
+            [srcTypes addObject:@"close"];
+            
+        }
+        
+        NSString *srcStr = [srcTypes componentsJoinedByString:@","];
+    
+        
+        NSMutableArray *images = [NSMutableArray arrayWithArray:self.openintentionImages];
+        [images addObjectsFromArray:self.secintentionImages];
+
+        
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        HUD.mode = MBProgressHUDModeAnnularDeterminate;
+        HUD.progress = 0;
+        
+        [XFFindNetworkManager publishWithType:type title:@"asdasd" unlockPrice:[self.diamondTextField.text longValue] labels:labels text:self.textView.text srcTypes:srcStr images:images videoCoverUrl:nil videoUrl:nil successBlock:^(id responseObj) {
+        
+            dispatch_async(dispatch_get_main_queue(), ^{
                 
                 [XFToolManager changeHUD:HUD successWithText:@"发布成功"];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                [self dismissViewControllerAnimated:YES completion:^{
+                    // 刷新动态页面通知
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+                    
+                }];
+                
+            });
+
+    
+        } failBlock:^(NSError *error) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [HUD hideAnimated:YES];
+
+            });
+
+            
+        } progress:^(CGFloat progress) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+            
+                HUD.progress = progress;
+                    
+            });
+        }];
+        
+    } else {
+        
+        NSString *labels = @"";
+        
+        if (self.labelsArr.count > 1) {
+            
+            for (NSInteger i = 0 ; i < self.labelsArr.count - 1; i ++) {
+                
+                if (i == 0) {
+                    
+                    labels = [labels stringByAppendingString:self.labelsArr[i]];
+                    
+                } else {
+                    labels = [labels stringByAppendingString:[NSString stringWithFormat:@",%@",self.labelsArr[i]]];
+                    
+                }
+            }
+            
+        } else {
+            
+            labels = nil;
+            
+        }
+        
+        __block MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        HUD.mode = MBProgressHUDModeAnnularDeterminate;
+        HUD.progress = 0;
+        
+        // 上传封面图片
+        [XFFindNetworkManager uploadFileWithData:UIImageJPEGRepresentation(self.videoImage, 1) successBlock:^(id responseObj) {
+            
+            NSString *coverUrl = ((NSDictionary *)responseObj)[@"url"];
+            // 上传视频
+            [XFFindNetworkManager publishWithType:@"video" title:@"test" unlockPrice:[self.diamondTextField.text longValue] labels:labels text:self.textView.text srcTypes:self.isOpenVideo?@"open":@"close" images:nil videoCoverUrl:coverUrl videoUrl:_videoPath successBlock:^(id responseObj) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [XFToolManager changeHUD:HUD successWithText:@"发布成功"];
                     
                     [self dismissViewControllerAnimated:YES completion:^{
                         // 刷新动态页面通知
                         [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
                         
                     }];
+                    
                 });
-
-            }
-        
-        } failedBlock:^(NSError *error) {
+                
+                
+            } failBlock:^(NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [HUD hideAnimated:YES];
+                    
+                });
+                
+            } progress:^(CGFloat progress) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    HUD.progress = progress;
+                    
+                });
+            }];
+            
+        } failBlock:^(NSError *error) {
             
             [HUD hideAnimated:YES];
             
         } progress:^(CGFloat progress) {
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                HUD.progress = progress;
-                
-            });
             
         }];
-        
-    } else {
-        
-        // 上传视频
-        
-        
-        
-        
-        // 上传成功之后要删除本地数据
-        NSFileManager *fileMgr = [NSFileManager defaultManager];
-        NSError *err;
-        [fileMgr createDirectoryAtPath:self.videoPath withIntermediateDirectories:YES attributes:nil error:&err];
-        BOOL bRet = [fileMgr fileExistsAtPath:self.videoPath];
-        if (bRet) {
-            //
-            NSError *err;
-            [fileMgr removeItemAtPath:self.videoPath error:&err];
-        }
+    
+//        // 上传成功之后要删除本地数据
+//        NSFileManager *fileMgr = [NSFileManager defaultManager];
+//        NSError *err;
+//        [fileMgr createDirectoryAtPath:self.videoPath withIntermediateDirectories:YES attributes:nil error:&err];
+//        BOOL bRet = [fileMgr fileExistsAtPath:self.videoPath];
+//        if (bRet) {
+//            //
+//            NSError *err;
+//            [fileMgr removeItemAtPath:self.videoPath error:&err];
+//        }
     
         
     }
@@ -422,9 +567,6 @@
         }
         
     }
-    
-    
-
 
     [self reloadImageViewHeight];
     
@@ -569,11 +711,37 @@
         
         [picker dismissViewControllerAnimated:YES completion:^{
            
+            
+            self.uploadProgressHUD = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+            
+            self.uploadProgressHUD.mode = MBProgressHUDModeDeterminateHorizontalBar;
+            
+            
             NSURL *url = [info objectForKey:UIImagePickerControllerMediaURL];
             
             _videoPath = [url absoluteString];
             
+            // 判断视频文件大小和时长
+
+            NSDictionary *videoInfo = [XFToolManager getVideoInfoWithSourcePath:_videoPath];
+
+            CGFloat duration = [videoInfo[@"duration"] floatValue];
+//            CGFloat size = [videoInfo[@"size"] integerValue];
+            
+            if (duration > 10) {
+                
+                [XFToolManager showProgressInWindowWithString:@"发布视频时长不能超过10s"];
+                
+                return;
+            }
+            
+            // 视频封面
             self.videoImage = [XFToolManager getImage:_videoPath];
+            
+            // 上传
+            [self.shortVideoUploader uploadVideoFile:url.path];
+            
+            // TODO:
             
             [self.secretView reloadData];
             [self.openView reloadData];
@@ -582,6 +750,48 @@
         
     }
     
+}
+
+#pragma mark - PLShortVideoUploaderDelegate 视频上传
+- (void)shortVideoUploader:(PLShortVideoUploader *)uploader completeInfo:(PLSUploaderResponseInfo *)info uploadKey:(NSString *)uploadKey resp:(NSDictionary *)resp {
+ 
+    if(info.error){
+        
+        [XFToolManager changeHUD:self.uploadProgressHUD successWithText:[NSString stringWithFormat:@"上传失败%@",info]];
+        
+//        NSLog(@"%@",info.error);
+        
+        self.videoPath = nil;
+        self.videoImage = nil;
+        
+        [self.openView reloadData];
+        [self.secretView reloadData];
+        return ;
+    }
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", kURLPrefix, uploadKey];
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.string = urlString;
+    
+//    [XFToolManager changeHUD:self.uploadProgressHUD successWithText:@"上传成功"];
+    [self.uploadProgressHUD hideAnimated:YES afterDelay:0.3];
+    
+    // 上传路径
+    self.videoPath = urlString;
+    
+    
+    NSLog(@"uploadInfo: %@",info);
+    NSLog(@"uploadKey:%@",uploadKey);
+    NSLog(@"resp: %@",resp);
+}
+
+- (void)shortVideoUploader:(PLShortVideoUploader *)uploader uploadKey:(NSString *)uploadKey uploadPercent:(float)uploadPercent {
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        self.uploadProgressHUD.progress = uploadPercent;
+    
+    });
+    NSLog(@"uploadKey: %@",uploadKey);
+    NSLog(@"uploadPercent: %.2f",uploadPercent);
 }
 
 

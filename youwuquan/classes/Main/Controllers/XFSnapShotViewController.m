@@ -8,7 +8,6 @@
 
 #import "XFSnapShotViewController.h"
 #import "XFCreatShareImgManager.h"
-#import <AliyunVodPlayerViewSDK/AliyunVodPlayerViewSDK.h>
 
 @interface XFSnapShotViewController () <UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UIImageView *bgVIew;
@@ -21,7 +20,6 @@
 
 @property (nonatomic,strong) UIImageView *codeView;
 
-@property (nonatomic,strong) AliyunVodPlayerView *playerView;
 
 @property (nonatomic,strong) UITableView *tableView;
 

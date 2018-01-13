@@ -21,4 +21,8 @@
 
 @property (nonatomic,strong) ASDisplayNode *bgNode;
 
+@property (nonatomic,copy) NSDictionary *userInfo;
+
+- (instancetype)initWithUserInfo:(NSDictionary *)userInfo;
+
 @end

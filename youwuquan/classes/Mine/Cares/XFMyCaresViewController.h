@@ -8,6 +8,17 @@
 
 #import "XFOtherMainViewController.h"
 
+@interface XFMyCareModel : NSObject
+
+@property (nonatomic,copy) NSString *followEach;
+@property (nonatomic,copy) NSString *followedUid;
+@property (nonatomic,copy) NSString *headIconUrl;
+@property (nonatomic,copy) NSArray *identificationIds;
+@property (nonatomic,copy) NSString *introduce;
+@property (nonatomic,copy) NSString *nickname;
+
+@end
+
 @interface  XFMyCareViewCell : UITableViewCell
 
 @property (nonatomic,strong) UIImageView *iconView;
@@ -19,6 +30,8 @@
 @property (nonatomic,strong) NSMutableArray *authIcons;
 
 @property (nonatomic,strong) UIButton *careButton;
+
+@property (nonatomic,strong) XFMyCareModel *model;
 
 @end
 

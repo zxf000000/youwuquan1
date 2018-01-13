@@ -9,6 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
 
+typedef NS_ENUM(NSInteger,XFPayVCType) {
+
+    XFPayVCTypeVIP,
+    XFPayVCTypeCharge
+
+};
+
 @interface XFPayViewController : XFOtherMainViewController
+
+@property (nonatomic,assign) XFPayVCType type;
 
 @end

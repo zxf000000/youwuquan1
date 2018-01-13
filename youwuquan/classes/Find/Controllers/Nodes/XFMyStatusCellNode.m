@@ -16,125 +16,6 @@
 
 @implementation XFMyStatusCellNode
 
-//- (instancetype)initWithpics:(NSArray *)pics {
-//
-//    if (self  = [super init]) {
-//
-//        _pics = pics;
-//        self.backgroundColor = UIColorHex(f4f4f4);
-//
-//        self.selectionStyle = UITableViewCellSelectionStyleNone;
-//
-//        _backNode = [[ASDisplayNode alloc] init];
-//        _backNode.backgroundColor = [UIColor whiteColor];
-//        _backNode.shadowColor = UIColorHex(e0e0e0).CGColor;
-//        _backNode.shadowOffset = CGSizeMake(0, 0);
-//        _backNode.shadowOpacity = 0.4;
-//        _backNode.cornerRadius = 4;
-//        [self addSubnode:_backNode];
-//
-//        // 图像
-//        NSMutableArray *nodes = [NSMutableArray array];
-//        for (NSInteger i = 0 ; i < _pics.count ; i ++ ) {
-//
-//            ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
-//            picNode.defaultImage = [UIImage imageNamed:_pics[i]];
-//
-//            picNode.cornerRadius = 10;
-//            picNode.clipsToBounds = YES;
-//
-//            [self addSubnode:picNode];
-//            [nodes addObject:picNode];
-//        }
-//
-//        _picNodes = nodes.copy;
-//
-//        // 图像遮罩
-//        _imgShadowNode = [[ASImageNode alloc] init];
-////        _imgShadowNode.image = [UIImage imageNamed:@"overlay-zise"];
-//        [self addSubnode:_imgShadowNode];
-//
-//        // 打赏
-//        _rewardButton = [[ASButtonNode alloc] init];
-//
-//        [_rewardButton setImage:[UIImage imageNamed:@"find_dashang"] forState:(UIControlStateNormal)];
-//        //        _rewardButton.borderColor = [UIColor whiteColor].CGColor;
-//        //        _rewardButton.borderWidth = 2;
-//        [self addSubnode:_rewardButton];
-//
-//        // 文字
-//        _contentNode = [[ASTextNode alloc] init];
-//        [_contentNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentLeft) textColor:[UIColor blackColor] offset:0 text:kRandomComment lineSpace:4 kern:1];
-//        _contentNode.maximumNumberOfLines = 3;
-//        [self addSubnode:_contentNode];
-//
-//        // 更多按钮
-//        _moreButton = [[ASButtonNode alloc] init];
-//        [_moreButton setImage:[UIImage imageNamed:@"find_unfold"] forState:(UIControlStateNormal)];
-//        [_moreButton setImage:[UIImage imageNamed:@"find_retract"] forState:(UIControlStateSelected)];
-//        [_moreButton addTarget:self action:@selector(clickMoreButton:) forControlEvents:(ASControlNodeEventTouchUpInside)];
-//
-//        [self addSubnode:_moreButton];
-//        // 横线
-//        _lineNode = [[ASDisplayNode alloc] init];
-//        _lineNode.backgroundColor = UIColorHex(f5f5f5);
-//        [self addSubnode:_lineNode];
-//
-//        // 时间
-//        _timeNode = [[ASTextNode alloc] init];
-//        [_timeNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:@"10 分钟前" lineSpace:2 kern:1];
-//
-//        [self addSubnode:_timeNode];
-//
-//        // 点赞
-//        _likeButton = [[ASButtonNode alloc] init];
-//        [ _likeButton setTitle:@"520" withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
-//        [_likeButton setImage:[UIImage imageNamed:@"find_like"] forState:(UIControlStateNormal)];
-//        [_likeButton setImage:[UIImage imageNamed:@"home_liked"] forState:(UIControlStateSelected)];
-//
-//        [self addSubnode:_likeButton];
-//
-//        // 评论
-//        _commentButton = [[ASButtonNode alloc] init];
-//        [ _commentButton setTitle:@"520" withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
-//        [_commentButton setImage:[UIImage imageNamed:@"find_comment"] forState:(UIControlStateNormal)];
-//
-//        [self addSubnode:_commentButton];
-//
-//        // 图片遮罩
-//        _shadowNode = [[ASImageNode alloc] init];
-//        _shadowNode.image = [UIImage imageNamed:@"find_bai1"];
-//
-//        [self addSubnode:_shadowNode];
-//
-//        // 小图标们
-//        NSMutableArray *icons = [NSMutableArray array];
-//        for (NSInteger i= 0 ; i < 5 ; i ++ ) {
-//
-//            ASImageNode *iconNode = [[ASImageNode alloc] init];
-//
-//            iconNode.image = [UIImage imageNamed:[NSString stringWithFormat:@"%c",65 + (int)i]];
-//
-//            //            iconNode.backgroundColor = [UIColor redColor];
-//
-//            [self addSubnode:iconNode];
-//
-//            [icons addObject:iconNode];
-//
-//
-//        }
-//
-//        _authenticationIcons = icons.copy;
-//
-//
-//        [_likeButton addTarget:self action:@selector(clickLikeButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
-//        [_rewardButton addTarget:self action:@selector(clickRewardButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
-//
-//    }
-//    return self;
-//
-//}
-
 - (instancetype)initWithPics:(NSArray *)pics open:(BOOL)open model:(XFStatusModel *)model{
     
     if (self  = [super init]) {
@@ -153,35 +34,17 @@
         _backNode.cornerRadius = 4;
         [self addSubnode:_backNode];
         
-        _iconNode = [ASNetworkImageNode new];
-        _iconNode.delegate = self;
-        _iconNode.defaultImage = [UIImage imageNamed:@"31"];
-        _iconNode.URL = [NSURL URLWithString:_model.headUrl];
-        _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
-          
-            UIGraphicsBeginImageContext(image.size);
-            
-            UIBezierPath *path = [UIBezierPath
-                                  bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height)
-                                  cornerRadius:MIN(image.size.width,image.size.height)/2];
-            
-            [path addClip];
-            
-            [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-            
-            UIImage *refinedImg = UIGraphicsGetImageFromCurrentImageContext();
-            
-            UIGraphicsEndImageContext();
-            
-            return refinedImg;
-            
-        };
+        _iconNode = [[XFNetworkImageNode alloc] init];;
+        _iconNode.image = [UIImage imageNamed:@"31"];
+        _iconNode.url = [NSURL URLWithString:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"headIconUrl"]];
+        _iconNode.cornerRadius = 22.5;
+        _iconNode.clipsToBounds = YES;
         
         [self addSubnode:_iconNode];
         
         _nameNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:[XFUserInfoManager sharedManager].userInfo[@"userNike"]];
+        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"nickname"]];
         
         str.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:15.0],
@@ -209,42 +72,69 @@
         [_shareButton setImage:[UIImage imageNamed:@"find_share"] forState:(UIControlStateNormal)];
         [self addSubnode:_shareButton];
         
-        // 图像
-//        _picNode = [[ASNetworkImageNode alloc] init];
-//        _picNode.defaultImage = [UIImage imageNamed:@"actor_pic2"];
-//
-//        [self addSubnode:_picNode];
+        // 图
         
         NSMutableArray *allImgs = [NSMutableArray array];
         
-        NSArray *opens = _model.openImageList;
-        NSArray *secs = _model.intimateImageList;
-//        NSArray *secs = _model.coverImage;
+        NSArray *opens = _model.pictures;
 
+        
         [allImgs addObjectsFromArray:opens];
-        [allImgs addObjectsFromArray:secs];
         _allImgs = allImgs.copy;
         _picCount = allImgs.count;
         
         NSMutableArray *nodes = [NSMutableArray array];
-        for (NSInteger i = 0 ; i < _allImgs.count ; i ++ ) {
+        
+        if (_model.video) {
             
-            NSDictionary *imgDic = _allImgs[i];
-
             ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
             
-//            picNode.defaultImage = [UIImage imageNamed:_pics[i]];
             picNode.defaultImage = [UIImage imageNamed:@"zhanweitu33"];
-            picNode.URL = [NSURL URLWithString:imgDic[@"breviaryUrl"]];
+            picNode.URL = [NSURL URLWithString:_model.video[@"video"][@"coverUrl"]];
+            
             picNode.cornerRadius = 10;
             picNode.clipsToBounds = YES;
             [self addSubnode:picNode];
             [nodes addObject:picNode];
+            
+            _picCount = 1;
+            
+        } else {
+            
+            for (NSInteger i = 0 ; i < _allImgs.count ; i ++ ) {
+                
+                NSDictionary *imgDic = _allImgs[i];
+                
+                XFNetworkImageNode *picNode = [[XFNetworkImageNode alloc] init];
+                
+                picNode.image = [UIImage imageNamed:@"zhanweitu33"];
+                picNode.url = [NSURL URLWithString:imgDic[@"image"][@"thumbImage500pxUrl"]];
+                picNode.cornerRadius = 10;
+                picNode.clipsToBounds = YES;
+                [self addSubnode:picNode];
+                [nodes addObject:picNode];
+            }
         }
+        
+
         
         _picNodes = nodes.copy;
         
+        _playButton = [[ASButtonNode alloc] init];
+        [_playButton setImage:[UIImage imageNamed:@"video_play"] forState:(UIControlStateNormal)];
+        _playButton.contentMode = UIViewContentModeScaleToFill;
+        [self addSubnode:_playButton];
         
+        if (_model.video) {
+
+            _playButton.hidden = NO;
+
+        } else {
+
+            _playButton.hidden = YES;
+
+
+        }
         // 图像遮罩
         _imgShadowNode = [[ASImageNode alloc] init];
 //        _imgShadowNode.image = [UIImage imageNamed:@"overlay-zise"];
@@ -286,14 +176,23 @@
         [self addSubnode:_lineNode];
         
         // 时间
+        
+        NSTimeInterval time = [_model.createTime longValue]/1000;
+        
+        NSDate *creatTime = [NSDate dateWithTimeIntervalSince1970:time];
+        
+        NSDateFormatter *format = [[NSDateFormatter alloc] init];
+        format.dateFormat = @"yyyy-MM-dd HH:mm";
+        
+        NSString *timeStr = [format stringFromDate:creatTime];
         _timeNode = [[ASTextNode alloc] init];
-        [_timeNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:_model.createTime lineSpace:2 kern:0];
+        [_timeNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:timeStr lineSpace:2 kern:0];
         
         [self addSubnode:_timeNode];
         
         // 点赞
         _likeButton = [[ASButtonNode alloc] init];
-        [ _likeButton setTitle:[NSString stringWithFormat:@"%@",_model.greatNum] withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+        [ _likeButton setTitle:[NSString stringWithFormat:@"%@",_model.likeNum] withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
         [_likeButton setImage:[UIImage imageNamed:@"find_like"] forState:(UIControlStateNormal)];
         [_likeButton setImage:[UIImage imageNamed:@"home_liked"] forState:(UIControlStateSelected)];
 
@@ -301,7 +200,7 @@
         
         // 评论
         _commentButton = [[ASButtonNode alloc] init];
-        [ _commentButton setTitle:[NSString stringWithFormat:@"%@",_model.messageNum] withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+        [ _commentButton setTitle:[NSString stringWithFormat:@"%@",_model.commentNum] withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
         [_commentButton setImage:[UIImage imageNamed:@"find_comment"] forState:(UIControlStateNormal)];
 
         [self addSubnode:_commentButton];
@@ -314,20 +213,22 @@
         [self addSubnode:_shadowNode];
         
         // 小图标们
+        NSArray *identifications = _model.user[@"identifications"];
+        
         NSMutableArray *icons = [NSMutableArray array];
-        for (NSInteger i= 0 ; i < 5 ; i ++ ) {
+        for (NSInteger i= 0 ; i < identifications.count ; i ++ ) {
             
-            ASImageNode *iconNode = [[ASImageNode alloc] init];
-            
-            iconNode.image = [UIImage imageNamed:[XFIconmanager sharedManager].authIcons[i]];
+            if ([[XFAuthManager sharedManager].ids containsObject:[NSString stringWithFormat:@"%@",identifications[i]]]) {
+                
+                NSInteger index = [[XFAuthManager sharedManager].ids indexOfObject:[NSString stringWithFormat:@"%@",identifications[i]]];
+                
+                XFNetworkImageNode *imgNode = [[XFNetworkImageNode alloc] init];
+                imgNode.url = [NSURL URLWithString:[XFAuthManager sharedManager].icons[index]];
+                [self addSubnode:imgNode];
+                
+                [icons addObject:imgNode];
+            }
 
-            //            iconNode.backgroundColor = [UIColor redColor];
-            
-            [self addSubnode:iconNode];
-            
-            [icons addObject:iconNode];
-            
-            
         }
         
         _authenticationIcons = icons.copy;
@@ -513,13 +414,22 @@
     ASStackLayoutSpec *picButtonLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[]];
     
     if (_picCount == 1) {
-        
+
         ASNetworkImageNode *picNode = self.picNodes[0];
+        CGSize imgSize;
+        // 判断是视频还是图片
+        if (_model.video) {
+            
+            imgSize = CGSizeMake(picWidth, picWidth * 19/35.f);
+            
+        } else {
+            
+            NSDictionary *imgDic = self.allImgs[0];
+            
+            imgSize = CGSizeMake([imgDic[@"image"][@"width"] intValue], [imgDic[@"image"][@"height"] intValue]);
+            
+        }
         
-        NSDictionary *imgDic = self.allImgs[0];
-        
-        
-        CGSize imgSize = CGSizeMake([imgDic[@"imgWidth"] intValue], [imgDic[@"imgHeight"] intValue]);
         CGFloat leftInset = 0;
         CGFloat picHeight = 0;
         
@@ -543,16 +453,24 @@
         
         picNode.style.preferredSize = CGSizeMake(picWidth, picHeight);
         
-        // 图像
+        
         ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(picHeight - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
         
         
         ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:picShadowLayout];
         
-        ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, -leftInset, 0, 0)) child:picLayout];
+        _playButton.style.preferredSize = CGSizeMake(80, 80);
+        
+        ASInsetLayoutSpec *insetPlay = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake((picHeight - 80)/2, (picWidth - 80)/2, (picHeight - 80)/2, (picWidth - 80)/2)) child:_playButton];
+        
+        ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:insetPlay];
+        
+        ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, -leftInset, 0, 0)) child:picPlayLayout];
         
         ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picInset,_rewardButton]];
         
+        //-----
+        // 图
         picButtonLayout = picButtonLayou;
         
     } else if (_picCount == 4) {

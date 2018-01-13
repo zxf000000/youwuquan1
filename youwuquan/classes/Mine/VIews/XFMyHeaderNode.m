@@ -59,25 +59,29 @@
         _topBgNode.shadowOffset = CGSizeMake(0, 0);
         _topBgNode.shadowOpacity = 0.5;
         _fansLabel = [[ASTextNode alloc] init];
+        
+        // 三个数字
+        NSString *likeNum = _userInfo[@"info"][@"followNum"];
+        NSString *fansNum = _userInfo[@"info"][@"fansNum"];
+        NSString *statusNum = _userInfo[@"info"][@"publishNum"];
+        
+        
         [_fansLabel setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"粉丝" lineSpace:2 kern:0];
         
         _fansNumberLabel = [[ASTextNode alloc] init];
-        [_fansNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:[NSString stringWithFormat:@"%@",_userInfo[@"fansNum"]] lineSpace:2 kern:0];
+        [_fansNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:fansNum?[NSString stringWithFormat:@"%@",fansNum]:@"0" lineSpace:2 kern:0];
     
-
         _careLabel = [[ASTextNode alloc] init];
         [_careLabel setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"关注" lineSpace:2 kern:0];
         
         _careNumberLabel = [[ASTextNode alloc] init];
-        [_careNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:[NSString stringWithFormat:@"%@",_userInfo[@"followNum"]] lineSpace:2 kern:0];
-        
-
-        
+        [_careNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:likeNum?[NSString stringWithFormat:@"%@",likeNum]:@"0" lineSpace:2 kern:0];
+    
         _statusLabel = [[ASTextNode alloc] init];
         [_statusLabel setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:@"动态" lineSpace:2 kern:0];
         
         _statusNumberLabel = [[ASTextNode alloc] init];
-        [_statusNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:[NSString stringWithFormat:@"%@",_userInfo[@"releaseNum"]] lineSpace:2 kern:0];
+        [_statusNumberLabel setFont:[UIFont systemFontOfSize:15] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:statusNum?[NSString stringWithFormat:@"%@",statusNum]:@"0" lineSpace:2 kern:0];
         
         _fansButton = [[ASButtonNode alloc] init];
         _caresButton = [[ASButtonNode alloc] init];

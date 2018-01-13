@@ -40,6 +40,18 @@
     
 }
 
+- (void)setModel:(XFVideoModel *)model {
+    
+    _model = model;
+    
+    [_picView setImageWithURL:[NSURL URLWithString:_model.coverImage[@"thumbImage500pxUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+    _nameLabel.text = model.title;
+    [_iconVIew setImageWithURL:[NSURL URLWithString:_model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+//    _likeButton.selected = [model.isLiked intValue] == 0 ? NO : YES;
+    _numberLabel.text = model.viewNum;
+    
+}
+
 - (void)tapIconView {
     
     if ([self.delegate respondsToSelector:@selector(videoCell:didClickIconWithjindexpath:)]) {

@@ -8,6 +8,7 @@
 
 #import "XFForgetViewController.h"
 #import "XFLoginManager.h"
+#import "XFLoginNetworkManager.h"
 
 @interface XFForgetViewController ()
 @property (nonatomic,strong) UIView *registView;
@@ -97,23 +98,34 @@
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
-    [[XFLoginManager sharedInstance]  changePwdWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text code:self.codeTextField.text  successBlock:^(NSDictionary *reponseDic) {
+    [XFLoginNetworkManager changePwdWithNewPwd:self.pwdTextField.text progress:^(CGFloat progress) {
         
-        if (reponseDic) {
-            
-            [XFToolManager changeHUD:HUD successWithText:@"修改成功"];
-            
-            [self.navigationController popViewControllerAnimated:YES];
-            
-        } else {
-            
-            [HUD hideAnimated:YES];
-        }
+    } successBlock:^(id responseObj) {
         
-    } failedBlock:^(NSError *error) {
+        [XFToolManager changeHUD:HUD successWithText:@"修改成功"];
+        
+        [self.navigationController popViewControllerAnimated:YES];
+        
+    } failBlock:^(NSError *error) {
+        
         [HUD hideAnimated:YES];
-        
+
     }];
+    
+//    [[XFLoginManager sharedInstance]  changePwdWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text code:self.codeTextField.text  successBlock:^(NSDictionary *reponseDic) {
+//
+//        if (reponseDic) {
+//
+//
+//
+//        } else {
+//
+//            [HUD hideAnimated:YES];
+//        }
+//
+//    } failedBlock:^(NSError *error) {
+//
+//    }];
     
 }
 
@@ -132,25 +144,37 @@
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
-    [[XFLoginManager sharedInstance] getCodeWithPhone:self.phoneTextField.text regist:@"" successBlock:^(NSDictionary *reponseDic) {
+    [XFLoginNetworkManager getCodeWithPhoneNumber:self.phoneTextField.text progress:^(CGFloat progress) {
         
-        if (reponseDic) {
-            
-            [XFToolManager changeHUD:HUD successWithText:@"发送成功"];
-            
-            [XFToolManager countdownbutton:sender];
-            
-            [self.codeTextField becomeFirstResponder];
-            
-        } else {
-            
-            [HUD hideAnimated:YES];
-        }
         
-    } failedBlock:^(NSError *error) {
+    } successBlock:^(id responseObj) {
+        
+        [XFToolManager changeHUD:HUD successWithText:@"发送成功"];
+        
+        [XFToolManager countdownbutton:sender];
+        
+        [self.codeTextField becomeFirstResponder];
+        
+    } failBlock:^(NSError *error) {
+        
         [HUD hideAnimated:YES];
-        
+
     }];
+    
+//    [[XFLoginManager sharedInstance] getCodeWithPhone:self.phoneTextField.text regist:@"" successBlock:^(NSDictionary *reponseDic) {
+//
+//        if (reponseDic) {
+//
+//
+//
+//        } else {
+//
+//            [HUD hideAnimated:YES];
+//        }
+//
+//    } failedBlock:^(NSError *error) {
+//
+//    }];
     
 }
 - (void)setupregistView {

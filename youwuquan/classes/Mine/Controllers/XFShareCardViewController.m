@@ -9,6 +9,7 @@
 #import "XFShareCardViewController.h"
 #import "XFShareCardView.h"
 #import "XFShareManager.h"
+#import "XFMineNetworkManager.h"
 
 #define itemWidth (kScreenWidth - 20)
 #define itemHeight (kScreenHeight - 64 - 20 - 20)
@@ -57,6 +58,9 @@
 @property (nonatomic,strong) XFShareCardView *addView;
 @property (nonatomic,strong) XFShareCardView *outsideView;
 
+@property (nonatomic,copy) NSString *inviteUrl;
+
+
 @end
 
 @implementation XFShareCardViewController
@@ -70,9 +74,7 @@
     
     self.picArr = @[@"find1",@"find2",@"find3",@"find4"];
     
-    [self setupSizes];
-    
-    [self setupCards];
+    [self getCode];
     
     self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
     
@@ -82,6 +84,29 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:shareButton];
     
     [shareButton addTarget:self action:@selector(clickShareButton) forControlEvents:(UIControlEventTouchUpInside)];
+    
+}
+
+- (void)getCode {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    [XFMineNetworkManager getShareUrlWithsuccessBlock:^(id responseObj) {
+        
+        [HUD hideAnimated:YES];
+        
+        self.inviteUrl = ((NSDictionary *)responseObj)[@"url"];
+        
+        [self setupSizes];
+        
+        [self setupCards];
+        
+    } failedBlock:^(NSError *error) {
+        [HUD hideAnimated:YES];
+
+    } progressBlock:^(CGFloat progress) {
+        
+    }];
     
 }
 
@@ -110,6 +135,7 @@
         view = [[XFShareCardView alloc] initWithFrame:frameOutside];
         
         view.picView.image = [UIImage imageNamed:self.picArr[i]];
+        view.inviteUrl = self.inviteUrl;
         view.delegate = self;
 
         self.bottomIndex = i;

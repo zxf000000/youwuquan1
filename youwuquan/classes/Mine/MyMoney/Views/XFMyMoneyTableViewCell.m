@@ -18,16 +18,35 @@
     self.payCoinButton.layer.cornerRadius = 4;
     self.castButton.layer.cornerRadius = 22;
 }
+- (IBAction)clickShareButton:(id)sender {
+    
+    if (self.clickShareButtonBlock) {
+        self.clickShareButtonBlock();
+    }
+    
+}
 
-- (void)setInfo:(NSDictionary *)info {
+- (void)setModel:(XFMyMoneyModel *)model {
     
-    _info = info;
+    _model = model;
     
-    _totalInLabel.text = [NSString stringWithFormat:@"%@",_info[@"totalIncome"]];
-    _canCashLabel.text = [NSString stringWithFormat:@"%@",_info[@"canBePresented"]];
-    _cashedLabel.text = [NSString stringWithFormat:@"%@",_info[@"alreadyPresented"]];
-    _diamondLabel.text = [NSString stringWithFormat:@"%@",_info[@"diamonds"]];
-    _goadNumLabel.text = [NSString stringWithFormat:@"%@",_info[@"gold"]];
+    _totalInLabel.text = [NSString stringWithFormat:@"%zd",[_model.phoneReceive integerValue] + [_model.publishReceive integerValue] + [_model.rewardReceive integerValue] + [_model.sharedReceive integerValue] + [_model.wechatReceive integerValue]];
+    _tcNumLabel.text = [NSString stringWithFormat:@"%zd",[_model.sharedReceive integerValue]];
+    _photoReciveNum.text = [NSString stringWithFormat:@"%zd",[_model.publishReceive integerValue]];
+    _wechatReciveNum.text = [NSString stringWithFormat:@"%zd",[_model.phoneReceive integerValue] + [_model.wechatReceive integerValue]];
+    _canCashLabel.text = _diamondLabel.text = [NSString stringWithFormat:@"%zd",[_model.balance integerValue]];;
+    _cashedLabel.text = [NSString stringWithFormat:@"%zd",[_model.withdraw integerValue]];
+    _goadNumLabel.text = [NSString stringWithFormat:@"%zd",[_model.coin integerValue]];
+
+}
+
+- (IBAction)clickCoinButton:(id)sender {
+    
+    if (self.clickCoinButtonBlock) {
+        
+        self.clickCoinButtonBlock();
+        
+    }
     
 }
 - (IBAction)clickPayButton:(id)sender {

@@ -8,6 +8,7 @@
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFStatusModel.h"
+#import "XFNetworkImageNode.h"
 @class XFMyStatusCellNode;
 
 @protocol XFMyStatusCellDelegate <NSObject>
@@ -34,7 +35,7 @@
 /**
  头像
  */
-@property (nonatomic,strong) ASNetworkImageNode *iconNode;
+@property (nonatomic,strong) XFNetworkImageNode *iconNode;
 
 /**
  昵称
@@ -118,6 +119,8 @@
  */
 
 @property (nonatomic,assign) NSInteger picCount;
+
+@property (nonatomic,strong) ASButtonNode *playButton;
 
 @property (nonatomic,copy) NSArray *allImgs;
 

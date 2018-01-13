@@ -35,4 +35,10 @@
 
 @property (nonatomic,strong) id <XFGiftVCDelegate> delegate;
 
+@property (nonatomic,copy) NSString *uid;
+
+@property (nonatomic,copy) NSString *userName;
+
+@property (nonatomic,copy) NSString *iconUrl;
+
 @end

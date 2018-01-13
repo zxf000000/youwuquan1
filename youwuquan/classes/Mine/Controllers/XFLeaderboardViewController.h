@@ -8,8 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+@interface XFRichlistModel : NSObject
+
+@property (nonatomic,copy) NSString *nickname;
+@property (nonatomic,copy) NSString *headIconUrl;
+@property (nonatomic,copy) NSString *balance;
+@property (nonatomic,copy) NSString *uid;
 
 
+
+@end
 
 @interface XFLeaderboardHeaderIconView : UIView
 

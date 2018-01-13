@@ -21,4 +21,5 @@ typedef NS_ENUM(NSInteger,XFNetHotVCType) {
 
 @property (nonatomic,copy) NSArray *datas;
 
+- (void)firstLoadData;
 @end

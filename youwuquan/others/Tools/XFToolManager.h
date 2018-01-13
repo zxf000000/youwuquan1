@@ -16,6 +16,28 @@ typedef void(^completeBlock)(void);
 
 @interface XFToolManager : NSObject
 
+
+/**
+ 状态栏操作
+
+ @param hidden 是否隐藏
+ */
++ (void)statusBarHidhen:(BOOL)hidden;
+/**
+ 获取视频时长和大小
+
+ @param path 路径
+ @return 时长duration 大小size
+ */
++ (NSDictionary *)getVideoInfoWithSourcePath:(NSString *)path;
+/**
+ 转换时间
+
+ @param dateObj 返回时间对象
+ @return 时间字符串
+ */
++ (NSString *)changeLongToDateWith:(id)dateObj;
+
 /**
  j加装个加载成一个
 

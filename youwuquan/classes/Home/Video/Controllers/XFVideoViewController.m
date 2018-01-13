@@ -10,7 +10,8 @@
 #import "XFHomeVideoTableViewCell.h"
 #import "XFFindDetailViewController.h"
 #import "XFHomeDataModel.h"
-
+#import "XFHomeNetworkManager.h"
+#import "XFVideoModel.h"
 
 @interface XFVideoViewController () <UITableViewDelegate,UITableViewDataSource,XFHomeVideoCellDelegate>
 
@@ -34,6 +35,10 @@
 @property (nonatomic,copy) NSArray *pics1;
 @property (nonatomic,copy) NSArray *pics2;
 
+
+@property (nonatomic,copy) NSArray *hdvideos;
+@property (nonatomic,copy) NSArray *VRVideos;
+
 @property (nonatomic,copy) NSArray *videos;
 
 @end
@@ -43,7 +48,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-
     [self setupTableView];
     
     [self setupHeaderView];
@@ -51,16 +55,73 @@
     self.videoType = Hightdefinition;
     
     [self.view setNeedsUpdateConstraints];
+    
+//    [self loadData];
 
+//    [self loadAdData];
+}
+
+- (void)loadAdData {
+    
+    [XFHomeNetworkManager getVideoAdWithSuccessBlock:^(id responseObj) {
+        
+        
+        
+    } failBlock:^(NSError *error) {
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
+}
+
+- (void)loadData {
+    
+    [self loadAdData];
+    
+    [XFHomeNetworkManager getVideoWithSuccessBlock:^(id responseObj) {
+        
+        NSDictionary *datas = (NSDictionary *)responseObj;
+        NSArray *hdDatas = datas[@"hd"];
+        NSArray *vrDatas = datas[@"vr"];
+        
+        NSMutableArray *hdarr = [NSMutableArray array];
+        NSMutableArray *vrArr = [NSMutableArray array];
+
+        for (NSInteger i = 0 ; i < hdDatas.count ; i ++ ) {
+            
+            [hdarr addObject:[XFVideoModel modelWithDictionary:hdDatas[i]]];
+        }
+        
+        self.hdvideos = hdarr.copy;
+        
+        for (NSInteger i = 0 ; i < vrDatas.count ; i ++ ) {
+            
+            [vrArr addObject:[XFVideoModel modelWithDictionary:vrDatas[i]]];
+        }
+        
+        self.VRVideos = vrArr.copy;
+        
+        self.videos = self.hdvideos;
+        
+        [self.tableView reloadData];
+        [self.tableView.mj_header endRefreshing];
+
+        
+    } failBlock:^(NSError *error) {
+        
+        [self.tableView.mj_header endRefreshing];
+
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     
     [super viewWillAppear:animated];
-    
-    self.videos = self.hightVides;
-    
-    [self.tableView reloadData];
     
 }
 
@@ -71,7 +132,7 @@
         self.gqButton.selected = YES;
         self.vrButton.selected = NO;
         
-        self.videos = self.hightVides;
+        self.videos = self.hdvideos;
         self.videoType = Hightdefinition;
 
 
@@ -79,7 +140,7 @@
         
         self.gqButton.selected = NO;
         self.vrButton.selected = YES;
-        self.videos = self.vrVideos;
+        self.videos = self.VRVideos;
         self.videoType = VRVideo;
 
 
@@ -113,8 +174,12 @@
 - (void)videoCell:(XFHomeVideoTableViewCell *)cell didClickIconWithjindexpath:(NSIndexPath *)indexpath {
     
     XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
-    detailVC.hidesBottomBarWhenPushed = YES;
     
+    XFVideoModel *model = self.self.videos[indexpath.row];
+    detailVC.userName  = model.title;
+    detailVC.userId = model.uid;
+    detailVC.hidesBottomBarWhenPushed = YES;
+    detailVC.iconUrl = model.headIconUrl;
     [self.navigationController pushViewController:detailVC animated:YES];
     
 }
@@ -123,7 +188,7 @@
     
     if (self.selectedCellBlock) {
         
-        self.selectedCellBlock();
+        self.selectedCellBlock(self.videos[indexPath.row]);
     }
     
 }
@@ -151,13 +216,7 @@
         
     }
     
-    XFHomeDataModel *model = self.videos[indexPath.row];
-    
-    cell.picView.image = [UIImage imageNamed:model.userPic];
-    cell.nameLabel.text = model.userName;
-    cell.iconVIew.image = [UIImage imageNamed:model.userIcon];
-    cell.likeButton.selected = [model.isLiked intValue] == 0 ? NO : YES;
-    cell.numberLabel.text = model.likeNumer;
+    cell.model = self.videos[indexPath.row];
     cell.delegate = self;
     
     return cell;
@@ -166,10 +225,6 @@
 
 - (void)tapHeaderView {
     
-    if (self.selectedCellBlock) {
-        
-        self.selectedCellBlock();
-    }
     
 }
 
@@ -187,6 +242,12 @@
     self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
     
     [self.view addSubview:self.tableView];
+    
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+       
+        [self loadData];
+        
+    }];
     
 }
 

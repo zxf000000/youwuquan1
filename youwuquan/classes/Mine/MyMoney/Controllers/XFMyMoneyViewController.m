@@ -14,11 +14,21 @@
 #import "XFMoneyNetworkManager.h"
 #import "XFPayViewController.h"
 #import "XFCHouJiangViewController.h"
+#import "XFShareCardViewController.h"
+#import "XFYwqAlertView.h"
+#import "XFAlertViewController.h"
+#import "XFMineNetworkManager.h"
+
+@implementation XFMyMoneyModel
+
+@end
 
 @interface XFMyMoneyViewController () <UITableViewDelegate,UITableViewDataSource>
 @property (nonatomic,strong) UITableView *tableView;
 
-@property (nonatomic,copy) NSDictionary *moneyInfo;
+@property (nonatomic,strong) NSMutableDictionary *moneyInfo;
+
+@property (nonatomic,strong) XFMyMoneyModel *model;
 
 @end
 
@@ -28,6 +38,8 @@
     [super viewDidLoad];
     self.title = @"我的财富";
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    self.moneyInfo = [NSMutableDictionary dictionary];
     
     self.tableView = [[UITableView alloc] init];
     self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
@@ -47,27 +59,80 @@
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.bounces = NO;
     
+    self.tableView.estimatedRowHeight = 1000;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
     [self loadData];
+
+    
 }
 
 - (void)loadData {
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
-    [XFUserInfoNetWorkManager getMyMoneyInfoWithsuccessBlock:^(NSDictionary *responseDic) {
-       
-        [HUD hideAnimated:YES];
-        if (responseDic) {
+//    [XFMineNetworkManager getMyWalletDataWithSuccessBlock:^(id responseObj) {
+//
+//        NSDictionary *balance = (NSDictionary *)responseObj;
+//
+//        [balance enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+//
+//            [self.moneyInfo setObject:obj forKey:key];
+//
+//        }];
+    
+        [XFMineNetworkManager getMyWalletDetailWithsuccessBlock:^(id responseObj) {
             
-            self.moneyInfo = responseDic[@"data"][0];
+            [HUD hideAnimated:YES];
+            NSLog(@"%@",responseObj);
+            [(NSDictionary *)responseObj enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+                
+                [self.moneyInfo setObject:obj forKey:key];
+            }];
+            
+            self.model = [XFMyMoneyModel modelWithDictionary:self.moneyInfo];
+            
             [self.tableView reloadData];
-        }
-        
-    } failedBlock:^(NSError *error) {
-        
-        [HUD hideAnimated:YES];
 
-    }];
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+//    } failedBlock:^(NSError *error) {
+//
+//        [HUD hideAnimated:YES];
+//
+//    } progressBlock:^(CGFloat progress) {
+//
+//
+//    }];
+
+    
+//    [XFUserInfoNetWorkManager getMyMoneyInfoWithsuccessBlock:^(NSDictionary *responseDic) {
+//
+//        [HUD hideAnimated:YES];
+//        if (responseDic) {
+//
+//            self.moneyInfo = responseDic[@"data"][0];
+//            [self.tableView reloadData];
+//        }
+//
+//    } failedBlock:^(NSError *error) {
+//
+//        [HUD hideAnimated:YES];
+//
+//    }];
     
 }
 
@@ -95,10 +160,10 @@
     [self.navigationController pushViewController:txVC animated:YES];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return kScreenHeight - 64;
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+//
+//    return kScreenHeight - 64;
+//}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
@@ -109,11 +174,14 @@
     
     XFMyMoneyTableViewCell *cell = [[[NSBundle mainBundle] loadNibNamed:@"XFMyMoneyTableViewCell" owner:nil options:nil] lastObject];
     
-    cell.info = self.moneyInfo;
+    cell.model = self.model;
     
     cell.clickCashButtonBlock = ^{
         
         XFCashViewController *cashVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFCashViewController"];
+        
+        cashVC.canCashMoney = [NSString stringWithFormat:@"%@",self.moneyInfo[@"balance"]];
+        
         [self.navigationController pushViewController:cashVC animated:YES];
         
     };
@@ -122,31 +190,33 @@
       
         XFPayViewController *payVC = [[XFPayViewController alloc] init];
         
+        payVC.type = XFPayVCTypeCharge;
+        
         [self.navigationController pushViewController:payVC animated:YES];
         
         return;
         
-        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在充值"];
-        // 充值
-        [XFMoneyNetworkManager chargeDiamondWithNUm:@"1000" successBlock:^(NSDictionary *responseDic) {
-            
-            if (responseDic) {
-                
-                [XFToolManager changeHUD:HUD successWithText:@"充值成功"];
-                
-                [self loadDataWithoutProgress];
-                
-            } else {
-                
-                [HUD hideAnimated:YES];
-
-            }
-            
-        } failedBlock:^(NSError *error) {
-            
-            [HUD hideAnimated:YES];
-
-        }];
+//        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在充值"];
+//        // 充值
+//        [XFMoneyNetworkManager chargeDiamondWithNUm:@"1000" successBlock:^(NSDictionary *responseDic) {
+//
+//            if (responseDic) {
+//
+//                [XFToolManager changeHUD:HUD successWithText:@"充值成功"];
+//
+//                [self loadDataWithoutProgress];
+//
+//            } else {
+//
+//                [HUD hideAnimated:YES];
+//
+//            }
+//
+//        } failedBlock:^(NSError *error) {
+//
+//            [HUD hideAnimated:YES];
+//
+//        }];
         
     };
     
@@ -157,6 +227,46 @@
         UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:choujiangVC];
         
         [self presentViewController:navi animated:YES completion:nil];
+        
+    };
+    
+    cell.clickShareButtonBlock = ^{
+        
+        XFShareCardViewController *shareSelectVC = [[XFShareCardViewController alloc] init];
+        
+        [self.navigationController pushViewController:shareSelectVC animated:YES];
+        
+    };
+    
+    cell.clickCoinButtonBlock = ^{
+      
+        XFAlertViewController *alertVC = [[XFAlertViewController alloc] init];
+        alertVC.type = XFAlertViewTypeChangeCoin;
+        
+        __weak typeof(alertVC) weakAlert = alertVC;
+        alertVC.clickDoneButtonBlock = ^(XFAlertViewController *alert) {
+            
+            // 点击兑换
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:[UIApplication sharedApplication].keyWindow];
+            [XFMineNetworkManager exchangeCoinsNumForDiamonds:[weakAlert.numberTextField.text longValue] successBlock:^(id responseObj) {
+                
+                [XFToolManager changeHUD:HUD successWithText:@"兑换成功"];
+                
+                [self loadData];
+
+            } failedBlock:^(NSError *error) {
+                
+                [HUD hideAnimated:YES];
+                
+            } progressBlock:^(CGFloat progress) {
+                
+                
+            }];
+            
+            
+        };
+        
+        [self presentViewController:alertVC animated:YES completion:nil];
         
     };
     

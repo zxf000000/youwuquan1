@@ -7,22 +7,26 @@
 //
 
 #import "XFVideoMoreCell.h"
+#import "XFVideoModel.h"
 
 @implementation XFVideoMoreSubCell
 
-- (instancetype)init {
-    
+- (instancetype)initWithModel:(XFVideoModel *)model {
+
     if (self = [super init]) {
         
-        _picNode = [[ASNetworkImageNode alloc] init];
-        _picNode.defaultImage = [UIImage imageNamed:@"zhanweitu22"];
+        _model = model;
+        
+        _picNode = [[XFNetworkImageNode alloc] init];
+        _picNode.image = [UIImage imageNamed:@"zhanweitu22"];
+        
+        _picNode.url = [NSURL URLWithString:_model.video[@"coverUrl"]];
         
         [self addSubnode:_picNode];
         
-        
         _nameNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:kRandomName];
+        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:_model.title];
         
         str.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:12.0],
@@ -36,7 +40,7 @@
         
         _numberNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *numStr = [[NSMutableAttributedString  alloc] initWithString:@"播放3.3W次"];
+        NSMutableAttributedString *numStr = [[NSMutableAttributedString  alloc] initWithString:[NSString stringWithFormat:@"播放%@次",_model.viewNum]];
         
         numStr.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:10],
@@ -68,39 +72,22 @@
 
 @implementation XFVideoMoreCell
 
-- (instancetype)init {
+- (instancetype)initWithInfo:(NSDictionary *)info {
     
     if (self = [super init]) {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
-        _iconNode = [ASNetworkImageNode new];
-//        _iconNode.delegate = self;
-        _iconNode.defaultImage = [UIImage imageNamed:@"zhanweitu44"];
         
-        _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
-            
-            UIGraphicsBeginImageContext(image.size);
-            
-            UIBezierPath *path = [UIBezierPath
-                                  bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height)
-                                  cornerRadius:MIN(image.size.width,image.size.height)/2];
-            
-            [path addClip];
-            
-            [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-            
-            UIImage *refinedImg = UIGraphicsGetImageFromCurrentImageContext();
-            
-            UIGraphicsEndImageContext();
-            
-            return refinedImg;
-            
-        };
+        _allinfo = info;
+        
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        _iconNode = [[XFNetworkImageNode alloc] init];
+        _iconNode.image = [UIImage imageNamed:@"zhanweitu44"];
+        _iconNode.url = [NSURL URLWithString:_allinfo[@"user"][@"headIconUrl"]];
         
         [self addSubnode:_iconNode];
         
         _nameNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:kRandomName];
+        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:_allinfo[@"user"][@"nickname"] ? _allinfo[@"user"][@"nickname"] : @""];
         
         str.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:15.0],
@@ -116,11 +103,13 @@
         _followButton = [[ASButtonNode alloc] init];
         [_followButton setTitle:@"+ 关注" withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
         [_followButton setTitle:@"已关注" withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateSelected)];
-        
+        _followButton.selected = [_allinfo[@"user"][@"followed"] boolValue];
         _followButton.backgroundColor = UIColorHex(F72F5E);
         [self addSubnode:_followButton];
         _followButton.cornerRadius = 4;
         _followButton.clipsToBounds = YES;
+        
+        [_followButton addTarget:self action:@selector(clickFollowButton:) forControlEvents:(ASControlNodeEventTouchUpInside)];
         
         _moreNode = [[ASTextNode alloc] init];
         
@@ -151,6 +140,14 @@
     return self;
 }
 
+- (void)clickFollowButton:(ASButtonNode *)button {
+    
+    if (self.clickFollowButtonBlock) {
+        self.clickFollowButtonBlock(button);
+    }
+    
+}
+
 - (void)setColl {
     
     self.collectionNode.view.showsHorizontalScrollIndicator = NO;
@@ -159,7 +156,10 @@
 
 - (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section {
     
-    return 10;
+    NSDictionary *dic = self.allinfo[@"videoSuggestion"];
+    NSArray *arr = dic[@"content"];
+    
+    return arr.count;
     
 }
 
@@ -167,7 +167,12 @@
     
     return ^ASCellNode *() {
       
-        XFVideoMoreSubCell *cell = [[XFVideoMoreSubCell alloc] init];
+        NSDictionary *dic = self.allinfo[@"videoSuggestion"];
+        NSArray *arr = dic[@"content"];
+        
+        XFVideoModel *model = [XFVideoModel modelWithDictionary:arr[indexPath.item]];
+    
+        XFVideoMoreSubCell *cell = [[XFVideoMoreSubCell alloc] initWithModel:model];
         
         return cell;
         

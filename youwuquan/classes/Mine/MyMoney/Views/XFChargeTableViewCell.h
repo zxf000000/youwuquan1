@@ -27,5 +27,6 @@
 
 @property (nonatomic,strong) id <XChargeTableViewCellDelegate> delegate;
 
+@property (nonatomic,copy) void(^selectedChargeNumBlock)(void);
 
 @end

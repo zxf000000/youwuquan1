@@ -11,6 +11,7 @@
 #import "XFLoginManager.h"
 #import "XFRegistInfoViewController.h"
 #import <YYCache.h>
+#import "XFLoginNetworkManager.h"
 
 @interface XFRegistViewController ()
 
@@ -96,87 +97,109 @@
 //    return;
     
     if (![self.phoneTextField.text isPhoneNumber]) {
-        
+
         [XFToolManager showProgressInWindowWithString:@"请输入正确的手机号码"];
-        
+
         return;
-        
+
     }
-    
+
     if (![self.codeTextField.text isHasContent]) {
-        
+
         [XFToolManager showProgressInWindowWithString:@"请输入验证码"];
-        
+
         return;
-        
+
     }
 
-    
+
     if (![self.pwdTextField.text isPasswordContent]) {
-        
+
         [XFToolManager showProgressInWindowWithString:@"密码必须由字母数字组成,且大于8位"];
-        
+
         return;
-        
+
     }
     
-    __block MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-    
-    [[XFLoginManager sharedInstance] registWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text codeNum:self.codeTextField.text platform:@"" regist:@"" successBlock:^(NSDictionary *reponseDic) {
+    __block MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在登录"];
+
+    [XFLoginNetworkManager registWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text code:self.codeTextField.text progress:^(CGFloat progress) {
         
-        if (reponseDic) {
+    } successBlock:^(id responseObj) {
+        
+//        NSDictionary *dic = responseObj;
+        
+        [XFUserInfoManager sharedManager].userName = self.phoneTextField.text;
+        [XFUserInfoManager sharedManager].pwd = self.pwdTextField.text;
+        // 登录
+        
+        [XFLoginNetworkManager loginWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
             
+            NSLog(@"%f",progress);
+            
+        } successBlock:^(id responseObj) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [XFToolManager changeHUD:HUD successWithText:@"注册成功"];
+                
+                // 完善信息界面
+                XFRegistInfoViewController *infoVC = [[UIStoryboard storyboardWithName:@"Login" bundle:nil] instantiateViewControllerWithIdentifier:@"XFRegistInfoViewController"];
+                
+                [self.navigationController pushViewController:infoVC animated:YES];
+                
+            });
 
             
-            NSDictionary *dic = reponseDic;
-    
-            // 登录融云
-            [[XFLoginManager sharedInstance] loginRongyunWithRongtoken:dic[@"data"][0] successBlock:^(id reponseDic) {
-                
-                // 发送成功
-
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [XFToolManager changeHUD:HUD successWithText:@"注册成功"];
-                    [HUD hideAnimated:YES afterDelay:0.3];
-                    
-                    // 保存token和userName
-                    [XFUserInfoManager sharedManager].token = dic[@"data"][1];
-                    [XFUserInfoManager sharedManager].rongToken = dic[@"data"][0];
-                    [XFUserInfoManager sharedManager].userName = self.phoneTextField.text;
-                    [XFUserInfoManager sharedManager].pwd = self.pwdTextField.text;
-                    // 完善信息界面
-                    XFRegistInfoViewController *infoVC = [[UIStoryboard storyboardWithName:@"Login" bundle:nil] instantiateViewControllerWithIdentifier:@"XFRegistInfoViewController"];
-                    
-                    [self.navigationController pushViewController:infoVC animated:YES];
-                });
-
-                
-            } failedBlock:^(NSError *error) {
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [XFToolManager changeHUD:HUD successWithText:@"登陆失败"];
-                    [HUD hideAnimated:YES afterDelay:0.3];
-                });
-                
-
-                
-            }];
+        } failBlock:^(NSError *error) {
             
-        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [HUD hideAnimated:YES];
+
+            });
             
-            [HUD hideAnimated:YES];
-        }
-    } failedBlock:^(NSError *error) {
+            
+        }];
+        
+        // 登录融云
+//        [[XFLoginManager sharedInstance] loginRongyunWithRongtoken:dic[@"data"][0] successBlock:^(id reponseDic) {
+//
+//            // 发送成功
+//
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//
+//                [XFToolManager changeHUD:HUD successWithText:@"注册成功"];
+//                [HUD hideAnimated:YES afterDelay:0.3];
+//
+//                // 保存token和userName
+//                [XFUserInfoManager sharedManager].token = dic[@"data"][1];
+//                [XFUserInfoManager sharedManager].rongToken = dic[@"data"][0];
+//
+
+//            });
+//
+//
+//        } failedBlock:^(NSError *error) {
+//
+//            [XFToolManager changeHUD:HUD successWithText:@"注册失败"];
+//            [HUD hideAnimated:YES afterDelay:0.3];
+//
+////            dispatch_async(dispatch_get_main_queue(), ^{
+////
+////                [XFToolManager changeHUD:HUD successWithText:@"登陆失败"];
+////            });
+//
+//
+//
+//        }];
+        
+        
+    } failBlock:^(NSError *error) {
         
         [HUD hideAnimated:YES];
 
     }];
-    
-
-    
-    
 }
 /**
  获取验证码
@@ -193,26 +216,43 @@
         return;
 
     }
-    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-    // 开始倒计时
+//    // 开始倒计时
+//
+//    [[XFLoginManager sharedInstance] getCodeWithPhone:self.phoneTextField.text regist:nil successBlock:^(NSDictionary *reponseDic) {
+//
+//        if (reponseDic) {
+//
+//            [XFToolManager changeHUD:HUD successWithText:@"发送成功"];
+//
+
+//
+//        } else {
+//
+//            [HUD hideAnimated:YES];
+//        }
+//
+//    } failedBlock:^(NSError *error) {
+//
+//        [HUD hideAnimated:YES];
+//
+//    }];
     
-    [[XFLoginManager sharedInstance] getCodeWithPhone:self.phoneTextField.text regist:nil successBlock:^(NSDictionary *reponseDic) {
+    // 发送验证码
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
+    [XFLoginNetworkManager getCodeWithPhoneNumber:self.phoneTextField.text progress:^(CGFloat progress) {
+        
+        
+    } successBlock:^(id responseObj) {
        
-        if (reponseDic) {
-            
-            [XFToolManager changeHUD:HUD successWithText:@"发送成功"];
-
-            // 发送成功
-            [XFToolManager countdownbutton:sender];
-
-        } else {
-            
-            [HUD hideAnimated:YES];
-        }
+        [XFToolManager changeHUD:HUD successWithText:@"发送成功"];
+        // 发送成功
+        [XFToolManager countdownbutton:sender];
         
-    } failedBlock:^(NSError *error) {
         
-        [HUD hideAnimated:YES];
+    } failBlock:^(NSError *error) {
+        
+        [XFToolManager changeHUD:HUD successWithText:@"请求失败,请检查网络设置"];
 
     }];
     

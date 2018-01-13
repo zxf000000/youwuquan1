@@ -11,24 +11,22 @@
 
 @interface XFmyPhotoModel : NSObject
 
-@property (nonatomic,copy) NSString *albumId;
-@property (nonatomic,copy) NSString *breviaryUrl;
-
 @property (nonatomic,copy) NSString *createTime;
 @property (nonatomic,copy) NSString *id;
-@property (nonatomic,copy) NSString *imageUrl;
-@property (nonatomic,copy) NSString *imgHeight;
-@property (nonatomic,copy) NSString *imgWidth;
+@property (nonatomic,copy) NSString *uid;
+@property (nonatomic,copy) NSDictionary *image;
+@property (nonatomic,copy) NSString *publishId;
 
-@property (nonatomic,strong) XFStatusModel *status;
-
-@property (nonatomic,copy) NSString *releaseId;
-
-@property (nonatomic,copy) NSString *type;
-
-@property (nonatomic,copy) NSString *userNo;
-
-@property (nonatomic,copy) NSString *vagueUrl;
-
+//@property (nonatomic,copy) NSString *imgWidth;
+//
+//@property (nonatomic,strong) XFStatusModel *status;
+//
+//@property (nonatomic,copy) NSString *releaseId;
+//
+//@property (nonatomic,copy) NSString *type;
+//
+//@property (nonatomic,copy) NSString *userNo;
+//
+//@property (nonatomic,copy) NSString *vagueUrl;
 
 @end

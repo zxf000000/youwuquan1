@@ -8,6 +8,8 @@
 
 #import "XFOtherMainViewController.h"
 #import "XFStatusCommentViewController.h"
+#import "XFStatusModel.h"
+#import "XFVideoModel.h"
 
 typedef NS_ENUM(NSInteger,XFVideoVCType) {
     
@@ -20,5 +22,6 @@ typedef NS_ENUM(NSInteger,XFVideoVCType) {
 
 @property (nonatomic,assign) XFVideoVCType type;
 
+@property (nonatomic,strong) XFVideoModel *model;
 
 @end

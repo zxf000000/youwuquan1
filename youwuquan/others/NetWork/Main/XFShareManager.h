@@ -7,12 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UShareUI/UShareUI.h>
 
-@interface XFShareManager : NSObject
+@interface XFShareManager : NSObject <UMSocialShareMenuViewDelegate>
 
-+ (UIImage *)sharedImageWithBg:(NSString *)bgImg icon:(NSString *)icon name:(NSString *)name userid:(NSString *)userid address:(NSString *)address;
++ (UIImage *)sharedImageWithBg:(NSString *)bgImg icon:(UIImage *)icon name:(NSString *)name userid:(NSString *)userid address:(NSString *)address;
 
-+ (UIImage *)sharedUrlImageWithBg:(NSString *)bgImg icon:(UIImage *)icon url:(NSString *)url;
++ (UIImage *)sharedUrlImageWithBg:(NSString *)bgImg icon:(id)icon url:(NSString *)url;
 
 + (UIImage *)sharedUrl:(NSString *)urlStr image:(UIImage *)pic title:(NSString *)title detail:(NSString *)detail;
 

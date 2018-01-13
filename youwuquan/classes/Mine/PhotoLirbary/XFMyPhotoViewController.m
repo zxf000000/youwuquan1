@@ -8,7 +8,7 @@
 
 #import "XFMyPhotoViewController.h"
 #import "XFOpenPhotoViewController.h"
-
+#import "XFMineNetworkManager.h"
 
 @interface XFMyPhotoViewController ()
 
@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *openView;
 @property (weak, nonatomic) IBOutlet UIImageView *secView;
 
+@property (nonatomic,copy) NSDictionary *photoCover;
 
 @end
 
@@ -28,6 +29,35 @@
     self.title = @"我的相册";
     
     [self setupEvent];
+    
+    [self loadData];
+}
+
+- (void)loadData {
+    
+    [XFMineNetworkManager getPhototCoverWithsuccessBlock:^(id responseObj) {
+        
+        self.photoCover = (NSDictionary *)responseObj;
+        
+        [self refreshData];
+        
+    } failedBlock:^(NSError *error) {
+        
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
+}
+
+- (void)refreshData {
+    
+    [self.wallView setImageWithURL:[NSURL URLWithString:self.photoCover[@"photo_wall"][@"image"][@"thumbImage300pxUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+    [self.openView setImageWithURL:[NSURL URLWithString:self.photoCover[@"publish_open"][@"thumbImage300pxUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+    [self.secView setImageWithURL:[NSURL URLWithString:self.photoCover[@"publish_close"][@"thumbImage300pxUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+
+    
 }
 
 #pragma mark - 照片墙
@@ -35,10 +65,10 @@
     
     XFOpenPhotoViewController *photoVC = [[XFOpenPhotoViewController alloc] init];
     photoVC.title = @"照片墙";
-    NSDictionary *wallDic = self.photoAlbums[0];
-    NSString *albumId = wallDic[@"id"];
-    photoVC.albumId = albumId;
-    photoVC.iswall = YES;
+//    NSDictionary *wallDic = self.photoAlbums[0];
+//    NSString *albumId = wallDic[@"id"];
+//    photoVC.albumId = albumId;
+    photoVC.type = OPenPhotoVCTypeWall;
     [self.navigationController pushViewController:photoVC animated:YES];
     
 }
@@ -46,11 +76,8 @@
 - (void)tapOpen {
     
     XFOpenPhotoViewController *photoVC = [[XFOpenPhotoViewController alloc] init];
-    photoVC.title = @"公开相册";
-    NSDictionary *wallDic = self.photoAlbums[1];
-    NSString *albumId = wallDic[@"id"];
-    photoVC.albumId = albumId;
-    photoVC.iswall = NO;
+
+    photoVC.type = OPenPhotoVCTypeOpen;
 
     [self.navigationController pushViewController:photoVC animated:YES];
 }
@@ -58,11 +85,8 @@
 - (void)tapSec {
     
     XFOpenPhotoViewController *photoVC = [[XFOpenPhotoViewController alloc] init];
-    photoVC.title = @"私密相册";
-    NSDictionary *wallDic = self.photoAlbums[2];
-    NSString *albumId = wallDic[@"id"];
-    photoVC.albumId = albumId;
-    photoVC.iswall = NO;
+
+    photoVC.type = OPenPhotoVCTypeClose;
 
     [self.navigationController pushViewController:photoVC animated:YES];
     

@@ -10,4 +10,10 @@
 
 @interface XFFindDetailViewController : UIViewController
 
+@property (nonatomic,copy) NSString *userId;
+
+@property (nonatomic,copy) NSString *userName;
+
+@property (nonatomic,copy) NSString *iconUrl;
+
 @end

@@ -9,6 +9,11 @@
 #import "XFMyAuthViewController.h"
 #import "XFYwqAlertView.h"
 #import "XFAddAuthTableViewController.h"
+#import "XFMineNetworkManager.h"
+
+@implementation XFMyAuthModel
+
+@end
 
 @implementation XFmyAuthCell
 
@@ -28,6 +33,16 @@
         [self setNeedsUpdateConstraints];
     }
     return self;
+}
+
+- (void)setModel:(XFMyAuthModel *)model {
+    
+    _model = model;
+    
+    [_iconView setImageWithURL:[NSURL URLWithString:_model.iconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+    
+    _titleLabel.text = _model.identificationName;
+    
 }
 
 - (void)updateConstraints {
@@ -69,6 +84,8 @@
 @property (nonatomic,copy) NSArray *titles;
 @property (nonatomic,copy) NSArray *unAuthIcons;
 
+@property (nonatomic,copy) NSArray *defines;
+@property (nonatomic,copy) NSArray *selectDefines;
 
 @end
 
@@ -82,7 +99,52 @@
     [self setupScrollView];
     [self setupCollectionView];
     [self setupLabels];
+    
+    [self loadData];
 
+}
+
+- (void)loadData {
+    // 获取所有认证列表
+    [XFMineNetworkManager getDefineListWithsuccessBlock:^(id responseObj) {
+        
+        NSArray *datas = (NSArray *)responseObj;
+        NSMutableArray *arr = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < datas.count; i++ ) {
+            
+            [arr addObject:[XFMyAuthModel modelWithDictionary:datas[i]]];
+        
+        }
+        
+        self.defines = arr.copy;
+        
+        [XFMineNetworkManager getMyDefinesWithsuccessBlock:^(id responseObj) {
+            
+            // 已经认证的信息
+            NSArray *datas = (NSArray *)responseObj;
+            NSMutableArray *arr = [NSMutableArray array];
+            for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+                
+                [arr addObject:[XFMyAuthModel modelWithDictionary:datas[i]]];
+
+                
+            }
+            self.selectDefines = arr.copy;
+            
+            [self.collectionView reloadData];
+            
+        } failedBlock:^(NSError *error) {
+            
+        } progressBlock:^(CGFloat progress) {
+            
+        }];
+        
+    } failedBlock:^(NSError *error) {
+    
+    } progressBlock:^(CGFloat progress) {
+    
+    }];
+    
 }
 
 
@@ -107,7 +169,6 @@
     self.detailLabel.numberOfLines = 0;
     NSString *str = @"1.认证需上传本人相关视频，如\'嗨歌达人\'需上传跟歌唱相关的视频；\n2.视频不少于10秒钟，且必须本人出镜；\n3.禁止上传违法视频；\n4.其他相关规则内容。\n5.用户已认证的项目图标为彩色，未认证的项目图标为灰色，点击进去可以进行认证申请。";
     
-    
     self.detailLabel.text = str;
     
     CGRect frame = [str boundingRectWithSize:(CGSizeMake(kScreenWidth - 20, MAXFLOAT)) options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading) attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15]} context:nil];
@@ -116,40 +177,25 @@
     
     [self.scrollView addSubview:self.detailLabel];
     
-
-    
 }
 
 #pragma mark - collectionView
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    // 确定按钮
+    XFMyAuthModel *model = self.defines[indexPath.item];
+    
     XFAddAuthTableViewController *addVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFAddAuthTableViewController"];
     
-    [self.navigationController pushViewController:addVC animated:YES];
+    addVC.authId = model.id;
     
-//    XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.view withTitle:@"申请须知" detail:@"1.认证尤物女神需缴1500元；\n2.1500元我们将为您拍摄1—10张精美写真。"];
-//
-//    alertView.doneBlock = ^{
-//
-//
-//
-//    };
-//
-//    alertView.cancelBlock = ^{
-//
-//        // 取消
-//
-//    };
-//
-//    [alertView showAnimation];
+    [self.navigationController pushViewController:addVC animated:YES];
     
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return self.icons.count;
+    return self.defines.count;
     
 }
 
@@ -157,17 +203,30 @@
     
     XFmyAuthCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFmyAuthCell" forIndexPath:indexPath];
     
-    if (indexPath.item < 5) {
-        cell.iconView.image = [UIImage imageNamed:self.icons[indexPath.item]];
-
-    } else {
-        cell.iconView.image = [UIImage imageNamed:self.unAuthIcons[indexPath.item]];
-
+    XFMyAuthModel *model = self.defines[indexPath.row];
+    
+    cell.model = model;
+    
+    for (XFMyAuthModel *define in self.selectDefines) {
+        
+        if ([define.identificationId isEqualToString:model.id]) {
+            
+            [cell.iconView setImageWithURL:[NSURL URLWithString:model.iconActiveUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        }
         
     }
-    
-    cell.titleLabel.text = self.titles[indexPath.item];
-    
+//
+//    if (indexPath.item < 5) {
+//        cell.iconView.image = [UIImage imageNamed:self.icons[indexPath.item]];
+//
+//    } else {
+//        cell.iconView.image = [UIImage imageNamed:self.unAuthIcons[indexPath.item]];
+//
+//
+//    }
+//
+//    cell.titleLabel.text = self.titles[indexPath.item];
+//
     return cell;
     
 }

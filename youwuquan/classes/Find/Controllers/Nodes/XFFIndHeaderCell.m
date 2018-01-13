@@ -26,11 +26,10 @@
         
         [self addSubnode:_backNode];
         
-        _picNode = [[ASNetworkImageNode alloc] init];
-        _picNode.defaultImage = [UIImage imageNamed:@"zhanweitu22"];
+        _picNode = [[XFNetworkImageNode alloc] init];
+        _picNode.image = [UIImage imageNamed:@"zhanweitu22"];
         _picNode.cornerRadius = 4;
         _picNode.clipsToBounds = YES;
-        
         [self addSubnode:_picNode];
         
         _titleNode = [[ASTextNode alloc] init];
@@ -121,8 +120,8 @@
     
     if (self.isEnd) {
         
-        _moreButton.style.spacingBefore = _moreButton.style.spacingAfter = 29;
-        
+//        _moreButton.style.spacingBefore = 29;
+        _moreButton.style.preferredSize = CGSizeMake(kScreenWidth - 20, 50);
         ASBackgroundLayoutSpec *backLayout = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:overlayImage background:_backNode];
 
         ASStackLayoutSpec *stackLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[backLayout,_moreButton]];

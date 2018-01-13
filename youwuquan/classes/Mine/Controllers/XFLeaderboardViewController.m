@@ -10,6 +10,7 @@
 #import "XFLeaderboardModel.h"
 #import "XFLeaderboardTableViewCell.h"
 #import "XFFindDetailViewController.h"
+#import "XFMineNetworkManager.h"
 
 #define kFirstheaderWidth 80
 #define kFirstheaderHeight 100
@@ -19,6 +20,12 @@
 #define kHeaderIconBottom 5
 
 #define kHeaderViewHeight 162
+
+@implementation XFRichlistModel
+
+
+
+@end
 
 @implementation XFLeaderboardHeaderIconView
 
@@ -71,37 +78,7 @@
 }
 
 - (void)updateConstraints {
-    
-//    [_bgImage mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.top.left.right.mas_offset(0);
-//        make.height.mas_equalTo(_bgImage.width*5/4.f);
-//
-//    }];
-//
-//    [_iconImage mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.right.mas_offset(-5);
-//        make.left.mas_offset(5);
-//        make.bottom.mas_equalTo(_bgImage.mas_bottom).offset(-5);
-//        make.height.mas_equalTo(_iconImage.width);
-//
-//    }];
-//
-//    [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.centerX.mas_offset(0);
-//        make.top.mas_equalTo(_bgImage.mas_bottom).offset(5);
-//
-//    }];
-//
-//    [_numberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.centerX.mas_offset(0);
-//        make.top.mas_equalTo(_nameLabel.mas_bottom).offset(5);
-//
-//    }];
-    
+
     
     [super updateConstraints];
 }
@@ -114,7 +91,7 @@
 
 @property (nonatomic,strong) UIView *headView;
 
-@property (nonatomic,copy) NSArray *headerIcons;
+@property (nonatomic,strong) NSMutableArray *headerIcons;
 
 @property (nonatomic,copy) NSArray *bgImgs;
 
@@ -134,11 +111,72 @@
     [self.view addSubview:imageView];
     imageView.frame = self.view.bounds;
     
+    self.headerIcons = [NSMutableArray array];
+    
     [self setupHeadView];
     
     [self setupTableView];
     
     [self setupTitleView];
+    
+    [self getData];
+    
+}
+
+- (void)getData {
+    
+    [XFMineNetworkManager getRichListWithsuccessBlock:^(id responseObj) {
+        
+        NSArray *datas = (NSArray *)responseObj;
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFRichlistModel modelWithDictionary:datas[i]]];
+        }
+        
+        self.models = arr.copy;
+        
+        [self reloadData];
+        
+    } failedBlock:^(NSError *error) {
+        
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
+    
+}
+
+- (void)reloadData {
+    
+    if (self.models.count < 3) {
+        
+        for (NSInteger i = 0 ; i < self.models.count ; i ++ ) {
+            
+            XFRichlistModel *model = self.models[i];
+            XFLeaderboardHeaderIconView *headerIcon1 = self.headerIcons[i];
+            [headerIcon1.iconImage setImageWithURL:[NSURL URLWithString:model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+            headerIcon1.nameLabel.text = model.nickname;
+            headerIcon1.numberLabel.text = model.balance;
+        }
+        
+    } else {
+        
+        for (NSInteger i = 0 ; i < 3 ; i ++ ) {
+            
+            XFRichlistModel *model = self.models[i];
+            XFLeaderboardHeaderIconView *headerIcon1 = self.headerIcons[i];
+            [headerIcon1.iconImage setImageWithURL:[NSURL URLWithString:model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+            headerIcon1.nameLabel.text = model.nickname;
+            headerIcon1.numberLabel.text = model.balance;
+        }
+        
+        [self.tableView reloadData];
+    }
     
 }
 
@@ -166,8 +204,12 @@
     
     cell.selected = NO;
     
-    XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+    XFRichlistModel *model = self.models[indexPath.row + 3];
     
+    XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+    detailVC.userName = model.nickname;
+    detailVC.userId = model.uid;
+    detailVC.iconUrl = model.headIconUrl;
     [self.navigationController pushViewController:detailVC animated:YES];
     
 }
@@ -195,9 +237,25 @@
     
     cell.model = self.models[indexPath.row + 3];
     
-    cell.numberLabel.text = [NSString stringWithFormat:@"%zd",indexPath.row + 4];
+    cell.numberLabel.text = [NSString stringWithFormat:@"%zd",indexPath.row + 3];
     
     return cell;
+    
+}
+
+#pragma mark - 点击前三名
+- (void)tapHeaderIcon:(UITapGestureRecognizer *)tap {
+    
+    UIImageView *iconView = (UIImageView *)tap.view;
+    
+    NSInteger index = [self.headerIcons indexOfObject:iconView];
+    
+    XFRichlistModel *model = self.models[index];
+    
+    XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+    detailVC.userName = model.nickname;
+    detailVC.userId = model.uid;
+    [self.navigationController pushViewController:detailVC animated:YES];
     
 }
 
@@ -211,14 +269,20 @@
     [self.view addSubview:self.headView];
     for (NSInteger i = 0 ; i < 3 ; i ++ ) {
         
-        XFLeaderboardModel *model = self.models[i];
+//        XFLeaderboardModel *model = self.models[i];
         
         XFLeaderboardHeaderIconView *headerIcon1 = [[XFLeaderboardHeaderIconView alloc] init];
         headerIcon1.bgImage.image = [UIImage imageNamed:self.bgImgs[i]];
-        headerIcon1.iconImage.image = [UIImage imageNamed:model.icon];
-        headerIcon1.nameLabel.text = model.name;
-        headerIcon1.numberLabel.text = model.number;
+//        headerIcon1.iconImage.image = [UIImage imageNamed:model.icon];
+//        headerIcon1.nameLabel.text = model.name;
+//        headerIcon1.numberLabel.text = model.number;
+        UITapGestureRecognizer *tapHeader = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHeaderIcon:)];
+        headerIcon1.userInteractionEnabled = YES;
+        [headerIcon1 addGestureRecognizer:tapHeader];
         [self.headView addSubview:headerIcon1];
+        [self.headerIcons addObject:headerIcon1];
+        
+    
         
         switch (i) {
             case 0:{
@@ -315,28 +379,28 @@
     return _bgImgs;
 }
 
-- (NSArray *)models {
-    
-    if (_models == nil) {
-        
-        _models = @[[[XFLeaderboardModel alloc] initWithIcon:@"video_pic3" name:@"就是霸气就是狂" number:@"123334"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"message_touxiang" name:@"地主家的傻儿子" number:@"89762"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"me_tou1" name:@"地主家的傻儿子" number:@"9999"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"actor_pic22" name:@"宵夜行军" number:@"12312"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"home_tou" name:@"吸猫少女" number:@"1233"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"find_icon2" name:@"游子" number:@"999"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"find_icon3" name:@"香蕉" number:@"998"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"find_icon4" name:@"苹果" number:@"996"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"find_icon5" name:@"猕猴桃" number:@"844"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"find_pic4" name:@"大脸猫" number:@"344"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"find_pic8" name:@"米老鼠" number:@"324"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"find_pic10" name:@"唐老鸭" number:@"157"],
-                    [[XFLeaderboardModel alloc] initWithIcon:@"find_pic12" name:@"李狗蛋" number:@"98"]];
-        
-        
-    }
-    return _models;
-}
+//- (NSArray *)models {
+//
+//    if (_models == nil) {
+//
+//        _models = @[[[XFLeaderboardModel alloc] initWithIcon:@"video_pic3" name:@"就是霸气就是狂" number:@"123334"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"message_touxiang" name:@"地主家的傻儿子" number:@"89762"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"me_tou1" name:@"地主家的傻儿子" number:@"9999"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"actor_pic22" name:@"宵夜行军" number:@"12312"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"home_tou" name:@"吸猫少女" number:@"1233"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"find_icon2" name:@"游子" number:@"999"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"find_icon3" name:@"香蕉" number:@"998"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"find_icon4" name:@"苹果" number:@"996"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"find_icon5" name:@"猕猴桃" number:@"844"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"find_pic4" name:@"大脸猫" number:@"344"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"find_pic8" name:@"米老鼠" number:@"324"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"find_pic10" name:@"唐老鸭" number:@"157"],
+//                    [[XFLeaderboardModel alloc] initWithIcon:@"find_pic12" name:@"李狗蛋" number:@"98"]];
+//
+//
+//    }
+//    return _models;
+//}
 
 
 @end

@@ -8,6 +8,7 @@
 
 #import "XFAddAuthTableViewController.h"
 #import "XFYwqAlertView.h"
+#import "XFMineNetworkManager.h"
 
 typedef NS_ENUM(NSInteger, ImagePickerType) {
   
@@ -33,6 +34,7 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
 
 @property (nonatomic,assign) ImagePickerType pickerType;
 
+@property (nonatomic,copy) NSDictionary *authDatas;
 
 @end
 
@@ -43,6 +45,34 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
     
     self.title = @"申请认证";
     self.addButton.layer.cornerRadius = 22;
+    
+    [self loadData];
+    
+}
+
+- (void)loadData {
+    
+    [XFMineNetworkManager getDefineInfoWithsuccessBlock:^(id responseObj) {
+        
+        // 更新信息
+        NSDictionary *info = (NSDictionary *)responseObj;
+        
+        self.nameTextField.text = info[@"name"];
+        self.phoneTextField.text = info[@"phone"];
+        self.idNumberTextFioeld.text = info[@"idCardNum"];
+        self.emailTextField.text = info[@"email"];
+        self.wxTextField.text = info[@"wechat"];
+
+        [self.idCardUpButton setImageWithURL:[NSURL URLWithString:info[@"frontIdCardImage"][@"imageUrl"]] forState:(UIControlStateNormal) options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        [self.idCardDownButton setImageWithURL:[NSURL URLWithString:info[@"backIdCardImage"][@"imageUrl"]] forState:(UIControlStateNormal) options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        
+    } failedBlock:^(NSError *error) {
+        
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
     
 }
 
@@ -122,32 +152,38 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
         
         return;
     }
-    
-    if (![self.waterNumber.text isHasContent]) {
-        
-        [XFToolManager showProgressInWindowWithString:@"请输入转账流水号"];
-        
-        return;
-        
-    }
-    if (self.certificateButton.currentImage == [UIImage imageNamed:@"my_add"]) {
-        
-        [XFToolManager showProgressInWindowWithString:@"请上传转账凭证"];
-        
-        return;
-    }
 
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
     
-    [HUD hideAnimated:YES afterDelay:0.5];
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    format.dateFormat = @"yyyy-MM-dd HH-mm";
+    NSString *dateStr = [format stringFromDate:[NSDate date]];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    [XFMineNetworkManager updateDefineInfoWith:self.nameTextField.text phone:self.phoneTextField.text wechat:self.wxTextField.text email:self.emailTextField.text idCardNum:self.idNumberTextFioeld.text notes:@"" createTime:dateStr frontImage:self.idCardUpButton.currentImage backImage:self.idCardDownButton.currentImage                     defineId:[self.authId longValue] successBlock:^(id responseObj) {
         
+        [HUD hideAnimated:YES];
         // 发送成功
         XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.view withTitle:@"提交成功!" detail:@"1-3个工作日内会有工作人员联系你,请保持手机畅通!" doneButtonTitle:@"确定"];
         
         [alertView showAnimation];
-    });
+        
+    } failedBlock:^(NSError *error) {
+        
+        [HUD hideAnimated:YES];
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
+//    [HUD hideAnimated:YES afterDelay:0.5];
+//
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//
+//
+//
+//
+//    });
     
 }
 

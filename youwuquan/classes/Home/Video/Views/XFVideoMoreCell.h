@@ -7,20 +7,26 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
+#import "XFNetworkImageNode.h"
+#import "XFVideoModel.h"
 
 @interface XFVideoMoreSubCell : ASCellNode
 
-@property (nonatomic,strong) ASNetworkImageNode *picNode;
+@property (nonatomic,strong) XFNetworkImageNode *picNode;
 
 @property (nonatomic,strong) ASTextNode *nameNode;
 
 @property (nonatomic,strong) ASTextNode *numberNode;
 
+@property (nonatomic,strong) XFVideoModel *model;
+
+- (instancetype)initWithModel:(XFVideoModel *)model;
+
 @end
 
 @interface XFVideoMoreCell : ASCellNode <ASCollectionDelegate,ASCollectionDataSource>
 
-@property (nonatomic,strong) ASNetworkImageNode *iconNode;
+@property (nonatomic,strong) XFNetworkImageNode *iconNode;
 
 @property (nonatomic,strong) ASTextNode *nameNode;
 
@@ -29,6 +35,12 @@
 @property (nonatomic,strong) ASTextNode *moreNode;
 
 @property (nonatomic,strong) ASCollectionNode *collectionNode;
+
+@property (nonatomic,copy) NSDictionary *allinfo;
+
+- (instancetype)initWithInfo:(NSDictionary *)info;
+
+@property (nonatomic,copy) void(^clickFollowButtonBlock)(ASButtonNode *button);
 
 - (void)setColl;
 

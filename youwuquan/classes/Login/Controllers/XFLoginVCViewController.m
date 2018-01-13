@@ -9,7 +9,8 @@
 #import "XFLoginVCViewController.h"
 #import "XFRegistViewController.h"
 #import "XFForgetViewController.h"
-#import "XFLoginManager.h"
+#import "XFLoginNetworkManager.h"
+#import "XFMineNetworkManager.h"
 
 
 @interface XFLoginVCViewController ()
@@ -90,60 +91,46 @@
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view withText:@"正在登陆"];
     
-    [[XFLoginManager sharedInstance] loginWithUserNumber:self.phoneTextField.text pwd:self.pwdTextField.text successBlock:^(NSDictionary *reponseDic) {
-       
-        if (reponseDic) {
+    [XFLoginNetworkManager loginWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
+        
+        
+    } successBlock:^(id responseObj) {
+    
+        dispatch_async(dispatch_get_main_queue(), ^{
             
-            NSArray *dataArr = reponseDic[@"data"];
-            NSDictionary *userInfo = dataArr[0];
-            
-            // 登录融云
-            
-            [[XFLoginManager sharedInstance] loginRongyunWithRongtoken:userInfo[@"rongyunToken"] successBlock:^(id reponseDic) {
+            // 获取个人信息
+            [XFMineNetworkManager getAllInfoWithsuccessBlock:^(id responseObj) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [XFToolManager changeHUD:HUD successWithText:@"登陆成功"];
-                    [HUD hideAnimated:YES afterDelay:0.3];
-                    
-                    [[XFUserInfoManager sharedManager] updateUserInfo:userInfo];
-                    // 保存用户信息
-                    [XFUserInfoManager sharedManager].token = userInfo[@"token"];
-                    
-                    
-                    [XFUserInfoManager sharedManager].rongToken = userInfo[@"rongyunToken"];
-                    [XFUserInfoManager sharedManager].userName = self.phoneTextField.text;
-                    [XFUserInfoManager sharedManager].pwd = self.pwdTextField.text;
-                    
-                    
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
-                    
-                    [self dismissViewControllerAnimated:YES completion:nil];
-                });
-
-
+                [XFToolManager changeHUD:HUD successWithText:@"登陆成功"];
                 
+                // 保存用户信息
+                [[XFUserInfoManager sharedManager] updateUserInfo:responseObj];
+                [XFUserInfoManager sharedManager].userName = self.phoneTextField.text;
+                [XFUserInfoManager sharedManager].pwd = self.pwdTextField.text;
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+                
+                [self dismissViewControllerAnimated:YES completion:nil];
+
             } failedBlock:^(NSError *error) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [XFToolManager changeHUD:HUD successWithText:@"登陆失败"];
-                    [HUD hideAnimated:YES afterDelay:0.3];
-                    
-                });
+                [HUD hideAnimated:YES];
                 
-
-
+            } progressBlock:^(CGFloat progress) {
+                
+                
             }];
-        
-        }
-        
-        [HUD hideAnimated:YES];
-        
-    } failedBlock:^(NSError *error) {
-        
-        [HUD hideAnimated:YES];
 
+        });
         
+    } failBlock:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [HUD hideAnimated:YES];
+
+        });
+        
+
     }];
     
 }

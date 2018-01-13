@@ -16,6 +16,11 @@
 #import "XFFindDetailViewController.h"
 #import "XFPayViewController.h"
 #import "XFYwqAlertView.h"
+#import "XFAlertViewController.h"
+#import "XFFindNetworkManager.h"
+#import "XFMineNetworkManager.h"
+#import <MediaPlayer/MediaPlayer.h>
+#import "XFMyVideoStatusViewController.h"
 
 @implementation XFStatusCenterNode
 
@@ -109,6 +114,9 @@
 
 @property (nonatomic,assign) BOOL unlock;
 
+@property (nonatomic,copy) NSArray *likeDatas;
+
+@property (nonatomic,strong) MBProgressHUD *HUD;
 
 @end
 
@@ -119,6 +127,8 @@
 
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"详情";
+    
+    self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
     // 返回按钮
     UIButton *backButton = [UIButton naviBackButton];
@@ -133,10 +143,61 @@
     
     [self setupTableNode];
     
-    [self loadDataWithInset:NO];
-    
+    self.tableNode.alpha = 0;
 
+    [self loadStatusInfo];
+    
 }
+
+// 获取点赞数据
+- (void)loadLikeInfo {
+    
+    [XFFindNetworkManager getLikeLIstWithStatusId:self.status.id successBlock:^(id responseObj) {
+    
+        self.likeDatas = ((NSDictionary *)responseObj)[@"content"];
+    
+        [self loadDataWithInset:NO];
+
+        
+    } failBlock:^(NSError *error) {
+        
+//        [XFToolManager showProgressInWindowWithString:@"加载点赞数据失败"];
+        
+        [self.HUD hideAnimated:YES];
+
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
+}
+
+// 加载动态数据
+- (void)loadStatusInfo {
+    
+    [XFFindNetworkManager getOneStatusWithStatusId:self.status.id successBlock:^(id responseObj) {
+        
+        XFStatusModel *model = [XFStatusModel modelWithDictionary:(NSDictionary *)responseObj];
+        
+        model.user = self.status.user;
+        model.likedIt = self.status.likedIt;
+        self.status = model;
+        
+        [self loadLikeInfo];
+
+    } failBlock:^(NSError *error) {
+        
+        [self.HUD hideAnimated:YES];
+
+        
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
+    
+}
+
 // 发送评论
 - (void)clickSendButton {
     
@@ -149,95 +210,67 @@
     
     [self hide];
     
-    
-    [XFStatusNetworkManager commentStatusWithId:self.status.id message:self.inputTextField.text userNoA:self.status.userNo successBlock:^(NSDictionary *reponseDic) {
-       
+    [XFFindNetworkManager commentStatusWithId:self.status.id text:self.inputTextField.text successBlock:^(id responseObj) {
+        
+        [self loadDataWithInset:YES];
+        
+        self.inputTextField.text = nil;
+        
+    } failBlock:^(NSError *error) {
+        
+        NSLog(@"%@",error.description);
 
-        if (reponseDic) {
-            
-            
-            [self loadDataWithInset:YES];
-            
-            self.inputTextField.text = nil;
-        }
+        
+    } progress:^(CGFloat progress) {
         
         
-    } failedBlock:^(NSError *error) {
-        
-
     }];
+    
     
 }
 
 - (void)loadDataWithInset:(BOOL)inset {
-    
-    [XFStatusNetworkManager getStatusDetailWithReleaseId:self.status.id successBlock:^(NSDictionary *reponseDic) {
+    // 获取评论列表
+    [XFFindNetworkManager getStatusCommentListWithId:self.status.id successBlock:^(id responseObj) {
         
-        if (reponseDic) {
+        
+        NSArray *comments = ((NSDictionary *)responseObj)[@"content"];
+        
+        NSMutableArray *commentArr = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < comments.count ; i ++ ) {
             
-            NSArray *allData = reponseDic[@"data"];
-            
-            NSArray *coments = allData[0];
-            NSMutableArray *commentArr = [NSMutableArray array];
-            for (NSInteger i = 0 ; i < coments.count ; i ++ ) {
-                
-                [commentArr addObject:[XFCommentModel modelWithDictionary:coments[i]]];
-                
-            }
-            self.commentList = commentArr.copy;
-            
-            if (inset) {
-                
-//                if (self.commentList.count == 5) {
-//
-//                    [self.tableNode insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0],[NSIndexPath indexPathForRow:7 inSection:0]] withRowAnimation:(UITableViewRowAnimationTop)];
-//
-//
-//                } else {
-//
-//                    if (self.isOpen) {
-//
-//                        [self.tableNode insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:(UITableViewRowAnimationTop)];
-//                        [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
-//
-//                    } else {
-//
-//                        if (self.commentList.count == 1) {
-//
-//                            [self.tableNode insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:(UITableViewRowAnimationTop)];
-//                            [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
-//
-//
-//                        } else {
-//
-//                            [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0],[NSIndexPath indexPathForRow:3 inSection:0],[NSIndexPath indexPathForRow:4 inSection:0],[NSIndexPath indexPathForRow:5 inSection:0],[NSIndexPath indexPathForRow:6 inSection:0],] withRowAnimation:(UITableViewRowAnimationFade)];
-//                            [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
-//
-//                        }
-//
-//                    }
-                
-//                }
-                
-                self.tableNode.hidden = YES;
-
-                [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
-                
-                self.tableNode.hidden = NO;
-                
-                [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
-            } else {
-                self.tableNode.hidden = YES;
-
-                [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
-                self.tableNode.hidden = NO;
-
-            }
+            [commentArr addObject:[XFCommentModel modelWithDictionary:comments[i]]];
             
         }
-       
+        self.commentList = commentArr.copy;
+        if (inset) {
+            
+            
+            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+            
+            
+            [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
+        } else {
+            
+            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+            
+        }
         
-    } failedBlock:^(NSError *error) {
+        [self.tableNode reloadData];
+        
+        [UIView animateWithDuration:0.2 animations:^{
+           
+            self.tableNode.alpha = 1;
+            
+        }];
+        
+        [self.HUD hideAnimated:YES];
+        
+    } failBlock:^(NSError *error) {
+        [self.HUD hideAnimated:YES];
+
+        
+    } progress:^(CGFloat progress) {
         
         
     }];
@@ -271,89 +304,108 @@
 #pragma mark - 点击图片查看大图的代理
 - (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didSelectedPicWithIndex:(NSInteger)index pics:(NSArray *)pics picnodes:(NSArray *)picNodes {
     
-//    NSArray *names = pics;
-//    NSMutableArray *items = [NSMutableArray array];
-//
-//    for (int i = 0; i < names.count; i++) {
-//
-//        ASNetworkImageNode *picNode = picNodes[i];
-//
-//        CGRect frame = [statusCell.view convertRect:picNode.view.frame toView:self.view.window];
-//
-//        UIImageView *imageView = [[UIImageView alloc] initWithFrame:frame];
-//
-//        KSPhotoItem *item = [KSPhotoItem itemWithSourceView:imageView image:[UIImage imageNamed:names[i]]];
-//        [items addObject:item];
-//    }
-//    KSPhotoBrowser *browser = [KSPhotoBrowser browserWithPhotoItems:items selectedIndex:index];
-//    browser.pageindicatorStyle = KSPhotoBrowserPageIndicatorStyleText;
-//    [browser showFromViewController:self];
-    
-    if (self.unlock) {
-        
-        XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
-        photoVC.type = XFMyStatuVCTypeOther;
-        photoVC.model = self.status;
-        [self.navigationController pushViewController:photoVC animated:YES];
-        
+    // 我的动态
+    if (self.type == Mine) {
+        // 判断是video或picture
+        if (self.status.video) {
+            // 判断是否解锁
+            if (self.status.video[@"video"][@"srcUrl"]) {
+                // 直接跳转
+                XFMyVideoStatusViewController *playerVC = [[XFMyVideoStatusViewController alloc] init];
+                playerVC.url = [NSURL URLWithString:self.status.video[@"video"][@"srcUrl"]];
+                [self presentViewController:playerVC animated:YES completion:nil];
+                
+            } else {
+                // 解锁
+                [self buyTheStatus];
+                
+            }
+            
+            
+        } else {
+            NSDictionary *picInfo = self.status.pictures[index];
+            // 如果未解锁需要解锁,如果解锁则不需要解锁
+            NSString *type = picInfo[@"albumType"];
+            if ([type isEqualToString:@"open"]) {
+                // open的不做处理
+                XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
+                photoVC.type = XFMyStatuVCTypeOther;
+                photoVC.model = self.status;
+                
+                
+                [self.navigationController pushViewController:photoVC animated:YES];
+                
+            } else {
+                // close的要弹框购买
+                [self buyTheStatus];
+                
+            }
+        }
         return;
     }
     
-    // 解锁
-    if (index > 1) {
-        
-        
-        
-        // TODO:
-        XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"请先解锁" detail:@"解锁本条动态需要66钻石,是否支付"];
-        
-        alertView.doneBlock = ^{
+    // 别人动态类型
+    
+    // 判断是video或picture
+    if (self.status.video) {
+        // 判断是否解锁
+        if (self.status.video[@"video"][@"srcUrl"]) {
+            // 直接跳转
+            XFMyVideoStatusViewController *playerVC = [[XFMyVideoStatusViewController alloc] init];
+            playerVC.url = [NSURL URLWithString:self.status.video[@"video"][@"srcUrl"]];
+            [self presentViewController:playerVC animated:YES completion:nil];
             
-//            [XFToolManager showProgressInWindowWithString:@"余额不足,请充值"];
-//            // 充值页面
-//            XFPayViewController *payVC = [[XFPayViewController alloc] init];
-//            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
-//            [self presentViewController:navi animated:YES completion:nil];
-            
-            // 充值成功,刷新页面
-            
-            self.unlock = YES;
-            
-            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
-            
-            [HUD hideAnimated:YES afterDelay:0.8];
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                
-                // 刷新页面
-                [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
-                
-            });
-        };
-        
-        alertView.cancelBlock = ^{
-        
-                // 取消
-            
-        };
-        
-        [alertView showAnimation];
-        
-        
-//        [XFToolManager showProgressInWindowWithString:@"私密美图/视频需要解锁才能查看"];
+        } else {
+            // 解锁
+            [self buyTheStatus];
 
+        }
+        
         
     } else {
-        
-        XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
-        photoVC.type = XFMyStatuVCTypeOther;
-        photoVC.model = self.status;
-        [self.navigationController pushViewController:photoVC animated:YES];
+        NSDictionary *picInfo = self.status.pictures[index];
+        // 如果未解锁需要解锁,如果解锁则不需要解锁
+        NSString *type = picInfo[@"albumType"];
+        if ([type isEqualToString:@"open"]) {
+            // open的不做处理
+            XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
+            photoVC.type = XFMyStatuVCTypeOther;
+            photoVC.model = self.status;
+            [self.navigationController pushViewController:photoVC animated:YES];
+            
+        } else {
+            // close的要弹框购买
+            [self buyTheStatus];
+            
+        }
     }
+    
+    
+    
+    if (self.unlock) {
+        
+ 
+        return;
+    }
+    
+//    // 解锁
+//    if (index > 1) {
+//        // TODO:
+//
+//
+//
+//
+//    } else {
+//
+//        XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
+//        photoVC.type = XFMyStatuVCTypeOther;
+//        photoVC.model = self.status;
+//        [self.navigationController pushViewController:photoVC animated:YES];
+//    }
 
     
 }
-
+#pragma mark - tableNodeDelegate
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     ASCellNode *node = [tableNode nodeForRowAtIndexPath:indexPath];
@@ -361,11 +413,65 @@
     
     if (indexPath.row > 1) {
     
+        XFCommentModel *model = self.commentList[indexPath.row - 2];
         // 个人信息
         XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
-        
+        detailVC.userId = model.uid;
+        detailVC.userName = model.username;
+        detailVC.iconUrl = model.headIconUrl;
         [self.navigationController pushViewController:detailVC animated:YES];
     }
+    
+}
+
+- (void)buyTheStatus {
+    
+    XFAlertViewController *alertVC = [[XFAlertViewController alloc] init];
+    alertVC.type = XFAlertViewTypeUnlockStatus;
+    alertVC.clickOtherButtonBlock = ^(XFAlertViewController *alert) {
+        // 充值页面
+        XFPayViewController *payVC = [[XFPayViewController alloc] init];
+        
+        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+        
+        [self presentViewController:navi animated:YES completion:nil];
+        
+    };
+    
+    alertVC.clickDoneButtonBlock = ^(XFAlertViewController *alert) {
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+
+        [XFFindNetworkManager unlockStatusWithStatusId:self.status.id successBlock:^(id responseObj) {
+            // 重新获取数据
+            [XFToolManager changeHUD:HUD successWithText:@"解锁成功"];
+            // 重新获取数据,刷新
+            [self loadStatusInfo];
+            // 刷新上层数据
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshLockStatusForModelNotification object:self.status];
+            
+        } failBlock:^(NSError *error) {
+            // 解锁失败
+            [HUD hideAnimated:YES];
+            // 获取返回状态码
+            if (!error) {
+                // 余额不足
+                // 充值页面
+                XFPayViewController *payVC = [[XFPayViewController alloc] init];
+                
+                UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+                
+                [self presentViewController:navi animated:YES completion:nil];
+                
+            }
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+        
+
+    };
+    [self presentViewController:alertVC animated:YES completion:nil];
     
 }
 
@@ -404,7 +510,7 @@
                 
                 if (self.type == Mine) {
                     
-                    XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithModel:self.status];
+                    XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithModel:self.status likeDatas:self.likeDatas];
                     
                     node.followButton.hidden = YES;
                     
@@ -414,13 +520,8 @@
                     
                 } else {
                     
-                    XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithImages:@[@"find4",@"find5",@"find6",@"find7"] likeImgs:@[@"icon1",@"icon2",@"icon3",@"icon4",@"icon2",@"icon6",@"icon7",@"icon9",@"icon8",@"icon10",@"icon11",@"icon12",@"icon13",@"icon14",@"icon15",@"icon16"] unlock:self.unlock];
-                    
-                    if (self.type == Mine) {
-                        
-                        node.followButton.hidden = YES;
-                    }
-                    
+                    XFStatusDetailCellNode *node = [[XFStatusDetailCellNode alloc] initWithModel:self.status likeDatas:self.likeDatas];
+//
                     node.detailDelegate = self;
                     
                     return node;
@@ -520,6 +621,187 @@
             break;
             
             
+    }
+    
+}
+
+#pragma mark - 点赞
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickLikeButton:(ASButtonNode *)followButton {
+    
+    if (_status.likedIt) {
+        
+        [XFFindNetworkManager unlikeWithStatusId:self.status.id successBlock:^(id responseObj) {
+            
+            // 取消点赞
+            followButton.selected = NO;
+            NSString *like = [NSString stringWithFormat:@"%zd",[[followButton.titleNode.attributedText string] intValue] - 1] ;
+            _status.likeNum = like;
+            _status.likedIt = NO;
+            
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshLikeStatusNotification object:@{@"status":self.status,
+                                                                                                               @"liked":@(NO)
+                                                                                                               }];
+            [self loadLikeInfo];
+
+
+        } failBlock:^(NSError *error) {
+            
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+
+    } else {
+        
+        [XFFindNetworkManager likeWithStatusId:self.status.id successBlock:^(id responseObj) {
+            
+            // 点赞
+            followButton.selected = YES;
+            NSString *like = [NSString stringWithFormat:@"%zd",[[followButton.titleNode.attributedText string] intValue] + 1] ;
+            _status.likeNum = like;
+            _status.likedIt = YES;
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshLikeStatusNotification object:@{@"status":self.status,
+                                                                                                               @"liked":@(YES)
+                                                                                                               }];
+
+            [self loadLikeInfo];
+
+            
+        } failBlock:^(NSError *error) {
+            
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+        
+
+    }
+    
+}
+
+#pragma mark - 点击头像查看个人信息
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickIconNode:(ASButtonNode *)iconNode {
+    
+    XFFindDetailViewController *userDetailVC =  [[XFFindDetailViewController alloc] init];
+    userDetailVC.userId = self.status.uid;
+    userDetailVC.userName = self.status.user[@"nickname"];
+    userDetailVC.iconUrl = self.status.user[@"headIconUrl"];
+    [self.navigationController pushViewController:userDetailVC animated:YES];
+    
+}
+
+#pragma mark - 关注按钮点击
+
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickFollowButton:(ASButtonNode *)followButton {
+    
+    [self followSomeoneWithId:self.status.uid followed:[self.status.user[@"followed"] boolValue] button:statusCell.followButton];
+    
+}
+
+- (void)followSomeoneWithId:(NSString *)uid followed:(BOOL)followed button:(ASButtonNode *)button {
+    
+    if (followed) {
+        
+        // 取消关注
+        [XFMineNetworkManager unCareSomeoneWithUid:uid successBlock:^(id responseObj) {
+            
+            button.selected = NO;
+            
+            [UIView animateWithDuration:0.2 animations:^{
+                
+                if (button.selected) {
+                    
+                    [button setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+                    
+                    button.backgroundColor = [UIColor lightGrayColor];
+                    
+                } else {
+                    [button setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
+                    
+                    button.backgroundColor = kMainRedColor;
+                    
+                }
+                
+
+                
+            }];
+
+                    NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:_status.user];
+                    
+                    [dic setObject:@(NO) forKey:@"followed"];
+                    
+                    _status.user = dic.copy;
+            
+            // 刷新上一级页面数据
+//            if (self.followedBlock) {
+//
+//                self.followedBlock(self.status, NO);
+//            }
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshCareStatusNotification object:@{@"status":self.status,
+                                                                                                               @"followed":@(NO)
+                                                                                                               }];
+        
+            
+        } failedBlock:^(NSError *error) {
+
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+    } else {
+        
+        [XFMineNetworkManager careSomeoneWithUid:uid successBlock:^(id responseObj) {
+            
+            button.selected = YES;
+            
+            [UIView animateWithDuration:0.2 animations:^{
+                
+                if (button.selected) {
+                    
+                    [button setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+                    
+                    button.backgroundColor = [UIColor lightGrayColor];
+                    
+                } else {
+                    [button setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
+                    
+                    button.backgroundColor = kMainRedColor;
+                    
+                }
+                
+            }];
+            
+            NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:_status.user];
+            
+            [dic setObject:@(YES) forKey:@"followed"];
+            
+            _status.user = dic.copy;
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshCareStatusNotification object:@{@"status":self.status,
+                                                                                                               @"followed":@(YES)
+                                                                                                               }];
+//
+//            // 刷新上一级页面数据
+//            if (self.followedBlock) {
+//
+//                self.followedBlock(self.status, YES);
+//            }
+            
+        } failedBlock:^(NSError *error) {
+            
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
     }
     
 }

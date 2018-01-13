@@ -34,7 +34,6 @@
     
     [_userCache removeAllObjects];
     
-    
 }
 
 - (void)setRongToken:(NSString *)token {
