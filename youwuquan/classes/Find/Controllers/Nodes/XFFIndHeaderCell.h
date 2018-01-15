@@ -8,6 +8,8 @@
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFNetworkImageNode.h"
+#import "XFFindActivityModel.h"
+
 @protocol XFFindHeaderdelegate <NSObject>
 
 - (void)didClickMoreButton;
@@ -35,6 +37,10 @@
 @property (nonatomic,assign) BOOL isOpen;
 
 @property (nonatomic,strong) id <XFFindHeaderdelegate> delegate;
+
+@property (nonatomic,strong) XFFindActivityModel *model;
+
+- (instancetype)initWithModel:(XFFindActivityModel *)model;
 
 
 @end

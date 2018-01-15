@@ -22,8 +22,7 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)getFindAdWithSuccessBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
-
++ (void)getFindAdWithPage:(NSInteger)page size:(NSInteger)size SuccessBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
 /**
  推荐数据
 

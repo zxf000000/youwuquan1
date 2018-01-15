@@ -66,6 +66,10 @@
         
     }
     
+    // 设置badge为0
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+
+    
     /* 打开调试日志 */
     [[UMSocialManager defaultManager] openLog:YES];
     

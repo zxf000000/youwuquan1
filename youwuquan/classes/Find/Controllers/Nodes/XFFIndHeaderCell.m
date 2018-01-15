@@ -10,9 +10,11 @@
 
 @implementation XFFIndHeaderCell
 
-- (instancetype)init {
+- (instancetype)initWithModel:(XFFindActivityModel *)model {
     
     if (self = [super init]) {
+        
+        _model = model;
         
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
@@ -28,17 +30,18 @@
         
         _picNode = [[XFNetworkImageNode alloc] init];
         _picNode.image = [UIImage imageNamed:@"zhanweitu22"];
+        _picNode.url = [NSURL URLWithString:_model.imgUrl];
         _picNode.cornerRadius = 4;
         _picNode.clipsToBounds = YES;
         [self addSubnode:_picNode];
         
         _titleNode = [[ASTextNode alloc] init];
-        [_titleNode setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18] alignment:(NSTextAlignmentCenter) textColor:[UIColor whiteColor] offset:0 text:@"遇见美好夜生活" lineSpace:0 kern:0];
+        [_titleNode setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18] alignment:(NSTextAlignmentCenter) textColor:[UIColor whiteColor] offset:0 text:_model.title ? _model.title : @"活动" lineSpace:0 kern:0];
         
         [self addSubnode:_titleNode];
         
         _desNode = [[ASTextNode alloc] init];
-        [_desNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor whiteColor] offset:0 text:@"一颗躁动的心" lineSpace:0 kern:0];
+        [_desNode setFont:[UIFont systemFontOfSize:14] alignment:(NSTextAlignmentCenter) textColor:[UIColor whiteColor] offset:0 text:_model.subTitle ? _model.subTitle : @"活动介绍" lineSpace:0 kern:0];
         
         [self addSubnode:_desNode];
         

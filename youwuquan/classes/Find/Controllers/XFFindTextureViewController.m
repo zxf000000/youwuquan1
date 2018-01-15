@@ -24,6 +24,7 @@
 #import "XFFindNetworkManager.h"
 #import "XFMineNetworkManager.h"
 #import "XFMyAuthViewController.h"
+#import "XFFindActivityModel.h"
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
 
@@ -59,6 +60,8 @@
 @property (nonatomic,strong) NSMutableArray *indexPathsTobeReload;
 
 @property (nonatomic,copy) NSArray *authList;
+
+@property (nonatomic,copy) NSArray *adDatas;
 
 @end
 
@@ -126,8 +129,7 @@
                 weakSelf.isInvite = YES;
                 [weakSelf.scrollView setContentOffset:(CGPointMake(0, 0)) animated:YES];
                 
-                [weakSelf loadinviteData];
-                [weakSelf getAdData];
+                [weakSelf network];
 
             }
                 break;
@@ -138,7 +140,12 @@
 
                 [weakSelf.scrollView setContentOffset:(CGPointMake(kScreenWidth, 0)) animated:YES];
                 
-                [weakSelf loadFollowData];
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    [weakSelf loadFollowData];
+
+                });
+                
 
             }
                 break;
@@ -148,15 +155,37 @@
     
     [self setupScrollView];
     
-    [self loadinviteData];
+//    [self loadinviteData];
+//
+//    [self getAdData];
     
-    [self getAdData];
+    [self network];
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshLikeStatus:) name:kRefreshLikeStatusNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshCareStatus:) name:kRefreshCareStatusNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshModelWith:) name:kRefreshLockStatusForModelNotification object:nil];
 
+    
+}
+
+- (void)network {
+    
+    // 获取活动
+    NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
+        [self getAdData];
+    }];
+    // 获取推荐列表
+    NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
+        [self loadinviteData];
+    }];
+
+    //设置依赖
+    [operation2 addDependency:operation1];      //任务3依赖任务2
+    
+    //创建队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperations:@[operation2, operation1] waitUntilFinished:NO];
     
 }
 
@@ -250,17 +279,28 @@
 
 - (void)getAdData {
     
-    [XFFindNetworkManager getFindAdWithSuccessBlock:^(id responseObj) {
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+
+    [XFFindNetworkManager getFindAdWithPage:0 size:6 SuccessBlock:^(id responseObj) {
+       
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0 ; i < datas.count; i ++ ) {
+            
+            [arr addObject:[XFFindActivityModel modelWithDictionary:datas[i]]];
+        }
         
-        // 广告数据
-        
+        self.adDatas = arr.copy;
+        dispatch_semaphore_signal(sema);
+
     } failBlock:^(NSError *error) {
-        
-        
+        dispatch_semaphore_signal(sema);
+
     } progress:^(CGFloat progress) {
         
-        
     }];
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+
     
 }
 
@@ -321,11 +361,12 @@
 
 - (void)loadinviteData {
     
-    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    
+//    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
     self.page = 0;
     
-
     [XFFindNetworkManager getInviteDataWithPage:self.page rows:10 SuccessBlock:^(id responseObj) {
         
         NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
@@ -341,14 +382,21 @@
         
         [self reloadLeftData];
         
-//        [self.tableNode reloadData];
+//        [HUD hideAnimated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self.tableNode.view.mj_header endRefreshing];
+
+        });
         
-        [HUD hideAnimated:YES];
-        [self.tableNode.view.mj_header endRefreshing];
         
     } failBlock:^(NSError *error) {
-        [HUD hideAnimated:YES];
-        [self.tableNode.view.mj_header endRefreshing];
+//        [HUD hideAnimated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self.tableNode.view.mj_header endRefreshing];
+
+        });
 
     } progress:^(CGFloat progress) {
         
@@ -361,7 +409,7 @@
 - (void)reloadLeftData {
     
     NSInteger count = [self.tableNode numberOfRowsInSection:1];
-    if ( count > 2 ) {
+    if ( count > 0 ) {
         
         // 将肉眼可见的cell添加进indexPathesToBeReloaded中
         for (int i = 0 ; i < 2 ; i ++ ) {
@@ -382,7 +430,7 @@
 - (void)reloadrihtData {
     
     NSInteger count = [self.rightNode numberOfRowsInSection:0];
-    if ( count > 2 ) {
+    if ( count > 0 ) {
         
         // 将肉眼可见的cell添加进indexPathesToBeReloaded中
         for (int i = 0 ; i < 2 ; i ++ ) {
@@ -971,12 +1019,12 @@
             {
 //                return ^ASCellNode *{
                 
-                    XFFIndHeaderCell *node = [[XFFIndHeaderCell alloc] init];
+                    XFFIndHeaderCell *node = [[XFFIndHeaderCell alloc] initWithModel:self.adDatas[indexPath.row]];
                     
                     node.delegate = self;
                     
-                    node.picNode.image = [UIImage imageNamed:[NSString stringWithFormat:@"home2%zd",indexPath.row]];
-                    
+//                    node.picNode.image = [UIImage imageNamed:[NSString stringWithFormat:@"home2%zd",indexPath.row]];
+                
                     if (indexPath.row == self.hdCount - 1) {
                         
                         node.isEnd = YES;

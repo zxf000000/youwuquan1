@@ -42,6 +42,8 @@
 
 @property (nonatomic,copy) void(^clickFollowButtonBlock)(ASButtonNode *button);
 
+@property (nonatomic,copy) void(^didSelectedVideoBLock)(XFVideoModel *model);
+
 - (void)setColl;
 
 @end

@@ -95,17 +95,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
 
     // 获取原图
-//
-//    __block PHAsset *asset;
-//    [self.assets enumerateObjectsWithOptions:(NSEnumerationReverse) usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//        if (idx == indexPath.item) {
-//            asset = [self.assets objectAtIndex:idx];
-//
-//        }
-//
-//    }];
-    
-    PHAsset *asset = [self.assets objectAtIndex:self.assets.count - indexPath.item - 1];
+    PHAsset *asset = [self.assets objectAtIndex:indexPath.item];
     
     // 原图尺寸
     CGSize size = CGSizeMake(asset.pixelWidth, asset.pixelHeight);
@@ -223,8 +213,7 @@
 
 #pragma mark - 获取单张大图
 - (NSArray *)getBigImageWithArr:(NSArray *)arr {
-
-
+    
     NSMutableArray *array = [NSMutableArray array];
 
     for (NSInteger i = 0 ; i < arr.count ; i ++ ) {
@@ -232,7 +221,7 @@
         NSIndexPath *indexPath = arr[i];
         
         // 获取原图
-        PHAsset *asset = [self.assets objectAtIndex:self.assets.count - indexPath.item - 1];
+        PHAsset *asset = [self.assets objectAtIndex:indexPath.item];
         
         // 原图尺寸
         CGSize size = CGSizeMake(asset.pixelWidth, asset.pixelHeight);
@@ -242,7 +231,6 @@
         options.synchronous = YES;
         // 从asset中获得图片
         [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-            
             
             [array addObject:result];
             
@@ -284,27 +272,29 @@
     // 同步获得图片, 只会返回1张图片
     options.synchronous = YES;
     // 获得某个相簿中的所有PHAsset对象
-    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+    PHFetchOptions *requestOptions = [[PHFetchOptions alloc] init];
+    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:assetCollection options:requestOptions];
     
     NSMutableArray *array = [NSMutableArray array];
-    
+    NSMutableArray *myAssets = [NSMutableArray array];
     [assets enumerateObjectsWithOptions:(NSEnumerationReverse) usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         // 是否要原图
         CGSize size = original ? CGSizeMake(obj.pixelWidth, obj.pixelHeight) : CGSizeZero;
         
-        // 从asset中获得图片
-        [[PHImageManager defaultManager] requestImageForAsset:obj targetSize:size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        // 只获取图片类型
+        if (obj.mediaType == PHAssetMediaTypeImage) {
+            // 从asset中获得图片
+            [[PHImageManager defaultManager] requestImageForAsset:obj targetSize:size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                
+                [array addObject:result];
+                [myAssets addObject:obj];
+            }];
             
-            [array addObject:result];
-        }];
-        
+        }
+    
     }];
     
-//    for (PHAsset *asset in assets) {
-//
-//    }
-    
-    self.assets = assets;
+    self.assets = myAssets.copy;
     
     self.images = array.copy;
     

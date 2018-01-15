@@ -8,8 +8,8 @@
 
 #import "XFApiClient.h"
 
-//#define YBYHost @"http://47.104.153.152:80/api/v1/"
-#define YBYHost @"http://192.168.123.179:80/api/v1/"
+#define YBYHost @"http://47.104.153.152:80/api/v1/"
+//#define YBYHost @"http://192.168.123.179:80/api/v1/"
 
 // 用户登录
 #define YBYLogin @"signin"
@@ -160,7 +160,7 @@
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 动态页面数据
 // 动态页面广告
-#define YBYGetFindAd @"page/publish/advertisements"
+#define YBYGetFindAd @"activity/list"
 // 关注的动态
 #define YBYGetFollowStatus @"page/publish/follows"
 // 我的所有动态

@@ -18,6 +18,7 @@
 #import "XFFindNetworkManager.h"
 
 #import "PLShortVideoKit/PLShortVideoKit.h"
+#import "CustomeImagePicker.h"
 
 
 #define kImgInset 12
@@ -26,7 +27,7 @@
 #define KImgBottom 15
 
 
-@interface XFAddImageViewController () <UITextViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,XFImagePickerDelegate,XFSelectTagVCDelegate,XFpublishCollectionCellDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,PLShortVideoUploaderDelegate>
+@interface XFAddImageViewController () <UITextViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,XFImagePickerDelegate,XFSelectTagVCDelegate,XFpublishCollectionCellDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,PLShortVideoUploaderDelegate,CustomeImagePickerDelegate>
 
 @property (nonatomic,strong) UIButton *publishButton;
 
@@ -648,9 +649,62 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
     
 }
 
+#pragma mark - 从选择器选中图片的时候
+//-(void) imageSelected:(NSArray *)arrayOfImages
+//{
+//
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ // 1
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//
+//        }); // Main Queue to Display the Activity View
+//        int count = 0;
+//        for(NSString *imageURLString in arrayOfImages)
+//        {
+//            // Asset URLs
+//            ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+//            [assetsLibrary assetForURL:[NSURL URLWithString:imageURLString] resultBlock:^(ALAsset *asset) {
+//                ALAssetRepresentation *representation = [asset defaultRepresentation];
+//                CGImageRef imageRef = [representation fullScreenImage];
+//                UIImage *image = [UIImage imageWithCGImage:imageRef];
+//                if (imageRef) {
+//                    dispatch_async(dispatch_get_main_queue(), ^{
+//                        if(count==0)
+//                        {
+//                        }
+//                        if(count==1)
+//                        {
+//                        }
+//                        if(count==2)
+//                        {
+//                        }
+//                    });
+//                } // Valid Image URL
+//            } failureBlock:^(NSError *error) {
+//            }];
+//            count++;
+//        } // All Images I got
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//        });
+//    }); // Queue for reloading all images
+//}
+//-(void) imageSelectionCancelled
+//{
+//
+//}
+
 - (void)selectImageForCollectionView:(UICollectionView *)collectionView {
     
     if (collectionView == self.openView) {
+        
+//        CustomeImagePicker *cip = [[CustomeImagePicker alloc] init];
+//        cip.delegate = self;
+//        [cip setHideSkipButton:NO];
+//        [cip setHideNextButton:NO];
+//        [cip setMaxPhotos:9];
+//        [cip setShowOnlyPhotosWithGPS:NO];
+//
+//        [self presentViewController:cip animated:YES completion:^{
+//        }];
         
         
         XFImagePickerViewController *imagePicker = [[XFImagePickerViewController alloc] init];

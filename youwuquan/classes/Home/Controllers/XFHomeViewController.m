@@ -1195,8 +1195,6 @@
     [super updateViewConstraints];
 }
 
-
-
 - (NSMutableArray *)selectedIndexs {
     
     if (_selectedIndexs == nil) {

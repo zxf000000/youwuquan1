@@ -154,6 +154,20 @@
     
 }
 
+- (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    NSDictionary *dic = self.allinfo[@"videoSuggestion"];
+    NSArray *arr = dic[@"content"];
+    
+    XFVideoModel *model = [XFVideoModel modelWithDictionary:arr[indexPath.item]];
+    
+    if (self.didSelectedVideoBLock) {
+        
+        self.didSelectedVideoBLock(model);
+    }
+    
+}
+
 - (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section {
     
     NSDictionary *dic = self.allinfo[@"videoSuggestion"];

@@ -7,12 +7,10 @@
 //
 
 #import "XFVideoDetailViewController.h"
-//#import <UIView+WebVideoCache.h>
 #import "XFVideoNameCell.h"
 #import "XFVideoMoreCell.h"
 #import "XFStatusDetailViewController.h"
 #import "XFStatusCommentCellNode.h"
-//#import <AliyunVodPlayerViewSDK/AliyunVodPlayerViewSDK.h>
 
 #import <MDVRLibrary.h>
 
@@ -713,21 +711,18 @@
 #pragma mark - 播放器
 - (void)setupVideoView {
     
-    #pragma mark - 阿里云播放器
+    [self.videoView removeFromSuperview];
+    self.videoView = nil;
+    [self.plPlayer stop];
 
-    NSString *path = [[NSBundle mainBundle] pathForResource:kRandomVideo ofType:@"mp4"];
+    self.plPlayer = nil;
     
-    NSURL *url = [NSURL fileURLWithPath:path];//网络视频，填写网络url地址
     // 七牛播放器
     PLPlayerOption *option = [PLPlayerOption defaultOption];
     [option setOptionValue:@15 forKey:PLPlayerOptionKeyTimeoutIntervalForMediaPackets];
     self.plPlayer = [PLPlayer playerWithURL:[NSURL URLWithString:self.model.video[@"srcUrl"]] option:option];
     self.plPlayer.delegate = self;
-//    //创建播放器对象，可以创建多个示例
-//    self.aliPlayer = [[AliyunVodPlayer alloc] init];
-//    //设置播放器代理
-//    self.aliPlayer.delegate = self;
-//    self.aliPlayer.autoPlay = YES;
+
     //获取播放器视图
     self.videoView = self.plPlayer.playerView;
     self.videoView.frame = CGRectMake(0, 0, kScreenWidth, kScreenWidth * 9/16.f);
@@ -735,7 +730,6 @@
     [self.view addSubview:self.videoView];
     
     [self.plPlayer play];
-//    [self.aliPlayer prepareWithURL:url];
 
     // 添加点按事件
     
@@ -1045,7 +1039,7 @@
     //获取播放的当前时间，单位为秒
     CGFloat currentTime = self.plPlayer.currentTime.value / self.plPlayer.currentTime.timescale;
     //获取视频的总时长，单位为秒
-    CGFloat duration = self.plPlayer.totalDuration.value / self.plPlayer.totalDuration.timescale;
+//    CGFloat duration = self.plPlayer.totalDuration.value / self.plPlayer.totalDuration.timescale;
     
     // 设置当前时间
     self.currntTimeLabel.text = [self timeStringWithTime:currentTime];
@@ -1288,6 +1282,18 @@
             return ^ASCellNode *() {
                 
                 XFVideoMoreCell *cell = [[XFVideoMoreCell alloc] initWithInfo:self.allInfo];
+                
+                cell.didSelectedVideoBLock = ^(XFVideoModel *model) {
+                  
+                    self.model = model;
+                    
+                    [self setupVideoView];
+                    
+//                    self.plPlayer.URL = [NSURL URLWithString:self.model.video[@"srcUrl"]];
+                    
+                    [self loadData];
+                    
+                };
                 
                 cell.clickFollowButtonBlock = ^(ASButtonNode *button) {
                   

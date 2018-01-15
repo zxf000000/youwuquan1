@@ -268,6 +268,8 @@
         
     }];
     
+    self.tableNode.view.tableHeaderView = [[UIView alloc] init];
+    
 }
 
 #pragma mark - cellNodeDelegate
