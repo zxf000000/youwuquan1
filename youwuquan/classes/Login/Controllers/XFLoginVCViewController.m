@@ -160,7 +160,6 @@
 
 - (void)clickBackButton {
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"dismissLoginVCNotification" object:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
     

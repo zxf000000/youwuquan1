@@ -11,6 +11,7 @@
 #import "XFMainTabbarViewController.h"
 #import "XFLoginNetworkManager.h"
 #import "CHWebView.h"
+#import "XFMineNetworkManager.h"
 
 @interface XFSetViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *totalCostLabel;
@@ -66,7 +67,26 @@
             break;
         case 1:
         {
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
             // 检查更新
+            [XFMineNetworkManager checkUpdateForAppWithsuccessBlock:^(id responseObj) {
+                [HUD hideAnimated:YES];
+
+                NSArray *results = ((NSDictionary *)responseObj)[@"results"];
+                
+                if (results.count == 0) {
+                    
+                    [XFToolManager showProgressInWindowWithString:@"已经是最新版本"];
+                    
+                }
+                
+                
+            } failedBlock:^(NSError *error) {
+                [HUD hideAnimated:YES];
+
+            } progressBlock:^(CGFloat progress) {
+                
+            }];
         }
             break;
         default:

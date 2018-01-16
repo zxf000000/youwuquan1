@@ -127,7 +127,7 @@
     
     if (self.type == Approve) {
         
-        return [XFAuthManager sharedManager].authList.count;
+        return self.auths.count + 1;
 
     } else {
         
@@ -142,25 +142,19 @@
         
         return ^ASCellNode*() {
             
-            XFMyAuthModel *model = [XFAuthManager sharedManager].authList[indexPath.item];
-        
             XFFindCollectionCellNode *node = [[XFFindCollectionCellNode alloc] init];
-            
-            [node.button setTitle:model.identificationName withFont:[UIFont systemFontOfSize:12] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-//            [node.button setImage:[UIImage imageNamed:self.titleImgs[indexPath.item]] forState:(UIControlStateNormal)];
-            [node.button setBackgroundImage:[UIImage imageNamed:@"find_rzred"] forState:(UIControlStateNormal)];
-            
-            if (![self.authIds containsObject:model.id])  {
-                
-                node.button.backgroundColor = UIColorHex(717171);
-                [node.button setBackgroundImage:[UIImage imageNamed:@""] forState:(UIControlStateNormal)];
+            [node.button setBackgroundColor:kMainRedColor];
 
+            if (indexPath.row < self.auths.count) {
+                
+                NSDictionary *dic = self.auths[indexPath.row];
+                [node.button setTitle:dic[@"identificationName"] withFont:[UIFont systemFontOfSize:12] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+            
             } else {
                 
-                [node.button setBackgroundImage:[UIImage imageNamed:@"find_rzred"] forState:(UIControlStateNormal)];
-
+                [node.button setTitle:@"更多认证" withFont:[UIFont systemFontOfSize:12] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+                
             }
-            
             return node;
         };
         
@@ -183,8 +177,6 @@
         
         
     }
-    
-    
 
     
 }
@@ -192,7 +184,11 @@
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
     
     ASInsetLayoutSpec *titleInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 13, 0, 0)) child:_titleNode];
-    CGFloat collectionheight = 30 * 4 + 15 + 22 + 8*3;
+    
+    NSInteger authsCount = self.auths.count + 1;
+    NSInteger lineCount = authsCount / 3 + (authsCount % 3 == 0 ? 0 : 1);
+    
+    CGFloat collectionheight = 30 * lineCount + 15 + 22 + 8*(lineCount - 1);
 
     if (self.type == Approve) {
         
@@ -211,25 +207,6 @@
     
     return bgInset;
     
-}
-
-- (NSArray *)titles {
-    
-    if (_titles == nil) {
-        
-        _titles = @[@"尤物女神",@"网      红",@"演      员",@"精舞达人",@"嗨歌达人",@"美妆达人",@"美食达人",@"旅游达人",@"运动达人",@"摄影达人",@"穿搭达人"];
-        
-    }
-    return _titles;
-}
-
-- (NSArray *)titleImgs {
-    
-    if (_titleImgs == nil) {
-        
-        _titleImgs = @[@"detail_V",@"detail_R",@"detail_S",@"detail_D",@"detail_H",@"detail_M",@"detail_F",@"detail_T",@"detail_A",@"detail_P",@"detail_C"];
-    }
-    return _titleImgs;
 }
 
 - (NSArray *)skillImgs {

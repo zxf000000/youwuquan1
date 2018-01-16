@@ -99,7 +99,6 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
     [self setupOtherView];
     [self prepareUpload];
     
-    PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
 
     
     [self.view setNeedsUpdateConstraints];
@@ -694,18 +693,11 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
 
 - (void)selectImageForCollectionView:(UICollectionView *)collectionView {
     
+    PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+
+    assetCollections = nil;
+    
     if (collectionView == self.openView) {
-        
-//        CustomeImagePicker *cip = [[CustomeImagePicker alloc] init];
-//        cip.delegate = self;
-//        [cip setHideSkipButton:NO];
-//        [cip setHideNextButton:NO];
-//        [cip setMaxPhotos:9];
-//        [cip setShowOnlyPhotosWithGPS:NO];
-//
-//        [self presentViewController:cip animated:YES completion:^{
-//        }];
-        
         
         XFImagePickerViewController *imagePicker = [[XFImagePickerViewController alloc] init];
         

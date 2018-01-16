@@ -56,7 +56,7 @@
 @property (nonatomic,copy) NSArray *images;
 
 // 所有动态图片集合
-@property (nonatomic,copy) NSArray *imageNodes;
+@property (nonatomic,strong) NSMutableArray *imageNodes;
 
 @property (nonatomic,strong) ASTextNode *numberNode;
 

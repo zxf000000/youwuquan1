@@ -245,18 +245,16 @@
         self.commentList = commentArr.copy;
         if (inset) {
             
-            
-            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
-            
+            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationNone)];
             
             [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
         } else {
             
-            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationNone)];
             
         }
         
-        [self.tableNode reloadData];
+//        [self.tableNode reloadData];
         
         [UIView animateWithDuration:0.2 animations:^{
            
@@ -331,7 +329,6 @@
                 XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
                 photoVC.type = XFMyStatuVCTypeOther;
                 photoVC.model = self.status;
-                
                 
                 [self.navigationController pushViewController:photoVC animated:YES];
                 
@@ -428,6 +425,7 @@
     
     XFAlertViewController *alertVC = [[XFAlertViewController alloc] init];
     alertVC.type = XFAlertViewTypeUnlockStatus;
+    alertVC.unlockPrice = self.status.unlockPrice;
     alertVC.clickOtherButtonBlock = ^(XFAlertViewController *alert) {
         // 充值页面
         XFPayViewController *payVC = [[XFPayViewController alloc] init];
@@ -516,6 +514,8 @@
                     
                     node.detailDelegate = self;
                     
+                    node.neverShowPlaceholders = YES;
+                    
                     return node;
                     
                 } else {
@@ -524,6 +524,8 @@
 //
                     node.detailDelegate = self;
                     
+                    node.neverShowPlaceholders = YES;
+
                     return node;
                     
                 }
@@ -687,7 +689,7 @@
 - (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickIconNode:(ASButtonNode *)iconNode {
     
     XFFindDetailViewController *userDetailVC =  [[XFFindDetailViewController alloc] init];
-    userDetailVC.userId = self.status.uid;
+    userDetailVC.userId = self.status.user[@"uid"];
     userDetailVC.userName = self.status.user[@"nickname"];
     userDetailVC.iconUrl = self.status.user[@"headIconUrl"];
     [self.navigationController pushViewController:userDetailVC animated:YES];
@@ -698,14 +700,13 @@
 
 - (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickFollowButton:(ASButtonNode *)followButton {
     
-    [self followSomeoneWithId:self.status.uid followed:[self.status.user[@"followed"] boolValue] button:statusCell.followButton];
+    [self followSomeoneWithId:self.status.user[@"uid"] followed:[self.status.user[@"followed"] boolValue] button:statusCell.followButton];
     
 }
 
 - (void)followSomeoneWithId:(NSString *)uid followed:(BOOL)followed button:(ASButtonNode *)button {
     
     if (followed) {
-        
         // 取消关注
         [XFMineNetworkManager unCareSomeoneWithUid:uid successBlock:^(id responseObj) {
             

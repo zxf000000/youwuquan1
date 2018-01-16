@@ -218,7 +218,7 @@
     
     self.doneButton = [[UIButton alloc] init];
     self.doneButton.backgroundColor = kMainRedColor;
-    [self.doneButton setTitle:@"支付66" forState:(UIControlStateNormal)];
+    [self.doneButton setTitle:[NSString stringWithFormat:@"支付%@",self.unlockPrice] forState:(UIControlStateNormal)];
     [self.doneButton setImage:[UIImage imageNamed:@"zuanshi"] forState:(UIControlStateNormal)];
     [self.alertView addSubview:self.doneButton];
     

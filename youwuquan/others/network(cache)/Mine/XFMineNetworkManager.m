@@ -1146,4 +1146,24 @@
     
 }
 
++ (void)checkUpdateForAppWithsuccessBlock:(MineRequestSuccessBlock)successBlock
+                              failedBlock:(MineRequestFailedBlock)failedBlock
+                            progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    NSString *appId = @"1335528589";
+    NSString *url = [NSString stringWithFormat:@"http://itunes.apple.com/lookup?id=%@",appId];
+    [XFNetworking postWithUrl:url refreshRequest:NO cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+}
+
 @end

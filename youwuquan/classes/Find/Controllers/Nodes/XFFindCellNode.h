@@ -9,6 +9,7 @@
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFStatusModel.h"
 #import "XFNetworkImageNode.h"
+#import "XFLockNode.h"
 
 @class XFFindCellNode;
 
@@ -132,6 +133,11 @@ typedef NS_ENUM(NSInteger,FindCellType) {
  */
 @property (nonatomic,copy) NSArray *authenticationIcons;
 
+/**
+ 标签
+ */
+@property (nonatomic,strong) NSArray *tagNodes;
+
 @property (nonatomic,strong) ASButtonNode *playButton;
 
 @property (nonatomic,strong) id <XFFindCellDelegate> delegate;
@@ -142,10 +148,15 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 @property (nonatomic,strong) XFStatusModel *model;
 
-- (instancetype)initWithOpen:(BOOL)open pics:(NSArray *)pics model:(XFStatusModel *)model;
-
+- (instancetype)initWithModel:(XFStatusModel *)model;
 @property (nonatomic,assign) FindCellType type;
 
-- (instancetype)initWithType:(FindCellType)type pics:(NSArray *)pics open:(BOOL)isOpen model:(XFStatusModel *)model;
+@property (nonatomic,assign) NSInteger openCount;
+@property (nonatomic,assign) NSInteger closeCount;
+
+@property (nonatomic,strong) XFLockNode *lockButton;
+
+@property (nonatomic,strong) ASButtonNode *moneyButton;
+@property (nonatomic,strong) ASButtonNode *setbutton;
 
 @end

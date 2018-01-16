@@ -292,5 +292,39 @@
 
 }
 
++ (void)getNearbyDataWithSex:(NSString *)gender
+                   longitude:(double)longitude
+                    latitude:(double)latitude
+                    distance:(long)distance
+                        page:(NSInteger)page
+                        size:(NSInteger)size
+                successBlock:(HomeRequestSuccessBlock)successBlock
+                   failBlock:(HomeRequestFailedBlock)failBlock
+                    progress:(HomeRequestProgressBlock)progressBlock {
+    
+    NSDictionary *params = @{@"gender":gender,
+                             @"longitude":@(longitude),
+                             @"latitude":@(latitude),
+                             @"distance":@(distance),
+                             @"page":@(page),
+                             @"size":@(size)
+                             };
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetNearby] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+    
+}
+
 
 @end

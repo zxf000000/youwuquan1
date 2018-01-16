@@ -149,4 +149,27 @@ typedef void(^HomeRequestProgressBlock)(CGFloat progress);
                          failBlock:(HomeRequestFailedBlock)failBlock
                           progress:(HomeRequestProgressBlock)progressBlock;
 
+
+/**
+ 获取附近的人
+
+ @param gender 性别
+ @param longitude 精度
+ @param latitude 未读
+ @param distance 距离
+ @param page 页
+ @param size 行
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getNearbyDataWithSex:(NSString *)gender
+                   longitude:(double)longitude
+                    latitude:(double)latitude
+                    distance:(long)distance
+                        page:(NSInteger)page
+                        size:(NSInteger)size
+                successBlock:(HomeRequestSuccessBlock)successBlock
+                   failBlock:(HomeRequestFailedBlock)failBlock
+                    progress:(HomeRequestProgressBlock)progressBlock;
 @end

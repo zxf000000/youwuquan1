@@ -43,6 +43,9 @@ typedef NS_ENUM(NSInteger,XFAlertViewType) {
 
 @property (nonatomic,strong) UITextField *numberTextField;
 
+@property (nonatomic,copy) NSString *unlockPrice;
+
+
 @property (nonatomic,assign) XFAlertViewType type;
 
 @property (nonatomic,copy) void(^clickDoneButtonBlock)(XFAlertViewController *alert);

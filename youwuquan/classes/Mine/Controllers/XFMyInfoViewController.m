@@ -80,15 +80,25 @@
     
     self.phoneTexTField.text = [XFUserInfoManager sharedManager].userName;
     
-    if (self.userInfo[@"info"][@"starSign"]) {
-        self.xzTextField.text = self.userInfo[@"info"][@"starSign"];
-
+    if (dateStr.length > 0) {
+        
+        NSArray *date = [dateStr componentsSeparatedByString:@"-"];
+        // 获取月份
+        NSInteger month = [date[1] intValue];
+        // 获取日
+        NSInteger day = [date[2] intValue];
+        
+        NSString *AstroW = [XFToolManager getAstroWithMonth:month day:day];
+        
+        self.xzTextField.text = [NSString stringWithFormat:@"%@座",AstroW];
+        
     }
     
     if (self.userInfo[@"info"][@"introduce"]) {
         self.desTextField.text = self.userInfo[@"info"][@"introduce"];
 
     }
+
     
 }
 - (IBAction)clickSaveButton:(id)sender {

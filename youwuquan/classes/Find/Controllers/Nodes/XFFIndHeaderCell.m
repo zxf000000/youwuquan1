@@ -31,8 +31,8 @@
         _picNode = [[XFNetworkImageNode alloc] init];
         _picNode.image = [UIImage imageNamed:@"zhanweitu22"];
         _picNode.url = [NSURL URLWithString:_model.imgUrl];
-        _picNode.cornerRadius = 4;
-        _picNode.clipsToBounds = YES;
+//        _picNode.cornerRadius = 4;
+//        _picNode.clipsToBounds = YES;
         [self addSubnode:_picNode];
         
         _titleNode = [[ASTextNode alloc] init];
@@ -45,12 +45,12 @@
         
         [self addSubnode:_desNode];
         
-        _joinButton = [[ASButtonNode alloc] init];
-        [_joinButton setTitle:@"立即参与" withFont:[UIFont systemFontOfSize:12] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-        
-        [_joinButton setImage:[UIImage imageNamed:@"find_Activetymore"] forState:(UIControlStateNormal)];
-        _joinButton.imageAlignment = ASButtonNodeImageAlignmentEnd;
-        [self addSubnode:_joinButton];
+//        _joinButton = [[ASButtonNode alloc] init];
+//        [_joinButton setTitle:@"立即参与" withFont:[UIFont systemFontOfSize:12] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+//
+//        [_joinButton setImage:[UIImage imageNamed:@"find_Activetymore"] forState:(UIControlStateNormal)];
+//        _joinButton.imageAlignment = ASButtonNodeImageAlignmentEnd;
+//        [self addSubnode:_joinButton];
         
         _moreButton = [[ASButtonNode alloc] init];
         [_moreButton setTitle:@"查看更多" withFont:[UIFont systemFontOfSize:12] withColor:kMainRedColor forState:(UIControlStateNormal)];
@@ -109,13 +109,13 @@
     _desNode.style.spacingBefore = 10;
     _joinButton.style.spacingBefore = 15;
     
-    ASStackLayoutSpec *textLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[_titleNode,_desNode,_joinButton]];
+    ASStackLayoutSpec *textLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[_titleNode,_desNode]];
     
     
     ASInsetLayoutSpec *insetTop = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(19, 10, 0, 0)) child:textLayout];
     
-    // 图片比例 24/71
-    _picNode.style.preferredSize = CGSizeMake(kScreenWidth - 20, (kScreenWidth - 20)*24/71.f);
+    // 图片比例 140/375
+    _picNode.style.preferredSize = CGSizeMake(kScreenWidth, (kScreenWidth)*140/375.f);
     
     ASOverlayLayoutSpec *overlayImage = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:_picNode overlay:insetTop];
     
@@ -123,20 +123,19 @@
     
     if (self.isEnd) {
         
-//        _moreButton.style.spacingBefore = 29;
         _moreButton.style.preferredSize = CGSizeMake(kScreenWidth - 20, 50);
         ASBackgroundLayoutSpec *backLayout = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:overlayImage background:_backNode];
 
         ASStackLayoutSpec *stackLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[backLayout,_moreButton]];
 
         
-        return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(5, 10, 5, 10)) child:stackLayout];
+        return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,0, 0, 0)) child:stackLayout];
 
     } else {
         
         ASBackgroundLayoutSpec *backLayout = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:overlayImage background:_backNode];
 
-        return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(5, 10, 5, 10)) child:backLayout];
+        return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 0, 0, 0)) child:backLayout];
 
     }
     

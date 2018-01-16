@@ -10,6 +10,8 @@
 
 @interface XFStatusModel : NSObject
 
+@property (nonatomic,copy) NSString *receivedDiamonds;
+
 @property (nonatomic,copy) NSString *commentNum;
 
 @property (nonatomic,copy) NSDictionary *coverPictureUrl;
@@ -48,6 +50,8 @@
 @property (nonatomic,copy) NSArray *likeUsers;
 
 @property (nonatomic,assign) BOOL likedIt;
+
+@property (nonatomic,copy) NSString *unlockPrice;
 
 
 //@property (nonatomic,copy) NSString *title;

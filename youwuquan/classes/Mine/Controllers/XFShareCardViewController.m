@@ -70,7 +70,6 @@
     
     self.title = @"模板选择";
     self.view.backgroundColor = [UIColor whiteColor];
-//    [self setupBottomView];
     
     self.picArr = @[@"find1",@"find2",@"find3",@"find4"];
     
@@ -145,25 +144,18 @@
         if (i == 0) {
             
             view.transform = self.insideTransform;
-//            view.numberLabel.text  =@"3";
         }
         
         if (i == 1) {
             
             view.transform = self.middleTransform;
-//            view.numberLabel.text  =@"2";
             
         }
         
         if (i == 2) {
-//            view.numberLabel.text  =@"1";
             self.outsideView = view;
 
         }
-        
-//        view.index = i;
-//
-//        view.delegate = self;
         
         [self.view addSubview:view];
         
@@ -232,7 +224,7 @@
         {
             CGPoint vel = [pan velocityInView:self.view];
             if (vel.x > 800 || vel.x < - 800) {
-                [self removeView:pan.view];
+                [self removeView:(XFShareCardView *)pan.view];
                 return ;
             }
             if (pan.view.frame.origin.x + pan.view.frame.size.width > 150 && pan.view.frame.origin.x < pan.view.frame.size.width - 150) {
@@ -241,7 +233,7 @@
                     pan.view.transform = CGAffineTransformMakeRotation(0);
                 }];
             } else {
-                [self removeView:pan.view];
+                [self removeView:(XFShareCardView *)pan.view];
             }
             
         }
@@ -264,10 +256,9 @@
     } completion:^(BOOL finished) {
         if (finished) {
             
+
             [view removeFromSuperview];
-//            if ([self.delegate respondsToSelector:@selector(cardItemViewDidRemoveFromSuperView:)]) {
-//                [self.delegate cardItemViewDidRemoveFromSuperView:self];
-//            }
+
             NSInteger index = [self.cards indexOfObject:view];
             
             NSInteger middleIndex = index - 1 == -1? 2:index-1;
@@ -281,16 +272,12 @@
             [self.view insertSubview:view belowSubview:insideView];
             
             self.outsideView = middleView;
-            
             self.bottomIndex += 1;
-            
             if (self.bottomIndex == self.picArr.count) {
                 
                 view.type = XFCardShareViewtypeAdd;
-                
                 self.addView = view;
                 self.bottomIndex = -1;
-                
                 
             } else {
                 
@@ -299,14 +286,13 @@
                 
             }
             
-            [UIView animateWithDuration:0.2 animations:^{
+            [UIView animateWithDuration:0.1 animations:^{
                
                 middleView.transform = CGAffineTransformIdentity;
 
                 insideView.transform = self.middleTransform;
             }];
 
-            
         }
     }];
     
@@ -367,76 +353,6 @@
     }];
     
 }
-
-//
-//- (void)clickSelectedNumnberButton:(UIButton *)sender {
-//
-//    sender.selected = YES;
-//
-//    for (UIButton *button in self.selectedButtons) {
-//
-//        if (sender != button) {
-//
-//            button.selected = NO;
-//
-//        }
-//
-//    }
-//
-//    XFCardSizeCache *cache = [XFCardSizeCache sharedInstance];
-//
-//    NSArray *sizearr;
-//
-//    switch (sender.tag) {
-//
-//        case 4001:
-//        {
-//            sizearr = cache.threeSize;
-//            self.selectedNumber = 0;
-//
-//        }
-//            break;
-//        case 4002:
-//        {
-//            sizearr = cache.fourSize;
-//            self.selectedNumber = 1;
-//
-//        }
-//            break;
-//        case 4003:
-//        {
-//            sizearr = cache.fiveSize;
-//            self.selectedNumber = 2;
-//
-//        }
-//            break;
-//        case 4004:
-//        {
-//            sizearr = cache.sixSize;
-//            self.selectedNumber = 3;
-//
-//        }
-//            break;
-//        case 4005:
-//        {
-//            sizearr = cache.sevenSize;
-//            self.selectedNumber = 4;
-//
-//        }
-//            break;
-//        case 4006:
-//        {
-//            sizearr = cache.eightSize;
-//            self.selectedNumber = 5;
-//
-//        }
-//            break;
-//    }
-//    [self setupCardsWithSizearr:sizearr];
-//
-//}
-
-
 
 - (CGAffineTransform)middleTransform {
 

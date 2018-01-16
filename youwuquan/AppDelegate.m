@@ -39,6 +39,10 @@
 #import <Bugly/Bugly.h>
 #import "XFDiamondMessageContent.h"
 #import <IQKeyboardManager/IQKeyboardManager.h>
+
+#import "XFTabBarControllerConfig.h"
+#import "CYLPlusButtonSubclass.h"
+
 #define kRongyunAppkey @"mgb7ka1nmwztg"
 #define kJPUSHAppKey @"1b12000e632a36af7363f2c7"
 #define USHARE_DEMO_APPKEY @"5a559d19b27b0a4556000275"
@@ -167,7 +171,6 @@
         
     }
     
-    self.window.rootViewController = self.mainTabbar;
     
     if ([XFUserInfoManager sharedManager].userName) {
         
@@ -208,6 +211,15 @@
         
     }
     
+    
+    [CYLPlusButtonSubclass registerPlusButton];
+    XFTabBarControllerConfig *tabBarControllerConfig = [[XFTabBarControllerConfig alloc] init];
+    CYLTabBarController *tabBarController = tabBarControllerConfig.tabBarController;
+
+    tabBarController.delegate = self;
+
+    self.window.rootViewController = tabBarController;
+
     [self.window makeKeyAndVisible];
 
     
@@ -256,16 +268,58 @@
     
     NSInteger index = [tabBarController.childViewControllers indexOfObject:viewController];
     
+    if (index == 0) {
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ChangeHomePAgeVisiable" object:nil];
+            
+        return YES;
+
+    }
+    
+    
     if (index == 2 || index == 3) {
         
         if ([XFUserInfoManager sharedManager].userName == nil || [XFUserInfoManager sharedManager].userName.length == 0) {
             
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"presentLoginVCNotification" object:nil];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:@"presentLoginVCNotification" object:nil];
+            XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
+            
+            UINavigationController *naviLogin = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            
+            [tabBarController presentViewController:naviLogin animated:YES completion:nil];
             
             return NO;
         }
     }
     return YES;
+}
+
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectControl:(UIControl *)control {
+    
+
+    
+    // 即使 PlusButton 也添加了点击事件，点击 PlusButton 后也会触发该代理方法。
+    if ([control cyl_isPlusButton]) {
+
+        if ([XFUserInfoManager sharedManager].userName != nil && [XFUserInfoManager sharedManager].userName.length > 0) {
+            
+            XFPublishViewController *publishVC = [[XFPublishViewController alloc] init];
+            XFPublishNaviViewController *navi = [[XFPublishNaviViewController alloc] initWithRootViewController:publishVC];
+            
+            [tabBarController presentViewController:navi animated:YES completion:nil];
+            
+        } else {
+            
+            XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
+            
+            UINavigationController *naviLogin = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            
+            [tabBarController presentViewController:naviLogin animated:YES completion:nil];
+            
+        }
+        
+    }
+    
 }
 
 // 收到自定义消息

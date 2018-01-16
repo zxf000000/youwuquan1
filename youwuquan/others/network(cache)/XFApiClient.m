@@ -8,8 +8,8 @@
 
 #import "XFApiClient.h"
 
-#define YBYHost @"http://47.104.153.152:80/api/v1/"
-//#define YBYHost @"http://192.168.123.179:80/api/v1/"
+//#define YBYHost @"http://47.104.153.152:80/api/v1/"
+#define YBYHost @"http://192.168.123.179:80/api/v1/"
 
 // 用户登录
 #define YBYLogin @"signin"

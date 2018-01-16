@@ -116,7 +116,6 @@
     self.whData = [XFHomeCacheManger sharedManager].whData;
     self.videoData = [XFHomeCacheManger sharedManager].videoData;
 
-    
     [self setupTableNode];
 
     [self setupNavigationbar];
@@ -163,6 +162,17 @@
 
 - (void)loadNearData {
     
+    [XFHomeNetworkManager getNearbyDataWithSex:@"male" longitude:[XFUserInfoManager sharedManager].userLong latitude:[XFUserInfoManager sharedManager].userLati distance:1000 page:0 size:10 successBlock:^(id responseObj) {
+        
+        
+        // 成功之后
+//        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationFade)];
+        
+    } failBlock:^(NSError *error) {
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
     
 }
 
@@ -402,8 +412,9 @@
         }];
     }
     
+    [self loadNearData];
 
-
+    
     _geoC = [[CLGeocoder alloc] init];
 
     [_geoC reverseGeocodeLocation:location completionHandler:^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
@@ -416,7 +427,6 @@
             
             [self.positionButton setTitle:city forState:(UIControlStateNormal)];
             
-        
             
 
         }else

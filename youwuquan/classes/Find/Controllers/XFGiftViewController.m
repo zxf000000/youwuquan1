@@ -10,6 +10,7 @@
 #import "XFPublishVCTransation.h"
 #import "XFGiftManager.h"
 #import "XFFindNetworkManager.h"
+#import "XFMineNetworkManager.h"
 
 #define kGiftViewWidth (kScreenWidth - 20)
 #define kRatio kScreenWidth/375.f
@@ -109,6 +110,8 @@
 
 @property (nonatomic,strong) UIButton *realButton;
 
+@property (nonatomic,copy) NSDictionary *balance;
+
 @end
 
 @implementation XFGiftViewController
@@ -137,6 +140,8 @@
     [self setupGiftView];
     
     [self loadGifts];
+    
+    [self loadbalance];
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
@@ -180,6 +185,23 @@
     
     
     return YES;
+}
+
+- (void)loadbalance {
+    
+    [XFMineNetworkManager getMyWalletDataWithSuccessBlock:^(id responseObj) {
+        
+        self.balance = (NSDictionary *)responseObj;
+        
+        _detailLabel.text = [NSString stringWithFormat:@"您目前钻石余额: %@",self.balance[@"balance"]];
+
+        
+    } failedBlock:^(NSError *error) {
+        
+    } progressBlock:^(CGFloat progress) {
+        
+    }];
+    
 }
 
 - (void)loadGifts {
@@ -246,7 +268,6 @@
     
     _iconView = [[UIImageView alloc] init];
     _iconView.frame = CGRectMake((width - 44)/2, 34 * kRatio, 44, 44);
-//    _iconView.image = [UIImage imageNamed:@"icon2"];
     [_iconView setImageWithURL:[NSURL URLWithString:self.iconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     _iconView.layer.masksToBounds = YES;
     _iconView.layer.cornerRadius = 22;
@@ -520,10 +541,14 @@
         _descriptLabel.hidden = YES;
         self.numberTextField.text = @"99";
         
-//        NSDictionary *info = self.gifts[self.giftSelectedIndex.item];
+        if (self.gifts.count == 0 || self.gifts == nil) {
+            
+            [XFToolManager showProgressInWindowWithString:@"还没有礼物"];
+            
+            return;
+        }
         
         XFGiftModel *model = self.gifts[self.giftSelectedIndex.item];
-//        NSInteger singlePrice = [info[@"price"] intValue];
         NSInteger singlePrice = [model.diamonds intValue];
         NSInteger number = [self.numberTextField.text intValue];
         

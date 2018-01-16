@@ -678,7 +678,7 @@
         }
         
         
-        XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.datas[indexPath.row -1]];
+        XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.datas[indexPath.row -1]];
         
         node.index = indexPath;
         

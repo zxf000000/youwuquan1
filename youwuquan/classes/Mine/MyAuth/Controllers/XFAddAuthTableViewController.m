@@ -46,6 +46,19 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
     self.title = @"申请认证";
     self.addButton.layer.cornerRadius = 22;
     
+    NSDictionary *info = [XFUserInfoManager sharedManager].userInfo;
+    
+    if (info[@"info"][@"phone"]) {
+        
+        self.phoneTextField.text = info[@"info"][@"phone"];
+    
+    }
+    
+    if (info[@"info"][@"wechat"]) {
+        
+        self.wxTextField.text = info[@"info"][@"wechat"];
+    }
+    
     [self loadData];
     
 }

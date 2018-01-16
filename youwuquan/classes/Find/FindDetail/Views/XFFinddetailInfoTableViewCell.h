@@ -23,6 +23,11 @@
 
 @property (nonatomic,copy) NSDictionary *userInfo;
 
+@property (nonatomic,strong) ASDisplayNode *line1;
+@property (nonatomic,strong) ASDisplayNode *line2;
+@property (nonatomic,strong) ASDisplayNode *line3;
+@property (nonatomic,strong) ASDisplayNode *line4;
+
 - (instancetype)initWithUserInfo:(NSDictionary *)userInfo;
 
 @end

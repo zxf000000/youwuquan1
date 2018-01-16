@@ -10,7 +10,6 @@
 #import "XFFinddetailInfoTableViewCell.h"
 #import "XFFindApproveNode.h"
 #import "XFConnectNode.h"
-#import "XFFindCellNode.h"
 #import "XFCarouselView.h"
 #import "XFYwqAlertView.h"
 #import "XFDateHerViewController.h"
@@ -24,10 +23,12 @@
 #import "XFMineNetworkManager.h"
 #import "SDCycleScrollView.h"
 #import "XFPayViewController.h"
+#import "XFDetailStatusCellNode.h"
+#import "XFUpImageNode.h"
 
 #define kHeaderHeight kScreenWidth
 
-@interface XFFindDetailViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate>
+@interface XFFindDetailViewController () <ASTableDelegate,ASTableDataSource,XFStatusCellNodeDelegate>
 
 @property (nonatomic,strong) ASTableNode *tableNode;
 
@@ -245,6 +246,15 @@
 //    _titleLabbel.text = self.userInfo[@"nickname"];
     _followButton.selected = [self.relation[@"followed"] boolValue];
     
+    if (_followButton.selected) {
+        
+        _followButton.backgroundColor = UIColorHex(808080);
+    } else {
+        
+        _followButton.backgroundColor = kMainRedColor;
+
+    }
+    
 }
 
 - (void)refreshPhotoWall {
@@ -262,7 +272,9 @@
 
 #pragma mark - cellNodeDelegate点赞
 // 分享
-- (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
+
+
+- (void)statusCellNode:(XFDetailStatusCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
     
     XFStatusModel *status = self.datas[inexPath.row - 4];
     
@@ -281,7 +293,7 @@
     
 }
 
-- (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
+- (void)statusCellNode:(XFDetailStatusCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
     
     XFStatusModel *model = self.datas[indexPath.row - 4];
     
@@ -356,7 +368,7 @@
     
 }
 
-- (void)findCellNode:(XFFindCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath {
+- (void)statusCellNode:(XFDetailStatusCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath {
     
     XFStatusModel *model = self.datas[inexPath.row - 4];
     
@@ -580,7 +592,7 @@
                 }
                 
                 
-                XFFindCellNode *node = [[XFFindCellNode alloc] initWithType:Detail pics:mutableArr open:isOpen model:self.datas[indexPath.row - 4]];
+                XFDetailStatusCellNode *node = [[XFDetailStatusCellNode alloc] initWithModel:self.datas[indexPath.row - 4]];
                 
                 node.index = indexPath;
                 
@@ -751,8 +763,6 @@
     [_followButton setTitle:@"已关注" forState:(UIControlStateSelected)];
 
     _followButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [_followButton setBackgroundImage:[UIImage imageNamed:@"find_careBg"] forState:(UIControlStateNormal)];
-    [_followButton setBackgroundImage:[UIImage imageNamed:@"care_huibg"] forState:(UIControlStateSelected)];
 
     _followButton.backgroundColor = kMainRedColor;
     [_followButton addTarget:self action:@selector(clickFollowButton:) forControlEvents:(UIControlEventTouchUpInside)];
@@ -908,11 +918,17 @@
 
     
 }
-
+#pragma mark - 底部点击
+- (void)clickGiftButton {
+    
+    // 送礼物
+    
+    
+}
 // 聊天
 - (void)clickChatButton {
     
-    XFChatViewController *chatVC = [[XFChatViewController alloc] initWithConversationType:(ConversationType_PRIVATE) targetId:self.userId];
+    XFChatViewController *chatVC = [[XFChatViewController alloc] initWithConversationType:(ConversationType_PRIVATE) targetId:[NSString stringWithFormat:@"%@",self.userId]];
     
     chatVC.title = self.userName;
     
@@ -943,51 +959,37 @@
     [self.bottomView setMyShadow];
     [self.view addSubview:self.bottomView];
     
-    UIButton *chatButton = [[UIButton alloc] init];
-    [chatButton setTitle:@"聊天/送钻石" forState:(UIControlStateNormal)];
-    [chatButton setImage:[UIImage imageNamed:@"find_comment2"] forState:(UIControlStateNormal)];
-    [chatButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
-    chatButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    chatButton.titleEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 0);
-    [self.bottomView addSubview:chatButton];
+    XFUpImageNode *chatButton = [[XFUpImageNode alloc] initWithImage:[UIImage imageNamed:@"find_comment2"] title:@"聊TA"];
+    
+
+    chatButton.frame = CGRectMake(0, 0, (kScreenWidth / 4.f), 44);
+    [self.bottomView addSubnode:chatButton];
+    
+    XFUpImageNode *giftButton = [[XFUpImageNode alloc] initWithImage:[UIImage imageNamed:@"find_sendgift"] title:@"送礼物"];
+    giftButton.frame = CGRectMake((kScreenWidth / 4.f) + 1, 0, (kScreenWidth / 4.f), 44);
+    [self.bottomView addSubnode:giftButton];
     UIView *lineView = [[UIView alloc] init];
     lineView.backgroundColor = UIColorHex(e6e6e6);
+    lineView.frame = CGRectMake((kScreenWidth / 4.f), 5, 1, 34);
     [self.bottomView addSubview:lineView];
+    
+    UIView *line2 = [[UIView alloc] init];
+    line2.backgroundColor = UIColorHex(e6e6e6);
+    line2.frame = CGRectMake((kScreenWidth / 2.f), 5, 1, 34);
+    [self.bottomView addSubview:line2];
     UIButton *yueButton = [[UIButton alloc] init];
     [yueButton setTitle:@"马上约Ta" forState:(UIControlStateNormal)];
     yueButton.backgroundColor = kMainRedColor;
     yueButton.layer.cornerRadius = 5;
     yueButton.titleLabel.font = [UIFont systemFontOfSize:14];
-
-    [chatButton addTarget:self action:@selector(clickChatButton) forControlEvents:(UIControlEventTouchUpInside)];
-
+    yueButton.frame = CGRectMake((kScreenWidth/2 + 11), 5, (kScreenWidth/2 - 23), 34);
+    [chatButton addTarget:self action:@selector(clickChatButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
+    [giftButton addTarget:self action:@selector(clickGiftButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
     [yueButton addTarget:self action:@selector(clickYueButton) forControlEvents:(UIControlEventTouchUpInside)];
     
     [self.bottomView addSubview:yueButton];
     
-    [chatButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.left.top.bottom.mas_offset(0);
-        make.width.mas_equalTo(kScreenWidth/2-1);
-        
-    }];
-    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.left.mas_equalTo(chatButton.mas_right);
-        make.top.mas_offset(6);
-        make.bottom.mas_offset(-6);
-        make.width.mas_equalTo(1);
-        
-    }];
-    
-    [yueButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.left.mas_equalTo(lineView.mas_right).offset(10);
-        make.right.mas_offset(-10);
-        make.top.mas_offset(5);
-        make.bottom.mas_offset(-5);
-        
-    }];
+
     
 }
 
@@ -1032,7 +1034,7 @@
     
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     
-    [self.tableNode reloadData];
+//    [self.tableNode reloadData];
 
 }
 

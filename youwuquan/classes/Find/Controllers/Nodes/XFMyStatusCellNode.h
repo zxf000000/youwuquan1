@@ -135,5 +135,13 @@
 
 @property (nonatomic,strong) XFStatusModel *model;
 
+@property (nonatomic,assign) NSInteger openCount;
+@property (nonatomic,assign) NSInteger closeCount;
+
+@property (nonatomic,copy) NSArray *tagNodes;
+
+@property (nonatomic,strong) ASButtonNode *moneyButton;
+@property (nonatomic,strong) ASButtonNode *setbutton;
+
 - (instancetype)initWithPics:(NSArray *)pics open:(BOOL)open model:(XFStatusModel *)model;
 @end

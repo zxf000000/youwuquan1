@@ -48,6 +48,8 @@
 #define kShadowCColor [UIColor colorWithRed:224/255.f green:224/255.f blue:224/255.f alpha:0.5]
 #define kBgGrayColor [UIColor colorWithRed:244/255.f green:244/255.f blue:244/255.f alpha:1]
 #define kBlueColor [UIColor colorWithRed:121/255.f green:98/255.f blue:226/255.f alpha:1]
+#define kRGBColorWith(Red,Green,Blue) [UIColor colorWithRed:(Red)/255.f green:(Green)/255.f blue:(Blue)/255.f alpha:1]
+
 
 // ASDK
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
@@ -123,8 +125,6 @@
 #define kAuthCache @"allAuthCache"
 
 #import "XFAuthManager.h"
-
-
 
 #endif /* PrefixHeader_pch */
 

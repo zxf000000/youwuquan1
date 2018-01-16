@@ -25,6 +25,8 @@
 #import "XFMineNetworkManager.h"
 #import "XFMyAuthViewController.h"
 #import "XFFindActivityModel.h"
+#import "XFFindSearchNode.h"
+#import "XFSearchViewController.h"
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
 
@@ -63,6 +65,8 @@
 
 @property (nonatomic,copy) NSArray *adDatas;
 
+@property (nonatomic,strong) MBProgressHUD *HUD;
+
 @end
 
 @implementation XFFindTextureViewController
@@ -87,7 +91,7 @@
 
     self.title = @"发现";
     
-    self.hdCount = 2;
+    self.hdCount = 0;
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -128,8 +132,9 @@
             {
                 weakSelf.isInvite = YES;
                 [weakSelf.scrollView setContentOffset:(CGPointMake(0, 0)) animated:YES];
+            
                 
-                [weakSelf network];
+//                [weakSelf network];
 
             }
                 break;
@@ -154,13 +159,8 @@
     };
     
     [self setupScrollView];
-    
-//    [self loadinviteData];
-//
-//    [self getAdData];
-    
+
     [self network];
-    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshLikeStatus:) name:kRefreshLikeStatusNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshCareStatus:) name:kRefreshCareStatusNotification object:nil];
@@ -170,6 +170,8 @@
 }
 
 - (void)network {
+    
+    self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
     // 获取活动
     NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
@@ -238,9 +240,9 @@
 
         for (XFStatusModel *status in self.inviteDatas) {
             
-            if ([model.uid isEqualToString:status.uid]) {
+            if ([model.user[@"uid"] intValue] == [status.user[@"uid"] intValue]) {
                 
-                [self refreshFollowStatusWithUid:model.uid witfFollowed:followed];
+                [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:followed];
                 self.isChanged = YES;
                 
             }
@@ -291,6 +293,7 @@
         }
         
         self.adDatas = arr.copy;
+        self.hdCount = self.adDatas.count >= 2 ? 2 : self.adDatas.count;
         dispatch_semaphore_signal(sema);
 
     } failBlock:^(NSError *error) {
@@ -361,10 +364,6 @@
 
 - (void)loadinviteData {
     
-    
-    
-//    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-    
     self.page = 0;
     
     [XFFindNetworkManager getInviteDataWithPage:self.page rows:10 SuccessBlock:^(id responseObj) {
@@ -382,18 +381,18 @@
         
         [self reloadLeftData];
         
-//        [HUD hideAnimated:YES];
         dispatch_async(dispatch_get_main_queue(), ^{
             
             [self.tableNode.view.mj_header endRefreshing];
+            [self.HUD hideAnimated:YES];
 
         });
         
         
     } failBlock:^(NSError *error) {
-//        [HUD hideAnimated:YES];
         dispatch_async(dispatch_get_main_queue(), ^{
-            
+            [self.HUD hideAnimated:YES];
+
             [self.tableNode.view.mj_header endRefreshing];
 
         });
@@ -457,6 +456,8 @@
         
         [XFFindNetworkManager getInviteDataWithPage:self.page rows:10 SuccessBlock:^(id responseObj) {
             
+            [self.tableNode.view.mj_footer endRefreshing];
+            
             NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
             
             NSMutableArray *arr = [NSMutableArray array];
@@ -490,6 +491,8 @@
         
         [XFFindNetworkManager getFollowsDataWithPage:self.carePage rows:10 SuccessBlock:^(id responseObj) {
             
+            [self.rightNode.view.mj_footer endRefreshing];
+
             NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
             
             NSMutableArray *arr = [NSMutableArray array];
@@ -524,10 +527,8 @@
 - (void)insertNewRowsInTableNode:(NSArray *)newDatas {
     
     if (self.isInvite) {
-        
-        
+    
         NSInteger section = 1;
-        
         
         NSMutableArray *indexPaths = [NSMutableArray array];
         
@@ -540,6 +541,7 @@
         [self.inviteDatas addObjectsFromArray:newDatas];
         
         [self.tableNode insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        
         
     } else {
         
@@ -568,7 +570,12 @@
 
 //  预加载
 - (BOOL)shouldBatchFetchForTableNode:(ASTableNode *)tableNode {
-    return YES;
+    
+//    if (self.inviteDatas.count == 0) {
+//
+//        return NO;
+//    }
+    return NO;
 }
 
 - (void)tableNode:(ASTableNode *)tableNode willBeginBatchFetchWithContext:(ASBatchContext *)context {
@@ -590,9 +597,23 @@
 
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    ASCellNode *node = [tableNode nodeForRowAtIndexPath:indexPath];
+    node.selected = NO;
+    
     if (self.tableNode == tableNode) {
         
         if (indexPath.section == 0) {
+            
+            if (indexPath.row == 0) {
+                
+                // 搜索
+                XFSearchViewController *searchVC = [[XFSearchViewController alloc] init];
+                UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:searchVC];
+                [self presentViewController:navi animated:NO completion:nil];
+                
+                return;
+                
+            }
             
             // 活动页面
             // TODO:
@@ -603,47 +624,26 @@
         } else {
             
             XFStatusModel *model = self.inviteDatas[indexPath.row];
-//
-//            if (model.video) {
-//
-//                XFVideoDetailViewController *detailVC = [[XFVideoDetailViewController alloc] init];
-//                detailVC.type = Hightdefinition;
-//                detailVC.hidesBottomBarWhenPushed = YES;
-//                detailVC.status = model;
-//                [self.navigationController pushViewController:detailVC animated:YES];
-//
-//            } else {
-            
+
                 XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
                 statusVC.hidesBottomBarWhenPushed = YES;
                 statusVC.type = Other;
                 statusVC.status = model;
         
                 [self.navigationController pushViewController:statusVC animated:YES];
-//            }
             
         }
         
     } else {
         
         XFStatusModel *model = self.careDatas[indexPath.row];
-//
-//        if (model.video) {
-//
-//            XFVideoDetailViewController *detailVC = [[XFVideoDetailViewController alloc] init];
-//            detailVC.type = Hightdefinition;
-//            detailVC.hidesBottomBarWhenPushed = YES;
-//            [self.navigationController pushViewController:detailVC animated:YES];
-//
-//        } else {
-        
+
             XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
             statusVC.hidesBottomBarWhenPushed = YES;
             statusVC.type = Other;
             statusVC.status = model;
             
             [self.navigationController pushViewController:statusVC animated:YES];
-//        }
         
     }
 
@@ -657,7 +657,6 @@
     }
     
     return 1;
-    
 }
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
@@ -666,7 +665,7 @@
         
         if (section == 0) {
             
-            return self.hdCount;
+            return self.hdCount + 1;
         } else {
             
             return self.inviteDatas.count;
@@ -691,16 +690,18 @@
     self.tableNode.dataSource = self;
     self.tableNode.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
     self.tableNode.view.showsVerticalScrollIndicator = NO;
+    self.tableNode.leadingScreensForBatching = 1;
+
     [self.scrollView addSubnode:self.tableNode];
-    
     if (@available (ios 11 , * )) {
         self.tableNode.view.estimatedRowHeight = 0;
         self.tableNode.view.estimatedSectionHeaderHeight = 0;
         self.tableNode.view.estimatedSectionFooterHeight = 0;
+        self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        self.tableNode.view.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+
     }
-    
-    self.tableNode.view.contentInset = UIEdgeInsetsMake(5, 0, 0, 0);
-    
+
     self.tableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
     // 关注
     self.rightNode = [[ASTableNode alloc] init];
@@ -708,12 +709,16 @@
     self.rightNode.dataSource = self;
     self.rightNode.frame = CGRectMake(kScreenWidth, 0, kScreenWidth, kScreenHeight - 64 - 49);
     self.rightNode.view.showsVerticalScrollIndicator = NO;
+    self.rightNode.leadingScreensForBatching = 1;
+
     [self.scrollView addSubnode:self.rightNode];
     
     if (@available (ios 11 , * )) {
         self.rightNode.view.estimatedRowHeight = 0;
         self.rightNode.view.estimatedSectionHeaderHeight = 0;
         self.rightNode.view.estimatedSectionFooterHeight = 0;
+        self.tableNode.view.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+
     }
     
     self.rightNode.view.contentInset = UIEdgeInsetsMake(5, 0, 0, 0);
@@ -726,9 +731,29 @@
         
     }];
     
+    self.tableNode.view.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
+        
+        [self retrieveNextPageWithCompletion:^(NSArray *datas) {
+            
+            [self insertNewRowsInTableNode:datas];
+
+        }];
+
+    }];
+    
     self.rightNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
         
         [self loadFollowData];
+    }];
+    
+    self.rightNode.view.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
+        
+        [self retrieveNextPageWithCompletion:^(NSArray *datas) {
+            
+            [self insertNewRowsInTableNode:datas];
+
+        }];
+        
     }];
     
 }
@@ -846,7 +871,7 @@
     XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
     
     detailVC.hidesBottomBarWhenPushed = YES;
-    detailVC.userId = model.uid;
+    detailVC.userId = model.user[@"uid"];
     detailVC.userName = model.user[@"nickname"];
     detailVC.iconUrl = model.user[@"headIconUrl"];
     [self.navigationController pushViewController:detailVC animated:YES];
@@ -867,7 +892,7 @@
     XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
     
     giftVC.userName = model.user[@"nickname"];
-    giftVC.uid = model.uid;
+    giftVC.uid = model.user[@"uid"];
     giftVC.iconUrl = model.user[@"headIconUrl"];
     
     [self presentViewController:giftVC animated:YES completion:nil];
@@ -895,10 +920,10 @@
     if ([model.user[@"followed"] boolValue]) {
         
         // 取消关注
-        [XFMineNetworkManager unCareSomeoneWithUid:model.uid successBlock:^(id responseObj) {
+        [XFMineNetworkManager unCareSomeoneWithUid:model.user[@"uid"] successBlock:^(id responseObj) {
 
             [HUD hideAnimated:YES];
-            [self refreshFollowStatusWithUid:model.uid witfFollowed:NO] ;
+            [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:NO] ;
 
 
         } failedBlock:^(NSError *error) {
@@ -912,10 +937,10 @@
         
     } else {
             
-            [XFMineNetworkManager careSomeoneWithUid:model.uid successBlock:^(id responseObj) {
+            [XFMineNetworkManager careSomeoneWithUid:model.user[@"uid"] successBlock:^(id responseObj) {
                 [HUD hideAnimated:YES];
 
-                [self refreshFollowStatusWithUid:model.uid witfFollowed:YES];
+                [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:YES];
                 
             } failedBlock:^(NSError *error) {
                 
@@ -952,7 +977,7 @@
         
         for (XFStatusModel *model in self.inviteDatas) {
             
-            if ([model.uid isEqualToString:uid]) {
+            if ([model.user[@"uid"] intValue] == [uid intValue]) {
                 
                 NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:model.user];
                 
@@ -972,7 +997,8 @@
 #pragma mark - 活动celldaili
 - (void)didClickMoreButton {
     
-    self.hdCount = 6;
+    self.hdCount = self.adDatas.count;
+    
     self.hdIsopen = YES;
     [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
     
@@ -980,7 +1006,7 @@
 
 - (void)didClickNoMoreButton {
     
-    self.hdCount = 2;
+    self.hdCount = self.adDatas.count >= 2 ? 2 : self.adDatas.count;
     self.hdIsopen = NO;
     [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
     [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
@@ -990,6 +1016,7 @@
 - (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
     
     if (isOpen) {
+        
         self.openIndexPath = index;
         
     } else {
@@ -1017,15 +1044,20 @@
         switch (indexPath.section) {
             case 0:
             {
-//                return ^ASCellNode *{
                 
-                    XFFIndHeaderCell *node = [[XFFIndHeaderCell alloc] initWithModel:self.adDatas[indexPath.row]];
+                if (indexPath.row == 0) {
+                    
+                    XFFindSearchNode *searchNode = [[XFFindSearchNode alloc] init];
+                    
+                    return searchNode;
+                    
+                }
+                
+                    XFFIndHeaderCell *node = [[XFFIndHeaderCell alloc] initWithModel:self.adDatas[indexPath.row - 1]];
                     
                     node.delegate = self;
-                    
-//                    node.picNode.image = [UIImage imageNamed:[NSString stringWithFormat:@"home2%zd",indexPath.row]];
                 
-                    if (indexPath.row == self.hdCount - 1) {
+                    if (indexPath.row == self.hdCount) {
                         
                         node.isEnd = YES;
                         node.isOpen = self.hdIsopen;
@@ -1054,43 +1086,14 @@
                 
                     return node;
                 
-                    
-//                };
             }
                 break;
             case 1:
             {
-//                return ^ASCellNode *{
-                
-                    NSMutableArray *mutableArr = [NSMutableArray array];
-                    for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
-                        
-                        [mutableArr addObject:[NSString stringWithFormat: @"find%zd",indexPath.row + i]];
-                    }
-                    BOOL isOpen;
                     
-                    if (self.openIndexPath == indexPath) {
-                        
-                        isOpen = YES;
-                        
-                    } else {
-                        
-                        isOpen = NO;
-                    }
-                    
-                    XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.inviteDatas[indexPath.row]];
-                    
-                    node.index = indexPath;
-                    
-                    node.delegate = self;
-                    
-                    if (self.openIndexPath == indexPath) {
-                        node.shadowNode.hidden = YES;
-                        
-                    } else {
-                        node.shadowNode.hidden = NO;
-                    }
-                    
+                XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.inviteDatas[indexPath.row]];
+                node.delegate = self;
+                node.index = indexPath;
                     if ([_indexPathsTobeReload containsObject:indexPath]) {
                         
                         ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
@@ -1109,7 +1112,6 @@
                     }
                     
                     return node;
-//                };
             }
                 break;
             default:
@@ -1117,38 +1119,12 @@
         }
     } else {
         
-//        return ^ASCellNode *{
-        
-            NSMutableArray *mutableArr = [NSMutableArray array];
-            for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
-                
-                [mutableArr addObject:[NSString stringWithFormat: @"find%zd",indexPath.row + i]];
-            }
-            BOOL isOpen;
-            
-            if (self.openIndexPath == indexPath) {
-                
-                isOpen = YES;
-                
-            } else {
-                
-                isOpen = NO;
-            }
-            
-            XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.careDatas[indexPath.row]];
-            
+            XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.careDatas[indexPath.row]];
+
             node.index = indexPath;
-            
-            node.delegate = self;
-            
-            node.approveButton.hidden = YES;
-            
-            if (self.openIndexPath == indexPath) {
-                node.shadowNode.hidden = YES;
-                
-            } else {
-                node.shadowNode.hidden = NO;
-            }
+
+        node.delegate = self;
+
         if ([_indexPathsTobeReload containsObject:indexPath]) {
             
             ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
@@ -1158,16 +1134,11 @@
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 node.neverShowPlaceholders = NO;
                 
-                NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
-                
-                [self.indexPathsTobeReload removeObjectAtIndex:index];
-                
             });
             
         }
             
             return node;
-//        };
         
     }
     
@@ -1175,138 +1146,15 @@
 
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    
+    if (section == 1) {
+        
+        return 11;
+    }
+    return 0;
+}
 
-//- (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
-//
-//    if (tableNode == self.tableNode) {
-//
-//        switch (indexPath.section) {
-//            case 0:
-//            {
-//                return ^ASCellNode *{
-//
-//                    XFFIndHeaderCell *node = [[XFFIndHeaderCell alloc] init];
-//
-//                    node.delegate = self;
-//
-//                    node.picNode.defaultImage = [UIImage imageNamed:[NSString stringWithFormat:@"home2%zd",indexPath.row]];
-//
-//                    if (indexPath.row == self.hdCount - 1) {
-//
-//                        node.isEnd = YES;
-//                        node.isOpen = self.hdIsopen;
-//
-//                    } else {
-//
-//                        node.isEnd = NO;
-//                    }
-//
-//                    return node;
-//
-//                };
-//            }
-//                break;
-//            case 1:
-//            {
-//                return ^ASCellNode *{
-//
-//                    NSMutableArray *mutableArr = [NSMutableArray array];
-//                    for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
-//
-//                        [mutableArr addObject:[NSString stringWithFormat: @"find%zd",indexPath.row + i]];
-//                    }
-//                    BOOL isOpen;
-//
-//                    if (self.openIndexPath == indexPath) {
-//
-//                        isOpen = YES;
-//
-//                    } else {
-//
-//                        isOpen = NO;
-//                    }
-//
-//                    XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.inviteDatas[indexPath.row]];
-//
-//                    node.index = indexPath;
-//
-//                    node.delegate = self;
-//
-//                    if (self.openIndexPath == indexPath) {
-//                        node.shadowNode.hidden = YES;
-//
-//                    } else {
-//                        node.shadowNode.hidden = NO;
-//                    }
-//
-//                    if ([_indexPathsTobeReload containsObject:indexPath]) {
-//
-//                        ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
-//
-//                        node.neverShowPlaceholders = YES;
-//                        oldCellNode.neverShowPlaceholders = YES;
-//                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                            node.neverShowPlaceholders = NO;
-//
-//                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
-//
-//                            [self.indexPathsTobeReload removeObjectAtIndex:index];
-//
-//                        });
-//
-//                    }
-//
-//                    return node;
-//                };
-//            }
-//                break;
-//            default:
-//                break;
-//        }
-//    } else {
-//
-//        return ^ASCellNode *{
-//
-//            NSMutableArray *mutableArr = [NSMutableArray array];
-//            for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
-//
-//                [mutableArr addObject:[NSString stringWithFormat: @"find%zd",indexPath.row + i]];
-//            }
-//            BOOL isOpen;
-//
-//            if (self.openIndexPath == indexPath) {
-//
-//                isOpen = YES;
-//
-//            } else {
-//
-//                isOpen = NO;
-//            }
-//
-//            XFFindCellNode *node = [[XFFindCellNode alloc] initWithOpen:isOpen pics:mutableArr.copy model:self.careDatas[indexPath.row]];
-//
-//            node.index = indexPath;
-//
-//            node.delegate = self;
-//
-//            node.approveButton.hidden = YES;
-//
-//            if (self.openIndexPath == indexPath) {
-//                node.shadowNode.hidden = YES;
-//
-//            } else {
-//                node.shadowNode.hidden = NO;
-//            }
-//
-//            return node;
-//        };
-//
-//    }
-//
-//
-//
-//    return nil;
-//
-//}
+
 
 @end

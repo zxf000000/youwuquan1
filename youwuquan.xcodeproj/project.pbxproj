@@ -18,6 +18,18 @@
 		B70CCC541FE5218000F5B7F3 /* XFHomeCacheManger.m in Sources */ = {isa = PBXBuildFile; fileRef = B70CCC531FE5218000F5B7F3 /* XFHomeCacheManger.m */; };
 		B70CCC571FE5227700F5B7F3 /* XFHomeDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B70CCC561FE5227700F5B7F3 /* XFHomeDataModel.m */; };
 		B70CCC5A1FE547F100F5B7F3 /* XFFIndCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B70CCC591FE547F100F5B7F3 /* XFFIndCacheManager.m */; };
+		B70F5712200D0CE600AD317A /* XFDetailStatusCellNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5711200D0CE600AD317A /* XFDetailStatusCellNode.m */; };
+		B70F5718200DF4DE00AD317A /* XFLockNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5717200DF4DE00AD317A /* XFLockNode.m */; };
+		B70F571B200E201200AD317A /* XFUpImageNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F571A200E201200AD317A /* XFUpImageNode.m */; };
+		B70F572C200E297E00AD317A /* CYLPlusButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F571F200E297D00AD317A /* CYLPlusButton.m */; };
+		B70F572D200E297E00AD317A /* CYLTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5721200E297D00AD317A /* CYLTabBar.m */; };
+		B70F572E200E297E00AD317A /* CYLTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5723200E297D00AD317A /* CYLTabBarController.m */; };
+		B70F572F200E297E00AD317A /* UIControl+CYLTabBarControllerExtention.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5725200E297D00AD317A /* UIControl+CYLTabBarControllerExtention.m */; };
+		B70F5730200E297E00AD317A /* UITabBarItem+CYLTabBarControllerExtention.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5727200E297D00AD317A /* UITabBarItem+CYLTabBarControllerExtention.m */; };
+		B70F5731200E297E00AD317A /* UIView+CYLTabBarControllerExtention.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5729200E297D00AD317A /* UIView+CYLTabBarControllerExtention.m */; };
+		B70F5732200E297E00AD317A /* UIViewController+CYLTabBarControllerExtention.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F572B200E297D00AD317A /* UIViewController+CYLTabBarControllerExtention.m */; };
+		B70F5735200E2A7200AD317A /* XFTabBarControllerConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5734200E2A7200AD317A /* XFTabBarControllerConfig.m */; };
+		B70F5738200E2D0F00AD317A /* CYLPlusButtonSubclass.m in Sources */ = {isa = PBXBuildFile; fileRef = B70F5737200E2D0F00AD317A /* CYLPlusButtonSubclass.m */; };
 		B718C78B1FA8C4CF00DA470B /* XFFindLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = B718C78A1FA8C4CF00DA470B /* XFFindLayout.m */; };
 		B718C78E1FA8C4DA00DA470B /* XFFindModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B718C78D1FA8C4DA00DA470B /* XFFindModel.m */; };
 		B718C7911FA8D71500DA470B /* XFFindTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B718C7901FA8D71500DA470B /* XFFindTableViewCell.m */; };
@@ -557,6 +569,7 @@
 		B7AABEC81FC5671E0031E0E8 /* XFMissionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7AABEC61FC5671E0031E0E8 /* XFMissionTableViewCell.xib */; };
 		B7AABECB1FC5696D0031E0E8 /* XFMissionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B7AABECA1FC5696D0031E0E8 /* XFMissionModel.m */; };
 		B7AC616B1FC666F600B27C40 /* XFPublishTransation.m in Sources */ = {isa = PBXBuildFile; fileRef = B7AC61691FC666F500B27C40 /* XFPublishTransation.m */; };
+		B7B40DF4200C55AB003B34FD /* XFFindSearchNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B40DF3200C55AB003B34FD /* XFFindSearchNode.m */; };
 		B7C174221FBA84450029ACDE /* XFFillInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C174211FBA84450029ACDE /* XFFillInfoViewController.m */; };
 		B7C174261FBA896B0029ACDE /* XFMessageListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C174241FBA896B0029ACDE /* XFMessageListTableViewCell.m */; };
 		B7C174271FBA896B0029ACDE /* XFMessageListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7C174251FBA896B0029ACDE /* XFMessageListTableViewCell.xib */; };
@@ -752,6 +765,31 @@
 		B70CCC561FE5227700F5B7F3 /* XFHomeDataModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFHomeDataModel.m; sourceTree = "<group>"; };
 		B70CCC581FE547F100F5B7F3 /* XFFIndCacheManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFFIndCacheManager.h; sourceTree = "<group>"; };
 		B70CCC591FE547F100F5B7F3 /* XFFIndCacheManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFFIndCacheManager.m; sourceTree = "<group>"; };
+		B70F5710200D0CE600AD317A /* XFDetailStatusCellNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFDetailStatusCellNode.h; sourceTree = "<group>"; };
+		B70F5711200D0CE600AD317A /* XFDetailStatusCellNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFDetailStatusCellNode.m; sourceTree = "<group>"; };
+		B70F5716200DF4DE00AD317A /* XFLockNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFLockNode.h; sourceTree = "<group>"; };
+		B70F5717200DF4DE00AD317A /* XFLockNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFLockNode.m; sourceTree = "<group>"; };
+		B70F5719200E201200AD317A /* XFUpImageNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFUpImageNode.h; sourceTree = "<group>"; };
+		B70F571A200E201200AD317A /* XFUpImageNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFUpImageNode.m; sourceTree = "<group>"; };
+		B70F571D200E297D00AD317A /* CYLConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYLConstants.h; sourceTree = "<group>"; };
+		B70F571E200E297D00AD317A /* CYLPlusButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYLPlusButton.h; sourceTree = "<group>"; };
+		B70F571F200E297D00AD317A /* CYLPlusButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CYLPlusButton.m; sourceTree = "<group>"; };
+		B70F5720200E297D00AD317A /* CYLTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYLTabBar.h; sourceTree = "<group>"; };
+		B70F5721200E297D00AD317A /* CYLTabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CYLTabBar.m; sourceTree = "<group>"; };
+		B70F5722200E297D00AD317A /* CYLTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYLTabBarController.h; sourceTree = "<group>"; };
+		B70F5723200E297D00AD317A /* CYLTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CYLTabBarController.m; sourceTree = "<group>"; };
+		B70F5724200E297D00AD317A /* UIControl+CYLTabBarControllerExtention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIControl+CYLTabBarControllerExtention.h"; sourceTree = "<group>"; };
+		B70F5725200E297D00AD317A /* UIControl+CYLTabBarControllerExtention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIControl+CYLTabBarControllerExtention.m"; sourceTree = "<group>"; };
+		B70F5726200E297D00AD317A /* UITabBarItem+CYLTabBarControllerExtention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITabBarItem+CYLTabBarControllerExtention.h"; sourceTree = "<group>"; };
+		B70F5727200E297D00AD317A /* UITabBarItem+CYLTabBarControllerExtention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITabBarItem+CYLTabBarControllerExtention.m"; sourceTree = "<group>"; };
+		B70F5728200E297D00AD317A /* UIView+CYLTabBarControllerExtention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+CYLTabBarControllerExtention.h"; sourceTree = "<group>"; };
+		B70F5729200E297D00AD317A /* UIView+CYLTabBarControllerExtention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+CYLTabBarControllerExtention.m"; sourceTree = "<group>"; };
+		B70F572A200E297D00AD317A /* UIViewController+CYLTabBarControllerExtention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+CYLTabBarControllerExtention.h"; sourceTree = "<group>"; };
+		B70F572B200E297D00AD317A /* UIViewController+CYLTabBarControllerExtention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+CYLTabBarControllerExtention.m"; sourceTree = "<group>"; };
+		B70F5733200E2A7200AD317A /* XFTabBarControllerConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFTabBarControllerConfig.h; sourceTree = "<group>"; };
+		B70F5734200E2A7200AD317A /* XFTabBarControllerConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFTabBarControllerConfig.m; sourceTree = "<group>"; };
+		B70F5736200E2D0E00AD317A /* CYLPlusButtonSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYLPlusButtonSubclass.h; sourceTree = "<group>"; };
+		B70F5737200E2D0F00AD317A /* CYLPlusButtonSubclass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CYLPlusButtonSubclass.m; sourceTree = "<group>"; };
 		B718C7891FA8C4CF00DA470B /* XFFindLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFFindLayout.h; sourceTree = "<group>"; };
 		B718C78A1FA8C4CF00DA470B /* XFFindLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFFindLayout.m; sourceTree = "<group>"; };
 		B718C78C1FA8C4DA00DA470B /* XFFindModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFFindModel.h; sourceTree = "<group>"; };
@@ -1742,6 +1780,8 @@
 		B7AABECA1FC5696D0031E0E8 /* XFMissionModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMissionModel.m; sourceTree = "<group>"; };
 		B7AC61691FC666F500B27C40 /* XFPublishTransation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFPublishTransation.m; sourceTree = "<group>"; };
 		B7AC616A1FC666F600B27C40 /* XFPublishTransation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFPublishTransation.h; sourceTree = "<group>"; };
+		B7B40DF2200C55AB003B34FD /* XFFindSearchNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFFindSearchNode.h; sourceTree = "<group>"; };
+		B7B40DF3200C55AB003B34FD /* XFFindSearchNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFFindSearchNode.m; sourceTree = "<group>"; };
 		B7C174201FBA84450029ACDE /* XFFillInfoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFFillInfoViewController.h; sourceTree = "<group>"; };
 		B7C174211FBA84450029ACDE /* XFFillInfoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFFillInfoViewController.m; sourceTree = "<group>"; };
 		B7C174231FBA896B0029ACDE /* XFMessageListTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMessageListTableViewCell.h; sourceTree = "<group>"; };
@@ -2075,6 +2115,14 @@
 				B701AC9F1FA999A9000728FC /* XFFindCellNode.m */,
 				B76EA5B21FB54B3B001673CC /* XFFIndHeaderCell.h */,
 				B76EA5B31FB54B3B001673CC /* XFFIndHeaderCell.m */,
+				B7B40DF2200C55AB003B34FD /* XFFindSearchNode.h */,
+				B7B40DF3200C55AB003B34FD /* XFFindSearchNode.m */,
+				B70F5710200D0CE600AD317A /* XFDetailStatusCellNode.h */,
+				B70F5711200D0CE600AD317A /* XFDetailStatusCellNode.m */,
+				B70F5716200DF4DE00AD317A /* XFLockNode.h */,
+				B70F5717200DF4DE00AD317A /* XFLockNode.m */,
+				B70F5719200E201200AD317A /* XFUpImageNode.h */,
+				B70F571A200E201200AD317A /* XFUpImageNode.m */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -2096,6 +2144,28 @@
 				B7A644FA2009F4B900F9C2D0 /* XFMessageCacheManager.m */,
 			);
 			path = CacheManager;
+			sourceTree = "<group>";
+		};
+		B70F571C200E297D00AD317A /* CYLTabBarController */ = {
+			isa = PBXGroup;
+			children = (
+				B70F571D200E297D00AD317A /* CYLConstants.h */,
+				B70F571E200E297D00AD317A /* CYLPlusButton.h */,
+				B70F571F200E297D00AD317A /* CYLPlusButton.m */,
+				B70F5720200E297D00AD317A /* CYLTabBar.h */,
+				B70F5721200E297D00AD317A /* CYLTabBar.m */,
+				B70F5722200E297D00AD317A /* CYLTabBarController.h */,
+				B70F5723200E297D00AD317A /* CYLTabBarController.m */,
+				B70F5724200E297D00AD317A /* UIControl+CYLTabBarControllerExtention.h */,
+				B70F5725200E297D00AD317A /* UIControl+CYLTabBarControllerExtention.m */,
+				B70F5726200E297D00AD317A /* UITabBarItem+CYLTabBarControllerExtention.h */,
+				B70F5727200E297D00AD317A /* UITabBarItem+CYLTabBarControllerExtention.m */,
+				B70F5728200E297D00AD317A /* UIView+CYLTabBarControllerExtention.h */,
+				B70F5729200E297D00AD317A /* UIView+CYLTabBarControllerExtention.m */,
+				B70F572A200E297D00AD317A /* UIViewController+CYLTabBarControllerExtention.h */,
+				B70F572B200E297D00AD317A /* UIViewController+CYLTabBarControllerExtention.m */,
+			);
+			path = CYLTabBarController;
 			sourceTree = "<group>";
 		};
 		B723CC061FBC921E00DC25E9 /* PhotoLirbary */ = {
@@ -2542,6 +2612,8 @@
 		B74AE9BA1FA30834002BD4A6 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				B70F5736200E2D0E00AD317A /* CYLPlusButtonSubclass.h */,
+				B70F5737200E2D0F00AD317A /* CYLPlusButtonSubclass.m */,
 				B74AE9FF1FA317C0002BD4A6 /* XFMainViewController.h */,
 				B74AEA001FA317C0002BD4A6 /* XFMainViewController.m */,
 				B74AEA021FA31844002BD4A6 /* XFMainTabbarViewController.h */,
@@ -2556,6 +2628,8 @@
 				B79C761A1FC3CB090040B844 /* XFPublishNaviViewController.m */,
 				B757DAAF1FCC3FD4002C0F3D /* XFSnapShotViewController.h */,
 				B757DAB01FCC3FD4002C0F3D /* XFSnapShotViewController.m */,
+				B70F5733200E2A7200AD317A /* XFTabBarControllerConfig.h */,
+				B70F5734200E2A7200AD317A /* XFTabBarControllerConfig.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2886,6 +2960,7 @@
 		B74AE9E51FA30835002BD4A6 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				B70F571C200E297D00AD317A /* CYLTabBarController */,
 				B7FD7AE520036BE000B6112B /* SDCycleScrollView */,
 				B7954E9F1FC26BE10016BD45 /* PGDatePicker */,
 				B7DDBC871FBD7A6300D53091 /* AlertView */,
@@ -4990,10 +5065,12 @@
 				B768D71B2007CD6B00468320 /* UIImage+GIF.m in Sources */,
 				B7954EBF1FC26BE10016BD45 /* PGPickerColumnView.m in Sources */,
 				B7EA94CB1FECB8B90092EB8A /* PLSTextBar.m in Sources */,
+				B70F572E200E297E00AD317A /* CYLTabBarController.m in Sources */,
 				B74AE9FD1FA30835002BD4A6 /* XFImageSizeCache.m in Sources */,
 				B73688891FDBE0F600483068 /* XFDiamondCollectionViewCell.m in Sources */,
 				B7EA921C1FEB6D540092EB8A /* XFActivityViewController.m in Sources */,
 				B768D6A02007CD6B00468320 /* scale_gcc.cc in Sources */,
+				B70F572F200E297E00AD317A /* UIControl+CYLTabBarControllerExtention.m in Sources */,
 				B77459781FE3CCA400BEC7F7 /* XFSendDiamondViewController.m in Sources */,
 				B7954EC21FC26BE10016BD45 /* UIColor+PGHex.m in Sources */,
 				B74AE9F51FA30835002BD4A6 /* XFCoreDataManager.m in Sources */,
@@ -5019,6 +5096,7 @@
 				B79C76271FC434830040B844 /* XFCardSizeCache.m in Sources */,
 				B7954EC01FC26BE10016BD45 /* PGPickerTableView.m in Sources */,
 				B768D69C2007CD6B00468320 /* scale.cc in Sources */,
+				B70F5730200E297E00AD317A /* UITabBarItem+CYLTabBarControllerExtention.m in Sources */,
 				B751B0551FFF1FD800811A7C /* XFPicModel.m in Sources */,
 				B7EA94CA1FECB8B90092EB8A /* PLSStickerBar.m in Sources */,
 				B768D6812007CD6B00468320 /* convert_argb.cc in Sources */,
@@ -5044,10 +5122,13 @@
 				B7EA92221FEBC1270092EB8A /* UIImage+ImageEffects.m in Sources */,
 				B7DF03421FA804620093022C /* XFNewActorTableViewCell.m in Sources */,
 				B768D7372007CD6B00468320 /* SPARApp.m in Sources */,
+				B7B40DF4200C55AB003B34FD /* XFFindSearchNode.m in Sources */,
 				B768D7112007CD6B00468320 /* MKAnnotationView+WebCache.m in Sources */,
 				B768D69E2007CD6B00468320 /* scale_argb.cc in Sources */,
 				B7FD7AF520036BE000B6112B /* TAAbstractDotView.m in Sources */,
 				B75362AB1FB6E55000EDFE94 /* XFCarouselView.m in Sources */,
+				B70F5738200E2D0F00AD317A /* CYLPlusButtonSubclass.m in Sources */,
+				B70F5731200E297E00AD317A /* UIView+CYLTabBarControllerExtention.m in Sources */,
 				B751B0491FFBBCE200811A7C /* XFMineNetworkManager.m in Sources */,
 				B768D71E2007CD6B00468320 /* UIImageView+HighlightedWebCache.m in Sources */,
 				B76F3E2F2007849A0080F0B7 /* CHWebProgressView.m in Sources */,
@@ -5135,6 +5216,7 @@
 				B75362871FB6883700EDFE94 /* XFFindApproveNode.m in Sources */,
 				B79C76211FC40E7D0040B844 /* XFCardView.m in Sources */,
 				B7C1742B1FBA8DF80029ACDE /* XFRewardedTableViewCell.m in Sources */,
+				B70F572D200E297E00AD317A /* CYLTabBar.m in Sources */,
 				B74AE9F01FA30835002BD4A6 /* NSString+checkPhone.m in Sources */,
 				B768D7162007CD6B00468320 /* SDWebImageDownloader.m in Sources */,
 				B7EA95D41FECB8B90092EB8A /* PhotoAlbumViewController.m in Sources */,
@@ -5159,9 +5241,12 @@
 				B7DF03101FA6BC1C0093022C /* XFHomeTopHeaderReusableView.m in Sources */,
 				B768D67C2007CD6B00468320 /* compare_gcc.cc in Sources */,
 				B718C79F1FA8DDFC00DA470B /* YYTableView.m in Sources */,
+				B70F5712200D0CE600AD317A /* XFDetailStatusCellNode.m in Sources */,
 				B768D7262007CD6B00468320 /* UIDevice+DeviceModel.m in Sources */,
+				B70F5735200E2A7200AD317A /* XFTabBarControllerConfig.m in Sources */,
 				B768D7292007CD6B00468320 /* KWFilterCell.m in Sources */,
 				B78F632B1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m in Sources */,
+				B70F572C200E297E00AD317A /* CYLPlusButton.m in Sources */,
 				B73933D01FD6892A00F2B0DD /* XFFansViewController.m in Sources */,
 				B76EE318200B79F00025A66D /* PhotoCell.m in Sources */,
 				B7EA92181FEB687C0092EB8A /* XFTxListTableViewCell.m in Sources */,
@@ -5308,9 +5393,11 @@
 				B74AEA0A1FA319B1002BD4A6 /* XFHomeViewController.m in Sources */,
 				B70CCC571FE5227700F5B7F3 /* XFHomeDataModel.m in Sources */,
 				B7A686401FEE03E7006B9109 /* XFNetworking.m in Sources */,
+				B70F571B200E201200AD317A /* XFUpImageNode.m in Sources */,
 				B768D70B2007CD6B00468320 /* KWStickerDownloadManager.m in Sources */,
 				B77459691FE3A98200BEC7F7 /* XFLikeMessageTableViewCell.m in Sources */,
 				B768D7142007CD6B00468320 /* SDWebImageCompat.m in Sources */,
+				B70F5732200E297E00AD317A /* UIViewController+CYLTabBarControllerExtention.m in Sources */,
 				B768D6962007CD6B00468320 /* row_gcc.cc in Sources */,
 				B768D6892007CD6B00468320 /* mjpeg_validate.cc in Sources */,
 				B79C761E1FC3D8E30040B844 /* XFMyActorCardViewController.m in Sources */,
@@ -5326,6 +5413,7 @@
 				B768D6922007CD6B00468320 /* rotate_neon64.cc in Sources */,
 				B7EA94C21FECB8B90092EB8A /* PLSProgressBar.m in Sources */,
 				B76EE312200B79F00025A66D /* CustomeImagePicker.m in Sources */,
+				B70F5718200DF4DE00AD317A /* XFLockNode.m in Sources */,
 				B7954EBC1FC26BE10016BD45 /* PGDatePicker.m in Sources */,
 				B723CBEA1FBBEF1800DC25E9 /* XFNearbyTableViewCell.m in Sources */,
 				B768D67F2007CD6B00468320 /* compare_win.cc in Sources */,

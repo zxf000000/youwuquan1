@@ -585,4 +585,18 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
                          failedBlock:(MineRequestFailedBlock)failedBlock
                        progressBlock:(MineRequestProgressBlock)progressBlock;
 
+
+/**
+ 检查app更新
+
+ @param successBlock 成功
+ @param failedBlock 失败
+ @param progressBlock 进度
+ */
++ (void)checkUpdateForAppWithsuccessBlock:(MineRequestSuccessBlock)successBlock
+                              failedBlock:(MineRequestFailedBlock)failedBlock
+                            progressBlock:(MineRequestProgressBlock)progressBlock;
+
+
+
 @end
