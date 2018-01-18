@@ -8,8 +8,8 @@
 
 #import "XFApiClient.h"
 
-//#define YBYHost @"http://47.104.153.152:80/api/v1/"
-#define YBYHost @"http://192.168.123.179:80/api/v1/"
+#define YBYHost @"http://47.104.153.152:80/api/v1/"
+//#define YBYHost @"http://192.168.123.179:80/api/v1/"
 
 // 用户登录
 #define YBYLogin @"signin"
@@ -148,7 +148,8 @@
 #define YBYTransactions @"user/transactions"
 // 获取富豪榜
 #define YBYGetRichList @"ranking/balance"
-
+// 充值列表
+#define YBYGetChargeList @"user/balance/recharge/list"
 // 账户详细信息
 #define YBYGetWalletDetailInfo @"user/account"
 
@@ -201,6 +202,8 @@
 
 // 个人vip信息
 #define YBYGetVipInfo  @"user/vip"
+// vip列表
+#define YBYGetVipList @"user/vip/list"
 // 更新用户位置
 #define YBYRefreshUserLocation @"position"
 
@@ -684,6 +687,16 @@
 + (NSString *)pathUrlForRefreshLocation {
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYRefreshUserLocation];
+}
+
++ (NSString *)pathUrlForGetVipList {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetVipList];
+}
+
++ (NSString *)pathUrlForGetCahrgeList {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetChargeList];
 }
 
 

@@ -27,6 +27,7 @@
 #import "XFFindActivityModel.h"
 #import "XFFindSearchNode.h"
 #import "XFSearchViewController.h"
+#import <PINCache.h>
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
 
@@ -85,6 +86,8 @@
 
     return self;
 }
+
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -790,8 +793,8 @@
 - (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
     XFStatusModel *model;
     if (self.isInvite) {
+        
         model = self.inviteDatas[indexPath.row];
-
         
     } else {
         
@@ -802,17 +805,16 @@
     if (model.likedIt) {
         
         [XFFindNetworkManager unlikeWithStatusId:model.id successBlock:^(id responseObj) {
-            
-
+        
             [self refreshlikeStatusWithModel:model witfFollowed:NO];
-            [node.likeButton setTitle:model.likeNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
-            
-            node.likeButton.selected = NO;
-            
-            [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
-                
-                
-            }];
+//            [node.likeButton setTitle:model.likeNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+//
+//            node.likeButton.selected = NO;
+//
+//            [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
+//
+//
+//            }];
             
         } failBlock:^(NSError *error) {
             
@@ -826,17 +828,16 @@
         
         [XFFindNetworkManager likeWithStatusId:model.id successBlock:^(id responseObj) {
             
-            
             [self refreshlikeStatusWithModel:model witfFollowed:YES];
-            
-            [node.likeButton setTitle:model.likeNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
-            
-            node.likeButton.selected = YES;
-            
-            [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
-                
-                
-            }];
+//
+//            [node.likeButton setTitle:model.likeNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
+//
+//            node.likeButton.selected = YES;
+//
+//            [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
+//
+//
+//            }];
             
         } failBlock:^(NSError *error) {
             
@@ -958,16 +959,51 @@
 
 - (void)refreshlikeStatusWithModel:(XFStatusModel *)model witfFollowed:(BOOL)liked {
     
-    model.likedIt = liked;
-    if (liked) {
+    //
+    [XFFindNetworkManager getOneStatusWithStatusId:model.id successBlock:^(id responseObj) {
         
-        model.likeNum = [NSString stringWithFormat:@"%zd",[model.likeNum integerValue] + 1];
+        XFStatusModel *status = [XFStatusModel modelWithDictionary:(NSDictionary *)responseObj];
         
-    } else {
-        
-        model.likeNum = [NSString stringWithFormat:@"%zd",[model.likeNum integerValue] - 1];
+        model.likeNum = status.likeNum;
+        model.likedIt = !model.likedIt;
 
-    }
+        XFFindCellNode *node;
+
+        if (self.isInvite) {
+            
+            NSInteger index = [self.inviteDatas indexOfObject:model];
+            [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:(UITableViewRowAnimationNone)];
+            node = [self.tableNode nodeForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:1]];
+        } else {
+            
+            NSInteger index = [self.careDatas indexOfObject:model];
+            [self.rightNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
+            node = [self.rightNode nodeForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+
+        }
+        
+        
+        [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{}];
+        
+    } failBlock:^(NSError *error) {
+        
+        
+        
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
+//    model.likedIt = liked;
+//    if (liked) {
+//
+//        model.likeNum = [NSString stringWithFormat:@"%zd",[model.likeNum integerValue] + 1];
+//
+//    } else {
+//
+//        model.likeNum = [NSString stringWithFormat:@"%zd",[model.likeNum integerValue] - 1];
+//
+//    }
 
 }
 
@@ -1094,6 +1130,7 @@
                 XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.inviteDatas[indexPath.row]];
                 node.delegate = self;
                 node.index = indexPath;
+                node.neverShowPlaceholders = YES;
                     if ([_indexPathsTobeReload containsObject:indexPath]) {
                         
                         ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];

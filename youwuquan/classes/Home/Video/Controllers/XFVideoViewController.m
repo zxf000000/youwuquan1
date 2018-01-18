@@ -27,6 +27,7 @@
 @property (nonatomic,strong) UIButton *gqButton;
 
 @property (nonatomic,strong) UIButton *vrButton;
+@property (nonatomic,strong) UIView *topLineView;
 
 @property (nonatomic,strong) UIView *slideView;
 
@@ -148,7 +149,7 @@
     
     [self.slideView mas_remakeConstraints:^(MASConstraintMaker *make) {
      
-        make.bottom.mas_offset(0);
+        make.bottom.mas_offset(-8);
         make.width.mas_equalTo(60);
         make.centerX.mas_equalTo(sender);
         make.height.mas_equalTo(2);
@@ -186,6 +187,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.selected = NO;
+    
     if (self.selectedCellBlock) {
         
         self.selectedCellBlock(self.videos[indexPath.row]);
@@ -195,7 +199,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    return kScreenWidth * 42/75.f;
+    return kScreenWidth * 201/375.f + 50;
     
 }
 
@@ -253,7 +257,7 @@
 
 - (void)setupHeaderView {
     
-    self.headerView = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenWidth * 38/75.f))];
+    self.headerView = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenWidth * 30/75.f + 43))];
     
     self.headerView.backgroundColor = UIColorFromHex(0xf5f5f5);
     
@@ -290,6 +294,10 @@
     self.vrButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.headerView addSubview:self.vrButton];
     
+    self.topLineView = [[UIView alloc] init];
+    self.topLineView.backgroundColor = UIColorHex(e0e0e0);
+    [self.headerView addSubview:self.topLineView];
+    
     self.slideView = [[UIView alloc] init];
     
     self.slideView.backgroundColor = kMainColor;
@@ -307,29 +315,36 @@
     [self.headerPicView mas_makeConstraints:^(MASConstraintMaker *make) {
        
         make.top.left.right.mas_offset(0);
-        make.height.mas_equalTo(150);
+        make.height.mas_equalTo(kScreenWidth * 30/75.f);
         
     }];
     
     [self.gqButton mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.top.mas_equalTo(self.headerPicView.mas_bottom).offset(0);
-        make.bottom.mas_offset(-2);
+        make.top.mas_equalTo(self.headerPicView.mas_bottom).offset(9);
+        make.bottom.mas_offset(-10);
         make.left.mas_offset(0);
     }];
     
     [self.vrButton mas_makeConstraints:^(MASConstraintMaker *make) {
         
-        make.top.mas_equalTo(self.headerPicView.mas_bottom).offset(0);
-        make.bottom.mas_offset(-2);
+        make.top.mas_equalTo(self.headerPicView.mas_bottom).offset(9);
+        make.bottom.mas_offset(-10);
         make.right.mas_offset(0);
         make.width.mas_equalTo(self.gqButton);
         make.left.mas_equalTo(self.gqButton.mas_right);
     }];
     
+    [self.topLineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.bottom.mas_offset(-7);
+        make.left.right.mas_offset(0);
+        make.height.mas_equalTo(1);
+    }];
+    
     [self.slideView mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.bottom.mas_offset(0);
+        make.bottom.mas_offset(-8);
         make.width.mas_equalTo(60);
         make.centerX.mas_equalTo(self.gqButton);
         make.height.mas_equalTo(2);

@@ -11,7 +11,7 @@
 #import "XFMineNetworkManager.h"
 
 #define kAlertViewWidth 300.f
-#define kAlertViewHeight 287.f
+#define kAlertViewHeight 327.f
 
 @interface XFAlertViewController () <UIViewControllerTransitioningDelegate,UITextFieldDelegate>
 
@@ -200,9 +200,16 @@
 
 - (void)setupUnlockAlertView {
     
-    self.titleIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"my_huiyuanka1"]];
-    self.titleIcon.frame = CGRectMake((kAlertViewWidth - 120)/2,27, 120, 72);
+    UIImageView *shadowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"vipcard_shadow"]];
+
+    [self.alertView addSubview:shadowView];
+    
+    self.titleIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"vip_card"]];
+    self.titleIcon.frame = CGRectMake((kAlertViewWidth - 150)/2,16, 150, 100);
     [self.alertView addSubview:self.titleIcon];
+    shadowView.width = 150;
+    shadowView.height = 100;
+    shadowView.center = CGPointMake(_titleIcon.center.x, _titleIcon.center.y + 20);
     
     self.titleLabel = [[UILabel alloc] init];
     self.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -217,7 +224,7 @@
     self.titleLabel.height = 45;
     
     self.doneButton = [[UIButton alloc] init];
-    self.doneButton.backgroundColor = kMainRedColor;
+    self.doneButton.backgroundColor = kRGBColorWith(212, 185, 113);
     [self.doneButton setTitle:[NSString stringWithFormat:@"支付%@",self.unlockPrice] forState:(UIControlStateNormal)];
     [self.doneButton setImage:[UIImage imageNamed:@"zuanshi"] forState:(UIControlStateNormal)];
     [self.alertView addSubview:self.doneButton];
@@ -227,7 +234,7 @@
     self.doneButton.frame = CGRectMake(36, _titleLabel.bottom + 15, kAlertViewWidth - 72, 44);
     
     self.anotherButton = [[UIButton alloc] init];
-    self.anotherButton.backgroundColor = kMainRedColor;
+    self.anotherButton.backgroundColor = kRGBColorWith(212, 185, 113);
     [self.anotherButton setTitle:@"成为会员" forState:(UIControlStateNormal)];
     self.anotherButton.layer.cornerRadius = 22;
 

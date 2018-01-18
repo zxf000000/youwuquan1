@@ -107,7 +107,7 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)getStatusCommentListWithId:(NSString *)statusId successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
++ (void)getStatusCommentListWithId:(NSString *)statusId page:(NSInteger)page size:(NSInteger)size successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
 
 /**
  评论动态
@@ -139,7 +139,7 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)commentCommentWithId:(NSString *)statusId commentId:(NSString *)commentId successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
++ (void)commentCommentWithId:(NSString *)statusId commentId:(NSString *)commentId text:(NSString *)text successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
 
 /**
  关注列表

@@ -11,7 +11,7 @@
 #import <AFNetworkActivityIndicatorManager.h>
 #import "XFCacheManager.h"
 #import "XFNetworking+RequestManager.h"
-
+#import "XFLoginVCViewController.h"
 
 #define YQ_ERROR_IMFORMATION @"网络出现错误，请检查网络连接"
 #define YQ_ERROR [NSError errorWithDomain:@"com.hyq.YQNetworking.ErrorDomain" code:-999 userInfo:@{ NSLocalizedDescriptionKey:YQ_ERROR_IMFORMATION}]
@@ -871,6 +871,12 @@ static NSTimeInterval requestTimeout = 10.f;
         {
             // 授权失败--重新登录
             [XFToolManager showProgressInWindowWithString:@"登录过期"];
+            
+            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+            XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
+            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginVC];
+            [vc presentViewController:navi animated:YES completion:nil];
+            
 
             
         }

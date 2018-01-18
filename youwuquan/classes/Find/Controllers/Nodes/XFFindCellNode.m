@@ -462,10 +462,8 @@
     _imgShadowNode.style.preferredSize = CGSizeMake(picWidth, picShadowHeight);
     //        _rewardButton.style.preferredSize = CGSizeMake(65, 65);
     
-    ASStackLayoutSpec *picButtonLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[]];
-    
+    ASInsetLayoutSpec *picButtonLayout = (ASInsetLayoutSpec *)[ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentEnd) alignItems:(ASStackLayoutAlignItemsEnd) children:@[]];
 
-    
     if (_picNodes.count == 1) {
         
         XFNetworkImageNode *picNode = self.picNodes[0];
@@ -555,34 +553,7 @@
         
         ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
         
-        
-        picButtonLayout = picPlayLayout;
-        
-    } else if (_picNodes.count == 2) {
-        
-        for (int i = 0 ; i < _picNodes.count ; i++) {
-            
-                XFNetworkImageNode *node = _picNodes[i];
-                node.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
-            
-        }
-        
-        if (self.closeCount > 0) {
-            _lockButton.style.preferredSize = CGSizeMake(50, 50);
-            XFNetworkImageNode *picNode = [self.picNodes lastObject];
-            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
-            NSMutableArray *arr = [NSMutableArray arrayWithArray:self.picNodes];
-            arr[arr.count - 1] = overlay;
-            self.picNodes = arr.copy;
-        }
-
-        ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:_picNodes];
-            
-        ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, (kScreenWidth - littlePicWidth * 3)/2, 0,(kScreenWidth - littlePicWidth * 3)/2 + littlePicWidth + 3)) child:upPicLayout];
-            
-        ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:_playButton];
-            
-        picButtonLayout = picPlayLayout;
+        picButtonLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 0, 0, 0)) child:picPlayLayout];
         
     } else if (_picNodes.count > 1 && _picNodes.count <= 3) {
 
@@ -603,13 +574,12 @@
         
         ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:_picNodes];
         
-        ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth * (3 - _picNodes.count), 0,0)) child:upPicLayout];
+//        ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0,  -littlePicWidth * (3 - _picNodes.count), 0,0)) child:upPicLayout];
         
-        ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(littlePicWidth - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
         
-        ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
+//        ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:picShadowLayout];
         
-        ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picLayout overlay:_playButton];
+        ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:upPicLayout overlay:_playButton];
         
         ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, kPicSpace, 0, kPicSpace)) child:picPlayLayout];
         
@@ -617,7 +587,7 @@
         
         picButtonLayout = picInset;
         
-    } else if (_picNodes.count > 3 && _picNodes.count <= 6) {
+    } else if (_picNodes.count > 3 && _picNodes.count <= 6 && _picNodes.count != 4) {
         
         NSMutableArray *downNodes = [NSMutableArray array];
         for (NSInteger i = 0 ; i <_picNodes.count ; i ++ ) {
@@ -887,5 +857,33 @@
     }];
 }
 
+
+//if (_picNodes.count == 2) {
+//
+//    for (int i = 0 ; i < _picNodes.count ; i++) {
+//
+//        XFNetworkImageNode *node = _picNodes[i];
+//        node.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
+//
+//    }
+//
+//    if (self.closeCount > 0) {
+//        _lockButton.style.preferredSize = CGSizeMake(50, 50);
+//        XFNetworkImageNode *picNode = [self.picNodes lastObject];
+//        ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
+//        NSMutableArray *arr = [NSMutableArray arrayWithArray:self.picNodes];
+//        arr[arr.count - 1] = overlay;
+//        self.picNodes = arr.copy;
+//    }
+//
+//    ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:_picNodes];
+//
+//    ASInsetLayoutSpec *picINset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, (kScreenWidth - littlePicWidth * 3)/2, 0,(kScreenWidth - littlePicWidth * 3)/2 + littlePicWidth + 3)) child:upPicLayout];
+//
+//    ASOverlayLayoutSpec *picPlayLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picINset overlay:_playButton];
+//
+//    picButtonLayout = picPlayLayout;
+//
+//} else
 
 @end

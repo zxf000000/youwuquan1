@@ -32,4 +32,8 @@ typedef NS_ENUM(NSInteger,NearbyCellType) {
 
 @property (nonatomic,strong) id <XFNearbyCellNodeDelegate> delegate;
 
+@property (nonatomic,copy) NSArray *datas;
+
+- (instancetype)initWithDatas:(NSArray *)datas;
+
 @end

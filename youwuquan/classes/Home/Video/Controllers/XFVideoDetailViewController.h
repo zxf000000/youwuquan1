@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger,XFVideoVCType) {
     
 };
 
-@interface XFVideoDetailViewController : XFStatusCommentViewController
+@interface XFVideoDetailViewController : UIViewController
 
 @property (nonatomic,assign) XFVideoVCType type;
 

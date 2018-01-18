@@ -9,12 +9,21 @@
 #import "XFNearbyViewController.h"
 #import "XFNearbyTableViewCell.h"
 #import "XFFindDetailViewController.h"
+#import "XFHomeNetworkManager.h"
+#import "XFNearModel.h"
 
 @interface XFNearbyViewController () <UICollectionViewDataSource,UICollectionViewDelegate>
 
 @property (nonatomic,strong) UICollectionView *collectionView;
 
 @property (nonatomic,strong) UIImage *nearImg;
+
+@property (nonatomic,copy) NSString *gender;
+
+@property (nonatomic,strong) NSMutableArray *nearDatas;
+
+@property (nonatomic,assign) NSInteger page;
+
 
 @end
 
@@ -34,6 +43,10 @@
     }
     
     self.nearImg = [UIImage imageNamed:@"find12"];
+    
+    self.nearDatas = [NSMutableArray array];
+    
+    self.gender = @"male";
     
     [self setupNavigationBar];
     
@@ -59,8 +72,58 @@
     [self.collectionView registerNib:[UINib nibWithNibName:@"XFNearbyTableViewCell" bundle:nil] forCellWithReuseIdentifier:@"XFNearbyTableViewCell"];
     self.collectionView.showsVerticalScrollIndicator = NO;
     [self.view addSubview:self.collectionView];
+    
+    [self getNearData];
 }
 
+- (void)getNearData {
+    
+    self.page = 0;
+    
+    [XFHomeNetworkManager getNearbyDataWithSex:self.gender longitude:[XFUserInfoManager sharedManager].userLong latitude:[XFUserInfoManager sharedManager].userLati distance:100 page:self.page size:20 successBlock:^(id responseObj) {
+        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFNearModel modelWithDictionary:datas[i]]];
+            
+        }
+        
+        self.nearDatas = arr;
+        // 成功之后
+        [self.collectionView reloadData];
+    } failBlock:^(NSError *error) {
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
+}
+
+- (void)loedMoredata {
+    
+    self.page += 1;
+    
+    [XFHomeNetworkManager getNearbyDataWithSex:self.gender longitude:[XFUserInfoManager sharedManager].userLong latitude:[XFUserInfoManager sharedManager].userLati distance:100 page:self.page size:20 successBlock:^(id responseObj) {
+        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFNearModel modelWithDictionary:datas[i]]];
+            
+        }
+        
+        [self.nearDatas addObjectsFromArray:arr.copy];
+        // 成功之后
+        [self.collectionView reloadData];
+    } failBlock:^(NSError *error) {
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
+}
 
 // 筛选
 - (void)clickSxButton {
@@ -69,18 +132,22 @@
     
     UIAlertAction *actionBoy = [UIAlertAction actionWithTitle:@"只看男神" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
         
-        self.nearImg = [UIImage imageNamed:@"find13"];
+//        self.nearImg = [UIImage imageNamed:@"find13"];
+        self.gender = @"female";
+        [self getNearData];
         [self.collectionView reloadData];
     }];
     UIAlertAction *actionGirl = [UIAlertAction actionWithTitle:@"只看女神" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
         
-        self.nearImg = [UIImage imageNamed:@"find7"];
+        self.gender = @"male";
+        [self getNearData];
         [self.collectionView reloadData];
 
     }];
     UIAlertAction *actionAll = [UIAlertAction actionWithTitle:@"查看所有" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
         
-        self.nearImg = [UIImage imageNamed:@"find21"];
+        self.gender = @"all";
+        [self getNearData];
         [self.collectionView reloadData];
 
     }];
@@ -131,16 +198,19 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    XFNearModel *model = self.nearDatas[indexPath.item];
 
     XFFindDetailViewController *datailVC = [[XFFindDetailViewController alloc] init];
-    
+    datailVC.userId = model.uid;
+    datailVC.userName = model.nickname;
+    datailVC.iconUrl = model.headIconUrl;
     [self.navigationController pushViewController:datailVC animated:YES];
     
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return 20;
+    return self.nearDatas.count;
     
 }
 
@@ -148,7 +218,7 @@
     
     XFNearbyTableViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFNearbyTableViewCell" forIndexPath:indexPath];
     
-    cell.picView.image = self.nearImg;
+    cell.model = self.nearDatas[indexPath.item];
     
     return cell;
     

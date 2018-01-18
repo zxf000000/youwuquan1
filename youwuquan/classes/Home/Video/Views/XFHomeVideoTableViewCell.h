@@ -21,10 +21,12 @@
 @property (weak, nonatomic) IBOutlet UIView *bgView;
 @property (weak, nonatomic) IBOutlet UIImageView *picView;
 @property (weak, nonatomic) IBOutlet UIImageView *iconVIew;
-@property (weak, nonatomic) IBOutlet UIButton *likeButton;
 @property (weak, nonatomic) IBOutlet XFInsertLabel *nameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *numberLabel;
+@property (weak, nonatomic) IBOutlet UIButton *timeButton;
+@property (weak, nonatomic) IBOutlet UIButton *numberButton;
+- (IBAction)clickShareButton:(id)sender;
 
+@property (weak, nonatomic) IBOutlet UIButton *typeButton;
 @property (nonatomic,strong) XFVideoModel *model;
 
 @property (nonatomic,strong) id <XFHomeVideoCellDelegate> delegate;

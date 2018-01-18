@@ -15,14 +15,20 @@
 @property (nonatomic,copy) NSString *id;
 @property (nonatomic,copy) NSString *text;
 @property (nonatomic,copy) NSString *headIconUrl;
-@property (nonatomic,copy) NSString *childComments;
+@property (nonatomic,copy) NSArray *childComments;
 @property (nonatomic,copy) NSString *username;
 @property (nonatomic,copy) NSString *commentDate;
+@property (nonatomic,copy) NSString *fatherId;
+@property (nonatomic,copy) NSString *fartherName;
+
+
 //@property (nonatomic,copy) NSString *releaseId;
 //@property (nonatomic,copy) NSString *type;
 //
 //@property (nonatomic,copy) NSString *userNike;
 //@property (nonatomic,copy) NSString *userNoA;
 //@property (nonatomic,copy) NSString *userNoB;
+
++ (NSArray *)modelsWithComments:(NSArray *)comments;
 
 @end

@@ -25,10 +25,11 @@
 #import "XFHomeNetworkManager.h"
 #import "XFCommentModel.h"
 #import "XFMineNetworkManager.h"
+#import <IQKeyboardManager.h>
 
 #define kVideoVideHeight (9/16.f * kScreenWidth)
 
-@interface XFVideoDetailViewController () <ASTableDelegate,ASTableDataSource,HJDanmakuViewDateSource,HJDanmakuViewDelegate,MD360DirectorFactory,PLPlayerDelegate>
+@interface XFVideoDetailViewController () <ASTableDelegate,ASTableDataSource,HJDanmakuViewDateSource,HJDanmakuViewDelegate,MD360DirectorFactory,PLPlayerDelegate,UITextFieldDelegate>
 
 @property (nonatomic,strong) UIButton *backButton;
 
@@ -91,6 +92,19 @@
 
 @property (nonatomic,copy) NSDictionary *allInfo;
 
+// 输入框
+@property (nonatomic,strong) UIView *videoInputView;
+@property (nonatomic,strong) UITextField *videoInputTf;
+@property (nonatomic,strong) UIButton *likeButton;
+@property (nonatomic,strong) UIButton *commentButton;
+@property (nonatomic,strong) UIButton *shareButton;
+@property (nonatomic,strong) UIView *shadowView;
+@property (nonatomic,strong) XFCommentModel *commentedModel;
+
+@property (nonatomic,strong) UIView *hdVideoCover;
+@property (nonatomic,strong) UIImageView *hdCoverImageView;
+@property (nonatomic,strong) UIButton *hdNunmberButton;
+
 @end
 
 @implementation XFVideoDetailViewController
@@ -120,37 +134,40 @@
 
     [self setupTableNode];
     
+    [self setupInputView];
     
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrame:)
+                                                 name:UIKeyboardWillChangeFrameNotification object:nil];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleDeviceOrientationDidChange:)
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil
      ];
+    
 
     self.count = 10;
     
-    [self.view bringSubviewToFront:self.inputView];
+//    [self.view bringSubviewToFront:self.inputView];
     self.inputView.frame = CGRectMake(0, kScreenHeight - 44, kScreenWidth, 44);
     
     [self loadData];
 }
 
+
+
 - (void)loadCommentData {
     
     [XFHomeNetworkManager getVideoCommentListWithID:self.model.id successBlock:^(id responseObj) {
         
-        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
-        NSMutableArray *arr = [NSMutableArray array];
-        for (int i = 0; i < datas.count; i ++ ) {
-            
-            [arr addObject:[XFCommentModel modelWithDictionary:datas[i]]];
-        }
+        NSArray *comments = ((NSDictionary *)responseObj)[@"content"];
         
-        self.comments = arr.copy;
+        self.comments = [XFCommentModel modelsWithComments:comments];
+//        self.comments = arr.copy;
         
-        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationNone)];
+//        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationNone)];
+        
+        [self.tableNode reloadData];
         
     } failBlock:^(NSError *error) {
         
@@ -162,7 +179,7 @@
 
 - (void)clickSendButton {
     
-    if (![self.inputTextField.text isHasContent]) {
+    if (![self.videoInputTf.text isHasContent]) {
         
         [XFToolManager showProgressInWindowWithString:@"请输入内容"];
         
@@ -170,21 +187,38 @@
     }
     
     [self hide];
-
     
-    [XFHomeNetworkManager commentVideWithVideoId:self.model.id text:self.inputTextField.text successBlock:^(id responseObj) {
+    if (!self.commentedModel) {
+
+        [XFHomeNetworkManager commentVideWithVideoId:self.model.id text:self.videoInputTf.text successBlock:^(id responseObj) {
+            
+            [self loadCommentData];
+            self.videoInputTf.text = nil;
+            
+        } failBlock:^(NSError *error) {
+            
+            NSLog(@"%@",error.description);
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+    } else {
         
-        [self loadCommentData];
-        self.inputTextField.text = nil;
+        [XFHomeNetworkManager commentCommentWithVideoId:self.model.id commentId:self.commentedModel.id text:self.videoInputTf.text successBlock:^(id responseObj) {
+            
+            [self loadCommentData];
+            self.videoInputTf.text = nil;
+        } failBlock:^(NSError *error) {
+            NSLog(@"%@",error.description);
+
+        } progress:^(CGFloat progress) {
+            
+        }];
         
-    } failBlock:^(NSError *error) {
-        
-        NSLog(@"%@",error);
-        
-    } progress:^(CGFloat progress) {
-        
-        
-    }];
+    }
+    
+
     
 }
 
@@ -385,50 +419,6 @@
     
 }
 
-#pragma mark - 键盘监听
-- (void)keyboardDidChangeFrame:(NSNotification *)notification {
-    
-    NSDictionary *info = notification.userInfo;
-    /*
-     UIKeyboardAnimationCurveUserInfoKey = 7;
-     UIKeyboardAnimationDurationUserInfoKey = "0.25";
-     UIKeyboardBoundsUserInfoKey = "NSRect: {{0, 0}, {375, 44}}";
-     UIKeyboardCenterBeginUserInfoKey = "NSPoint: {187.5, 689}";
-     UIKeyboardCenterEndUserInfoKey = "NSPoint: {187.5, 645}";
-     UIKeyboardFrameBeginUserInfoKey = "NSRect: {{0, 667}, {375, 44}}";
-     UIKeyboardFrameEndUserInfoKey = "NSRect: {{0, 623}, {375, 44}}";
-     UIKeyboardIsLocalUserInfoKey = 1;
-     **/
-    CGRect frame = [info[@"UIKeyboardFrameEndUserInfoKey"] CGRectValue];
-    
-    if (frame.origin.y == kScreenHeight) {
-        
-        [UIView animateWithDuration:0.25 animations:^{
-            
-            self.inputView.frame = CGRectMake(0, kScreenHeight - 44, kScreenWidth, 44);
-            self.shadowView.alpha = 0;
-            
-        }];
-        
-        
-    } else {
-        
-        [self.view bringSubviewToFront:self.shadowView];
-        [self.view bringSubviewToFront:self.inputView];
-        CGRect inputFrame = self.inputView.frame;
-        inputFrame.origin.y = frame.origin.y - 44 ;
-        
-        [UIView animateWithDuration:0.25 animations:^{
-            
-            self.inputView.frame = inputFrame;
-            self.shadowView.alpha = 1;
-            
-        }];
-        
-    }
-    
-}
-
 - (void)handleDeviceOrientationDidChange:(UIInterfaceOrientation)interfaceOrientation
 {
     //1.获取 当前设备 实例
@@ -508,6 +498,9 @@
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+    [[IQKeyboardManager sharedManager] setEnable:NO];
+    [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -518,6 +511,9 @@
     self.timer = nil;
     
     [self.navigationController setNavigationBarHidden:NO animated:YES];
+    
+    [[IQKeyboardManager sharedManager] setEnable:YES];
+    [IQKeyboardManager sharedManager].enableAutoToolbar = YES;
 }
 
 
@@ -742,6 +738,9 @@
     //在创建播放器类,并在调用prepare方法之前设置。比如：maxSize设置500M时缓存文件超过500M后会优先覆盖最早缓存的文件。maxDuration设置为300秒时表示超过300秒的视频不会启用缓存功能。
 
 //    [self.aliPlayer setPlayingCache:YES saveDir:docDir maxSize:500 maxDuration:300];
+    
+    self.hdVideoCover = [[UIView alloc] init];
+    
     
     // 返回按钮
     self.backButton = [[UIButton alloc] init];
@@ -1237,6 +1236,29 @@
 
 #pragma mark - tableNodedelegate
 
+- (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    ASCellNode *node = [tableNode nodeForRowAtIndexPath:indexPath];
+    node.selected  = NO;
+    
+    if (indexPath.row > 0) {
+        
+        XFCommentModel *model = self.comments[indexPath.row - 1];
+        self.commentedModel = model;
+        // 回复
+        [self.videoInputTf becomeFirstResponder];
+        
+        // 个人信息
+        
+        //        XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+        //        detailVC.userId = model.uid;
+        //        detailVC.userName = model.username;
+        //        detailVC.iconUrl = model.headIconUrl;
+        //        [self.navigationController pushViewController:detailVC animated:YES];
+    }
+    
+}
+
 - (NSInteger)numberOfSectionsInTableNode:(ASTableNode *)tableNode {
     
     return 3;
@@ -1347,7 +1369,6 @@
                             
                         };
                         
-                        
                     }
                     break;
                 case 9:
@@ -1378,7 +1399,18 @@
                         
                         return ^ASCellNode *{
                             
-                            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:self.comments[indexPath.row - 1]];
+                            XFCommentModel *model = self.comments[indexPath.row - 1];
+                            
+                            [self.comments enumerateObjectsUsingBlock:^(XFCommentModel * obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                
+                                if ([obj.id isEqualToString:model.fatherId]) {
+                                    
+                                    model.fartherName = obj.username;
+                                }
+                                
+                            }];
+                            
+                            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
                             
                             return node;
                             
@@ -1392,9 +1424,20 @@
                     
                     return ^ASCellNode *() {
                         
-                        XFStatusCommentCellNode *cell = [[XFStatusCommentCellNode alloc] initWithMode:self.comments[indexPath.row - 1]];
+                        XFCommentModel *model = self.comments[indexPath.row - 1];
                         
-                        return cell;
+                        [self.comments enumerateObjectsUsingBlock:^(XFCommentModel * obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                            
+                            if ([obj.id isEqualToString:model.fatherId]) {
+                                
+                                model.fartherName = obj.username;
+                            }
+                            
+                        }];
+                        
+                        XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
+                        
+                        return node;
                         
                     };
 
@@ -1437,6 +1480,114 @@
     
     return view;
     
+}
+
+
+
+#pragma mark - 键盘监听
+- (void)keyboardDidChangeFrame:(NSNotification *)notification {
+    
+    NSDictionary *info = notification.userInfo;
+    /*
+     UIKeyboardAnimationCurveUserInfoKey = 7;
+     UIKeyboardAnimationDurationUserInfoKey = "0.25";
+     UIKeyboardBoundsUserInfoKey = "NSRect: {{0, 0}, {375, 44}}";
+     UIKeyboardCenterBeginUserInfoKey = "NSPoint: {187.5, 689}";
+     UIKeyboardCenterEndUserInfoKey = "NSPoint: {187.5, 645}";
+     UIKeyboardFrameBeginUserInfoKey = "NSRect: {{0, 667}, {375, 44}}";
+     UIKeyboardFrameEndUserInfoKey = "NSRect: {{0, 623}, {375, 44}}";
+     UIKeyboardIsLocalUserInfoKey = 1;
+     **/
+    CGRect frame = [info[@"UIKeyboardFrameEndUserInfoKey"] CGRectValue];
+    
+    if (frame.origin.y == kScreenHeight) {
+        
+        [UIView animateWithDuration:0.25 animations:^{
+            
+            self.videoInputView.frame = CGRectMake(0, kScreenHeight - 49, kScreenWidth, 49);
+            self.shadowView.alpha = 0;
+            
+        }];
+        
+        
+    } else {
+        
+        [self.view bringSubviewToFront:self.shadowView];
+        [self.view bringSubviewToFront:self.videoInputView];
+        CGRect inputFrame = self.videoInputView.frame;
+        inputFrame.origin.y = frame.origin.y - 49;
+        
+        [UIView animateWithDuration:0.25 animations:^{
+            
+            self.videoInputView.frame = inputFrame;
+            self.shadowView.alpha = 1;
+            
+        }];
+        
+    }
+    
+}
+
+- (void)hide {
+    
+    [self tapShadowView];
+}
+
+- (void)tapShadowView {
+    
+    [self.videoInputTf resignFirstResponder];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        
+        self.shadowView.alpha = 0;
+        
+    }];
+    
+}
+
+- (void)setupInputView {
+    
+    self.videoInputView = [[UIView alloc] initWithFrame:(CGRectMake(0, kScreenHeight - 49, kScreenWidth, 49))];
+    self.videoInputView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.videoInputView];
+    
+    UIView *bgView = [[UIView alloc] initWithFrame:(CGRectMake(6, 6, kScreenWidth - 126, 37))];
+    bgView.backgroundColor = UIColorHex(e0e0e0);
+    bgView.layer.cornerRadius = 5;
+    [self.videoInputView addSubview:bgView];
+    
+    _videoInputTf = [[UITextField alloc] initWithFrame:(CGRectMake(6, 0, bgView.width - 37 - 6, 37))];
+    _videoInputTf.placeholder = @"评论吧";
+    _videoInputTf.delegate = self;
+    _videoInputTf.font = [UIFont systemFontOfSize:14];
+    [bgView addSubview:_videoInputTf];
+    
+    UIButton *sendButton = [[UIButton alloc] init];
+    [sendButton setImage:[UIImage imageNamed:@"video_send"] forState:(UIControlStateNormal)];
+    [sendButton addTarget:self action:@selector(clickSendButton) forControlEvents:(UIControlEventTouchUpInside)];
+    sendButton.frame = CGRectMake(bgView.width - 37, 0, 37, 37);
+    [bgView addSubview:sendButton];
+    
+    _likeButton = [[UIButton alloc] initWithFrame:(CGRectMake(bgView.right, 0, 40, 49))];
+    [_likeButton setImage:[UIImage imageNamed:@"find_like"] forState:(UIControlStateNormal)];
+    [self.videoInputView addSubview:_likeButton];
+    
+    _commentButton = [[UIButton alloc] initWithFrame:(CGRectMake(_likeButton.right, 0, 40, 49))];
+    [_commentButton setImage:[UIImage imageNamed:@"find_comment"] forState:(UIControlStateNormal)];
+    [self.videoInputView addSubview:_commentButton];
+    
+    _shareButton = [[UIButton alloc] initWithFrame:(CGRectMake(_commentButton.right, 0, 40, 49))];
+    [_shareButton setImage:[UIImage imageNamed:@"find_share"] forState:(UIControlStateNormal)];
+    [self.videoInputView addSubview:_shareButton];
+    
+    self.shadowView = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64))];
+    
+    self.shadowView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    [self.view insertSubview:self.shadowView belowSubview:self.inputView];
+    self.shadowView.alpha = 0;
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapShadowView)];
+    [self.shadowView addGestureRecognizer:tap];
 }
 
 - (void)setupTableNode {

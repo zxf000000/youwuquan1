@@ -8,6 +8,7 @@
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFCommentModel.h"
+#import "XFNetworkImageNode.h"
 
 @class XFStatusCommentCellNode;
 
@@ -21,7 +22,7 @@
 
 @property (nonatomic,strong) ASTextNode *nameNode;
 
-@property (nonatomic,strong) ASNetworkImageNode *iconNode;
+@property (nonatomic,strong) XFNetworkImageNode *iconNode;
 
 @property (nonatomic,strong) ASTextNode *timeNode;
 

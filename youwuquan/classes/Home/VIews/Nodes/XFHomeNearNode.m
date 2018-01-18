@@ -9,12 +9,15 @@
 #import "XFHomeNearNode.h"
 
 #import "XFNearbyCellNode.h"
+#import "XFNearModel.h"
 
 @implementation XFHomeNearNode
 
-- (instancetype)init {
+- (instancetype)initWithDatas:(NSArray *)datas {
     
     if (self = [super init]) {
+        
+        _datas = datas;
         
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
@@ -63,7 +66,7 @@
 
 - (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section {
     
-    return 10;
+    return self.datas.count;
     
 }
 
@@ -73,20 +76,22 @@
         
         XFNearbyCellNode *node = [[XFNearbyCellNode alloc] init];
     
-        NSString *imgStr = [XFIconmanager sharedManager].headImages[indexPath.item % 5];
+        XFNearModel *model = self.datas[indexPath.item];
         
-        node.iconNode.defaultImage  = [UIImage imageNamed:imgStr];
-        node.nameNode.attributedText  = [[NSMutableAttributedString alloc] initWithString:self.names[indexPath.item%5]];
-
+        NSString *imgStr = model.headIconUrl;
+        
+        node.iconNode.URL  = [NSURL URLWithString:imgStr];
+        node.nameNode.attributedText  = [[NSMutableAttributedString alloc] initWithString:model.nickname];
+        
+        [node.distanceButton setTitle:[NSString stringWithFormat:@"%@km",model.distance] withFont:[UIFont systemFontOfSize:11] withColor:kMainRedColor forState:(UIControlStateNormal)];
+        
         if (self.type == Search) {
             
             [node.distanceButton setImage:nil forState:(UIControlStateNormal)];
             [node.distanceButton setTitle:@"" withFont:nil withColor:nil forState:(UIControlStateNormal)];
             
         }
-        
     
-        
         return node;
     };
     

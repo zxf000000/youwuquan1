@@ -646,4 +646,19 @@
  */
 + (NSString *)pathUrlForRefreshLocation;
 
+/**
+ 获取VIP列表
+
+ @return url
+ */
++ (NSString *)pathUrlForGetVipList;
+
+
+/**
+ 获取充值列表
+
+ @return url
+ */
++ (NSString *)pathUrlForGetCahrgeList;
+
 @end

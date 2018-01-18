@@ -489,6 +489,16 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
               failedBlock:(MineRequestFailedBlock)failedBlock
             progressBlock:(MineRequestProgressBlock)progressBlock;
 
+/**
+ 获取充值列表
+
+ @param successBlock 成功
+ @param failedBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getChargeListWithsuccessBlock:(MineRequestSuccessBlock)successBlock
+                          failedBlock:(MineRequestFailedBlock)failedBlock
+                        progressBlock:(MineRequestProgressBlock)progressBlock;
 
 /**
  获取每日任务
@@ -596,7 +606,5 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
 + (void)checkUpdateForAppWithsuccessBlock:(MineRequestSuccessBlock)successBlock
                               failedBlock:(MineRequestFailedBlock)failedBlock
                             progressBlock:(MineRequestProgressBlock)progressBlock;
-
-
 
 @end

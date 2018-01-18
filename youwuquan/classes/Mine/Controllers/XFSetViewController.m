@@ -34,24 +34,141 @@
 
 - (void)getData {
     
+    NSString *path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *path1 = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *path2 = NSTemporaryDirectory();
     
-    YYCache *netCache = kNetworkCache;
-    // 清除缓存
-    YYCache *cache = [YYCache cacheWithName:kTagsHistoryKey];
-    YYCache *cache1 = [YYCache cacheWithName:kSearchHistoryKey];
-    
-    NSLog(@"%zd",cache.diskCache.totalCost + cache1.diskCache.totalCost);
-    
-    NSInteger total = cache.diskCache.totalCost + cache1.diskCache.totalCost + netCache.diskCache.totalCost;
-    
-    if (total < 1000 * 1000) {
+    unsigned long long size = 0;
+
+    NSFileManager *fileManager=[NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:path]) {
+        NSArray *childerFiles= [fileManager subpathsAtPath:path];
         
-        self.totalCostLabel.text = [NSString stringWithFormat:@"%.1fK",total/1000.f];
-        
-    } else if (total > 1000 * 1000) {
-        
-        self.totalCostLabel.text = [NSString stringWithFormat:@"%.1fM",total/1000000.f];
+        for (NSString *fileName in childerFiles) {
+            //如有需要，加入条件，过滤掉不想删除的文件
+            
+            
+            NSString *fileAbsolutePath = [path stringByAppendingPathComponent:fileName];
+            if (![fileName hasPrefix:@"userInfo"]) {
+                
+                NSDictionary *attrs = [fileManager attributesOfItemAtPath:fileAbsolutePath error:nil];
+                size += attrs.fileSize;
+            }
+            //            [fileManager removeItemAtPath:fileAbsolutePath error:nil];
+        }
     }
+    
+    if ([fileManager fileExistsAtPath:path1]) {
+        NSArray *childerFiles= [fileManager subpathsAtPath:path1];
+        
+        for (NSString *fileName in childerFiles) {
+            //如有需要，加入条件，过滤掉不想删除的文件
+            
+            
+            NSString *fileAbsolutePath = [path1 stringByAppendingPathComponent:fileName];
+            if (![fileName hasPrefix:@"userInfo"]) {
+                
+                NSDictionary *attrs = [fileManager attributesOfItemAtPath:fileAbsolutePath error:nil];
+                size += attrs.fileSize;
+            }
+            
+        }
+    }
+    
+    if ([fileManager fileExistsAtPath:path2]) {
+        NSArray *childerFiles= [fileManager subpathsAtPath:path2];
+        
+        for (NSString *fileName in childerFiles) {
+            //如有需要，加入条件，过滤掉不想删除的文件
+            
+            NSString *fileAbsolutePath = [path2 stringByAppendingPathComponent:fileName];
+            if (![fileName hasPrefix:@"userInfo"]) {
+                
+                NSDictionary *attrs = [fileManager attributesOfItemAtPath:fileAbsolutePath error:nil];
+                size += attrs.fileSize;
+            }
+            
+        }
+    }
+    NSString *sizeText = @"";
+    if (size >= pow(10, 9)) { // size >= 1GB
+        sizeText = [NSString stringWithFormat:@"%.2fGB", size / pow(10, 9)];
+    } else if (size >= pow(10, 6)) { // 1GB > size >= 1MB
+        sizeText = [NSString stringWithFormat:@"%.2fMB", size / pow(10, 6)];
+    } else if (size >= pow(10, 3)) { // 1MB > size >= 1KB
+        sizeText = [NSString stringWithFormat:@"%.2fKB", size / pow(10, 3)];
+    } else { // 1KB > size
+        sizeText = [NSString stringWithFormat:@"%zdB", size];
+    }
+    
+    self.totalCostLabel.text = [NSString stringWithFormat:@"%@",sizeText];
+    
+}
+
+- (void)deleteDatas {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在清除缓存"];
+    
+    NSString *path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *path1 = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *path2 = NSTemporaryDirectory();
+    NSFileManager *fileManager=[NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:path]) {
+        NSArray *childerFiles= [fileManager subpathsAtPath:path];
+        
+        for (NSString *fileName in childerFiles) {
+            //如有需要，加入条件，过滤掉不想删除的文件
+        
+            NSString *fileAbsolutePath = [path stringByAppendingPathComponent:fileName];
+            
+            if (![fileName hasPrefix:@"userInfo"]) {
+                
+                [fileManager removeItemAtPath:fileAbsolutePath error:nil];
+
+            }
+
+        }
+    }
+    
+    if ([fileManager fileExistsAtPath:path1]) {
+        NSArray *childerFiles= [fileManager subpathsAtPath:path1];
+        
+        for (NSString *fileName in childerFiles) {
+            //如有需要，加入条件，过滤掉不想删除的文件
+            
+            
+            NSString *fileAbsolutePath = [path1 stringByAppendingPathComponent:fileName];
+            if (![fileName hasPrefix:@"userInfo"]) {
+                
+                [fileManager removeItemAtPath:fileAbsolutePath error:nil];
+                
+            }
+            
+        }
+    }
+    
+    if ([fileManager fileExistsAtPath:path2]) {
+        NSArray *childerFiles= [fileManager subpathsAtPath:path2];
+        
+        for (NSString *fileName in childerFiles) {
+            //如有需要，加入条件，过滤掉不想删除的文件
+            
+            NSString *fileAbsolutePath = [path2 stringByAppendingPathComponent:fileName];
+            if (![fileName hasPrefix:@"userInfo"]) {
+                
+                [fileManager removeItemAtPath:fileAbsolutePath error:nil];
+                
+            }
+        }
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.7 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        [XFToolManager changeHUD:HUD successWithText:@"清除成功"];
+        [self getData];
+
+    });
+    
     
 }
 
@@ -61,7 +178,7 @@
             
         case 0:
         {
-
+            [self deleteDatas];
             
         }
             break;
@@ -182,5 +299,54 @@
     
 }
 
+
+- (NSString *)fileSizeWithPath:(NSString *)path
+{
+    // 总大小
+    unsigned long long size = 0;
+    NSString *sizeText = nil;
+    // 文件管理者
+    NSFileManager *mgr = [NSFileManager defaultManager];
+    
+    // 文件属性
+    NSDictionary *attrs = [mgr attributesOfItemAtPath:path error:nil];
+    // 如果这个文件或者文件夹不存在,或者路径不正确直接返回0;
+    if (attrs == nil) return 0;
+    if ([attrs.fileType isEqualToString:NSFileTypeDirectory]) { // 如果是文件夹
+        // 获得文件夹的大小  == 获得文件夹中所有文件的总大小
+        NSDirectoryEnumerator *enumerator = [mgr enumeratorAtPath:path];
+        for (NSString *subpath in enumerator) {
+            // 全路径
+            NSString *fullSubpath = [path stringByAppendingPathComponent:subpath];
+            // 累加文件大小
+            size += [mgr attributesOfItemAtPath:fullSubpath error:nil].fileSize;
+            
+            if (size >= pow(10, 9)) { // size >= 1GB
+                sizeText = [NSString stringWithFormat:@"%.2fGB", size / pow(10, 9)];
+            } else if (size >= pow(10, 6)) { // 1GB > size >= 1MB
+                sizeText = [NSString stringWithFormat:@"%.2fMB", size / pow(10, 6)];
+            } else if (size >= pow(10, 3)) { // 1MB > size >= 1KB
+                sizeText = [NSString stringWithFormat:@"%.2fKB", size / pow(10, 3)];
+            } else { // 1KB > size
+                sizeText = [NSString stringWithFormat:@"%zdB", size];
+            }
+            
+        }
+        return sizeText;
+    } else { // 如果是文件
+        size = attrs.fileSize;
+        if (size >= pow(10, 9)) { // size >= 1GB
+            sizeText = [NSString stringWithFormat:@"%.2fGB", size / pow(10, 9)];
+        } else if (size >= pow(10, 6)) { // 1GB > size >= 1MB
+            sizeText = [NSString stringWithFormat:@"%.2fMB", size / pow(10, 6)];
+        } else if (size >= pow(10, 3)) { // 1MB > size >= 1KB
+            sizeText = [NSString stringWithFormat:@"%.2fKB", size / pow(10, 3)];
+        } else { // 1KB > size
+            sizeText = [NSString stringWithFormat:@"%zdB", size];
+        }
+        
+    }
+    return sizeText;
+}
 
 @end

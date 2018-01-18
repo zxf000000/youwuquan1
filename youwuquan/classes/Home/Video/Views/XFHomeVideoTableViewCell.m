@@ -14,13 +14,11 @@
     [super awakeFromNib];
     // Initialization code
     
-    self.bgView.layer.masksToBounds = NO;
-    self.bgView.layer.shadowColor = UIColorFromHex(0xe5e5e5).CGColor;
-    self.bgView.layer.shadowRadius = 4;
-    self.bgView.layer.shadowOpacity = 0.9;
-    self.bgView.layer.shadowOffset = CGSizeMake(0, 0);
-    
-    self.likeButton.titleEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
+//    self.bgView.layer.masksToBounds = NO;
+//    self.bgView.layer.shadowColor = UIColorFromHex(0xe5e5e5).CGColor;
+//    self.bgView.layer.shadowRadius = 4;
+//    self.bgView.layer.shadowOpacity = 0.9;
+//    self.bgView.layer.shadowOffset = CGSizeMake(0, 0);
     
     
     self.picView.layer.masksToBounds = YES;
@@ -30,14 +28,17 @@
     
     // 设置圆角
     
-    self.iconVIew.layer.cornerRadius = 15;
+    self.iconVIew.layer.cornerRadius = 20;
     self.iconVIew.layer.masksToBounds = YES;
     UITapGestureRecognizer *tapIcon = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapIconView)];
     self.iconVIew.userInteractionEnabled = YES;
     [self.iconVIew addGestureRecognizer:tapIcon];
 
+    self.typeButton.layer.cornerRadius = 9;
+    self.numberButton.layer.cornerRadius = 9;
+    self.typeButton.titleEdgeInsets = UIEdgeInsetsMake(0, 3, 0, 0);
     
-    
+    self.timeButton.titleEdgeInsets = UIEdgeInsetsMake(0, 3, 0, 0);
 }
 
 - (void)setModel:(XFVideoModel *)model {
@@ -47,8 +48,10 @@
     [_picView setImageWithURL:[NSURL URLWithString:_model.coverImage[@"thumbImage500pxUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     _nameLabel.text = model.title;
     [_iconVIew setImageWithURL:[NSURL URLWithString:_model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
-//    _likeButton.selected = [model.isLiked intValue] == 0 ? NO : YES;
-    _numberLabel.text = model.viewNum;
+    
+    [_numberButton setTitle:[NSString stringWithFormat:@"播放%zd次",[_model.viewNum intValue]] forState:(UIControlStateNormal)];
+    
+    [_typeButton setTitle:_model.category forState:(UIControlStateNormal)];
     
 }
 
@@ -71,7 +74,6 @@
         
     }];
     
-    
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -80,4 +82,6 @@
     // Configure the view for the selected state
 }
 
+- (IBAction)clickShareButton:(id)sender {
+}
 @end

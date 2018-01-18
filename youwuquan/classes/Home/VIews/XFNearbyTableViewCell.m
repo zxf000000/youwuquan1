@@ -33,5 +33,14 @@
     [self setMyShadowWithRound:4];
 }
 
+- (void)setModel:(XFNearModel *)model {
+    
+    _model = model;
+    _nameLabel.text = _model.nickname;
+    [_picView setImageWithURL:[NSURL URLWithString:_model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+
+    [_distanceButton setTitle:[NSString stringWithFormat:@"%@km",_model.distance] forState:(UIControlStateNormal)];
+}
+
 
 @end

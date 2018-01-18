@@ -16,30 +16,11 @@
         
         _model = model;
         
-        _iconNode = [ASNetworkImageNode new];
-//        _iconNode.delegate = self;
-        _iconNode.defaultImage = [UIImage imageNamed:kRandomIcon];
-        _iconNode.URL = [NSURL URLWithString:_model.headIconUrl];
-        _iconNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
-            
-            UIGraphicsBeginImageContext(image.size);
-            
-            UIBezierPath *path = [UIBezierPath
-                                  bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height)
-                                  cornerRadius:MIN(image.size.width,image.size.height)/2];
-            
-            [path addClip];
-            
-            [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-            
-            UIImage *refinedImg = UIGraphicsGetImageFromCurrentImageContext();
-            
-            UIGraphicsEndImageContext();
-            
-            return refinedImg;
-            
-        };
-        
+        _iconNode = [XFNetworkImageNode new];
+        _iconNode.placeholderColor = UIColorHex(808080);
+        _iconNode.url = [NSURL URLWithString:_model.headIconUrl];
+        _iconNode.cornerRadius = 22.5;
+        _iconNode.clipsToBounds = YES;
         [self addSubnode:_iconNode];
         
         _nameNode = [[ASTextNode alloc] init];
@@ -74,7 +55,16 @@
         
         _commentNode = [[ASTextNode alloc] init];
 
-        NSMutableAttributedString *comment = [[NSMutableAttributedString  alloc] initWithString:_model.text == nil? @"数据错误":_model.text];
+        NSString *commentStr = _model.text;
+        
+        if (_model.fatherId.length > 0 ) {
+            
+            commentStr = [NSString stringWithFormat:@" 回复 %@ : %@",_model.fartherName,commentStr];
+            
+        }
+        
+        
+        NSMutableAttributedString *comment = [[NSMutableAttributedString  alloc] initWithString:commentStr == nil? @"数据错误":commentStr];
         NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
         
         paraStyle.lineSpacing = 5;
@@ -84,6 +74,12 @@
                                NSForegroundColorAttributeName:UIColorHex(000000),
                                NSParagraphStyleAttributeName:paraStyle,
                                };
+        
+        NSRange range = [commentStr rangeOfString:@"回复"];
+        [comment addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:13] range:range];
+        [comment addAttribute:NSForegroundColorAttributeName value:UIColorHex(808080) range:range];
+
+        
         
         _commentNode.attributedText = comment;
         

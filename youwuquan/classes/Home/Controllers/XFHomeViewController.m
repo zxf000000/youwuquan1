@@ -34,6 +34,7 @@
 #import "XFMineNetworkManager.h"
 #import "XFMineNetworkManager.h"
 #import "XFHomeDataParamentModel.h"
+#import "XFNearModel.h"
 
 #define kHomeHeaderHeight (15 + 15 + 17 + 210 + 15 + 100 + 15 + 15 + 17)
 #define kSecondHeaderHeight (195 + 15 + 17 + 15)
@@ -75,7 +76,7 @@
 @property (nonatomic,copy) NSArray *ywData;
 @property (nonatomic,copy) NSArray *whData;
 @property (nonatomic,copy) NSArray *videoData;
-
+@property (nonatomic,copy) NSArray *nearDatas;
 // 所有View数组
 @property (nonatomic,copy) NSArray *allMainViews;
 
@@ -127,7 +128,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(changeHomeViewVIsiable) name:@"ChangeHomePAgeVisiable" object:nil];
     
-    [self getLocation];
     
     [self.view setNeedsUpdateConstraints];
     
@@ -151,9 +151,13 @@
         [self loadHomeData];
     }];
     
+    NSBlockOperation *operation4 = [NSBlockOperation blockOperationWithBlock:^{
+        [self getLocation];
+    }];
     //设置依赖
     [operation3 addDependency:operation2];      //任务3依赖任务2
-    
+    [operation4 addDependency:operation3];      //任务3依赖任务2
+
     //创建队列
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperations:@[operation3, operation2, operation1] waitUntilFinished:NO];
@@ -161,12 +165,39 @@
 }
 
 - (void)loadNearData {
+
+    NSDictionary *userInfo = [XFUserInfoManager sharedManager].userInfo;
+
+    if (userInfo[@"basicInfo"][@"gender"] != nil && [userInfo[@"basicInfo"][@"gender"] length] > 0) {
+        
+        NSString *gender = userInfo[@"basicInfo"][@"gender"];
+        
+        [self getNearDataWithSex:[gender isEqualToString:@"male"] ? @"female" : @"male"];
+        
+    } else {
+        
+        [self getNearDataWithSex:@"male"];
+    }
     
-    [XFHomeNetworkManager getNearbyDataWithSex:@"male" longitude:[XFUserInfoManager sharedManager].userLong latitude:[XFUserInfoManager sharedManager].userLati distance:1000 page:0 size:10 successBlock:^(id responseObj) {
+
+    
+}
+
+- (void)getNearDataWithSex:(NSString *)gender {
+    
+    [XFHomeNetworkManager getNearbyDataWithSex:gender longitude:[XFUserInfoManager sharedManager].userLong latitude:[XFUserInfoManager sharedManager].userLati distance:100 page:0 size:10 successBlock:^(id responseObj) {
         
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFNearModel modelWithDictionary:datas[i]]];
+            
+        }
         
+        self.nearDatas = arr.copy;
         // 成功之后
-//        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationFade)];
+        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationFade)];
         
     } failBlock:^(NSError *error) {
         
@@ -177,9 +208,11 @@
 }
 
 - (void)loadHomeData {
-    
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+
     [XFHomeNetworkManager getHomeDataWithSuccessBlock:^(id responseObj) {
-    
+        dispatch_semaphore_signal(sema);
+
         NSArray *datas = (NSArray *)responseObj;
         NSMutableArray *arr = [NSMutableArray array];
         
@@ -209,14 +242,19 @@
         
         
     } failBlock:^(NSError *error) {
+        
+        dispatch_semaphore_signal(sema);
+
         dispatch_async(dispatch_get_main_queue(), ^{
             
             [self.tableNode.view.mj_header endRefreshing];
         });
+
     } progress:^(CGFloat progress) {
         
     }];
-    
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+
 }
 
 - (void)loadAuthData {
@@ -722,20 +760,30 @@
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    
     //竖直滑动时 判断是上滑还是下滑
     if(velocity.y>0){
         //上滑
+
         [UIView animateWithDuration:0.15 animations:^{
-            
+
             self.tabBarController.tabBar.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 49);
-            
+
         }];
     }else{
+        
+        CGAffineTransform transform = CGAffineTransformIdentity;
+        animation.toValue = [NSValue valueWithCGAffineTransform:transform];
+        animation.fillMode = kCAFillModeRemoved;
+        animation.removedOnCompletion = YES;
+        [self.tabBarController.tabBar.layer addAnimation:animation forKey:nil];
+        
         //下滑
         [UIView animateWithDuration:0.15 animations:^{
-            
+
             self.tabBarController.tabBar.frame = CGRectMake(0, kScreenHeight - 49, kScreenWidth, 49);
-            
+
         }];
     }
     
@@ -826,7 +874,7 @@
         case 2:
         {
             
-            XFHomeNearNode *node = [[XFHomeNearNode alloc] init];
+            XFHomeNearNode *node = [[XFHomeNearNode alloc] initWithDatas:self.nearDatas];
             
             node.delegate = self;
             

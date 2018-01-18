@@ -123,6 +123,21 @@
     return self;
 }
 
+- (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.type != Approve) {
+        
+        return;
+    }
+    if (indexPath.item == self.auths.count) {
+        
+        if (self.moreAuthBlock) {
+            self.moreAuthBlock();
+        }
+        
+    }
+    
+}
+
 - (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section {
     
     if (self.type == Approve) {

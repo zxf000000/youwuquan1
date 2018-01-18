@@ -11,6 +11,7 @@
 #import "XFForgetViewController.h"
 #import "XFLoginNetworkManager.h"
 #import "XFMineNetworkManager.h"
+#import <UMSocialCore/UMSocialCore.h>
 
 
 @interface XFLoginVCViewController ()
@@ -165,6 +166,83 @@
     
 }
 
+- (void)clickqqButton {
+    
+    [[UMSocialManager defaultManager] getUserInfoWithPlatform:UMSocialPlatformType_QQ currentViewController:nil completion:^(id result, NSError *error) {
+        if (error) {
+            
+        } else {
+            UMSocialUserInfoResponse *resp = result;
+            
+            // 授权信息
+            NSLog(@"QQ uid: %@", resp.uid);
+            NSLog(@"QQ openid: %@", resp.openid);
+            NSLog(@"QQ unionid: %@", resp.unionId);
+            NSLog(@"QQ accessToken: %@", resp.accessToken);
+            NSLog(@"QQ expiration: %@", resp.expiration);
+            
+            // 用户信息
+            NSLog(@"QQ name: %@", resp.name);
+            NSLog(@"QQ iconurl: %@", resp.iconurl);
+            NSLog(@"QQ gender: %@", resp.unionGender);
+            
+            // 第三方平台SDK源数据
+            NSLog(@"QQ originalResponse: %@", resp.originalResponse);
+        }
+    }];
+}
+
+- (void)clickwxButton {
+    [[UMSocialManager defaultManager] getUserInfoWithPlatform:UMSocialPlatformType_WechatSession currentViewController:nil completion:^(id result, NSError *error) {
+        if (error) {
+            
+        } else {
+            UMSocialUserInfoResponse *resp = result;
+            
+            // 授权信息
+            NSLog(@"Wechat uid: %@", resp.uid);
+            NSLog(@"Wechat openid: %@", resp.openid);
+            NSLog(@"Wechat unionid: %@", resp.unionId);
+            NSLog(@"Wechat accessToken: %@", resp.accessToken);
+            NSLog(@"Wechat refreshToken: %@", resp.refreshToken);
+            NSLog(@"Wechat expiration: %@", resp.expiration);
+            
+            // 用户信息
+            NSLog(@"Wechat name: %@", resp.name);
+            NSLog(@"Wechat iconurl: %@", resp.iconurl);
+            NSLog(@"Wechat gender: %@", resp.unionGender);
+            
+            // 第三方平台SDK源数据
+            NSLog(@"Wechat originalResponse: %@", resp.originalResponse);
+        }
+    }];
+}
+
+- (void)clickwbButton {
+    [[UMSocialManager defaultManager] getUserInfoWithPlatform:UMSocialPlatformType_Sina currentViewController:nil completion:^(id result, NSError *error) {
+        if (error) {
+            
+        } else {
+            UMSocialUserInfoResponse *resp = result;
+            
+            // 授权信息
+            NSLog(@"Sina uid: %@", resp.uid);
+            NSLog(@"Sina accessToken: %@", resp.accessToken);
+            NSLog(@"Sina refreshToken: %@", resp.refreshToken);
+            NSLog(@"Sina expiration: %@", resp.expiration);
+            
+            // 用户信息
+            NSLog(@"Sina name: %@", resp.name);
+            NSLog(@"Sina iconurl: %@", resp.iconurl);
+            NSLog(@"Sina gender: %@", resp.unionGender);
+            
+            // 第三方平台SDK源数据
+            NSLog(@"Sina originalResponse: %@", resp.originalResponse);
+        }
+    }];
+    
+}
+
 - (void)setupLoginView {
     
     self.loginView = [[UIView alloc] init];
@@ -249,6 +327,10 @@
     [self.wbButton setImage:[UIImage imageNamed:@"weibo"] forState:(UIControlStateNormal)];
     [self.loginView addSubview:self.wbButton];
     
+    [self.qqButton addTarget:self action:@selector(clickqqButton) forControlEvents:(UIControlEventTouchUpInside)];
+    [self.wxbutton addTarget:self action:@selector(clickwxButton) forControlEvents:(UIControlEventTouchUpInside)];
+    [self.wbButton addTarget:self action:@selector(clickwbButton) forControlEvents:(UIControlEventTouchUpInside)];
+
     self.line1 = [[UIView alloc] init];
     self.line1.backgroundColor = UIColorHex(e0e0e0);
     

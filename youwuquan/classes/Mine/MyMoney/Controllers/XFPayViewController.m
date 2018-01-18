@@ -13,9 +13,12 @@
 #import "XFChargeSuccessViewController.h"
 #import "XFChargeSmallTableViewCell.h"
 #import "XFMineNetworkManager.h"
+#import "XFVipCollectionViewCell.h"
+#import "XFVipModel.h"
+#import "XFChargeCollectionViewCell.h"
+#import "XFChargeModel.h"
 
-
-@interface XFPayViewController () <UITableViewDelegate,UITableViewDataSource,XFVipTableViewCellDelegate,XChargeTableViewCellDelegate>
+@interface XFPayViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFVipTableViewCellDelegate,XChargeTableViewCellDelegate>
 
 @property (nonatomic,weak) UIView *topView;
 
@@ -29,8 +32,10 @@
 
 @property (nonatomic,copy) NSArray *titleButtons;
 
-@property (nonatomic,strong) UITableView *vipView;
-@property (nonatomic,strong) UITableView *chargView;
+@property (nonatomic,strong) UIScrollView *vipView;
+@property (nonatomic,strong) UIScrollView *chargView;
+
+@property (nonatomic,strong) UICollectionView *vipCollectionView;
 
 @property (nonatomic,strong) UILabel *totalLabel;
 
@@ -43,7 +48,6 @@
 
 @property (nonatomic,strong) UIButton *chargePayButton;
 
-@property (nonatomic,copy) NSString *chargeNumber;
 @property (nonatomic,copy) NSString *vipNum;
 
 @property (nonatomic,assign) NSInteger vipChargeDays;
@@ -52,6 +56,19 @@
 @property (nonatomic,copy) NSDictionary *vippayInfo;
 
 @property (nonatomic,copy) NSDictionary *vipInfo;
+@property (nonatomic,copy) NSArray *vipList;
+
+@property (nonatomic,strong) UICollectionView *chargeCollectionView;
+
+@property (nonatomic,copy) NSArray *chargeList;
+
+@property (nonatomic,strong) UILabel *diamondsNumLabel;
+
+@property (nonatomic,strong) NSIndexPath *selectedVipIndex;
+@property (nonatomic,strong) NSIndexPath *selectedChargeIndex;
+
+@property (nonatomic,assign) NSInteger chargeNumber;
+
 
 @end
 
@@ -74,16 +91,64 @@
     [self setupTopView];
     [self setupScrolLView];
     
+    
+    [self loadVipList];
+    [self loadChargeList];
     [self loadvipInfo];
     
     [self.view setNeedsUpdateConstraints];
+}
+
+- (void)loadChargeList {
+    
+    [XFMineNetworkManager getChargeListWithsuccessBlock:^(id responseObj) {
+        
+        NSArray *datas = (NSArray *)responseObj;
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFChargeModel modelWithDictionary:datas[i]]];
+            
+        }
+        self.chargeList = arr.copy;
+        [self.chargeCollectionView reloadData];
+    } failedBlock:^(NSError *error) {
+        
+    } progressBlock:^(CGFloat progress) {
+        
+    }];
+    
+}
+
+- (void)loadVipList {
+    
+    [XFMineNetworkManager getVipListWithsuccessBlock:^(id responseObj) {
+        
+        NSArray *datas = (NSArray *)responseObj;
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFVipModel modelWithDictionary:datas[i]]];
+            
+        }
+        self.vipList = arr.copy;
+        [self.vipCollectionView reloadData];
+        
+    } failedBlock:^(NSError *error) {
+        
+    } progressBlock:^(CGFloat progress) {
+        
+    }];
+    
 }
 
 - (void)loadvipInfo {
     
     [XFMineNetworkManager getMyVipInfoWithsuccessBlock:^(id responseObj) {
     
-        self.vipInfo = (NSDictionary *)responseObj;
+        NSArray *vipDatas = (NSArray *)responseObj;
+        
+        
         
     } failedBlock:^(NSError *error) {
         
@@ -103,34 +168,69 @@
 // 充值
 - (void)clickChargeButton {
     
-    if (!self.selectedIndexPath) {
-      
+    if (!self.selectedChargeIndex) {
+        
         [XFToolManager showProgressInWindowWithString:@"请选择充值金额"];
         
         return;
         
     }
     
-    if (!(self.alipayButton.selected || self.wechatButton.selected)) {
+    __block NSInteger number;
+    
+    if (self.selectedChargeIndex.item < self.chargeList.count) {
         
-        [XFToolManager showProgressInWindowWithString:@"请选择充值方式"];
+        XFChargeModel *model = self.chargeList[self.selectedChargeIndex.item];
+        number = [model.price intValue];
+        self.chargeNumber = number;
+        [self selectChargeType];
+
         
-        return;
+    } else {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请输入充值金额" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
+        [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+           
+            textField.placeholder = @"请输入金额";
+            textField.keyboardType = UIKeyboardTypeNumberPad;
+        }];
+        
+        UIAlertAction *actionDone = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+           
+            UITextField *textField = alert.textFields[0];
+            if (![textField.text isHasContent] || [textField.text intValue] <= 0) {
+                
+                [XFToolManager showProgressInWindowWithString:@"请输入有效金额"];
+                return;
+            } else {
+                
+                self.chargeNumber = [textField.text intValue];
+                
+                [self selectChargeType];
+            }
+            
+            
+        }];
+        
+        UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+            
+            
+            
+        }];
+        
+        [alert addAction:actionDone];
+        [alert addAction:actionCancel];
+        [self presentViewController:alert animated:YES completion:nil];
     }
+
+}
+
+- (void)charge {
     
-    NSString *chargeNumber = self.chargeInfos[self.selectedIndexPath.row][@"diamonds"];
-    
-    if ([chargeNumber containsString:@"("]) {
-        
-        NSRange range = [chargeNumber rangeOfString:@"("];
-    
-        chargeNumber = [chargeNumber substringToIndex:range.location];
-        
-    }
-    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在充值"];
     // 充值
-    [XFMineNetworkManager chargeWithNumber:chargeNumber successBlock:^(id responseObj) {
+    [XFMineNetworkManager chargeWithNumber:[NSString stringWithFormat:@"%zd",_chargeNumber] successBlock:^(id responseObj) {
         
+        [XFToolManager changeHUD:HUD successWithText:@"充值成功"];
         // 充值成功,刷新
         [self.navigationController pushViewController:[[XFChargeSuccessViewController alloc] init] animated:YES];
         
@@ -138,12 +238,39 @@
         
         
     } failedBlock:^(NSError *error) {
-        
+        [HUD hideAnimated:YES];
         
     } progressBlock:^(CGFloat progress) {
         
         
     }];
+}
+
+- (void)selectChargeType {
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"请选择充值类型" message:nil preferredStyle:(UIAlertControllerStyleActionSheet)];
+    
+    UIAlertAction *actionWechat = [UIAlertAction actionWithTitle:@"微信" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        
+        [self charge];
+    }];
+    
+    UIAlertAction *actionAlipay = [UIAlertAction actionWithTitle:@"支付宝" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+
+        [self charge];
+
+    }];
+    
+    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+    }];
+    
+    [alertController addAction:actionWechat];
+    [alertController addAction:actionAlipay];
+    [alertController addAction:actionCancel];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
     
 }
 
@@ -246,96 +373,97 @@
     
 }
 
-#pragma mark - cellDelegate
-- (void)vipTableViewCell:(XFVipTableViewCell *)cell didClickPayButton:(UIButton *)payButton {
+#pragma mark - 购买vip
+- (void)clickPayVipButton {
     
-    // 充值vip
-    if (self.vipChargeDays == 0) {
+    if (!self.selectedVipIndex) {
         
-        [XFToolManager showProgressInWindowWithString:@"请选择vip类型"];
-        
-        return;
-        
-    }
-    
-    if (self.vipPayType == 0) {
-        
-        [XFToolManager showProgressInWindowWithString:@"请选择充值方式"];
+        [XFToolManager showProgressInWindowWithString:@"请选择充值类型"];
         
         return;
     }
     
-    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    XFVipModel *model = self.vipList[self.selectedVipIndex.item];
     
-    switch (self.vipPayType) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"请选择充值类型" message:nil preferredStyle:(UIAlertControllerStyleActionSheet)];
+    
+    UIAlertAction *actionWechat = [UIAlertAction actionWithTitle:@"微信" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
+        // 微信
+        [XFMineNetworkManager buyVipWithWechatWithDays:[model.day intValue] successBlock:^(id responseObj) {
             
-        case 1:
-        {
-            // 微信
-            [XFMineNetworkManager buyVipWithWechatWithDays:self.vipChargeDays successBlock:^(id responseObj) {
-                
-                [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
-                XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
-                
-                successVC.type = XFSuccessViewTypeVipSuccess;
-                
-                [self.navigationController pushViewController:successVC animated:YES];
-            } failedBlock:^(NSError *error) {
-                [HUD hideAnimated:YES];
-
-            } progressBlock:^(CGFloat progress) {
-                
-            }];
-        }
-            break;
-        case 2:
-        {
-            // 支付宝
-            [XFMineNetworkManager buyVipWithAlipayWithDays:self.vipChargeDays successBlock:^(id responseObj) {
-                
-                [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
-                XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
-                
-                successVC.type = XFSuccessViewTypeVipSuccess;
-                
-                [self.navigationController pushViewController:successVC animated:YES];
-                
-            } failedBlock:^(NSError *error) {
-                [HUD hideAnimated:YES];
-
-            } progressBlock:^(CGFloat progress) {
-                
-            }];
-        }
-            break;
-        case 3:
-        {
-            // 钻石
-            [XFMineNetworkManager buyVipWithDiamondsWithDays:self.vipChargeDays successBlock:^(id responseObj) {
-                
-                [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
-                XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
-                
-                successVC.type = XFSuccessViewTypeVipSuccess;
-                
-                [self.navigationController pushViewController:successVC animated:YES];
-                
-            } failedBlock:^(NSError *error) {
-                [HUD hideAnimated:YES];
-
-            } progressBlock:^(CGFloat progress) {
-                
-            }];
-        }
-            break;
+            [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
+            XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
             
-    }
+            successVC.type = XFSuccessViewTypeVipSuccess;
+            
+            [self.navigationController pushViewController:successVC animated:YES];
+        } failedBlock:^(NSError *error) {
+            [HUD hideAnimated:YES];
+            
+        } progressBlock:^(CGFloat progress) {
+            
+        }];
+        
+    }];
     
+    UIAlertAction *actionAlipay = [UIAlertAction actionWithTitle:@"支付宝" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
 
+        // 支付宝
+        [XFMineNetworkManager buyVipWithAlipayWithDays:[model.day intValue] successBlock:^(id responseObj) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
+            XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
+            
+            successVC.type = XFSuccessViewTypeVipSuccess;
+            
+            [self.navigationController pushViewController:successVC animated:YES];
+            
+        } failedBlock:^(NSError *error) {
+            [HUD hideAnimated:YES];
+            
+        } progressBlock:^(CGFloat progress) {
+            
+        }];
+        
+    }];
     
+    UIAlertAction *actionDiamonds = [UIAlertAction actionWithTitle:@"钻石" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
+        // 钻石
+        [XFMineNetworkManager buyVipWithDiamondsWithDays:[model.day intValue] successBlock:^(id responseObj) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
+            XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
+            
+            successVC.type = XFSuccessViewTypeVipSuccess;
+            
+            [self.navigationController pushViewController:successVC animated:YES];
+            
+        } failedBlock:^(NSError *error) {
+            [HUD hideAnimated:YES];
+            
+        } progressBlock:^(CGFloat progress) {
+            
+        }];
+    }];
+    
+    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+    }];
+    
+    [alertController addAction:actionWechat];
+    [alertController addAction:actionAlipay];
+    [alertController addAction:actionDiamonds];
+    [alertController addAction:actionCancel];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 
 }
-
 - (void)chargeTableViewCell:(XFChargeTableViewCell *)cell didClickPayButton:(UIButton *)payButton {
     
     
@@ -348,189 +476,90 @@
     
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (tableView == self.chargView) {
-        
-        XFChargeSmallTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-        
-        cell.selected = NO;
-        
-        if (self.selectedIndexPath) {
-            
-            XFChargeSmallTableViewCell *selectedCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
 
-            selectedCell.monneyButton.selected = NO;
-            selectedCell.monneyButton.layer.borderColor = UIColorHex(808080).CGColor;
-        }
-        
-        cell.monneyButton.selected = YES;
-        cell.monneyButton.layer.borderColor = kMainRedColor.CGColor;
-        
-        self.selectedIndexPath = indexPath;
+#pragma mark - collectionViewDelegate
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    }
-    
-}
+    if (collectionView == self.vipCollectionView) {
+        
+        return self.vipList.count;
 
-#pragma mark - tableView
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
-    if (tableView == _vipView) {
-    
-        return 1;
-        
     } else {
         
-        return self.chargeInfos.count;
+        return self.chargeList.count + 1;
     }
     
-    return 1;
+    
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (tableView == _vipView) {
+    if (collectionView == self.vipCollectionView) {
         
-        XFVipTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFVipTableViewCell"];
+        XFVipCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFVipCollectionViewCell" forIndexPath:indexPath];
+
+        cell.model = self.vipList[indexPath.item];
         
-        if (!cell)  {
+        cell.index = indexPath;
+        if (indexPath == self.selectedVipIndex) {
             
-            cell = [[[NSBundle mainBundle] loadNibNamed:@"XFVipTableViewCell" owner:nil options:nil] lastObject];
-        }
-        
-        cell.delegate = self;
-        if (!self.vipInfo) {
-            
-            cell.daysLeftLabel.text = @"还未开通会员";
+            cell.selected = YES;
         } else {
-
+            
+            cell.selected = NO;
         }
-        __weak typeof(cell) weakCell = cell;
-        cell.selectedVipCardBlock = ^(NSInteger index) {
-          
-            switch (index) {
-                case 0:
-                {
-                    self.vipChargeDays = 30;
-
-                }
-                    break;
-                case 1:{
-                    self.vipChargeDays = 90;
-
-                }
-                    break;
-                case 2:{
-                    
-                    self.vipChargeDays = 365;
-
-                }
-                    break;
-                    
-                default:
-                    break;
-            }
+        
+        if (indexPath.item != 0) {
             
-            // 获取需要多少钱
-            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+            cell.giftLabel.hidden = YES;
+        }
+        
+        cell.selectedBlock = ^(NSIndexPath *indexPath) {
             
-            [XFMineNetworkManager chargeVipWithDays:[NSString stringWithFormat:@"%zd",self.vipChargeDays] successBlock:^(id responseObj) {
-                
-                [HUD hideAnimated:YES];
-                
-                NSDictionary *vipInfo = (NSDictionary *)responseObj;
-                self.vippayInfo = vipInfo;
-                
-                if (self.vipPayType == 3) {
-                    [weakCell.payButton setTitle:[NSString stringWithFormat:@"支付%@钻石",vipInfo[@"diamonds"]] forState:(UIControlStateNormal)];
-
-                } else {
-                    
-                    [weakCell.payButton setTitle:[NSString stringWithFormat:@"支付%@元",vipInfo[@"price"]] forState:(UIControlStateNormal)];
-
-                }
-                
-                
-            } failedBlock:^(NSError *error) {
-                
-                [HUD hideAnimated:YES];
-
-            } progressBlock:^(CGFloat progress) {
-                
-                
-            }];
-            
-            
+            self.selectedVipIndex = indexPath;
         };
         
-        cell.selectedPayTypeBlock = ^(NSInteger index) {
-          
-            self.vipPayType = index;
-            
-            if (self.vippayInfo) {
-                
-                switch (index) {
-                        
-                    case 3:
-                    {
-                        [weakCell.payButton setTitle:[NSString stringWithFormat:@"支付%@钻石",self.vippayInfo[@"diamonds"]] forState:(UIControlStateNormal)];
-
-                    }
-                        break;
-                    default:
-                    {
-                        [weakCell.payButton setTitle:[NSString stringWithFormat:@"支付%@元",self.vippayInfo[@"price"]] forState:(UIControlStateNormal)];
-
-                    }
-                        break;
-                        
-                }
-                
-            }
-            
-        };
-        
+        cell.giftLabel.backgroundColor = kRGBColorWith(113, 47, 243);
         return cell;
 
+        
     } else {
+        XFChargeCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFChargeCollectionViewCell" forIndexPath:indexPath];
         
-        XFChargeSmallTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFChargeSmallTableViewCell"];
+        cell.index = indexPath;
         
-        if (!cell) {
+        if (indexPath.item < self.chargeList.count) {
+
+            cell.model = self.chargeList[indexPath.item];
+            cell.isAuto = NO;
             
-            cell = [[[NSBundle mainBundle] loadNibNamed:@"XFChargeSmallTableViewCell" owner:nil options:nil] lastObject];
+        } else {
+            
+            cell.isAuto = YES;
         }
         
-        cell.info = self.chargeInfos[indexPath.row];
-        
-        cell.indexPath = indexPath;
-        
-        if (self.selectedIndexPath == indexPath) {
+        cell.selectedBlock = ^(NSIndexPath *indexPath) {
             
-            cell.monneyButton.selected = YES;
-            cell.monneyButton.layer.borderColor = kMainRedColor.CGColor;
-        }
-        
-        cell.clickButtonBlock = ^(NSIndexPath *indexPath, UIButton *moneyButton) {
-            
-            if (self.selectedIndexPath) {
-                
-                XFChargeSmallTableViewCell *selectedCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
-                
-                selectedCell.monneyButton.selected = NO;
-                selectedCell.monneyButton.layer.borderColor = UIColorHex(808080).CGColor;
-            }
-            
-            moneyButton.selected = YES;
-            moneyButton.layer.borderColor = kMainRedColor.CGColor;
-            
-            self.selectedIndexPath = indexPath;
-            
-            
+            self.selectedChargeIndex = indexPath;
         };
         
         return cell;
+        
+    }
+
+    return nil;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (collectionView == self.chargeCollectionView) {
+        
+        if (indexPath.item == self.chargeList.count) {
+            
+            // 填写自主ine
+            
+        }
+        
     }
     
 }
@@ -540,154 +569,224 @@
     self.scrollView = [[UIScrollView alloc] init];
     [self.view addSubview:self.scrollView];
     self.scrollView.delegate = self;
-    self.vipView = [[UITableView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64))];
-    
-    self.vipView.backgroundColor = [UIColor whiteColor];
-    [self.scrollView addSubview:self.vipView];
-    
-    self.chargView = [[UITableView alloc] initWithFrame:(CGRectMake(kScreenWidth, 0, kScreenWidth, kScreenHeight - 64))];
-    
-    self.chargView.backgroundColor = [UIColor whiteColor];
-    [self.scrollView addSubview:self.chargView];
     
     self.scrollView.contentSize = CGSizeMake(kScreenWidth * 2, 0);
     self.scrollView.pagingEnabled = YES;
     
-    self.chargView.delegate = self;
-    self.chargView.dataSource = self;
-    self.vipView.delegate = self;
-    self.vipView.dataSource = self;
+    [self setupVipView];
+    [self setupChargeView];
     
-    self.vipView.estimatedRowHeight = kScreenHeight;
-    self.vipView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.vipView.showsVerticalScrollIndicator = NO;
-    self.chargView.estimatedRowHeight = kScreenHeight;
-//    self.chargView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.chargView.showsVerticalScrollIndicator = NO;
+}
+
+- (void)setupVipView {
     
-    // 头部
-    UIView *headerView = [[UIView alloc] init];
-    headerView.backgroundColor = [UIColor whiteColor];
-    headerView.frame = CGRectMake(0, 0, kScreenWidth, 120);
-    self.chargView.tableHeaderView = headerView;
+    self.vipView = [[UIScrollView alloc] init];
+    self.vipView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+    [self.scrollView addSubview:self.vipView];
     
-    UILabel *topLabel = [[UILabel alloc] init];
-    topLabel.textColor = UIColorHex(808080);
-    topLabel.text = @"我的钻石";
-    topLabel.font = [UIFont systemFontOfSize:12];
-    [headerView addSubview:topLabel];
+    CGFloat cardWidth = 255 * kScreenWidth / 375.f;
+    CGFloat cardHeight = 160 * kScreenWidth / 375.f;
     
-    self.totalLabel = [[UILabel alloc] init];
-    self.totalLabel.textColor = [UIColor blackColor];
-    self.totalLabel.text = @"123";
-    self.totalLabel.font = [UIFont systemFontOfSize:22];
-    [headerView addSubview:self.totalLabel];
+    UIImageView *shadowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"vipcard_shadow"]];
+    shadowView.frame = CGRectMake((kScreenWidth - cardWidth)/2, 26 + 30, cardWidth, cardHeight);
+    [self.vipView addSubview:shadowView];
+    
+    UIImageView *cardView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"vip_card"]];
+    cardView.frame = CGRectMake((kScreenWidth - cardWidth)/2, 26 , cardWidth, cardHeight);
+    [self.vipView addSubview:cardView];
+    
+    UILabel *desLabbel = [[UILabel alloc] init];
+    desLabbel.textColor = [UIColor blackColor];
+    desLabbel.font = [UIFont systemFontOfSize:12];
+    desLabbel.text = @"会员可免费查看所有用户的私密图片/视频";
+    desLabbel.frame = CGRectMake(0, 26 + cardHeight + 17, kScreenWidth, 15);
+    desLabbel.textAlignment = NSTextAlignmentCenter;
+    [self.vipView addSubview:desLabbel];
+    
+    UILabel *vipdes = [[UILabel alloc] init];
+    vipdes.textColor = [UIColor blackColor];
+    vipdes.text = @"尤物VIP会员";
+    vipdes.font = [UIFont systemFontOfSize:14];
+    vipdes.frame = CGRectMake(13, desLabbel.bottom + 32, 200, 15);
+    [self.vipView addSubview:vipdes];
+    
+    CGFloat itemWidth = 100 * kScreenWidth / 375.f;
+    CGFloat itemHeight = 123 / 100.f * itemWidth;
+    CGFloat spacing = (kScreenWidth - itemWidth * 3)/4.f;
+    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
+    layout.itemSize = CGSizeMake(itemWidth, itemHeight);
+    layout.minimumLineSpacing = spacing;
+    layout.minimumInteritemSpacing = spacing;
+    layout.sectionInset = UIEdgeInsetsMake(0, spacing, 0, spacing);
+    self.vipCollectionView = [[UICollectionView alloc] initWithFrame:(CGRectZero) collectionViewLayout:layout];
+    self.vipCollectionView.frame = CGRectMake(0, vipdes.bottom + 20, kScreenWidth, itemHeight);
+    [self.vipView addSubview:self.vipCollectionView];
+    self.vipCollectionView.backgroundColor = [UIColor whiteColor];
+    [self.vipCollectionView registerNib:[UINib nibWithNibName:@"XFVipCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"XFVipCollectionViewCell"];
+    self.vipCollectionView.delegate = self;
+    self.vipCollectionView.dataSource = self;
+    UIButton *payVipButton = [[UIButton alloc] init];
+    [payVipButton setTitle:@"立即开通" forState:(UIControlStateNormal)];
+    [payVipButton setBackgroundColor:kRGBColorWith(238, 184, 99)];
+    payVipButton.layer.cornerRadius = 15;
+    payVipButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [self.vipView addSubview:payVipButton];
+    [payVipButton mas_makeConstraints:^(MASConstraintMaker *make) {
+       make.top.mas_equalTo(self.vipCollectionView.mas_bottom).offset(88);
+        make.centerX.mas_equalTo(self.vipCollectionView.mas_centerX);
+        make.width.mas_equalTo(kScreenWidth - 46);
+        make.height.mas_equalTo(30);
+        
+    }];
+    
+    [payVipButton addTarget:self action:@selector(clickPayVipButton) forControlEvents:(UIControlEventTouchUpInside)];
+    
+    // 底部距离83
+    self.vipView.contentSize = CGSizeMake(kScreenWidth, 26 + cardHeight + 17 + 15 + 32 + 15 + 20 + itemHeight + 88 + 30 + 83);
+    
+}
+
+- (void)setupChargeView {
+    
+    self.chargView = [[UIScrollView alloc] init];
+    self.chargView.frame = CGRectMake(kScreenWidth, 0, kScreenWidth, kScreenHeight - 64);
+    [self.scrollView addSubview:self.chargView];
+    
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.textColor = kRGBColorWith(128, 128, 128);
+    titleLabel.font = [UIFont systemFontOfSize:12];
+    titleLabel.text = @"我的钻石";
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.chargView addSubview:titleLabel];
+    titleLabel.frame = CGRectMake(0, 22, kScreenWidth, 10);
+    
+    UILabel *dismondsLabel = [[UILabel alloc] init];
+    dismondsLabel.textColor = [UIColor blackColor];
+    dismondsLabel.font = [UIFont systemFontOfSize:22];
+    dismondsLabel.text = @"123";
+    dismondsLabel.textAlignment = NSTextAlignmentCenter;
+    [self.chargView addSubview:dismondsLabel];
+    dismondsLabel.frame = CGRectMake(0, titleLabel.bottom + 14, kScreenWidth, 18);
     
     UILabel *desLabel = [[UILabel alloc] init];
     desLabel.textColor = [UIColor blackColor];
-    desLabel.text = @"请选择充值金额";
     desLabel.font = [UIFont systemFontOfSize:15];
-    [headerView addSubview:desLabel];
+    desLabel.text = @"请选择充值金额";
+    [self.chargView addSubview:desLabel];
+    desLabel.frame = CGRectMake(13, dismondsLabel.bottom + 12, kScreenWidth, 15);
     
-    [topLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.centerX.mas_offset(0);
-        make.top.mas_offset(15);
+    CGFloat itemWidth = 100 * kScreenWidth / 375.f;
+    CGFloat itemHeight = 123 / 100.f * itemWidth;
+    CGFloat spacing = (kScreenWidth - itemWidth * 3)/4.f;
+    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
+    layout.itemSize = CGSizeMake(itemWidth, itemHeight);
+    layout.minimumLineSpacing = spacing;
+    layout.minimumInteritemSpacing = spacing;
+    layout.sectionInset = UIEdgeInsetsMake(0, spacing, 0, spacing);
+    
+    self.chargeCollectionView = [[UICollectionView alloc] initWithFrame:(CGRectZero) collectionViewLayout:layout];
+    self.chargeCollectionView.frame = CGRectMake(0, desLabel.bottom + 22, kScreenWidth, itemHeight * 3 + spacing * 2);
+    
+    [self.chargView addSubview:self.chargeCollectionView];
+    self.chargeCollectionView.backgroundColor = [UIColor whiteColor];
+    [self.chargeCollectionView registerNib:[UINib nibWithNibName:@"XFChargeCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"XFChargeCollectionViewCell"];
+    self.chargeCollectionView.delegate = self;
+    self.chargeCollectionView.dataSource = self;
+    
+    UIButton *chargeButton = [[UIButton alloc] init];
+    [chargeButton setTitle:@"立即充值" forState:(UIControlStateNormal)];
+    [chargeButton setBackgroundColor:kRGBColorWith(238, 184, 99)];
+    chargeButton.layer.cornerRadius = 15;
+    chargeButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [self.chargView addSubview:chargeButton];
+    [chargeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.chargeCollectionView.mas_bottom).offset(43);
+        make.centerX.mas_equalTo(self.chargeCollectionView.mas_centerX);
+        make.width.mas_equalTo(kScreenWidth - 46);
+        make.height.mas_equalTo(30);
         
     }];
     
-    [self.totalLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.top.mas_equalTo(topLabel.mas_bottom).offset(20);
-        make.centerX.mas_offset(0);
-        
-    }];
-    
-    [desLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.left.mas_offset(15);
-        make.bottom.mas_offset(-10);
-        
-    }];
-    
-    [self setupFooter];
+    [chargeButton addTarget:self action:@selector(clickChargeButton) forControlEvents:(UIControlEventTouchUpInside)];
+    self.chargView.contentSize = CGSizeMake(kScreenWidth, 22 + 10 + 14 + 18 + 12 + 15 + 20 + itemHeight * 3 + spacing * 2 + 43 + 30 + 83);
+
 }
 
 - (void)setupFooter {
-    
-    UIView *footerView = [[UIView alloc] init];
-    footerView.backgroundColor = [UIColor whiteColor];
-    
-    footerView.frame = CGRectMake(0, 0, kScreenWidth, 250);
-    self.chargView.tableFooterView = footerView;
-    
-    UILabel *desLabel = [[UILabel alloc] init];
-    desLabel.textColor = [UIColor blackColor];
-    desLabel.text = @"请选择充值方式";
-    desLabel.font = [UIFont systemFontOfSize:15];
-    [footerView addSubview:desLabel];
-    
-    self.alipayButton = [[UIButton alloc] init];
-    [self.alipayButton setImage:[UIImage imageNamed:@"date_zhifubao"] forState:(UIControlStateNormal)];
-    [self.alipayButton setBackgroundImage:[UIImage imageNamed:@"my_weixuanze"] forState:(UIControlStateNormal)];
-    [self.alipayButton setBackgroundImage:[UIImage imageNamed:@"my_xuanze"] forState:(UIControlStateSelected)];
-    [self.alipayButton setTitle:@" 支付宝" forState:(UIControlStateNormal)];
-    [self.alipayButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
-    self.alipayButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [footerView addSubview:self.alipayButton];
-    
-    self.wechatButton = [[UIButton alloc] init];
-    [self.wechatButton setImage:[UIImage imageNamed:@"date_wechat"] forState:(UIControlStateNormal)];
-    [self.wechatButton setBackgroundImage:[UIImage imageNamed:@"my_weixuanze"] forState:(UIControlStateNormal)];
-    [self.wechatButton setBackgroundImage:[UIImage imageNamed:@"my_xuanze"] forState:(UIControlStateSelected)];
-    [self.wechatButton setTitle:@" 微信" forState:(UIControlStateNormal)];
-    [self.wechatButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
-    self.wechatButton.titleLabel.font = [UIFont systemFontOfSize:14];
-
-    [footerView addSubview:self.wechatButton];
-
-    self.chargePayButton = [[UIButton alloc] init];
-    [self.chargePayButton setTitle:@"支付" forState:(UIControlStateNormal)];
-    self.chargePayButton.backgroundColor = kMainRedColor;
-    self.chargePayButton.layer.cornerRadius = 22;
-    [footerView addSubview:self.chargePayButton];
-    
-    [desLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.top.left.mas_offset(15);
-        
-    }];
-    
-    [self.alipayButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.top.mas_equalTo(desLabel.mas_bottom).offset(20);
-        make.left.mas_offset(20);
-        make.width.mas_equalTo(110);
-        make.height.mas_equalTo(60);
-        
-    }];
-    [self.wechatButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.top.mas_equalTo(desLabel.mas_bottom).offset(20);
-        make.left.mas_equalTo(self.alipayButton.mas_right).offset(20);
-        make.width.mas_equalTo(110);
-        make.height.mas_equalTo(60);
-        
-    }];
-    
-    [self.chargePayButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.top.mas_equalTo(self.alipayButton.mas_bottom).offset(56);
-        make.left.mas_offset(30);
-        make.right.mas_offset(-30);
-        make.height.mas_equalTo(44);
-        
-    }];
-    
-    [self.alipayButton addTarget:self action:@selector(clickPayTypebutton:) forControlEvents:(UIControlEventTouchUpInside)];
-    [self.wechatButton addTarget:self action:@selector(clickPayTypebutton:) forControlEvents:(UIControlEventTouchUpInside)];
-    
-    [self.chargePayButton addTarget:self action:@selector(clickChargeButton) forControlEvents:(UIControlEventTouchUpInside)];
+//
+//    UIView *footerView = [[UIView alloc] init];
+//    footerView.backgroundColor = [UIColor whiteColor];
+//
+//    footerView.frame = CGRectMake(0, 0, kScreenWidth, 250);
+//    self.chargView.tableFooterView = footerView;
+//
+//    UILabel *desLabel = [[UILabel alloc] init];
+//    desLabel.textColor = [UIColor blackColor];
+//    desLabel.text = @"请选择充值方式";
+//    desLabel.font = [UIFont systemFontOfSize:15];
+//    [footerView addSubview:desLabel];
+//
+//    self.alipayButton = [[UIButton alloc] init];
+//    [self.alipayButton setImage:[UIImage imageNamed:@"date_zhifubao"] forState:(UIControlStateNormal)];
+//    [self.alipayButton setBackgroundImage:[UIImage imageNamed:@"my_weixuanze"] forState:(UIControlStateNormal)];
+//    [self.alipayButton setBackgroundImage:[UIImage imageNamed:@"my_xuanze"] forState:(UIControlStateSelected)];
+//    [self.alipayButton setTitle:@" 支付宝" forState:(UIControlStateNormal)];
+//    [self.alipayButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
+//    self.alipayButton.titleLabel.font = [UIFont systemFontOfSize:14];
+//    [footerView addSubview:self.alipayButton];
+//
+//    self.wechatButton = [[UIButton alloc] init];
+//    [self.wechatButton setImage:[UIImage imageNamed:@"date_wechat"] forState:(UIControlStateNormal)];
+//    [self.wechatButton setBackgroundImage:[UIImage imageNamed:@"my_weixuanze"] forState:(UIControlStateNormal)];
+//    [self.wechatButton setBackgroundImage:[UIImage imageNamed:@"my_xuanze"] forState:(UIControlStateSelected)];
+//    [self.wechatButton setTitle:@" 微信" forState:(UIControlStateNormal)];
+//    [self.wechatButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
+//    self.wechatButton.titleLabel.font = [UIFont systemFontOfSize:14];
+//
+//    [footerView addSubview:self.wechatButton];
+//
+//    self.chargePayButton = [[UIButton alloc] init];
+//    [self.chargePayButton setTitle:@"支付" forState:(UIControlStateNormal)];
+//    self.chargePayButton.backgroundColor = kMainRedColor;
+//    self.chargePayButton.layer.cornerRadius = 22;
+//    [footerView addSubview:self.chargePayButton];
+//
+//    [desLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.top.left.mas_offset(15);
+//
+//    }];
+//
+//    [self.alipayButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.top.mas_equalTo(desLabel.mas_bottom).offset(20);
+//        make.left.mas_offset(20);
+//        make.width.mas_equalTo(110);
+//        make.height.mas_equalTo(60);
+//
+//    }];
+//    [self.wechatButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.top.mas_equalTo(desLabel.mas_bottom).offset(20);
+//        make.left.mas_equalTo(self.alipayButton.mas_right).offset(20);
+//        make.width.mas_equalTo(110);
+//        make.height.mas_equalTo(60);
+//
+//    }];
+//
+//    [self.chargePayButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//        make.top.mas_equalTo(self.alipayButton.mas_bottom).offset(56);
+//        make.left.mas_offset(30);
+//        make.right.mas_offset(-30);
+//        make.height.mas_equalTo(44);
+//
+//    }];
+//
+//    [self.alipayButton addTarget:self action:@selector(clickPayTypebutton:) forControlEvents:(UIControlEventTouchUpInside)];
+//    [self.wechatButton addTarget:self action:@selector(clickPayTypebutton:) forControlEvents:(UIControlEventTouchUpInside)];
+//
+//    [self.chargePayButton addTarget:self action:@selector(clickChargeButton) forControlEvents:(UIControlEventTouchUpInside)];
 
 }
 
@@ -802,4 +901,195 @@
     
     [super updateViewConstraints];
 }
+
+
+
+#pragma mark - tableView
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    if (tableView == _vipView) {
+        
+        return 1;
+        
+    } else {
+        
+        return self.chargeInfos.count;
+    }
+    
+    return 1;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (tableView == _vipView) {
+        
+        XFVipTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFVipTableViewCell"];
+        
+        if (!cell)  {
+            
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"XFVipTableViewCell" owner:nil options:nil] lastObject];
+        }
+        
+        cell.delegate = self;
+        if (!self.vipInfo) {
+            
+            cell.daysLeftLabel.text = @"还未开通会员";
+        } else {
+            
+        }
+        __weak typeof(cell) weakCell = cell;
+        cell.selectedVipCardBlock = ^(NSInteger index) {
+            
+            switch (index) {
+                case 0:
+                {
+                    self.vipChargeDays = 30;
+                    
+                }
+                    break;
+                case 1:{
+                    self.vipChargeDays = 90;
+                    
+                }
+                    break;
+                case 2:{
+                    
+                    self.vipChargeDays = 365;
+                    
+                }
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            // 获取需要多少钱
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+            
+            [XFMineNetworkManager chargeVipWithDays:[NSString stringWithFormat:@"%zd",self.vipChargeDays] successBlock:^(id responseObj) {
+                
+                [HUD hideAnimated:YES];
+                
+                NSDictionary *vipInfo = (NSDictionary *)responseObj;
+                self.vippayInfo = vipInfo;
+                
+                if (self.vipPayType == 3) {
+                    [weakCell.payButton setTitle:[NSString stringWithFormat:@"支付%@钻石",vipInfo[@"diamonds"]] forState:(UIControlStateNormal)];
+                    
+                } else {
+                    
+                    [weakCell.payButton setTitle:[NSString stringWithFormat:@"支付%@元",vipInfo[@"price"]] forState:(UIControlStateNormal)];
+                    
+                }
+                
+                
+            } failedBlock:^(NSError *error) {
+                
+                [HUD hideAnimated:YES];
+                
+            } progressBlock:^(CGFloat progress) {
+                
+                
+            }];
+            
+            
+        };
+        
+        cell.selectedPayTypeBlock = ^(NSInteger index) {
+            
+            self.vipPayType = index;
+            
+            if (self.vippayInfo) {
+                
+                switch (index) {
+                        
+                    case 3:
+                    {
+                        [weakCell.payButton setTitle:[NSString stringWithFormat:@"支付%@钻石",self.vippayInfo[@"diamonds"]] forState:(UIControlStateNormal)];
+                        
+                    }
+                        break;
+                    default:
+                    {
+                        [weakCell.payButton setTitle:[NSString stringWithFormat:@"支付%@元",self.vippayInfo[@"price"]] forState:(UIControlStateNormal)];
+                        
+                    }
+                        break;
+                        
+                }
+                
+            }
+            
+        };
+        
+        return cell;
+        
+    } else {
+        
+        XFChargeSmallTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFChargeSmallTableViewCell"];
+        
+        if (!cell) {
+            
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"XFChargeSmallTableViewCell" owner:nil options:nil] lastObject];
+        }
+        
+        cell.info = self.chargeInfos[indexPath.row];
+        
+        cell.indexPath = indexPath;
+        
+        if (self.selectedIndexPath == indexPath) {
+            
+            cell.monneyButton.selected = YES;
+            cell.monneyButton.layer.borderColor = kMainRedColor.CGColor;
+        }
+        
+        cell.clickButtonBlock = ^(NSIndexPath *indexPath, UIButton *moneyButton) {
+            
+            if (self.selectedIndexPath) {
+                
+                XFChargeSmallTableViewCell *selectedCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
+                
+                selectedCell.monneyButton.selected = NO;
+                selectedCell.monneyButton.layer.borderColor = UIColorHex(808080).CGColor;
+            }
+            
+            moneyButton.selected = YES;
+            moneyButton.layer.borderColor = kMainRedColor.CGColor;
+            
+            self.selectedIndexPath = indexPath;
+            
+        };
+        
+        return cell;
+    }
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (tableView == self.chargView) {
+        
+        XFChargeSmallTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        
+        cell.selected = NO;
+        
+        if (self.selectedIndexPath) {
+            
+            XFChargeSmallTableViewCell *selectedCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
+            
+            selectedCell.monneyButton.selected = NO;
+            selectedCell.monneyButton.layer.borderColor = UIColorHex(808080).CGColor;
+        }
+        
+        cell.monneyButton.selected = YES;
+        cell.monneyButton.layer.borderColor = kMainRedColor.CGColor;
+        
+        self.selectedIndexPath = indexPath;
+        
+    }
+    
+}
+
+
+
 @end

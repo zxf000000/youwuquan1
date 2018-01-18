@@ -13,8 +13,6 @@
 
 @property (nonatomic,strong) UIView *inputView;
 
-
-
 @property (nonatomic,strong) UIButton *sendButton;
 @end
 
@@ -97,7 +95,7 @@
     self.inputView = [[UIView alloc] initWithFrame:(CGRectMake(0, kScreenHeight - 44 - 64, kScreenWidth, 44))];
     
     [self.view addSubview:self.inputView];
-    self.inputView.backgroundColor = [UIColor redColor];
+    self.inputView.backgroundColor = [UIColor whiteColor];
     
     self.inputTextField = [[UITextField alloc] init];
     

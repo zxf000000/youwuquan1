@@ -121,7 +121,7 @@ static CGFloat const CYLTabBarControllerHeight = 49.f;
 #warning CUSTOMIZE YOUR TABBAR APPEARANCE
     // Customize UITabBar height
     // 自定义 TabBar 高度
-    tabBarController.tabBarHeight = CYL_IS_IPHONE_X ? 65 : 40;
+    tabBarController.tabBarHeight = CYL_IS_IPHONE_X ? 65 : 49;
     
     // set the text color for unselected state
     // 普通状态下的文字属性
@@ -152,7 +152,7 @@ static CGFloat const CYLTabBarControllerHeight = 49.f;
     // set the bar shadow image
     // This shadow image attribute is ignored if the tab bar does not also have a custom background image.So at least set somthing.
     [[UITabBar appearance] setBackgroundImage:[[UIImage alloc] init]];
-    [[UITabBar appearance] setBackgroundColor:[UIColor whiteColor]];
+    [[UITabBar appearance] setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.7]];
     //    [[UITabBar appearance] setShadowImage:[UIImage imageNamed:@"tapbar_top_line"]];
     
 //    // set the bar background image

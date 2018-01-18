@@ -606,6 +606,8 @@
 }
 
 
+
+
 /**
  充值
  
@@ -619,7 +621,7 @@
              failedBlock:(MineRequestFailedBlock)failedBlock
            progressBlock:(MineRequestProgressBlock)progressBlock {
     
-    NSDictionary *params = @{@"price":number};
+    NSDictionary *params = @{@"price":@([number intValue])};
     
     [XFNetworking postWithUrl:[XFApiClient pathUrlForCharge] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
@@ -1164,6 +1166,25 @@
         failedBlock(error);
         
     }];
+}
+
++ (void)getChargeListWithsuccessBlock:(MineRequestSuccessBlock)successBlock
+                          failedBlock:(MineRequestFailedBlock)failedBlock
+                        progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetCahrgeList] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+    
 }
 
 @end

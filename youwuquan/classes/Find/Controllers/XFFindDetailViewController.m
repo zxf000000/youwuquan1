@@ -25,6 +25,7 @@
 #import "XFPayViewController.h"
 #import "XFDetailStatusCellNode.h"
 #import "XFUpImageNode.h"
+#import "XFMyAuthViewController.h"
 
 #define kHeaderHeight kScreenWidth
 
@@ -464,7 +465,14 @@
             return ^ASCellNode *{
                 
                 XFFindApproveNode *node = [[XFFindApproveNode alloc] initWithType:Approve auths:self.userInfo[@"identifications"]];
-                
+                node.moreAuthBlock = ^{
+                  
+                    // 跳转到认证页面
+                    XFMyAuthViewController *authVC = [[XFMyAuthViewController alloc] init];
+                    
+                    [self.navigationController pushViewController:authVC animated:YES];
+                    
+                };
                 return node;
             };
         }
@@ -899,9 +907,7 @@
 
 #pragma mark - 分享海报
 - (void)clickShareButton {
-    
 
-    
     [[YYWebImageManager sharedManager] requestImageWithURL:[NSURL URLWithString:self.iconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         
         

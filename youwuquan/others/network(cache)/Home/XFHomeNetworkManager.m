@@ -188,7 +188,7 @@
                       progress:(HomeRequestProgressBlock)progressBlock {
     
     
-    [XFNetworking postWithUrl:[XFApiClient pathUrlForCommentVideo:videoId] refreshRequest:YES cache:NO praams:@{@"text":text} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForCommentVideo:videoId] refreshRequest:NO cache:NO praams:@{@"text":text} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
@@ -244,11 +244,12 @@
  */
 + (void)commentCommentWithVideoId:(NSString *)videoId
                         commentId:(NSString *)commentId
+                             text:(NSString *)text
                      successBlock:(HomeRequestSuccessBlock)successBlock
                         failBlock:(HomeRequestFailedBlock)failBlock
                          progress:(HomeRequestProgressBlock)progressBlock {
     
-    [XFNetworking postWithUrl:[XFApiClient pathUrlForDeleteCommentForVideo:videoId comment:commentId] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForDeleteCommentForVideo:videoId comment:commentId] refreshRequest:YES cache:NO praams:@{@"text":text} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
@@ -310,7 +311,7 @@
                              @"size":@(size)
                              };
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetNearby] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetNearby] refreshRequest:NO cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         

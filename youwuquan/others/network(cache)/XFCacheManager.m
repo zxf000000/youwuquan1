@@ -12,7 +12,7 @@
 
 static NSString *const cacheDirkey = @"cacheDirKey";
 static NSString *const downloadDirKey = @"downloadDirKey";
-static NSUInteger diskCapacity = 40 * 1024 * 1024;
+static NSUInteger diskCapacity = 10 * 1024 * 1024;
 static NSTimeInterval cacheTime = 7 * 24 * 60 * 60;
 
 @implementation XFCacheManager

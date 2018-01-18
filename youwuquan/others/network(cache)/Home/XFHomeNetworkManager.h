@@ -132,6 +132,7 @@ typedef void(^HomeRequestProgressBlock)(CGFloat progress);
  */
 + (void)commentCommentWithVideoId:(NSString *)videoId
                         commentId:(NSString *)commentId
+                             text:(NSString *)text
                      successBlock:(HomeRequestSuccessBlock)successBlock
                         failBlock:(HomeRequestFailedBlock)failBlock
                          progress:(HomeRequestProgressBlock)progressBlock;

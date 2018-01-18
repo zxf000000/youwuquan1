@@ -29,7 +29,8 @@
         _iconNode = [[ASNetworkImageNode alloc] init];
         
         [_iconNode setDefaultImage:[UIImage imageNamed:@"zhanweitu44"]];
-        
+        _iconNode.cornerRadius = 31;
+        _iconNode.clipsToBounds = YES;
         [self addSubnode:_iconNode];
         
         _nameNode = [[ASTextNode alloc] init];

@@ -118,7 +118,14 @@
 
 @property (nonatomic,strong) MBProgressHUD *HUD;
 
+@property (nonatomic,strong) XFCommentModel *commentedModel;
+
+@property (nonatomic,assign) NSInteger page;
+
+@property (nonatomic,copy) NSArray *indexPathsTobeReload;
+
 @end
+
 
 @implementation XFStatusDetailViewController
 
@@ -146,6 +153,26 @@
     self.tableNode.alpha = 0;
 
     [self loadStatusInfo];
+    
+}
+
+- (void)reloadData {
+    
+    NSArray *nodes = [self.tableNode visibleNodes];
+    
+    NSMutableArray *array = [NSMutableArray array];
+    if ( nodes.count > 0 ) {
+        
+        for (ASCellNode *node in nodes) {
+            
+            [array addObject:node.indexPath];
+        }
+        
+    }
+    
+    _indexPathsTobeReload = array.copy;
+    
+    [self.tableNode reloadData];
     
 }
 
@@ -207,54 +234,72 @@
         
         return;
     }
-    
     [self hide];
-    
-    [XFFindNetworkManager commentStatusWithId:self.status.id text:self.inputTextField.text successBlock:^(id responseObj) {
-        
-        [self loadDataWithInset:YES];
-        
-        self.inputTextField.text = nil;
-        
-    } failBlock:^(NSError *error) {
-        
-        NSLog(@"%@",error.description);
 
+    
+    if (!self.commentedModel) {
         
-    } progress:^(CGFloat progress) {
+        [XFFindNetworkManager commentStatusWithId:self.status.id text:self.inputTextField.text successBlock:^(id responseObj) {
+            
+            [self loadDataWithInset:YES];
+            
+            self.inputTextField.text = nil;
+            
+        } failBlock:^(NSError *error) {
+            
+            NSLog(@"%@",error.description);
+            
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
         
+    } else {
         
-    }];
+        [XFFindNetworkManager commentCommentWithId:self.status.id commentId:self.commentedModel.id text:self.inputTextField.text successBlock:^(id responseObj) {
+            
+            [self loadDataWithInset:NO];
+
+            self.commentedModel = nil;
+            self.inputTextField.text = nil;
+
+        } failBlock:^(NSError *error) {
+            NSLog(@"%@",error.description);
+
+        } progress:^(CGFloat progress) {
+            
+        }];
+    }
+    
+
+    
+
     
     
 }
 
 - (void)loadDataWithInset:(BOOL)inset {
+    
+    self.page = 0;
     // 获取评论列表
-    [XFFindNetworkManager getStatusCommentListWithId:self.status.id successBlock:^(id responseObj) {
-        
+    [XFFindNetworkManager getStatusCommentListWithId:self.status.id page:self.page size:15 successBlock:^(id responseObj) {
         
         NSArray *comments = ((NSDictionary *)responseObj)[@"content"];
         
-        NSMutableArray *commentArr = [NSMutableArray array];
-        for (NSInteger i = 0 ; i < comments.count ; i ++ ) {
-            
-            [commentArr addObject:[XFCommentModel modelWithDictionary:comments[i]]];
-            
-        }
-        self.commentList = commentArr.copy;
+        self.commentList = [XFCommentModel modelsWithComments:comments];
+        
         if (inset) {
             
-            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationNone)];
+//            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationNone)];
+            
+            [self.tableNode reloadData];
             
             [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
         } else {
             
-            [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationNone)];
-            
+            [self.tableNode reloadData];
         }
-        
-//        [self.tableNode reloadData];
         
         [UIView animateWithDuration:0.2 animations:^{
            
@@ -268,6 +313,36 @@
         [self.HUD hideAnimated:YES];
 
         
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
+    
+}
+
+- (void)loadMoreComments {
+    
+    self.page += 1;
+    // 获取评论列表
+    [XFFindNetworkManager getStatusCommentListWithId:self.status.id page:self.page size:15 successBlock:^(id responseObj) {
+        
+        NSArray *comments = ((NSDictionary *)responseObj)[@"content"];
+        
+        NSMutableArray *arr = [NSMutableArray arrayWithArray:self.commentList];
+        
+        [arr addObjectsFromArray:[XFCommentModel modelsWithComments:comments]];
+        
+        self.commentList  =  arr.copy;
+
+        [self.tableNode reloadData];
+        
+        [self.tableNode.view.mj_footer endRefreshing];
+        
+    } failBlock:^(NSError *error) {
+        
+        [self.tableNode.view.mj_footer endRefreshing];
+
     } progress:^(CGFloat progress) {
         
         
@@ -411,12 +486,17 @@
     if (indexPath.row > 1) {
     
         XFCommentModel *model = self.commentList[indexPath.row - 2];
+        self.commentedModel = model;
+        // 回复
+        [self.inputTextField becomeFirstResponder];
+        
         // 个人信息
-        XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
-        detailVC.userId = model.uid;
-        detailVC.userName = model.username;
-        detailVC.iconUrl = model.headIconUrl;
-        [self.navigationController pushViewController:detailVC animated:YES];
+        
+//        XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+//        detailVC.userId = model.uid;
+//        detailVC.userName = model.username;
+//        detailVC.iconUrl = model.headIconUrl;
+//        [self.navigationController pushViewController:detailVC animated:YES];
     }
     
 }
@@ -516,6 +596,23 @@
                     
                     node.neverShowPlaceholders = YES;
                     
+                    if ([_indexPathsTobeReload containsObject:indexPath]) {
+                        
+                        ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                        
+                        node.neverShowPlaceholders = YES;
+                        oldCellNode.neverShowPlaceholders = YES;
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            node.neverShowPlaceholders = NO;
+                            
+//                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+                            
+//                            [self.indexPathsTobeReload removeObjectAtIndex:index];
+                            
+                        });
+                        
+                    }
+                    
                     return node;
                     
                 } else {
@@ -525,6 +622,23 @@
                     node.detailDelegate = self;
                     
                     node.neverShowPlaceholders = YES;
+                    
+                    if ([_indexPathsTobeReload containsObject:indexPath]) {
+                        
+                        ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                        
+                        node.neverShowPlaceholders = YES;
+                        oldCellNode.neverShowPlaceholders = YES;
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            node.neverShowPlaceholders = NO;
+                            
+//                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+                            
+//                            [self.indexPathsTobeReload removeObjectAtIndex:index];
+                            
+                        });
+                        
+                    }
 
                     return node;
                     
@@ -574,10 +688,38 @@
             if (self.isOpen) {
             
                 return ^ASCellNode *{
+                                        
+                    XFCommentModel *model = self.commentList[indexPath.row - 2];
                     
-                    XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:self.commentList[indexPath.row - 2]];
+                    [self.commentList enumerateObjectsUsingBlock:^(XFCommentModel * obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                       
+                        if ([obj.id isEqualToString:model.fatherId]) {
+                            
+                            model.fartherName = obj.username;
+                        }
+                        
+                    }];
+                    
+                    XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
                     
                     node.delegate = self;
+                    
+                    if ([_indexPathsTobeReload containsObject:indexPath]) {
+                        
+                        ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                        
+                        node.neverShowPlaceholders = YES;
+                        oldCellNode.neverShowPlaceholders = YES;
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            node.neverShowPlaceholders = NO;
+                            
+//                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+//
+//                            [self.indexPathsTobeReload removeObjectAtIndex:index];
+                            
+                        });
+                        
+                    }
                     
                     return node;
                     
@@ -608,9 +750,36 @@
                     
                     return ^ASCellNode *{
                         
-                        XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:self.commentList[indexPath.row - 2]];
+                        XFCommentModel *model = self.commentList[indexPath.row - 2];
                         
+                        [self.commentList enumerateObjectsUsingBlock:^(XFCommentModel * obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                            
+                            if ([obj.id isEqualToString:model.fatherId]) {
+                                
+                                model.fartherName = obj.username;
+                            }
+                            
+                        }];
+                        
+                        XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
                         node.delegate = self;
+                        
+                        if ([_indexPathsTobeReload containsObject:indexPath]) {
+                            
+                            ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                            
+                            node.neverShowPlaceholders = YES;
+                            oldCellNode.neverShowPlaceholders = YES;
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                node.neverShowPlaceholders = NO;
+                                
+//                                NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+//
+//                                [self.indexPathsTobeReload removeObjectAtIndex:index];
+                                
+                            });
+                            
+                        }
                         
                         return node;
                         
@@ -834,6 +1003,11 @@
         self.tableNode.view.estimatedSectionFooterHeight = 0;
     }
     
+    self.tableNode.view.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
+       
+        [self loadMoreComments];
+        
+    }];
     
 }
 - (void)clickBackButton {

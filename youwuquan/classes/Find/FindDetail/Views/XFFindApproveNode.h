@@ -49,4 +49,6 @@ typedef NS_ENUM(NSInteger,CellType) {
 
 @property (nonatomic,copy) NSArray *authIds;
 
+@property (nonatomic,copy) void(^moreAuthBlock)(void);
+
 @end

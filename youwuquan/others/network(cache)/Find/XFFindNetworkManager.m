@@ -283,9 +283,9 @@
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)getStatusCommentListWithId:(NSString *)statusId successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock {
++ (void)getStatusCommentListWithId:(NSString *)statusId page:(NSInteger)page size:(NSInteger)size successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock {
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetStatusCommentListWith:statusId] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetStatusCommentListWith:statusId] refreshRequest:YES cache:NO praams:@{@"page":@(page),@"size":@(size)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
@@ -362,9 +362,9 @@
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)commentCommentWithId:(NSString *)statusId commentId:(NSString *)commentId successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock {
++ (void)commentCommentWithId:(NSString *)statusId commentId:(NSString *)commentId text:(NSString *)text successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock {
     
-    [XFNetworking postWithUrl:[XFApiClient pathUrlForcommentCommentWithStatusId:statusId commentId:commentId] refreshRequest:NO cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForcommentCommentWithStatusId:statusId commentId:commentId] refreshRequest:NO cache:NO praams:@{@"text":text} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         

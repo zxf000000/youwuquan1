@@ -60,6 +60,7 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
             <connections>
+                <outlet property="distanceButton" destination="Nlp-ef-uBf" id="cge-WY-Zsg"/>
                 <outlet property="nameLabel" destination="Wjj-xF-iWw" id="mn0-Jq-IBy"/>
                 <outlet property="picView" destination="Vcw-xk-dcn" id="sda-zG-Tz0"/>
             </connections>

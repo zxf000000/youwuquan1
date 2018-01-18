@@ -437,7 +437,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
      设置微信的appKey和appSecret
      [微信平台从U-Share 4/5升级说明]http://dev.umeng.com/social/ios/%E8%BF%9B%E9%98%B6%E6%96%87%E6%A1%A3#1_1
      */
-    [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_WechatSession appKey:@"wx48c1f096be6cf592" appSecret:@"f448bf514ad77303e176e48e908dae23" redirectURL:nil];
+    [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_WechatSession appKey:@"wx0c651ac02e3a8be1" appSecret:@"353ddbdd2778b19fcd213da7f541e28b" redirectURL:nil];
     /*
      * 移除相应平台的分享，如微信收藏
      */
