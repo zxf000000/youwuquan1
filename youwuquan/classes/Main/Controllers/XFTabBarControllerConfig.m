@@ -12,21 +12,10 @@
 static CGFloat const CYLTabBarControllerHeight = 49.f;
 
 @interface XFTabBarControllerConfig ()<UITabBarControllerDelegate>
+@property (nonatomic, readwrite, strong) CYLTabBarController *tabBarController;
 
 @end
 @implementation XFTabBarControllerConfig
-
-- (instancetype)init {
-    
-    if (self = [super init]) {
-        
-        
-        
-    }
-    return self;
-}
-
-
 
 // 退出登录页面的时候自动跳到首页
 - (void)dismissLoginVC {
@@ -49,7 +38,7 @@ static CGFloat const CYLTabBarControllerHeight = 49.f;
          * 更推荐后一种做法。
          */
         
-        CYLTabBarController *tabBarController = [CYLTabBarController tabBarControllerWithViewControllers:self.viewControllers tabBarItemsAttributes:self.tabBarItemsAttributesForController];
+        CYLTabBarController *tabBarController = [CYLTabBarController tabBarControllerWithViewControllers:self.viewControllers tabBarItemsAttributes:self.tabBarItemsAttributesForController] ;
         [self customizeTabBarAppearance:tabBarController];
         _tabBarController = tabBarController;
     }
@@ -139,6 +128,7 @@ static CGFloat const CYLTabBarControllerHeight = 49.f;
     [tabBar setTitleTextAttributes:normalAttrs forState:UIControlStateNormal];
     [tabBar setTitleTextAttributes:selectedAttrs forState:UIControlStateSelected];
     
+
     // Set the dark color to selected tab (the dimmed background)
     // TabBarItem选中后的背景颜色
     // [self customizeTabBarSelectionIndicatorImage];
@@ -151,22 +141,23 @@ static CGFloat const CYLTabBarControllerHeight = 49.f;
     
     // set the bar shadow image
     // This shadow image attribute is ignored if the tab bar does not also have a custom background image.So at least set somthing.
-    [[UITabBar appearance] setBackgroundImage:[[UIImage alloc] init]];
-    [[UITabBar appearance] setBackgroundColor:[UIColor colorWithWhite:1 alpha:0.7]];
-    //    [[UITabBar appearance] setShadowImage:[UIImage imageNamed:@"tapbar_top_line"]];
+//    [[UITabBar appearance] setBackgroundImage:[[UIImage alloc] init]];
+//    [[UITabBar appearance] setBackgroundColor:[UIColor whiteColor]];
+        [[UITabBar appearance] setShadowImage:[UIImage imageNamed:@"tapbar_top_line"]];
     
-//    // set the bar background image
-//    // 设置背景图片
-//    UITabBar *tabBarAppearance = [UITabBar appearance];
-//
-//    //FIXED: #196
-//    UIImage *tabBarBackgroundImage = [UIImage imageNamed:@"tab_bar"];
-//    UIImage *scanedTabBarBackgroundImage = [[self class] scaleImage:tabBarBackgroundImage toScale:1.0];
-    //     [tabBarAppearance setBackgroundImage:scanedTabBarBackgroundImage];
+    // set the bar background image
+    // 设置背景图片
+    UITabBar *tabBarAppearance = [UITabBar appearance];
+    
+    //FIXED: #196
+    UIImage *tabBarBackgroundImage = [UIImage imageNamed:@"tabbar_bg"];
+    UIImage *scanedTabBarBackgroundImage = [[self class] scaleImage:tabBarBackgroundImage toScale:1.0];
+    [tabBarAppearance setBackgroundImage:scanedTabBarBackgroundImage];
     
     // remove the bar system shadow image
     // 去除 TabBar 自带的顶部阴影
-    // iOS10 后 需要使用 `-[CYLTabBarController hideTabBadgeBackgroundSeparator]` 见 AppDelegate 类中的演示;
+    // iOS10 后 需要使用 `-` 见 AppDelegate 类中的演示;
+    [tabBarController hideTabBadgeBackgroundSeparator];
     [[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
 }
 

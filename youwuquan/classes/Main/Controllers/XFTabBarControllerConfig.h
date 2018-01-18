@@ -26,7 +26,7 @@
 
 @interface XFTabBarControllerConfig : NSObject
 
-@property (nonatomic, strong) CYLTabBarController *tabBarController;
+@property (nonatomic, readonly, strong) CYLTabBarController *tabBarController;
 @property (nonatomic, copy) NSString *context;
 
 @end

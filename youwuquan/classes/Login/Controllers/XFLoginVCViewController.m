@@ -187,7 +187,7 @@
             NSLog(@"QQ gender: %@", resp.unionGender);
             
             // 第三方平台SDK源数据
-            NSLog(@"QQ originalResponse: %@", resp.originalResponse);
+            NSLog(@"QQ originalResponse: %@", resp);
         }
     }];
 }

@@ -78,7 +78,7 @@
 
 + (void)loginWithPhone:(NSString *)phone pwd:(NSString *)pwd longitude:(NSString *)longitude latitude:(NSString *)latitude progress:(LoginRequestProgressBlock)progressBlock successBlock:(LoginRequestSuccessBlock)successBlock failBlock:(LoginRequestFailedBlock)failBlock {
     
-    NSDictionary *params = @{@"phone":phone,
+    NSDictionary *params = @{@"username":phone,
                              @"password":[XFToolManager md5:pwd],
                              @"remember-me":@(YES),
                              @"longitude":@([longitude doubleValue]),

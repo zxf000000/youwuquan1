@@ -29,6 +29,5 @@
 //@property (nonatomic,copy) NSString *userNoA;
 //@property (nonatomic,copy) NSString *userNoB;
 
-+ (NSArray *)modelsWithComments:(NSArray *)comments;
-
++ (NSArray *)modelsWithComments:(NSArray *)comments farthName:(NSString *)fartherName;
 @end

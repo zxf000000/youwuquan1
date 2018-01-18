@@ -35,10 +35,12 @@
     
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:[dateObj longValue]/1000];
     
-    NSDateFormatter *format = [[NSDateFormatter alloc] init];
-    format.dateFormat = @"yyyy-MM-dd HH:mm";
+//
+//
+//    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+//    format.dateFormat = @"yyyy-MM-dd HH:mm";
     
-    return [format stringFromDate:date];
+    return [self changeDateToStringWithDate:date];
     
 }
 
@@ -609,5 +611,43 @@
              @"duration" : @(seconds)};
 }
 
+
++ (NSString *)changeDateToStringWithDate:(NSDate *)date {
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit unit = NSCalendarUnitYear | NSCalendarUnitMonth
+    | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+    // 对比时间差
+    NSDateComponents *dateCom = [calendar components:unit fromDate:date toDate:[NSDate date] options:0];
+
+    NSInteger year = dateCom.year;
+    NSInteger month = dateCom.month;
+    NSInteger day = dateCom.day;
+    NSInteger hour = dateCom.hour;
+    NSInteger minute = dateCom.minute;
+    
+    if (year > 0) {
+        
+        return [NSString stringWithFormat:@"%zd年之前",year];
+        
+    } else if (month > 0) {
+        
+        return [NSString stringWithFormat:@"%zd月之前",month];
+    } else if (day > 0) {
+        
+        return [NSString stringWithFormat:@"%zd天之前",day];
+    } else if (hour > 0) {
+        
+        return [NSString stringWithFormat:@"%zd小时之前",hour];
+
+    } else if (minute > 1) {
+        
+        return [NSString stringWithFormat:@"%zd分钟之前",minute];
+    } else {
+        
+        return @"刚刚";
+    }
+
+}
 
 @end

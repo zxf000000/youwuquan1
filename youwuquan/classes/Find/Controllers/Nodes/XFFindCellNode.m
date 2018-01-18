@@ -99,7 +99,10 @@
                     picNode.clipsToBounds = YES;
                     [self addSubnode:picNode];
                     [nodes addObject:picNode];
+                    
                     self.openCount += 1;
+                    
+                    [picNode addTarget:self action:@selector(clickPicNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
                     
                 } else {
                     XFNetworkImageNode *picNode = [[XFNetworkImageNode alloc] init];
@@ -109,6 +112,9 @@
                     picNode.clipsToBounds = YES;
                     [closesNodes addObject:picNode];
                     self.closeCount += 1;
+                    
+                    [picNode addTarget:self action:@selector(clickPicNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
+
                 }
                 
             }
@@ -252,7 +258,7 @@
         
         _moneyButton = [[ASButtonNode alloc] init];
         [_moneyButton setTitle:[NSString stringWithFormat:@"收入 %@",[NSString stringWithFormat:@"%zd",[_model.receivedDiamonds intValue]]] withFont:[UIFont systemFontOfSize:11] withColor:[UIColor blackColor] forState:(UIControlStateNormal)];
-        [_moneyButton setImage:[UIImage imageNamed:@"find_share"] forState:(UIControlStateNormal)];
+        [_moneyButton setImage:[UIImage imageNamed:@"find_money"] forState:(UIControlStateNormal)];
         
         [self addSubnode:_moneyButton];
         
@@ -307,6 +313,25 @@
         
     }
     return self;
+}
+
+// 点击图片
+- (void)clickPicNode:(ASNetworkImageNode *)imgNode {
+    
+    NSMutableArray *urls = [NSMutableArray array];
+    for (int i = 0 ; i < _model.pictures.count ; i ++ ) {
+        
+        NSDictionary *info = _model.pictures[i];
+        NSString *url = info[@"image"][@"thumbImage300pxUrl"];
+        [urls addObject:url];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(findCellNode:didClickImageWithIndex:urls:)]) {
+        
+        [self.delegate findCellNode:self didClickImageWithIndex:[self.picNodes indexOfObject:imgNode.supernode] urls:urls.copy];
+        
+    }
+    
 }
 
 // 分享
@@ -486,9 +511,9 @@
             picWidth = picWidth/2;
             picHeight = picWidth * imgSize.height/imgSize.width;
             
-            if (picHeight > kScreenWidth) {
+            if (picHeight > kScreenWidth * 0.5) {
                 
-                picHeight = kScreenWidth;
+                picHeight = kScreenWidth * 0.5;
                 
             }
             
@@ -783,7 +808,7 @@
     _commentButton.style.spacingBefore = 10;
 
     _setbutton.style.preferredSize = CGSizeMake(30, 20);
-    
+    _setbutton.style.spacingAfter = 20;
     ASStackLayoutSpec *likeLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:8 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_likeButton,_commentButton,_shareButton]];
     
     ASStackLayoutSpec *moneyLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_moneyButton,_setbutton]];

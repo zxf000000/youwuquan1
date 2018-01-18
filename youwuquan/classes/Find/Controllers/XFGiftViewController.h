@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 @class XFGiftViewController;
 
+@interface XFRealCell : UICollectionViewCell
+
+@property (nonatomic,strong) UIImageView *imgView;
+
+@end
+
 @interface XFGiftCell : UICollectionViewCell
 
 @property (nonatomic,strong) UIButton *flowerButton;

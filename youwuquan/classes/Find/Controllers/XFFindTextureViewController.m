@@ -27,7 +27,8 @@
 #import "XFFindActivityModel.h"
 #import "XFFindSearchNode.h"
 #import "XFSearchViewController.h"
-#import <PINCache.h>
+#import "LBPhotoBrowserManager.h"
+
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
 
@@ -95,6 +96,8 @@
     self.title = @"发现";
     
     self.hdCount = 0;
+    self.page = -1;
+    self.carePage = -1;
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -164,6 +167,8 @@
     [self setupScrollView];
 
     [self network];
+//    [self getAdData];
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshLikeStatus:) name:kRefreshLikeStatusNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshCareStatus:) name:kRefreshCareStatusNotification object:nil];
@@ -173,9 +178,9 @@
 }
 
 - (void)network {
-    
+
     self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-    
+
     // 获取活动
     NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
         [self getAdData];
@@ -187,11 +192,11 @@
 
     //设置依赖
     [operation2 addDependency:operation1];      //任务3依赖任务2
-    
+
     //创建队列
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperations:@[operation2, operation1] waitUntilFinished:NO];
-    
+
 }
 
 
@@ -284,7 +289,6 @@
 
 - (void)getAdData {
     
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
     [XFFindNetworkManager getFindAdWithPage:0 size:6 SuccessBlock:^(id responseObj) {
        
@@ -297,15 +301,14 @@
         
         self.adDatas = arr.copy;
         self.hdCount = self.adDatas.count >= 2 ? 2 : self.adDatas.count;
-        dispatch_semaphore_signal(sema);
 
+        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
+        
     } failBlock:^(NSError *error) {
-        dispatch_semaphore_signal(sema);
 
     } progress:^(CGFloat progress) {
         
     }];
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 
     
 }
@@ -329,7 +332,6 @@
 - (void)loadFollowData {
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-//    self.scrollView.hidden = YES;
     
     self.carePage = 0;
     
@@ -388,7 +390,7 @@
             
             [self.tableNode.view.mj_header endRefreshing];
             [self.HUD hideAnimated:YES];
-
+            
         });
         
         
@@ -459,7 +461,6 @@
         
         [XFFindNetworkManager getInviteDataWithPage:self.page rows:10 SuccessBlock:^(id responseObj) {
             
-            [self.tableNode.view.mj_footer endRefreshing];
             
             NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
             
@@ -479,10 +480,12 @@
                 block(arr.copy);
                 
             }
-            
+            [self.tableNode.view.mj_footer endRefreshing];
+
         } failBlock:^(NSError *error) {
             
-            
+            [self.tableNode.view.mj_footer endRefreshing];
+
         } progress:^(CGFloat progress) {
             
             
@@ -494,7 +497,6 @@
         
         [XFFindNetworkManager getFollowsDataWithPage:self.carePage rows:10 SuccessBlock:^(id responseObj) {
             
-            [self.rightNode.view.mj_footer endRefreshing];
 
             NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
             
@@ -514,10 +516,12 @@
                 block(arr.copy);
                 
             }
-            
+            [self.rightNode.view.mj_footer endRefreshing];
+
         } failBlock:^(NSError *error) {
             
-            
+            [self.rightNode.view.mj_footer endRefreshing];
+
         } progress:^(CGFloat progress) {
             
             
@@ -574,10 +578,6 @@
 //  预加载
 - (BOOL)shouldBatchFetchForTableNode:(ASTableNode *)tableNode {
     
-//    if (self.inviteDatas.count == 0) {
-//
-//        return NO;
-//    }
     return NO;
 }
 
@@ -681,7 +681,7 @@
 - (void)setupScrollView {
     
     self.scrollView = [[UIScrollView alloc] init];
-    self.scrollView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
+    self.scrollView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
     self.scrollView.pagingEnabled = YES;
     [self.view addSubview:self.scrollView];
     
@@ -691,9 +691,9 @@
     self.tableNode = [[ASTableNode alloc] init];
     self.tableNode.delegate = self;
     self.tableNode.dataSource = self;
-    self.tableNode.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
+    self.tableNode.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
     self.tableNode.view.showsVerticalScrollIndicator = NO;
-    self.tableNode.leadingScreensForBatching = 1;
+//    self.tableNode.leadingScreensForBatching = 2;
 
     [self.scrollView addSubnode:self.tableNode];
     if (@available (ios 11 , * )) {
@@ -710,9 +710,9 @@
     self.rightNode = [[ASTableNode alloc] init];
     self.rightNode.delegate = self;
     self.rightNode.dataSource = self;
-    self.rightNode.frame = CGRectMake(kScreenWidth, 0, kScreenWidth, kScreenHeight - 64 - 49);
+    self.rightNode.frame = CGRectMake(kScreenWidth, 0, kScreenWidth, kScreenHeight - 64);
     self.rightNode.view.showsVerticalScrollIndicator = NO;
-    self.rightNode.leadingScreensForBatching = 1;
+//    self.rightNode.leadingScreensForBatching = 2;
 
     [self.scrollView addSubnode:self.rightNode];
     
@@ -734,34 +734,87 @@
         
     }];
     
-    self.tableNode.view.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
-        
+    self.tableNode.view.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+       
         [self retrieveNextPageWithCompletion:^(NSArray *datas) {
-            
+           
             [self insertNewRowsInTableNode:datas];
-
+            
+            [self.tableNode.view.mj_footer endRefreshing];
+            
         }];
-
+        
     }];
     
+    [self.tableNode.view.mj_footer setAutomaticallyHidden:YES];
+
     self.rightNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
         
         [self loadFollowData];
     }];
     
-    self.rightNode.view.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
+    self.rightNode.view.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
         
         [self retrieveNextPageWithCompletion:^(NSArray *datas) {
             
             [self insertNewRowsInTableNode:datas];
-
+            
+            [self.tableNode.view.mj_footer endRefreshing];
+            
         }];
         
     }];
-    
 }
 
 #pragma mark - cellNodeDelegate点赞
+
+- (void)findCellNode:(XFFindCellNode *)node didClickImageWithIndex:(NSInteger)index urls:(NSArray *)urls {
+    
+    NSMutableArray *items = @[].mutableCopy;
+    for (int i = 0; i < node.picNodes.count; i++) {
+        // Get the large image url
+        XFNetworkImageNode *imgNode = node.picNodes[i];
+        UIImageView *imgView = [[UIImageView alloc] init];
+        
+        CGRect rect = CGRectZero;
+        
+        if ([imgNode isKindOfClass:[XFNetworkImageNode class]]) {
+            
+            rect = [node.view convertRect:imgNode.view.frame toView:self.view];
+            imgView.frame = rect;
+            
+        } else {
+            
+            ASOverlayLayoutSpec *overlay = (ASOverlayLayoutSpec *)imgNode;
+            for (ASDisplayNode *picNode in overlay.children) {
+                
+                if ([picNode isKindOfClass:[XFNetworkImageNode class]]) {
+                    
+                    rect = [node.view convertRect:picNode.view.frame toView:self.view];
+                    imgView.frame = rect;
+
+                }
+                
+            }
+            
+        }
+            
+            
+
+
+        LBPhotoWebItem *item = [[LBPhotoWebItem alloc] initWithURLString:urls[i] frame:rect];
+        [items addObject:item];
+    }
+
+    [LBPhotoBrowserManager.defaultManager showImageWithWebItems:items selectedIndex:index fromImageViewSuperView:self.view].lowGifMemory = YES;
+
+    [[[LBPhotoBrowserManager.defaultManager addLongPressShowTitles:@[@"保存",@"识别二维码",@"取消"]] addTitleClickCallbackBlock:^(UIImage *image, NSIndexPath *indexPath, NSString *title) {
+        LBPhotoBrowserLog(@"%@",title);
+    }]addPhotoBrowserWillDismissBlock:^{
+        LBPhotoBrowserLog(@"即将销毁");
+    }].needPreloading = NO;// 这里关掉预加载功能
+
+}
 
 - (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
     
@@ -807,14 +860,6 @@
         [XFFindNetworkManager unlikeWithStatusId:model.id successBlock:^(id responseObj) {
         
             [self refreshlikeStatusWithModel:model witfFollowed:NO];
-//            [node.likeButton setTitle:model.likeNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
-//
-//            node.likeButton.selected = NO;
-//
-//            [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
-//
-//
-//            }];
             
         } failBlock:^(NSError *error) {
             
@@ -829,15 +874,6 @@
         [XFFindNetworkManager likeWithStatusId:model.id successBlock:^(id responseObj) {
             
             [self refreshlikeStatusWithModel:model witfFollowed:YES];
-//
-//            [node.likeButton setTitle:model.likeNum withFont:[UIFont systemFontOfSize:13] withColor:UIColorHex(e0e0e0) forState:(UIControlStateNormal)];
-//
-//            node.likeButton.selected = YES;
-//
-//            [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
-//
-//
-//            }];
             
         } failBlock:^(NSError *error) {
             
@@ -847,13 +883,6 @@
             
         }];
     }
-    
-
-    
-    
-//    model.isLiked = [model.isLiked intValue] == 0 ? @"1" : @"0";
-
-    
     
 }
 
@@ -953,13 +982,11 @@
             }];
             
         }
-    
 
 }
 
 - (void)refreshlikeStatusWithModel:(XFStatusModel *)model witfFollowed:(BOOL)liked {
     
-    //
     [XFFindNetworkManager getOneStatusWithStatusId:model.id successBlock:^(id responseObj) {
         
         XFStatusModel *status = [XFStatusModel modelWithDictionary:(NSDictionary *)responseObj];
@@ -994,17 +1021,6 @@
         
     }];
     
-//    model.likedIt = liked;
-//    if (liked) {
-//
-//        model.likeNum = [NSString stringWithFormat:@"%zd",[model.likeNum integerValue] + 1];
-//
-//    } else {
-//
-//        model.likeNum = [NSString stringWithFormat:@"%zd",[model.likeNum integerValue] - 1];
-//
-//    }
-
 }
 
 - (void)refreshFollowStatusWithUid:(NSString *)uid witfFollowed:(BOOL)followed {

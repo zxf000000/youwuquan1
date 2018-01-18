@@ -164,4 +164,13 @@ typedef void(^completeBlock)(void);
 // 按钮倒计时
 + (void)countdownbutton:(UIButton *)countButton;
 
+
+/**
+ date更改为(分钟/天/年之前)
+
+ @param date date
+ @return string
+ */
++ (NSString *)changeDateToStringWithDate:(NSDate *)date;
+
 @end

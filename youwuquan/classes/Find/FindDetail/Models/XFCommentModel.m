@@ -10,14 +10,14 @@
 
 @implementation XFCommentModel
 
-+ (NSArray *)modelsWithComments:(NSArray *)comments {
++ (NSArray *)modelsWithComments:(NSArray *)comments farthName:(NSString *)fartherName {
     
     NSMutableArray *arr = [NSMutableArray array];
     
     for (int i = 0 ; i < comments.count; i ++ ) {
         
         XFCommentModel *model = [XFCommentModel modelWithDictionary:comments[i]];
-        
+        model.fartherName = fartherName;
         [arr addObject:model];
         
         if (model.childComments.count > 0) {
@@ -34,7 +34,7 @@
     NSMutableArray *array = [NSMutableArray array];
     if (model.childComments.count > 0) {
         
-        array = [NSMutableArray arrayWithArray:[self modelsWithComments:model.childComments]];
+        array = [NSMutableArray arrayWithArray:[self modelsWithComments:model.childComments farthName:model.username]];
         
     }
     return array.copy;

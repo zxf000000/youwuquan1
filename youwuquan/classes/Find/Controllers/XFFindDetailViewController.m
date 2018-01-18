@@ -918,7 +918,7 @@
         
     } completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
         
-            [XFShareManager sharedImageWithBg:@"backgroundImage" icon:image name:self.userInfo[@"nickname"] userid:[NSString stringWithFormat:@"ID:%@",self.userInfo[@"uid"]] address:@"福田区,深圳"];
+            [XFShareManager sharedImageWithBg:@"backgroundImage" icon:image name:self.userName userid:[NSString stringWithFormat:@"ID:%@",self.userId] address:@"福田区,深圳"];
     }];
     
 
@@ -928,8 +928,14 @@
 - (void)clickGiftButton {
     
     // 送礼物
+    XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
     
+    giftVC.userName = self.userName;
+    giftVC.uid = self.userId;
+    giftVC.iconUrl = self.iconUrl;
     
+    [self presentViewController:giftVC animated:YES completion:nil];
+
 }
 // 聊天
 - (void)clickChatButton {

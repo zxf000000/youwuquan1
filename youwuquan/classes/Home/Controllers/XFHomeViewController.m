@@ -313,6 +313,10 @@
     
     [super viewWillAppear:animated];
     
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0) {
+        self.tabBarController.tabBar.subviews[0].subviews[1].hidden = YES;
+    }
+    
 //    self.tableNode.hidden = YES;
 //    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
 //

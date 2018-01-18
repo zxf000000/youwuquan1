@@ -20,6 +20,7 @@ pod 'RongCloudIM/IMKit', '~> 2.8.3'
 pod 'JPush'
 pod 'HJDanmaku'
 
+
 # U-Share SDK UI模块（分享面板，建议添加）
 pod 'UMengUShare/UI'
 

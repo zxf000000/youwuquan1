@@ -105,22 +105,24 @@
 @property (nonatomic,strong) UIImageView *hdCoverImageView;
 @property (nonatomic,strong) UIButton *hdNunmberButton;
 
+@property (nonatomic,strong) NSMutableArray *indexPathsTobeReload;
+
 @end
 
 @implementation XFVideoDetailViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    self.view.backgroundColor = [UIColor whiteColor];
     
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.indexPathsTobeReload = [NSMutableArray array];
     if ([self.model.category isEqualToString:@"hd"]) {
         
         self.type = Hightdefinition;
     } else {
         
         self.type = VRVideo;
-
+        
     }
     
     if (self.type == Hightdefinition) {
@@ -131,7 +133,7 @@
         
         [self setupVrView];
     }
-
+    
     [self setupTableNode];
     
     [self setupInputView];
@@ -145,10 +147,10 @@
                                                object:nil
      ];
     
-
+    
     self.count = 10;
     
-//    [self.view bringSubviewToFront:self.inputView];
+    //    [self.view bringSubviewToFront:self.inputView];
     self.inputView.frame = CGRectMake(0, kScreenHeight - 44, kScreenWidth, 44);
     
     [self loadData];
@@ -162,12 +164,12 @@
         
         NSArray *comments = ((NSDictionary *)responseObj)[@"content"];
         
-        self.comments = [XFCommentModel modelsWithComments:comments];
-//        self.comments = arr.copy;
+        self.comments = [XFCommentModel modelsWithComments:comments farthName:@""];
+        //        self.comments = arr.copy;
         
-//        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationNone)];
+        //        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationNone)];
         
-        [self.tableNode reloadData];
+        [self reloadData];
         
     } failBlock:^(NSError *error) {
         
@@ -189,7 +191,7 @@
     [self hide];
     
     if (!self.commentedModel) {
-
+        
         [XFHomeNetworkManager commentVideWithVideoId:self.model.id text:self.videoInputTf.text successBlock:^(id responseObj) {
             
             [self loadCommentData];
@@ -211,14 +213,14 @@
             self.videoInputTf.text = nil;
         } failBlock:^(NSError *error) {
             NSLog(@"%@",error.description);
-
+            
         } progress:^(CGFloat progress) {
             
         }];
         
     }
     
-
+    
     
 }
 
@@ -240,7 +242,7 @@
         }
         self.comments = arr.copy;
         
-        [self.tableNode reloadData];
+        [self reloadData];
         
     } failBlock:^(NSError *error) {
         
@@ -249,6 +251,26 @@
         
         
     }];
+    
+}
+
+- (void)reloadData {
+    
+    NSArray *nodes = [self.tableNode visibleNodes];
+    
+    NSMutableArray *array = [NSMutableArray array];
+    if ( nodes.count > 0 ) {
+        
+        for (ASCellNode *node in nodes) {
+            
+            [array addObject:node.indexPath];
+        }
+        
+    }
+    
+    _indexPathsTobeReload = array.copy;
+    
+    [self.tableNode reloadData];
     
 }
 
@@ -261,7 +283,7 @@
     [self.view addSubview:self.vrView];
     self.vrView.backgroundColor = [UIColor redColor];
     
-
+    
     
     self.bgImgView = [[UIImageView alloc] init];
     [self.bgImgView setImageWithURL:[NSURL URLWithString:self.model.video[@"coverUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
@@ -276,7 +298,7 @@
     
     // 选择器
     self.segment = [[UISegmentedControl alloc] initWithItems:@[@"全景模式",@"眼镜模式"]];
-//    self.segment.backgroundColor = [UIColor whiteColor];
+    //    self.segment.backgroundColor = [UIColor whiteColor];
     self.segment.tintColor = [UIColor whiteColor];
     self.segment.selectedSegmentIndex = 0;
     [self.vrView addSubview:self.segment];
@@ -284,7 +306,7 @@
     
     // 缩略图
     self.littleImgView = [[UIImageView alloc] init];
-//    self.littleImgView.image = [UIImage imageNamed:@"find_pic5"];
+    //    self.littleImgView.image = [UIImage imageNamed:@"find_pic5"];
     [self.littleImgView setImageWithURL:[NSURL URLWithString:self.model.video[@"coverUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     self.littleImgView.contentMode = UIViewContentModeScaleAspectFill;
     self.littleImgView.layer.masksToBounds = YES;
@@ -307,7 +329,7 @@
     [playbutton addTarget:self action:@selector(clickVrPlayer) forControlEvents:(UIControlEventTouchUpInside)];
     [self.vrView addSubview:playbutton];
     
-
+    
     self.backButton = [[UIButton alloc] init];
     [self.backButton setImage:[UIImage imageNamed:@"find_back"] forState:(UIControlStateNormal)];
     [self.vrView addSubview:self.backButton];
@@ -315,13 +337,13 @@
     [self.backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
     
     [self.bgImgView mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.edges.mas_offset(0);
         
     }];
     
     [visualView mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.edges.mas_offset(0);
         
     }];
@@ -336,7 +358,7 @@
     }];
     
     [self.littleImgView mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.width.mas_equalTo(self.segment);
         make.top.mas_equalTo(self.segment.mas_bottom).offset(8);
         make.centerX.mas_equalTo(self.segment);
@@ -364,11 +386,11 @@
     }];
     
     [playbutton mas_makeConstraints:^(MASConstraintMaker *make) {
-
+        
         make.width.height.mas_equalTo(100);
         make.centerX.mas_equalTo(self.littleImgView.mas_centerX);
         make.centerY.mas_equalTo(self.littleImgView.mas_centerY);
-
+        
     }];
     
     [self.backButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -382,7 +404,7 @@
     
     self.leftImgView.hidden = YES;
     self.rightImgView.hidden = YES;
-
+    
 }
 
 - (void)clickSegmentControl {
@@ -396,7 +418,7 @@
     } else {
         
         self.littleImgView.hidden = YES;
-
+        
         self.leftImgView.hidden = NO;
         self.rightImgView.hidden = NO;
     }
@@ -432,11 +454,11 @@
      *
      */
     switch (device.orientation) {
-
+            
         case UIDeviceOrientationUnknown:
             NSLog(@"未知方向");
             break;
-
+            
         case UIDeviceOrientationLandscapeLeft:
         {
             NSLog(@"屏幕向左横置");
@@ -448,28 +470,28 @@
             
         }
             break;
-
+            
         case UIDeviceOrientationLandscapeRight:
             NSLog(@"屏幕向右橫置");
             break;
-
+            
         case UIDeviceOrientationPortrait:
         {
             NSLog(@"屏幕直立");
             [self setPortraitVideoPlayerControlViewFrame];
-
+            
         }
             break;
-
+            
         case UIDeviceOrientationPortraitUpsideDown:
             NSLog(@"屏幕直立，上下顛倒");
             break;
-
+            
         default:
             NSLog(@"无法辨识");
             break;
     }
-
+    
 }
 
 
@@ -480,16 +502,16 @@
                                                   object:nil
      ];
     [[UIDevice currentDevice]endGeneratingDeviceOrientationNotifications];
-
+    
     
 }
 // 返回按钮
 - (void)clickBackButton {
-
+    
     [self.plPlayer stop];
     
     [self.navigationController popViewControllerAnimated:YES];
-
+    
 }
 
 #pragma mark - 隐藏展示导航栏
@@ -526,12 +548,12 @@
         [self.plPlayer pause];
         [self invalidateTimer];
         self.beginButton.selected = NO;
-
+        
     } else {
         [self.plPlayer play];
         [self setupTimer];
         self.beginButton.selected = YES;
-
+        
     }
     
 }
@@ -560,17 +582,17 @@
             if (x > 0) {
                 
                 self.progressView.progress = beginProgress + progress;
-
+                
             } else {
                 
                 self.progressView.progress = beginProgress - progress;
-
+                
             }
             
             
             endProgress = self.progressView.progress;
             
-        
+            
         }
             break;
         default:
@@ -580,7 +602,7 @@
             CGFloat seconds = totalDuration.value / totalDuration.timescale;
             CMTime time = CMTimeMake(seconds * self.progressView.progress, totalDuration.timescale);
             [self.plPlayer seekTo:time];
-
+            
         }
             
             
@@ -596,55 +618,55 @@
     if (self.fullScreenButton.selected) {
         
         [self setPortraitVideoPlayerControlViewFrame];
-
+        
     } else {
         
         [self setLadscapeVideoVideControlViewFrame];
-
+        
     }
 }
 
 #pragma mark - 设置弹幕
 - (void)setupDanmu {
     
-//    HJDanmakuConfiguration *config = [[HJDanmakuConfiguration alloc] initWithDanmakuMode:HJDanmakuModeVideo];
-//    HJDanmakuView *danmakuView = [[HJDanmakuView alloc] initWithFrame:self.view.bounds configuration:config];
+    //    HJDanmakuConfiguration *config = [[HJDanmakuConfiguration alloc] initWithDanmakuMode:HJDanmakuModeVideo];
+    //    HJDanmakuView *danmakuView = [[HJDanmakuView alloc] initWithFrame:self.view.bounds configuration:config];
     
-//    [self.danmakuView sendDanmaku:danmaku forceRender:YES];
+    //    [self.danmakuView sendDanmaku:danmaku forceRender:YES];
     
-//    HJDanmakuConfiguration *config = [[HJDanmakuConfiguration alloc] initWithDanmakuMode:(HJDanmakuModeVideo)];
-//
-//    self.danmuView = [[HJDanmakuView alloc] initWithFrame:(CGRectZero) configuration:config];
-//
-//    self.danmuView.delegate = self;
-//    self.danmuView.dataSource = self;
-//
-//    [self.danmuView registerClass:[XFDanmuCell class] forCellReuseIdentifier:@"danmu"];
-//    [self.videoView insertSubview:self.danmuView belowSubview:self.controlView];
-//
-//    [self.danmuView mas_makeConstraints:^(MASConstraintMaker *make) {
-//
-//        make.edges.mas_offset(0);
-//
-//    }];
+    //    HJDanmakuConfiguration *config = [[HJDanmakuConfiguration alloc] initWithDanmakuMode:(HJDanmakuModeVideo)];
+    //
+    //    self.danmuView = [[HJDanmakuView alloc] initWithFrame:(CGRectZero) configuration:config];
+    //
+    //    self.danmuView.delegate = self;
+    //    self.danmuView.dataSource = self;
+    //
+    //    [self.danmuView registerClass:[XFDanmuCell class] forCellReuseIdentifier:@"danmu"];
+    //    [self.videoView insertSubview:self.danmuView belowSubview:self.controlView];
+    //
+    //    [self.danmuView mas_makeConstraints:^(MASConstraintMaker *make) {
+    //
+    //        make.edges.mas_offset(0);
+    //
+    //    }];
     
-//    NSString *danmakufile = [[NSBundle mainBundle] pathForResource:@"danmakufile" ofType:nil];
-//    NSArray *danmakus = [NSArray arrayWithContentsOfFile:danmakufile];
-//    NSMutableArray *danmakuModels = [NSMutableArray arrayWithCapacity:danmakus.count];
-//    for (NSDictionary *danmaku in danmakus) {
-//        NSArray *pArray = [danmaku[@"p"] componentsSeparatedByString:@","];
-//        HJDanmakuType type = [pArray[1] integerValue] % 3;
-//        XFDanmuModel *danmakuModel = [[XFDanmuModel alloc] initWithType:type];
-//        danmakuModel.time = [pArray[0] floatValue] / 1000.0f;
-//        danmakuModel.text = danmaku[@"m"];
-//        danmakuModel.textFont = [pArray[2] integerValue] == 1 ? [UIFont systemFontOfSize:20]: [UIFont systemFontOfSize:18];
-//        danmakuModel.textColor = [UIColor redColor];
-//        [danmakuModels addObject:danmakuModel];
-//    }
-//    [self.danmuView prepareDanmakus:danmakuModels];
+    //    NSString *danmakufile = [[NSBundle mainBundle] pathForResource:@"danmakufile" ofType:nil];
+    //    NSArray *danmakus = [NSArray arrayWithContentsOfFile:danmakufile];
+    //    NSMutableArray *danmakuModels = [NSMutableArray arrayWithCapacity:danmakus.count];
+    //    for (NSDictionary *danmaku in danmakus) {
+    //        NSArray *pArray = [danmaku[@"p"] componentsSeparatedByString:@","];
+    //        HJDanmakuType type = [pArray[1] integerValue] % 3;
+    //        XFDanmuModel *danmakuModel = [[XFDanmuModel alloc] initWithType:type];
+    //        danmakuModel.time = [pArray[0] floatValue] / 1000.0f;
+    //        danmakuModel.text = danmaku[@"m"];
+    //        danmakuModel.textFont = [pArray[2] integerValue] == 1 ? [UIFont systemFontOfSize:20]: [UIFont systemFontOfSize:18];
+    //        danmakuModel.textColor = [UIColor redColor];
+    //        [danmakuModels addObject:danmakuModel];
+    //    }
+    //    [self.danmuView prepareDanmakus:danmakuModels];
     
-//    self.danmuView.hidden = YES;
-
+    //    self.danmuView.hidden = YES;
+    
 }
 
 #pragma mark - 点击弹幕按钮
@@ -669,7 +691,7 @@
 - (void)prepareCompletedWithDanmakuView:(HJDanmakuView *)danmakuView {
     
     [self.danmuView play];
-
+    
 }
 //
 //#pragma mark - dataSource
@@ -710,7 +732,7 @@
     [self.videoView removeFromSuperview];
     self.videoView = nil;
     [self.plPlayer stop];
-
+    
     self.plPlayer = nil;
     
     // 七牛播放器
@@ -718,7 +740,7 @@
     [option setOptionValue:@15 forKey:PLPlayerOptionKeyTimeoutIntervalForMediaPackets];
     self.plPlayer = [PLPlayer playerWithURL:[NSURL URLWithString:self.model.video[@"srcUrl"]] option:option];
     self.plPlayer.delegate = self;
-
+    
     //获取播放器视图
     self.videoView = self.plPlayer.playerView;
     self.videoView.frame = CGRectMake(0, 0, kScreenWidth, kScreenWidth * 9/16.f);
@@ -726,18 +748,18 @@
     [self.view addSubview:self.videoView];
     
     [self.plPlayer play];
-
+    
     // 添加点按事件
     
     UITapGestureRecognizer *tapVideo = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapVideoView)];
     [self.videoView addGestureRecognizer:tapVideo];
     
     //设置缓存目录路径
-//    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    NSString *docDir = [pathArray objectAtIndex:0];
+    //    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    //    NSString *docDir = [pathArray objectAtIndex:0];
     //在创建播放器类,并在调用prepare方法之前设置。比如：maxSize设置500M时缓存文件超过500M后会优先覆盖最早缓存的文件。maxDuration设置为300秒时表示超过300秒的视频不会启用缓存功能。
-
-//    [self.aliPlayer setPlayingCache:YES saveDir:docDir maxSize:500 maxDuration:300];
+    
+    //    [self.aliPlayer setPlayingCache:YES saveDir:docDir maxSize:500 maxDuration:300];
     
     self.hdVideoCover = [[UIView alloc] init];
     
@@ -748,12 +770,12 @@
     [self.videoView addSubview:self.backButton];
     self.backButton.imageEdgeInsets = UIEdgeInsetsMake(0, -40, 0, 0);
     [self.backButton addTarget:self action:@selector(clickBackButton) forControlEvents:(UIControlEventTouchUpInside)];
-
+    
     // 播放控制view
     self.controlView = [[UIView alloc] init];
     self.controlView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     [self.videoView addSubview:self.controlView];
-
+    
     // 开始
     self.beginButton = [[UIButton alloc] init];
     [self.beginButton setImage:[UIImage imageNamed:@"video_begin"] forState:(UIControlStateNormal)];
@@ -770,7 +792,7 @@
     [self.totalTimeLabel setFont:[UIFont systemFontOfSize:10] textColor:[UIColor whiteColor] aligment:(NSTextAlignmentCenter)];
     [self.controlView addSubview:self.totalTimeLabel];
     self.totalTimeLabel.text  =@"00:00";
-
+    
     // 进度条
     
     self.slider = [[UISlider alloc] init];
@@ -801,7 +823,7 @@
     [self.dmButton addTarget:self action:@selector(clickDmButton) forControlEvents:(UIControlEventTouchUpInside)];
     
     [self.backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.top.mas_offset(20);
         make.left.mas_offset(10);
         make.width.mas_equalTo(60);
@@ -820,9 +842,9 @@
         
     }
     
-
+    
     [self.dmButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.right.mas_offset(-43);
         make.height.width.mas_equalTo(35);
         make.centerY.mas_offset(0);
@@ -837,15 +859,15 @@
             make.height.mas_equalTo(35);
             
         }];
-
+        
     } else {
         
         self.controlView.frame = CGRectMake(0, kScreenWidth * 9 / 16.f - 35, kScreenWidth, 35);
-
+        
     }
-
+    
     [self.beginButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.left.mas_offset(0);
         make.centerY.mas_offset(0);
         make.width.height.mas_equalTo(35);
@@ -853,24 +875,24 @@
     }];
     
     [self.currntTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.left.mas_equalTo(self.beginButton.mas_right).offset(10);
-//        make.width.mas_equalTo(30);
+        //        make.width.mas_equalTo(30);
         make.centerY.mas_offset(0);
         
     }];
     
     [self.fullScreenButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.centerY.mas_offset(0);
         make.right.mas_offset(0);
         make.width.mas_equalTo(43);
         make.width.mas_equalTo(35);
-
+        
     }];
     
     [self.totalTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.right.mas_offset(-46);
         make.centerY.mas_offset(0);
         make.width.mas_equalTo(30);
@@ -904,7 +926,7 @@
     //    [self.videoView jp_playerIsMute];
     //
     //    self.videoView.jp_videoPlayerDelegate = self;
-
+    
 }
 
 #pragma mark - videoVide的单击事件
@@ -924,7 +946,7 @@
         }
         
         [UIView animateWithDuration:0.2 animations:^{
-           
+            
             self.topShadowView.alpha = self.controlView.alpha = alpha;
             
         }];
@@ -1038,7 +1060,7 @@
     //获取播放的当前时间，单位为秒
     CGFloat currentTime = self.plPlayer.currentTime.value / self.plPlayer.currentTime.timescale;
     //获取视频的总时长，单位为秒
-//    CGFloat duration = self.plPlayer.totalDuration.value / self.plPlayer.totalDuration.timescale;
+    //    CGFloat duration = self.plPlayer.totalDuration.value / self.plPlayer.totalDuration.timescale;
     
     // 设置当前时间
     self.currntTimeLabel.text = [self timeStringWithTime:currentTime];
@@ -1078,7 +1100,7 @@
     NSString *minString = currentMin <= 9 ? [NSString stringWithFormat:@"0%zd",currentMin]:[NSString stringWithFormat:@"%zd",currentMin];
     
     return [NSString stringWithFormat:@"%@:%@",minString,secString];
-
+    
 }
 
 #pragma mark - 设置播放器横屏的元素位置
@@ -1095,7 +1117,7 @@
     
     // 隐藏顶部
     self.topShadowView.hidden = YES;
-
+    
     // 先隐藏操作栏
     self.controlView.hidden = YES;
     
@@ -1122,7 +1144,7 @@
         
         self.videoView.transform = CGAffineTransformIdentity;
         self.videoView.frame = CGRectMake(0, 0, kScreenWidth, kVideoVideHeight);
-
+        
     } completion:^(BOOL finished) {
         
         
@@ -1148,10 +1170,10 @@
             
         }];
     }
-
+    
     
     // 弹幕库关闭
-
+    
 }
 
 - (void)setLadscapeVideoVideControlViewFrame {
@@ -1168,7 +1190,7 @@
     
     self.fullScreenButton.selected = YES;
     self.backButton.hidden = YES;
-
+    
     // 先隐藏操作栏
     self.controlView.hidden = YES;
     
@@ -1195,7 +1217,7 @@
     [self.videoView removeFromSuperview];
     self.videoView.frame = rectInWindow;
     [[UIApplication sharedApplication].keyWindow addSubview:self.videoView];
-
+    
     [UIView animateWithDuration:0.3 animations:^{
         
         self.videoView.transform = CGAffineTransformMakeRotation(M_PI_2);
@@ -1219,7 +1241,7 @@
         
         [self.controlView layoutIfNeeded];
     }];
-
+    
     
     if (@available (iOS 11, *)) {
         
@@ -1230,7 +1252,7 @@
             
         }];
     }
-
+    
     
 }
 
@@ -1285,74 +1307,102 @@
     
 }
 
-- (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (ASCellNode *)tableNode:(ASTableNode *)tableNode nodeForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     switch (indexPath.section) {
         case 0:
         {
-            return ^ASCellNode *() {
+            
+            XFVideoNameCell *cell = [[XFVideoNameCell alloc] initWithInfo:self.model];
+            if ([_indexPathsTobeReload containsObject:indexPath]) {
                 
-                XFVideoNameCell *cell = [[XFVideoNameCell alloc] initWithInfo:self.model];
+                ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
                 
-                return cell;
+                cell.neverShowPlaceholders = YES;
+                oldCellNode.neverShowPlaceholders = YES;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    cell.neverShowPlaceholders = NO;
+                    
+                    //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+                    //
+                    //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
+                    
+                });
                 
-            };
+            }
+            return cell;
+            
         }
             break;
         case 1:
         {
-            return ^ASCellNode *() {
+            
+            XFVideoMoreCell *cell = [[XFVideoMoreCell alloc] initWithInfo:self.allInfo];
+            
+            cell.didSelectedVideoBLock = ^(XFVideoModel *model) {
                 
-                XFVideoMoreCell *cell = [[XFVideoMoreCell alloc] initWithInfo:self.allInfo];
+                self.model = model;
                 
-                cell.didSelectedVideoBLock = ^(XFVideoModel *model) {
-                  
-                    self.model = model;
-                    
-                    [self setupVideoView];
-                    
-//                    self.plPlayer.URL = [NSURL URLWithString:self.model.video[@"srcUrl"]];
-                    
-                    [self loadData];
-                    
-                };
+                [self setupVideoView];
                 
-                cell.clickFollowButtonBlock = ^(ASButtonNode *button) {
-                  
-                    if (button.selected) {
-                        
-                        [XFMineNetworkManager unCareSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
-                            
-                            button.selected = NO;
-                            
-                        } failedBlock:^(NSError *error) {
-                            
-                            
-                        } progressBlock:^(CGFloat progress) {
-                            
-                            
-                        }];
-                    } else {
-                        
-                        [XFMineNetworkManager careSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
-                            
-                            button.selected = YES;
-
-                            
-                        } failedBlock:^(NSError *error) {
-                            
-                        } progressBlock:^(CGFloat progress) {
-                            
-                        }];
-
-                    }
-                    
-                    
-                };
+                //                    self.plPlayer.URL = [NSURL URLWithString:self.model.video[@"srcUrl"]];
                 
-                return cell;
+                [self loadData];
                 
             };
+            
+            cell.clickFollowButtonBlock = ^(ASButtonNode *button) {
+                
+                if (button.selected) {
+                    
+                    [XFMineNetworkManager unCareSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
+                        
+                        button.selected = NO;
+                        
+                    } failedBlock:^(NSError *error) {
+                        
+                        
+                    } progressBlock:^(CGFloat progress) {
+                        
+                        
+                    }];
+                } else {
+                    
+                    [XFMineNetworkManager careSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
+                        
+                        button.selected = YES;
+                        
+                        
+                    } failedBlock:^(NSError *error) {
+                        
+                    } progressBlock:^(CGFloat progress) {
+                        
+                    }];
+                    
+                }
+                
+                
+            };
+            
+            if ([_indexPathsTobeReload containsObject:indexPath]) {
+                
+                ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                
+                cell.neverShowPlaceholders = YES;
+                oldCellNode.neverShowPlaceholders = YES;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    cell.neverShowPlaceholders = NO;
+                    
+                    //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+                    //
+                    //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
+                    
+                });
+                
+            }
+            
+            return cell;
+            
             
         }
             break;
@@ -1360,101 +1410,119 @@
             
             switch (indexPath.row) {
                 case 0:
-                    {
-                        return ^ASCellNode *() {
-                            
-                            XFStatusCenterNode *cell = [[XFStatusCenterNode alloc] init];
-                            
-                            return cell;
-                            
-                        };
-                        
-                    }
+                {
+                    
+                    XFStatusCenterNode *cell = [[XFStatusCenterNode alloc] init];
+                    
+                    return cell;
+                    
+                    
+                }
                     break;
                 case 9:
                 {
                     
                     if (!self.isOpen) {
                         
-                        return ^ASCellNode *{
+                        
+                        XFStatusBottomNode *node = [[XFStatusBottomNode alloc] init];
+                        
+                        // 加载更多评论
+                        node.clickMoreButtonBlock = ^{
                             
-                            XFStatusBottomNode *node = [[XFStatusBottomNode alloc] init];
+                            self.count = 20;
+                            self.isOpen = YES;
                             
-                            // 加载更多评论
-                            node.clickMoreButtonBlock = ^{
-                                
-                                self.count = 20;
-                                self.isOpen = YES;
-                                [self.tableNode reloadData];
-                                
-                                
-                            };
-                            
-                            return node;
+                            [self reloadData];
                             
                             
                         };
+                        if ([_indexPathsTobeReload containsObject:indexPath]) {
+                            
+                            ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                            
+                            node.neverShowPlaceholders = YES;
+                            oldCellNode.neverShowPlaceholders = YES;
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                node.neverShowPlaceholders = NO;
+                                
+                                //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+                                //
+                                //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
+                                
+                            });
+                            
+                        }
+                        
+                        return node;
+                        
+                        
                         
                     } else {
                         
-                        return ^ASCellNode *{
+                        
+                        XFCommentModel *model = self.comments[indexPath.row - 1];
+                        
+                        XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
+                        if ([_indexPathsTobeReload containsObject:indexPath]) {
                             
-                            XFCommentModel *model = self.comments[indexPath.row - 1];
+                            ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
                             
-                            [self.comments enumerateObjectsUsingBlock:^(XFCommentModel * obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                            node.neverShowPlaceholders = YES;
+                            oldCellNode.neverShowPlaceholders = YES;
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                node.neverShowPlaceholders = NO;
                                 
-                                if ([obj.id isEqualToString:model.fatherId]) {
-                                    
-                                    model.fartherName = obj.username;
-                                }
+                                //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+                                //
+                                //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
                                 
-                            }];
+                            });
                             
-                            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
-                            
-                            return node;
-                            
-                        };
+                        }
+                        return node;
+                        
                     }
-
-
+                    
+                    
                 }
                 default:
                 {
                     
-                    return ^ASCellNode *() {
+                    XFCommentModel *model = self.comments[indexPath.row - 1];
+                    
+                    
+                    XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
+                    if ([_indexPathsTobeReload containsObject:indexPath]) {
                         
-                        XFCommentModel *model = self.comments[indexPath.row - 1];
+                        ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
                         
-                        [self.comments enumerateObjectsUsingBlock:^(XFCommentModel * obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                        node.neverShowPlaceholders = YES;
+                        oldCellNode.neverShowPlaceholders = YES;
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            node.neverShowPlaceholders = NO;
                             
-                            if ([obj.id isEqualToString:model.fatherId]) {
-                                
-                                model.fartherName = obj.username;
-                            }
+                            //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
+                            //
+                            //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
                             
-                        }];
+                        });
                         
-                        XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
-                        
-                        return node;
-                        
-                    };
-
+                    }
+                    return node;
+                    
                 }
                     break;
             }
     }
-            
-            return ^ASCellNode *() {
-                
-                XFVideoNameCell *cell = [[XFVideoNameCell alloc] init];
-                
-                return cell;
-                
-            };
-
+    
+    
+    XFVideoNameCell *cell = [[XFVideoNameCell alloc] init];
+    
+    return cell;
+    
 }
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     
@@ -1604,5 +1672,161 @@
     
 }
 
+
+
+
+- (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    switch (indexPath.section) {
+        case 0:
+        {
+            return ^ASCellNode *() {
+                
+                XFVideoNameCell *cell = [[XFVideoNameCell alloc] initWithInfo:self.model];
+                
+                return cell;
+                
+            };
+        }
+            break;
+        case 1:
+        {
+            return ^ASCellNode *() {
+                
+                XFVideoMoreCell *cell = [[XFVideoMoreCell alloc] initWithInfo:self.allInfo];
+                
+                cell.didSelectedVideoBLock = ^(XFVideoModel *model) {
+                    
+                    self.model = model;
+                    
+                    [self setupVideoView];
+                    
+                    //                    self.plPlayer.URL = [NSURL URLWithString:self.model.video[@"srcUrl"]];
+                    
+                    [self loadData];
+                    
+                };
+                
+                cell.clickFollowButtonBlock = ^(ASButtonNode *button) {
+                    
+                    if (button.selected) {
+                        
+                        [XFMineNetworkManager unCareSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
+                            
+                            button.selected = NO;
+                            
+                        } failedBlock:^(NSError *error) {
+                            
+                            
+                        } progressBlock:^(CGFloat progress) {
+                            
+                            
+                        }];
+                    } else {
+                        
+                        [XFMineNetworkManager careSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
+                            
+                            button.selected = YES;
+                            
+                            
+                        } failedBlock:^(NSError *error) {
+                            
+                        } progressBlock:^(CGFloat progress) {
+                            
+                        }];
+                        
+                    }
+                    
+                    
+                };
+                
+                return cell;
+                
+            };
+            
+        }
+            break;
+        case 2:
+            
+            switch (indexPath.row) {
+                case 0:
+                {
+                    return ^ASCellNode *() {
+                        
+                        XFStatusCenterNode *cell = [[XFStatusCenterNode alloc] init];
+                        
+                        return cell;
+                        
+                    };
+                    
+                }
+                    break;
+                case 9:
+                {
+                    
+                    if (!self.isOpen) {
+                        
+                        return ^ASCellNode *{
+                            
+                            XFStatusBottomNode *node = [[XFStatusBottomNode alloc] init];
+                            
+                            // 加载更多评论
+                            node.clickMoreButtonBlock = ^{
+                                
+                                self.count = 20;
+                                self.isOpen = YES;
+                                [self reloadData];
+                                
+                                
+                            };
+                            
+                            return node;
+                            
+                            
+                        };
+                        
+                    } else {
+                        
+                        return ^ASCellNode *{
+                            
+                            XFCommentModel *model = self.comments[indexPath.row - 1];
+                            
+                            XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
+                            
+                            return node;
+                            
+                        };
+                    }
+                    
+                    
+                }
+                default:
+                {
+                    
+                    return ^ASCellNode *() {
+                        
+                        XFCommentModel *model = self.comments[indexPath.row - 1];
+                        
+                        
+                        XFStatusCommentCellNode *node = [[XFStatusCommentCellNode alloc] initWithMode:model];
+                        
+                        return node;
+                        
+                    };
+                    
+                }
+                    break;
+            }
+    }
+    
+    return ^ASCellNode *() {
+        
+        XFVideoNameCell *cell = [[XFVideoNameCell alloc] init];
+        
+        return cell;
+        
+    };
+    
+}
 
 @end

@@ -15,6 +15,28 @@
 #define kGiftViewWidth (kScreenWidth - 20)
 #define kRatio kScreenWidth/375.f
 
+@implementation XFRealCell
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    
+    if (self = [super initWithFrame:frame]) {
+        
+        self.backgroundColor = [UIColor whiteColor];
+        _imgView = [[UIImageView alloc] init];
+        _imgView.frame = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame));
+        [self.contentView addSubview:_imgView];
+        
+        [_imgView mas_makeConstraints:^(MASConstraintMaker *make) {
+           
+            make.edges.mas_offset(0);
+            
+        }];
+    }
+    return self;
+}
+
+@end
+
 @implementation XFGiftCell
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -112,6 +134,7 @@
 
 @property (nonatomic,copy) NSDictionary *balance;
 
+@property (nonatomic,strong) UICollectionView *realCollectionView;
 @end
 
 @implementation XFGiftViewController
@@ -232,6 +255,8 @@
         
     }];
     
+    
+    
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -254,6 +279,17 @@
 - (void)clikCacnelButton {
     
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    
+    if (scrollView == self.realCollectionView) {
+        
+        NSInteger index = scrollView.contentOffset.x / self.scrollView.height;
+        
+        NSLog(@"玫瑰花 %zd",index);
+        
+    }
 }
 
 - (void)setupGiftView {
@@ -371,9 +407,11 @@
     _descriptLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_descriptLabel];
     
-    _realButton = [[UIButton alloc] init];
-    [_realButton setImage:[UIImage imageNamed:@"gift_meigui"] forState:(UIControlStateNormal)];
-    [self.realGiftView addSubview:_realButton];
+    
+
+//    _realButton = [[UIButton alloc] init];
+//    [_realButton setImage:[UIImage imageNamed:@"gift_meigui"] forState:(UIControlStateNormal)];
+//    [self.realGiftView addSubview:_realButton];
     
     
     _descriptLabel.hidden = YES;
@@ -424,7 +462,26 @@
 
     _doneButton.frame = CGRectMake((width - 230)/2, height - _detailLabel.height - 17 * kRatio - 12 * kRatio - 44, 230, 44);
     
-    _realButton.frame = CGRectMake((width - self.scrollView.height)/2, 0, self.scrollView.height, self.scrollView.height);
+//    _realButton.frame = CGRectMake((width - self.scrollView.height)/2, 0, self.scrollView.height, self.scrollView.height);
+    UICollectionViewFlowLayout *realLayout = [[UICollectionViewFlowLayout alloc] init];
+    realLayout.minimumLineSpacing = 0;
+    realLayout.minimumInteritemSpacing = 0;
+    realLayout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    realLayout.itemSize = CGSizeMake(self.scrollView.height, self.scrollView.height);
+    realLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    _realCollectionView = [[UICollectionView alloc] initWithFrame:(CGRectZero) collectionViewLayout:realLayout];
+    //    _realCollectionView.backgroundColor = [UIColor redColor];
+    [self.realGiftView addSubview:_realCollectionView];
+    _realCollectionView.pagingEnabled = YES;
+    _realCollectionView.delegate = self;
+    _realCollectionView.dataSource = self;
+    [_realCollectionView registerClass:[XFRealCell class] forCellWithReuseIdentifier:@"XFRealCell"];
+    _realCollectionView.showsHorizontalScrollIndicator = NO;
+    _realCollectionView.backgroundColor = [UIColor whiteColor];
+    _realCollectionView.frame = CGRectMake((width - self.scrollView.height)/2, 0, self.scrollView.height, self.scrollView.height);
+    
+    
+
 
     [_addButton addTarget:self action:@selector(clicknumberbutton:) forControlEvents:(UIControlEventTouchUpInside)];
     [_minusButton addTarget:self action:@selector(clicknumberbutton:) forControlEvents:(UIControlEventTouchUpInside)];
@@ -622,66 +679,85 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return self.gifts.count;
+    if (collectionView == self.giftCollectionView) {
+        
+        return self.gifts.count;
+
+    } else {
+        
+        return 2;
+    }
+    
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    XFGiftCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFGiftCell" forIndexPath:indexPath];
-    
-    XFGiftModel *model = self.gifts[indexPath.item];
-    
-//    NSDictionary *info = self.gifts[indexPath.item];
-    
-//    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icons"]] forState:(UIControlStateNormal)];
-//    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icon"]] forState:(UIControlStateSelected)];
-    [cell.flowerButton setImageWithURL:[NSURL URLWithString:model.iconUrl] forState:(UIControlStateNormal) options:(YYWebImageOptionSetImageWithFadeAnimation)];
-    [cell.flowerButton setBackgroundImage:[UIImage imageNamed:@"hua1none"] forState:(UIControlStateNormal)];
-    [cell.flowerButton setBackgroundImage:[UIImage imageNamed:@"hua1"] forState:(UIControlStateSelected)];
-    cell.numberLabel.text = model.diamonds;
-    
-    cell.indexpath = indexPath;
-    
-    cell.clickFlowButtonBlock = ^(NSIndexPath *giftIndex) {
-        
-        if (self.giftSelectedIndex) {
-            
-            XFGiftCell *cell = (XFGiftCell *)[collectionView cellForItemAtIndexPath:self.giftSelectedIndex];
-            
-            cell.flowerButton.selected = NO;
-            
-        }
-        
-        if (self.giftSelectedIndex != giftIndex) {
-            
-            self.numberTextField.text = @"99";
-            
-        } else {
-            
-            self.numberTextField.text = [NSString stringWithFormat:@"%zd",[self.numberTextField.text integerValue] + 1];
-            
-        }
-        
-        XFGiftCell *cell = (XFGiftCell *)[collectionView cellForItemAtIndexPath:indexPath];
-        
-        cell.flowerButton.selected = YES;
-        
-        self.giftSelectedIndex = indexPath;
-        
-//        NSDictionary *info = self.gifts[indexPath.row];
+    if (collectionView == self.giftCollectionView) {
+        XFGiftCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFGiftCell" forIndexPath:indexPath];
         
         XFGiftModel *model = self.gifts[indexPath.item];
         
-        NSInteger singlePrice = [model.diamonds integerValue];
+        //    NSDictionary *info = self.gifts[indexPath.item];
         
-        NSInteger number = [self.numberTextField.text intValue];
+        //    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icons"]] forState:(UIControlStateNormal)];
+        //    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icon"]] forState:(UIControlStateSelected)];
+        [cell.flowerButton setImageWithURL:[NSURL URLWithString:model.iconUrl] forState:(UIControlStateNormal) options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        [cell.flowerButton setBackgroundImage:[UIImage imageNamed:@"hua1none"] forState:(UIControlStateNormal)];
+        [cell.flowerButton setBackgroundImage:[UIImage imageNamed:@"hua1"] forState:(UIControlStateSelected)];
+        cell.numberLabel.text = model.diamonds;
         
-        [self setTotalNumberWith:[NSString stringWithFormat:@"%zd",singlePrice * number]];
+        cell.indexpath = indexPath;
+        
+        cell.clickFlowButtonBlock = ^(NSIndexPath *giftIndex) {
+            
+            if (self.giftSelectedIndex) {
+                
+                XFGiftCell *cell = (XFGiftCell *)[collectionView cellForItemAtIndexPath:self.giftSelectedIndex];
+                
+                cell.flowerButton.selected = NO;
+                
+            }
+            
+            if (self.giftSelectedIndex != giftIndex) {
+                
+                self.numberTextField.text = @"99";
+                
+            } else {
+                
+                self.numberTextField.text = [NSString stringWithFormat:@"%zd",[self.numberTextField.text integerValue] + 1];
+                
+            }
+            
+            XFGiftCell *cell = (XFGiftCell *)[collectionView cellForItemAtIndexPath:indexPath];
+            
+            cell.flowerButton.selected = YES;
+            
+            self.giftSelectedIndex = indexPath;
+            
+            //        NSDictionary *info = self.gifts[indexPath.row];
+            
+            XFGiftModel *model = self.gifts[indexPath.item];
+            
+            NSInteger singlePrice = [model.diamonds integerValue];
+            
+            NSInteger number = [self.numberTextField.text intValue];
+            
+            [self setTotalNumberWith:[NSString stringWithFormat:@"%zd",singlePrice * number]];
+            
+        };
+        
+        return cell;
+        
+    } else {
+        
+        XFRealCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFRealCell" forIndexPath:indexPath];
+        
+        cell.imgView.image = [UIImage imageNamed:@"gift_meigui"];
+     
+        return cell;
+    }
 
-    };
-
-    return cell;
-    
+    return nil;
 }
 
 @end

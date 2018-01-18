@@ -216,17 +216,8 @@
         [self addSubnode:_lineNode];
         
         // 时间
-        
-        NSTimeInterval time = [_model.createTime longValue]/1000;
-        
-        NSDate *creatTime = [NSDate dateWithTimeIntervalSince1970:time];
-        
-        NSDateFormatter *format = [[NSDateFormatter alloc] init];
-        format.dateFormat = @"yyyy-MM-dd HH:mm";
-        
-        NSString *timeStr = [format stringFromDate:creatTime];
         _timeNode = [[ASTextNode alloc] init];
-        [_timeNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:timeStr lineSpace:2 kern:0];
+        [_timeNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:[XFToolManager changeLongToDateWith:_model.createTime] lineSpace:2 kern:0];
         
         [self addSubnode:_timeNode];
         

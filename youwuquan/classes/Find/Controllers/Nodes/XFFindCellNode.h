@@ -24,6 +24,8 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 - (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen;
 
+- (void)findCellNode:(XFFindCellNode *)node didClickImageWithIndex:(NSInteger)index urls:(NSArray *)urls;
+
 - (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath;
 
 - (void)findCellNode:(XFFindCellNode *)node didClickIconForIndex:(NSIndexPath *)indexPath;

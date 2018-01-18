@@ -158,16 +158,9 @@
     // rootVC
     self.window = [[UIWindow alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight))];
     
-//    XFSnapShotViewController *mainTabbar = [[XFSnapShotViewController alloc] init];
-    self.mainTabbar = [[XFMainTabbarViewController alloc] init];
-    
-    self.mainTabbar.delegate = self;
-    
-    
     // 如果有推送通知,则直接跳转到消息界面
     if (remoteNotificationUserInfo) {
         
-        self.mainTabbar.selectedIndex = 2;
         
     }
     
@@ -213,19 +206,49 @@
     
     
     [CYLPlusButtonSubclass registerPlusButton];
+    
     XFTabBarControllerConfig *tabBarControllerConfig = [[XFTabBarControllerConfig alloc] init];
+    
     CYLTabBarController *tabBarController = tabBarControllerConfig.tabBarController;
 
     tabBarController.delegate = self;
+    [tabBarController hideTabBadgeBackgroundSeparator];
 
     self.window.rootViewController = tabBarController;
 
     [self.window makeKeyAndVisible];
+    [self customizeInterfaceWithTabBarController:tabBarController];
 
-    
     [IQKeyboardManager sharedManager].enable = YES;
     
     return YES;
+}
+
+
+- (void)customizeInterfaceWithTabBarController:(CYLTabBarController *)tabBarController {
+    //设置导航栏
+    
+    [tabBarController hideTabBadgeBackgroundSeparator];
+    //添加小红点
+//    UIViewController *viewController = tabBarController.viewControllers[0];
+//    UIView *tabBadgePointView0 = [UIView cyl_tabBadgePointViewWithClolor:RANDOM_COLOR radius:4.5];
+//    [viewController.tabBarItem.cyl_tabButton cyl_setTabBadgePointView:tabBadgePointView0];
+//    [viewController cyl_showTabBadgePoint];
+//
+//    UIView *tabBadgePointView1 = [UIView cyl_tabBadgePointViewWithClolor:RANDOM_COLOR radius:4.5];
+//    @try {
+//        [tabBarController.viewControllers[1] cyl_setTabBadgePointView:tabBadgePointView1];
+//        [tabBarController.viewControllers[1] cyl_showTabBadgePoint];
+//
+//        UIView *tabBadgePointView2 = [UIView cyl_tabBadgePointViewWithClolor:RANDOM_COLOR radius:4.5];
+//        [tabBarController.viewControllers[2] cyl_setTabBadgePointView:tabBadgePointView2];
+//        [tabBarController.viewControllers[2] cyl_showTabBadgePoint];
+//
+//        [tabBarController.viewControllers[3] cyl_showTabBadgePoint];
+//
+//        //添加提示动画，引导用户点击
+//        [self addScaleAnimationOnView:tabBarController.viewControllers[3].cyl_tabButton.cyl_tabImageView repeatCount:20];
+//    } @catch (NSException *exception) {}
 }
 
 /**

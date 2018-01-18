@@ -460,7 +460,7 @@
 - (NSArray *)titles {
     
     if (_titles == nil) {
-        _titles =@[@"文字",@"拍摄",@"相册",@"小视频"];
+        _titles =@[@"动态",@"语音",@"视频"];
     }
     return _titles;
 }
@@ -470,7 +470,7 @@
     
     if (_imgs == nil) {
         
-        _imgs = @[@"publish_words",@"publish_photograph",@"publish_photo",@"publish_video"];
+        _imgs = @[@"publish_words",@"publish_voice",@"publish_photograph"];
     }
     return _imgs;
     

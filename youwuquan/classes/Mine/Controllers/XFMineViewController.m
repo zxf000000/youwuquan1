@@ -32,7 +32,7 @@
 #import "XFMineNetworkManager.h"
 
 
-#define kHeaderHeight (kScreenWidth * 170/375.f)
+#define kHeaderHeight (kScreenWidth * 195/375.f)
 
 @implementation XFMyTableCellNode
 
