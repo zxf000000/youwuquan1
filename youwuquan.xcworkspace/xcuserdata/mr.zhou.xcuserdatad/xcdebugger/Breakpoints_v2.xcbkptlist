@@ -32,11 +32,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "youwuquan/classes/Publish/ShortVideo/PL/RecordViewController.m"
-            timestampString = "537698478.68852"
+            timestampString = "538040298.61013"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "971"
-            endingLineNumber = "971"
+            startingLineNumber = "972"
+            endingLineNumber = "972"
             landmarkName = "-shortVideoRecorder:didFinishRecordingMaxDuration:"
             landmarkType = "7">
          </BreakpointContent>

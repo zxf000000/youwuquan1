@@ -746,7 +746,8 @@ PLSRateButtonViewDelegate
 // 取消录制
 - (void)discardRecord {
     [self.shortVideoRecorder cancelRecording];
-    [self dismissViewControllerAnimated:YES completion:nil];
+//    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 // 导入视频

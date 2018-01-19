@@ -140,6 +140,10 @@ typedef NS_ENUM(NSInteger,FindCellType) {
  */
 @property (nonatomic,strong) NSArray *tagNodes;
 
+// 声音
+@property (nonatomic,strong) ASButtonNode *voiceButton;
+@property (nonatomic,strong) ASTextNode *voiceTimeNode;
+
 @property (nonatomic,strong) ASButtonNode *playButton;
 
 @property (nonatomic,strong) id <XFFindCellDelegate> delegate;

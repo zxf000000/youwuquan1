@@ -597,6 +597,10 @@
 		B774597E1FE3EE9500BEC7F7 /* XFPayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B774597D1FE3EE9500BEC7F7 /* XFPayViewController.m */; };
 		B77459821FE3FA6900BEC7F7 /* XFVipTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B77459801FE3FA6900BEC7F7 /* XFVipTableViewCell.m */; };
 		B77459831FE3FA6900BEC7F7 /* XFVipTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B77459811FE3FA6900BEC7F7 /* XFVipTableViewCell.xib */; };
+		B787A66F2011C4170068D7B2 /* XFPublishVoiceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B787A66E2011C4170068D7B2 /* XFPublishVoiceViewController.m */; };
+		B787A6722011D8790068D7B2 /* XFSecretphotoNotiViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B787A6712011D8790068D7B2 /* XFSecretphotoNotiViewController.m */; };
+		B787A6742011DA020068D7B2 /* Publish.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B787A6732011DA020068D7B2 /* Publish.storyboard */; };
+		B787A6772011DB660068D7B2 /* XFVoiceStatusNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B787A6762011DB660068D7B2 /* XFVoiceStatusNode.m */; };
 		B78C2CB61FE79E59006A0B70 /* XFShareCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B78C2CB41FE79E58006A0B70 /* XFShareCardViewController.m */; };
 		B78C2CB91FE7A1D6006A0B70 /* XFShareCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = B78C2CB81FE7A1D6006A0B70 /* XFShareCardView.m */; };
 		B78F632B1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B78F632A1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m */; };
@@ -654,6 +658,20 @@
 		B7C174371FBAB6C30029ACDE /* XFSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C174361FBAB6C30029ACDE /* XFSearchBar.m */; };
 		B7C174431FBAEB260029ACDE /* XFMyMoneyTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C174411FBAEB260029ACDE /* XFMyMoneyTableViewCell.m */; };
 		B7C174441FBAEB260029ACDE /* XFMyMoneyTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7C174421FBAEB260029ACDE /* XFMyMoneyTableViewCell.xib */; };
+		B7C7FCCB201186AA0040976C /* IQ_FDWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCB6201186A90040976C /* IQ_FDWaveformView.m */; };
+		B7C7FCCC201186AA0040976C /* IQAudioCropperViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCB8201186A90040976C /* IQAudioCropperViewController.m */; };
+		B7C7FCCD201186AA0040976C /* IQAudioRecorderConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCBA201186A90040976C /* IQAudioRecorderConstants.m */; };
+		B7C7FCCE201186AA0040976C /* IQAudioRecorderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCBC201186A90040976C /* IQAudioRecorderViewController.m */; };
+		B7C7FCCF201186AA0040976C /* IQCropSelectionBeginView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCBE201186A90040976C /* IQCropSelectionBeginView.m */; };
+		B7C7FCD0201186AA0040976C /* IQCropSelectionEndView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCC0201186A90040976C /* IQCropSelectionEndView.m */; };
+		B7C7FCD1201186AA0040976C /* IQCropSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCC2201186A90040976C /* IQCropSelectionView.m */; };
+		B7C7FCD2201186AA0040976C /* IQMessageDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCC4201186A90040976C /* IQMessageDisplayView.m */; };
+		B7C7FCD3201186AA0040976C /* IQPlaybackDurationView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCC6201186A90040976C /* IQPlaybackDurationView.m */; };
+		B7C7FCD4201186AA0040976C /* NSString+IQTimeIntervalFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCC8201186A90040976C /* NSString+IQTimeIntervalFormatter.m */; };
+		B7C7FCD5201186AA0040976C /* IQAudioRecorderController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B7C7FCCA201186A90040976C /* IQAudioRecorderController.bundle */; };
+		B7C7FCDC2011873C0040976C /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B7C7FCD72011873C0040976C /* LICENSE */; };
+		B7C7FCDD2011873C0040976C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B7C7FCD82011873C0040976C /* README.md */; };
+		B7C7FCDE2011873C0040976C /* SCSiriWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C7FCDB2011873C0040976C /* SCSiriWaveformView.m */; };
 		B7C9EB391FCE8DFA0087C87E /* XFDownloadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C9EB381FCE8DFA0087C87E /* XFDownloadViewController.m */; };
 		B7C9EB3C1FCE9EBE0087C87E /* XFMyStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7C9EB3B1FCE9EBE0087C87E /* XFMyStatusViewController.m */; };
 		B7CED9971FE1424C00B81FAD /* XFCommentModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B7CED9961FE1424C00B81FAD /* XFCommentModel.m */; };
@@ -1825,6 +1843,13 @@
 		B774597F1FE3FA6900BEC7F7 /* XFVipTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFVipTableViewCell.h; sourceTree = "<group>"; };
 		B77459801FE3FA6900BEC7F7 /* XFVipTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFVipTableViewCell.m; sourceTree = "<group>"; };
 		B77459811FE3FA6900BEC7F7 /* XFVipTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = XFVipTableViewCell.xib; sourceTree = "<group>"; };
+		B787A66D2011C4170068D7B2 /* XFPublishVoiceViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFPublishVoiceViewController.h; sourceTree = "<group>"; };
+		B787A66E2011C4170068D7B2 /* XFPublishVoiceViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFPublishVoiceViewController.m; sourceTree = "<group>"; };
+		B787A6702011D8790068D7B2 /* XFSecretphotoNotiViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFSecretphotoNotiViewController.h; sourceTree = "<group>"; };
+		B787A6712011D8790068D7B2 /* XFSecretphotoNotiViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFSecretphotoNotiViewController.m; sourceTree = "<group>"; };
+		B787A6732011DA020068D7B2 /* Publish.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Publish.storyboard; sourceTree = "<group>"; };
+		B787A6752011DB660068D7B2 /* XFVoiceStatusNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFVoiceStatusNode.h; sourceTree = "<group>"; };
+		B787A6762011DB660068D7B2 /* XFVoiceStatusNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFVoiceStatusNode.m; sourceTree = "<group>"; };
 		B78C2CB41FE79E58006A0B70 /* XFShareCardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFShareCardViewController.m; sourceTree = "<group>"; };
 		B78C2CB51FE79E58006A0B70 /* XFShareCardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFShareCardViewController.h; sourceTree = "<group>"; };
 		B78C2CB71FE7A1D6006A0B70 /* XFShareCardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFShareCardView.h; sourceTree = "<group>"; };
@@ -1938,6 +1963,31 @@
 		B7C174401FBAEB260029ACDE /* XFMyMoneyTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMyMoneyTableViewCell.h; sourceTree = "<group>"; };
 		B7C174411FBAEB260029ACDE /* XFMyMoneyTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMyMoneyTableViewCell.m; sourceTree = "<group>"; };
 		B7C174421FBAEB260029ACDE /* XFMyMoneyTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = XFMyMoneyTableViewCell.xib; sourceTree = "<group>"; };
+		B7C7FCB5201186A90040976C /* IQ_FDWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQ_FDWaveformView.h; sourceTree = "<group>"; };
+		B7C7FCB6201186A90040976C /* IQ_FDWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQ_FDWaveformView.m; sourceTree = "<group>"; };
+		B7C7FCB7201186A90040976C /* IQAudioCropperViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQAudioCropperViewController.h; sourceTree = "<group>"; };
+		B7C7FCB8201186A90040976C /* IQAudioCropperViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQAudioCropperViewController.m; sourceTree = "<group>"; };
+		B7C7FCB9201186A90040976C /* IQAudioRecorderConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQAudioRecorderConstants.h; sourceTree = "<group>"; };
+		B7C7FCBA201186A90040976C /* IQAudioRecorderConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQAudioRecorderConstants.m; sourceTree = "<group>"; };
+		B7C7FCBB201186A90040976C /* IQAudioRecorderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQAudioRecorderViewController.h; sourceTree = "<group>"; };
+		B7C7FCBC201186A90040976C /* IQAudioRecorderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQAudioRecorderViewController.m; sourceTree = "<group>"; };
+		B7C7FCBD201186A90040976C /* IQCropSelectionBeginView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQCropSelectionBeginView.h; sourceTree = "<group>"; };
+		B7C7FCBE201186A90040976C /* IQCropSelectionBeginView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQCropSelectionBeginView.m; sourceTree = "<group>"; };
+		B7C7FCBF201186A90040976C /* IQCropSelectionEndView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQCropSelectionEndView.h; sourceTree = "<group>"; };
+		B7C7FCC0201186A90040976C /* IQCropSelectionEndView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQCropSelectionEndView.m; sourceTree = "<group>"; };
+		B7C7FCC1201186A90040976C /* IQCropSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQCropSelectionView.h; sourceTree = "<group>"; };
+		B7C7FCC2201186A90040976C /* IQCropSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQCropSelectionView.m; sourceTree = "<group>"; };
+		B7C7FCC3201186A90040976C /* IQMessageDisplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQMessageDisplayView.h; sourceTree = "<group>"; };
+		B7C7FCC4201186A90040976C /* IQMessageDisplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQMessageDisplayView.m; sourceTree = "<group>"; };
+		B7C7FCC5201186A90040976C /* IQPlaybackDurationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQPlaybackDurationView.h; sourceTree = "<group>"; };
+		B7C7FCC6201186A90040976C /* IQPlaybackDurationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQPlaybackDurationView.m; sourceTree = "<group>"; };
+		B7C7FCC7201186A90040976C /* NSString+IQTimeIntervalFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+IQTimeIntervalFormatter.h"; sourceTree = "<group>"; };
+		B7C7FCC8201186A90040976C /* NSString+IQTimeIntervalFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+IQTimeIntervalFormatter.m"; sourceTree = "<group>"; };
+		B7C7FCCA201186A90040976C /* IQAudioRecorderController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = IQAudioRecorderController.bundle; sourceTree = "<group>"; };
+		B7C7FCD72011873C0040976C /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		B7C7FCD82011873C0040976C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B7C7FCDA2011873C0040976C /* SCSiriWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSiriWaveformView.h; sourceTree = "<group>"; };
+		B7C7FCDB2011873C0040976C /* SCSiriWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSiriWaveformView.m; sourceTree = "<group>"; };
 		B7C9EB371FCE8DFA0087C87E /* XFDownloadViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFDownloadViewController.h; sourceTree = "<group>"; };
 		B7C9EB381FCE8DFA0087C87E /* XFDownloadViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFDownloadViewController.m; sourceTree = "<group>"; };
 		B7C9EB3A1FCE9EBE0087C87E /* XFMyStatusViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMyStatusViewController.h; sourceTree = "<group>"; };
@@ -2175,6 +2225,8 @@
 				B70F5717200DF4DE00AD317A /* XFLockNode.m */,
 				B70F5719200E201200AD317A /* XFUpImageNode.h */,
 				B70F571A200E201200AD317A /* XFUpImageNode.m */,
+				B787A6752011DB660068D7B2 /* XFVoiceStatusNode.h */,
+				B787A6762011DB660068D7B2 /* XFVoiceStatusNode.m */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -3886,6 +3938,8 @@
 		B74AE9C91FA30834002BD4A6 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				B7C7FCD62011873C0040976C /* SCSiriWaveformView */,
+				B7C7FCB3201186A90040976C /* IQAudioRecorderController */,
 				B7E3FF301FC6E8F30086414F /* ImagePicker */,
 				B74AEA141FA32115002BD4A6 /* XFPublishViewController.h */,
 				B74AEA151FA32115002BD4A6 /* XFPublishViewController.m */,
@@ -3895,6 +3949,11 @@
 				B7E3FF3A1FC727F90086414F /* XFSelectLabelViewController.m */,
 				B7F8AFA41FDA81ED00C9173D /* XFPreviewViewController.h */,
 				B7F8AFA51FDA81ED00C9173D /* XFPreviewViewController.m */,
+				B787A66D2011C4170068D7B2 /* XFPublishVoiceViewController.h */,
+				B787A66E2011C4170068D7B2 /* XFPublishVoiceViewController.m */,
+				B787A6702011D8790068D7B2 /* XFSecretphotoNotiViewController.h */,
+				B787A6712011D8790068D7B2 /* XFSecretphotoNotiViewController.m */,
+				B787A6732011DA020068D7B2 /* Publish.storyboard */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -4484,6 +4543,70 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		B7C7FCB3201186A90040976C /* IQAudioRecorderController */ = {
+			isa = PBXGroup;
+			children = (
+				B7C7FCB4201186A90040976C /* FDWaveformView */,
+				B7C7FCB7201186A90040976C /* IQAudioCropperViewController.h */,
+				B7C7FCB8201186A90040976C /* IQAudioCropperViewController.m */,
+				B7C7FCB9201186A90040976C /* IQAudioRecorderConstants.h */,
+				B7C7FCBA201186A90040976C /* IQAudioRecorderConstants.m */,
+				B7C7FCBB201186A90040976C /* IQAudioRecorderViewController.h */,
+				B7C7FCBC201186A90040976C /* IQAudioRecorderViewController.m */,
+				B7C7FCBD201186A90040976C /* IQCropSelectionBeginView.h */,
+				B7C7FCBE201186A90040976C /* IQCropSelectionBeginView.m */,
+				B7C7FCBF201186A90040976C /* IQCropSelectionEndView.h */,
+				B7C7FCC0201186A90040976C /* IQCropSelectionEndView.m */,
+				B7C7FCC1201186A90040976C /* IQCropSelectionView.h */,
+				B7C7FCC2201186A90040976C /* IQCropSelectionView.m */,
+				B7C7FCC3201186A90040976C /* IQMessageDisplayView.h */,
+				B7C7FCC4201186A90040976C /* IQMessageDisplayView.m */,
+				B7C7FCC5201186A90040976C /* IQPlaybackDurationView.h */,
+				B7C7FCC6201186A90040976C /* IQPlaybackDurationView.m */,
+				B7C7FCC7201186A90040976C /* NSString+IQTimeIntervalFormatter.h */,
+				B7C7FCC8201186A90040976C /* NSString+IQTimeIntervalFormatter.m */,
+				B7C7FCC9201186A90040976C /* Resources */,
+			);
+			path = IQAudioRecorderController;
+			sourceTree = "<group>";
+		};
+		B7C7FCB4201186A90040976C /* FDWaveformView */ = {
+			isa = PBXGroup;
+			children = (
+				B7C7FCB5201186A90040976C /* IQ_FDWaveformView.h */,
+				B7C7FCB6201186A90040976C /* IQ_FDWaveformView.m */,
+			);
+			path = FDWaveformView;
+			sourceTree = "<group>";
+		};
+		B7C7FCC9201186A90040976C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B7C7FCCA201186A90040976C /* IQAudioRecorderController.bundle */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B7C7FCD62011873C0040976C /* SCSiriWaveformView */ = {
+			isa = PBXGroup;
+			children = (
+				B7C7FCD72011873C0040976C /* LICENSE */,
+				B7C7FCD82011873C0040976C /* README.md */,
+				B7C7FCD92011873C0040976C /* SCSiriWaveformView */,
+			);
+			name = SCSiriWaveformView;
+			path = "../../../../../../Downloads/IQAudioRecorderController-master 2/Pods/SCSiriWaveformView";
+			sourceTree = "<group>";
+		};
+		B7C7FCD92011873C0040976C /* SCSiriWaveformView */ = {
+			isa = PBXGroup;
+			children = (
+				B7C7FCDA2011873C0040976C /* SCSiriWaveformView.h */,
+				B7C7FCDB2011873C0040976C /* SCSiriWaveformView.m */,
+			);
+			path = SCSiriWaveformView;
+			sourceTree = "<group>";
+		};
 		B7CED9941FE1423B00B81FAD /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -4886,6 +5009,7 @@
 				B76EE33C200B79F70025A66D /* flash-off.png in Resources */,
 				B72A4BE5200EE99E0013157A /* Time_Machine_No_Reverser.png in Resources */,
 				B72A4BD7200EE99E0013157A /* icon_dub.png in Resources */,
+				B7C7FCD5201186AA0040976C /* IQAudioRecorderController.bundle in Resources */,
 				B72A4B4D200EE99E0013157A /* tags drk@2x.png in Resources */,
 				B76EE33D200B79F70025A66D /* flash-off@2x.png in Resources */,
 				B72A4BEF200EE99E0013157A /* plsmusics.json in Resources */,
@@ -4921,6 +5045,7 @@
 				B7DF03251FA6E28A0093022C /* XFHomeCollectionViewCell.xib in Resources */,
 				B7AABEC81FC5671E0031E0E8 /* XFMissionTableViewCell.xib in Resources */,
 				B72A4B14200EE99D0013157A /* cutoutIconDown@2x.png in Resources */,
+				B7C7FCDD2011873C0040976C /* README.md in Resources */,
 				B72A4BA9200EE99E0013157A /* btn_camera_done_a@2x.png in Resources */,
 				B72A4B3F200EE99E0013157A /* presentStickerDown_sys@2x.png in Resources */,
 				B72A4B19200EE99D0013157A /* distorting mirror@3x.png in Resources */,
@@ -5000,10 +5125,12 @@
 				B72A4B61200EE99E0013157A /* stickers_gift.json in Resources */,
 				B72A4B33200EE99D0013157A /* mask@2x.png in Resources */,
 				B72A4AB7200EE99D0013157A /* sierraMap.png in Resources */,
+				B787A6742011DA020068D7B2 /* Publish.storyboard in Resources */,
 				B72A4B51200EE99E0013157A /* takephoto_sys@2x.png in Resources */,
 				B72A4BE2200EE99E0013157A /* rotate.png in Resources */,
 				B72A4C0C200EE99E0013157A /* video_draft_test.mp4 in Resources */,
 				B72A4AFF200EE99D0013157A /* distortion_SquareFace.png in Resources */,
+				B7C7FCDC2011873C0040976C /* LICENSE in Resources */,
 				B72A4B21200EE99D0013157A /* face@2x.png in Resources */,
 				B72A4B1F200EE99D0013157A /* face drk@2x.png in Resources */,
 				B72A4BF4200EE99E0013157A /* PLShortVideoKit.bundle in Resources */,
@@ -5155,6 +5282,7 @@
 				B723CBE61FBBEF0000DC25E9 /* XFNearbyViewController.m in Sources */,
 				B79C76241FC42F4C0040B844 /* XFActorCardNode.m in Sources */,
 				B7239E1C1FCAD84E003BBC94 /* XFInsertLabel.m in Sources */,
+				B7C7FCCC201186AA0040976C /* IQAudioCropperViewController.m in Sources */,
 				B72A4AC7200EE99D0013157A /* KWGlobalFilter.m in Sources */,
 				B72A4C02200EE99E0013157A /* PLSViewRecorderManager.m in Sources */,
 				B7FD7AF720036BE000B6112B /* TADotView.m in Sources */,
@@ -5183,6 +5311,7 @@
 				B79C76181FC3C5710040B844 /* XFAddImageViewController.m in Sources */,
 				B7C174221FBA84450029ACDE /* XFFillInfoViewController.m in Sources */,
 				B7EB67C81FB1995700AAD65D /* ASTextNode+XFSetTextAttributes.m in Sources */,
+				B7C7FCD0201186AA0040976C /* IQCropSelectionEndView.m in Sources */,
 				B72A4B68200EE99E0013157A /* SDWebImageDecoder.m in Sources */,
 				B72B21DC200F1CA60081B32D /* XFChargeCollectionViewCell.m in Sources */,
 				B72A4AF2200EE99D0013157A /* scale_common.cc in Sources */,
@@ -5222,6 +5351,7 @@
 				B73933BB1FD2A7F500F2B0DD /* PlayerViewController.m in Sources */,
 				B72A4BFC200EE99E0013157A /* PLSFilterGroup.m in Sources */,
 				B7FD7AF620036BE000B6112B /* TAAnimatedDotView.m in Sources */,
+				B7C7FCDE2011873C0040976C /* SCSiriWaveformView.m in Sources */,
 				B7EA92221FEBC1270092EB8A /* UIImage+ImageEffects.m in Sources */,
 				B7DF03421FA804620093022C /* XFNewActorTableViewCell.m in Sources */,
 				B7B40DF4200C55AB003B34FD /* XFFindSearchNode.m in Sources */,
@@ -5253,6 +5383,7 @@
 				B74AE9F81FA30835002BD4A6 /* XFNetWorkApiTool.m in Sources */,
 				B72A4B6F200EE99E0013157A /* UIImage+MultiFormat.m in Sources */,
 				B72A4C08200EE99E0013157A /* PLSTextBar.m in Sources */,
+				B7C7FCCD201186AA0040976C /* IQAudioRecorderConstants.m in Sources */,
 				B7E3FF3B1FC727F90086414F /* XFSelectLabelViewController.m in Sources */,
 				B7C174331FBAABCA0029ACDE /* XFHistoryCollectionViewCell.m in Sources */,
 				B7DDBC8A1FBD7A8400D53091 /* XFYwqAlertView.m in Sources */,
@@ -5297,7 +5428,9 @@
 				B70CCC541FE5218000F5B7F3 /* XFHomeCacheManger.m in Sources */,
 				B7A682951FECEE3E006B9109 /* XFChargeSmallTableViewCell.m in Sources */,
 				B72A4B91200EE99E0013157A /* SPARTarget.m in Sources */,
+				B7C7FCCB201186AA0040976C /* IQ_FDWaveformView.m in Sources */,
 				B72A4B73200EE99E0013157A /* UIView+WebCacheOperation.m in Sources */,
+				B787A66F2011C4170068D7B2 /* XFPublishVoiceViewController.m in Sources */,
 				B757DAAE1FCC13EF002C0F3D /* XFEditSkillTableViewController.m in Sources */,
 				B77459731FE3B75A00BEC7F7 /* XFAvtivityMsgTableViewCell.m in Sources */,
 				B77459641FE3A96A00BEC7F7 /* XFCommentMessageTableViewCell.m in Sources */,
@@ -5327,6 +5460,7 @@
 				B72A4B8F200EE99E0013157A /* SPARPackage.m in Sources */,
 				B73898471FA600290000D4B0 /* XFOutsideButtonView.m in Sources */,
 				B72A4B69200EE99E0013157A /* SDWebImageDownloader.m in Sources */,
+				B7C7FCCE201186AA0040976C /* IQAudioRecorderViewController.m in Sources */,
 				B73933CD1FD677EA00F2B0DD /* XFMyCaresViewController.m in Sources */,
 				B72A4B95200EE99E0013157A /* EditViewController.m in Sources */,
 				B74AE9A01FA306DC002BD4A6 /* youwuquan.xcdatamodeld in Sources */,
@@ -5338,6 +5472,7 @@
 				B7DF033A1FA779F00093022C /* XFActorBestTableViewCell.m in Sources */,
 				B72B22112010856B0081B32D /* LBOptionView.m in Sources */,
 				B74AEA161FA32115002BD4A6 /* XFPublishViewController.m in Sources */,
+				B787A6722011D8790068D7B2 /* XFSecretphotoNotiViewController.m in Sources */,
 				B74AE9A81FA306DC002BD4A6 /* main.m in Sources */,
 				B7DB8E5D1FBFD85200FFFC7D /* UIButton+NaviBackButton.m in Sources */,
 				B723CBEE1FBC1A6400DC25E9 /* XFStatusDetailViewController.m in Sources */,
@@ -5354,6 +5489,7 @@
 				B72A4ACF200EE99D0013157A /* compare_gcc.cc in Sources */,
 				B76EE318200B79F00025A66D /* PhotoCell.m in Sources */,
 				B72A4B79200EE99E0013157A /* UIDevice+DeviceModel.m in Sources */,
+				B7C7FCD1201186AA0040976C /* IQCropSelectionView.m in Sources */,
 				B72A4B7C200EE99E0013157A /* KWFilterCell.m in Sources */,
 				B7EA92181FEB687C0092EB8A /* XFTxListTableViewCell.m in Sources */,
 				B7E10FDC1FC506E1007FFCE0 /* XFActorCardInfoView.m in Sources */,
@@ -5390,6 +5526,7 @@
 				B75362831FB6053E00EDFE94 /* XFFinddetailInfoTableViewCell.m in Sources */,
 				B7EB67BC1FB153FF00AAD65D /* XFHomeTableNode.m in Sources */,
 				B7AABEC71FC5671E0031E0E8 /* XFMissionTableViewCell.m in Sources */,
+				B7C7FCD2201186AA0040976C /* IQMessageDisplayView.m in Sources */,
 				B75ECB2E1FB93F4100952713 /* XFLoginVCViewController.m in Sources */,
 				B7DDBC7A1FBD2D0800D53091 /* ASSearchManCellNode.m in Sources */,
 				B723CC021FBC731B00DC25E9 /* XFSetViewController.m in Sources */,
@@ -5401,6 +5538,7 @@
 				B7E3FF2E1FC6DCFC0086414F /* XFPublishAddImageViewCollectionViewCell.m in Sources */,
 				B76EE31A200B79F00025A66D /* PhotoPickerCell.m in Sources */,
 				B72A4C06200EE99E0013157A /* PLSEditToolbar.m in Sources */,
+				B7C7FCD4201186AA0040976C /* NSString+IQTimeIntervalFormatter.m in Sources */,
 				B7C1742F1FBAAA0B0029ACDE /* XFSearchViewController.m in Sources */,
 				B7DB14F71FD0037F0095AED0 /* XFYueViewController.m in Sources */,
 				B72B22142010856B0081B32D /* LBPhotoBrowserView.m in Sources */,
@@ -5408,6 +5546,7 @@
 				B72A4AF7200EE99D0013157A /* scale_win.cc in Sources */,
 				B751B04C1FFD15E800811A7C /* XFHomeNetworkManager.m in Sources */,
 				B72A4BFD200EE99E0013157A /* PLSFormatGifView.m in Sources */,
+				B7C7FCD3201186AA0040976C /* IQPlaybackDurationView.m in Sources */,
 				B78C2CB61FE79E59006A0B70 /* XFShareCardViewController.m in Sources */,
 				B7FD7AFB20036BE000B6112B /* UIView+SDExtension.m in Sources */,
 				B7DF09001FE35EC900310B79 /* UIAlertController+ShowSingleDoneWithMsg.m in Sources */,
@@ -5422,6 +5561,7 @@
 				B7E10FDF1FC52EE0007FFCE0 /* XFMessageListViewController.m in Sources */,
 				B7DB14E81FCF94C10095AED0 /* XFLittleImageSlider.m in Sources */,
 				B774597E1FE3EE9500BEC7F7 /* XFPayViewController.m in Sources */,
+				B787A6772011DB660068D7B2 /* XFVoiceStatusNode.m in Sources */,
 				B7C174261FBA896B0029ACDE /* XFMessageListTableViewCell.m in Sources */,
 				B72A4BF3200EE99E0013157A /* PlayViewController.m in Sources */,
 				B72A4ADD200EE99D0013157A /* planar_functions.cc in Sources */,
@@ -5498,6 +5638,7 @@
 				B75ECB391FB9A72600952713 /* XFForgetViewController.m in Sources */,
 				B7E3FF421FC97FE40086414F /* XFUserInfoManager.m in Sources */,
 				B74AEA0A1FA319B1002BD4A6 /* XFHomeViewController.m in Sources */,
+				B7C7FCCF201186AA0040976C /* IQCropSelectionBeginView.m in Sources */,
 				B72A4AD6200EE99D0013157A /* convert_from_argb.cc in Sources */,
 				B72A4B6A200EE99E0013157A /* SDWebImageDownloaderOperation.m in Sources */,
 				B70CCC571FE5227700F5B7F3 /* XFHomeDataModel.m in Sources */,

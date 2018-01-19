@@ -99,8 +99,6 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
     [self setupOtherView];
     [self prepareUpload];
     
-
-    
     [self.view setNeedsUpdateConstraints];
 }
 
@@ -232,10 +230,11 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
                 [XFToolManager changeHUD:HUD successWithText:@"发布成功"];
                 
                 [self dismissViewControllerAnimated:YES completion:^{
-                    // 刷新动态页面通知
+//                     刷新动态页面通知
                     [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
                     
                 }];
+                
                 
             });
 
@@ -1349,7 +1348,8 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
 
 - (void)clickBackButton {
     
-    [self dismissViewControllerAnimated:YES completion:nil];
+//    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 
