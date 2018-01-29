@@ -214,6 +214,8 @@ PLSVideoEditingControllerDelegate
     [self.shortVideoEditor startEditing];
     
     [XFToolManager statusBarHidhen:YES];
+    
+    self.navigationController.navigationBarHidden = YES;
 
 }
 
@@ -225,6 +227,7 @@ PLSVideoEditingControllerDelegate
     [self.shortVideoEditor stopEditing];
     
     [XFToolManager statusBarHidhen:NO];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
 
 }
 
@@ -809,7 +812,10 @@ PLSVideoEditingControllerDelegate
     DubViewController *dubViewController = [[DubViewController alloc]init];
     dubViewController.movieSettings = self.movieSettings;
     dubViewController.delegate = self;
-    [self presentViewController:dubViewController animated:YES completion:nil];
+    
+    [self.navigationController pushViewController:dubViewController animated:YES];
+    
+//    [self presentViewController:dubViewController animated:YES completion:nil];
 }
 
 #pragma mark -- DubViewControllerDelegate 配音的回调
@@ -952,7 +958,9 @@ PLSVideoEditingControllerDelegate
         [videoEditingVC setVideoAsset:asset timeRange:timeRange placeholderImage:nil];
     }
     
-    [self presentViewController:videoEditingVC animated:YES completion:nil];
+    [self.navigationController pushViewController:videoEditingVC animated:YES];
+    
+//    [self presentViewController:videoEditingVC animated:YES completion:nil];
 }
 
 #pragma mark -- 视频列表
@@ -967,13 +975,17 @@ PLSVideoEditingControllerDelegate
 
 #pragma mark - PLSVideoEditingControllerDelegate 涂鸦、文字、贴纸效果的回调
 - (void)VideoEditingController:(PLSVideoEditingController *)videoEditingVC didCancelPhotoEdit:(PLSVideoEdit *)videoEdit {
-    [videoEditingVC dismissViewControllerAnimated:YES completion:nil];
+    
+    [videoEditingVC.navigationController popViewControllerAnimated:YES];
+//    [videoEditingVC dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)VideoEditingController:(PLSVideoEditingController *)videoEditingVC didFinishPhotoEdit:(PLSVideoEdit *)videoEdit {
     self.videoEdit = videoEdit;
     
-    [videoEditingVC dismissViewControllerAnimated:YES completion:nil];
+    [videoEditingVC.navigationController popViewControllerAnimated:YES];
+
+//    [videoEditingVC dismissViewControllerAnimated:YES completion:nil];
     
     // 重置视频的方向
     self.videoLayerOrientation = PLSPreviewOrientationPortrait;
@@ -1107,7 +1119,10 @@ PLSVideoEditingControllerDelegate
 
 #pragma mark -- 返回
 - (void)backButtonClick {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+//    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 下一步
@@ -1177,7 +1192,10 @@ PLSVideoEditingControllerDelegate
 
     GifFormatViewController *gifFormatViewController = [[GifFormatViewController alloc] init];
     gifFormatViewController.asset = asset;
-    [self presentViewController:gifFormatViewController animated:YES completion:nil];
+    
+    [self.navigationController pushViewController:gifFormatViewController animated:YES];
+    
+//    [self presentViewController:gifFormatViewController animated:YES completion:nil];
 }
 
 #pragma mark -- 完成视频合成跳转到下一页面
@@ -1186,8 +1204,9 @@ PLSVideoEditingControllerDelegate
     
     PlayViewController *playViewController = [[PlayViewController alloc] init];
     playViewController.url = url;
-    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:playViewController];
-    [self presentViewController:navi animated:YES completion:nil];
+    [self.navigationController pushViewController:playViewController animated:YES];
+//    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:playViewController];
+//    [self presentViewController:navi animated:YES completion:nil];
 }
 
 #pragma mark -- 程序的状态监听

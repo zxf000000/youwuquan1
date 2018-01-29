@@ -42,6 +42,22 @@
 
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBarHidden = YES;
+    
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    [super viewWillDisappear:animated];
+    
+    self.navigationController.navigationBarHidden = NO;
+
+    
+}
+
 #pragma mark -- 配置视图
 - (void)setupBaseToolboxView {
     self.baseToolboxView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, PLS_SCREEN_WIDTH, PLS_BaseToolboxView_HEIGHT)];
@@ -131,7 +147,10 @@
 #pragma mark -- UIButton 按钮响应事件
 #pragma mark -- 返回
 - (void)backButtonClick {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+//    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 下一步

@@ -10,6 +10,34 @@
 #import "UIImage+ImageEffects.h"
 #import "XFNetworkImageNode.h"
 
+
+@implementation XFCloseImgNode
+
+- (instancetype)init {
+    
+    if (self = [super init]) {
+        
+        _lockNode = [[XFLockNode alloc] initWithNumber:1];
+        [_lockNode.titleNode setFont:[UIFont systemFontOfSize:10] alignment:(NSTextAlignmentCenter) textColor:[UIColor whiteColor] offset:0 text:@"解锁" lineSpace:0 kern:2];
+        [self addSubnode:_lockNode];
+    }
+    return self;
+}
+
+- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
+    
+    ASLayoutSpec *layout = [super layoutSpecThatFits:constrainedSize];
+    
+    _lockNode.style.preferredSize = CGSizeMake(80, 80);
+    
+    ASCenterLayoutSpec *center = [ASCenterLayoutSpec centerLayoutSpecWithCenteringOptions:(ASCenterLayoutSpecCenteringXY) sizingOptions:(ASCenterLayoutSpecSizingOptionDefault) child:_lockNode];
+    
+    
+    return [ASOverlayLayoutSpec overlayLayoutSpecWithChild:layout overlay:center];
+}
+
+@end
+
 @implementation XFStatusDetailCollectionCellnode
 
 - (instancetype)init {
@@ -170,6 +198,21 @@
         
         [self addSubnode:_commentNode];
         
+        if (_status.audio) {
+            
+            _voiceButton = [[ASButtonNode alloc] init];
+            [_voiceButton setImage:[UIImage imageNamed:@"voice_bg"] forState:(UIControlStateNormal)];
+            [self addSubnode:_voiceButton];
+            
+            [_voiceButton addTarget:self action:@selector(clickVoiceButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
+            
+            _voiceTimeNode = [[ASTextNode alloc] init];
+            [_voiceTimeNode setFont:[UIFont systemFontOfSize:10] alignment:(NSTextAlignmentRight) textColor:[UIColor whiteColor] offset:-16 text:[NSString stringWithFormat:@"%zd\"",[_status.audio[@"audioSecond"] intValue]] lineSpace:0 kern:0];
+            //        _voiceTimeNode.backgroundColor = [UIColor redColor];
+            [self addSubnode:_voiceTimeNode];
+            
+        }
+        
         // 动态图片
         NSMutableArray *noteImgs = [NSMutableArray array];
         _imageNodes = [NSMutableArray array];
@@ -187,15 +230,32 @@
                 
                 NSDictionary *imgInfo = noteImgs[i];
 
-                XFNetworkImageNode *imageNode = [[XFNetworkImageNode alloc] init];
-                imageNode.image = [UIImage imageNamed:@"zhanweitu33"];
-                imageNode.url = [NSURL URLWithString:imgInfo[@"image"][@"imageUrl"]];
-                imageNode.contentMode = UIViewContentModeScaleToFill;
+                if ([imgInfo[@"albumType"] isEqualToString:@"open"]) {
+                    
+                    XFNetworkImageNode *imageNode = [[XFNetworkImageNode alloc] init];
+                    imageNode.image = [UIImage imageNamed:@"zhanweitu33"];
+                    imageNode.url = [NSURL URLWithString:imgInfo[@"image"][@"imageUrl"]];
+                    imageNode.contentMode = UIViewContentModeScaleToFill;
+                    
+                    [imageNode addTarget:self action:@selector(selectedPicWithImage:) forControlEvents:(ASControlNodeEventTouchUpInside)];
+                    
+                    [self addSubnode:imageNode];
+                    [_imageNodes addObject:imageNode];
+                    
+                } else {
+                    
+                    XFCloseImgNode *imageNode = [[XFCloseImgNode alloc] init];
+                    imageNode.image = [UIImage imageNamed:@"zhanweitu33"];
+                    imageNode.url = [NSURL URLWithString:imgInfo[@"image"][@"imageUrl"]];
+                    imageNode.contentMode = UIViewContentModeScaleToFill;
+                    
+                    [imageNode addTarget:self action:@selector(selectedPicWithImage:) forControlEvents:(ASControlNodeEventTouchUpInside)];
+                    
+                    [self addSubnode:imageNode];
+                    [_imageNodes addObject:imageNode];
+                }
                 
-                [imageNode addTarget:self action:@selector(selectedPicWithImage:) forControlEvents:(ASControlNodeEventTouchUpInside)];
-                
-                [self addSubnode:imageNode];
-                [_imageNodes addObject:imageNode];
+
                 
             }
         } else {
@@ -226,6 +286,7 @@
             
             _playButton.hidden = YES;
         }
+        
         
         // 底部
         _numberNode = [[ASTextNode alloc] init];
@@ -285,6 +346,14 @@
     
     return self;
 }
+
+// 点击声音
+- (void)clickVoiceButton {
+    
+    [self.detailDelegate statusCellNode:self didClickVoiceNodeWithUrl:_status.audio[@"audioUrl"]];
+    
+}
+
 
 - (void)clickIconNode {
     
@@ -357,6 +426,8 @@
     
     if (self.allImgs.count > 0 || _status.video) {
     
+        NSMutableArray *allLayout = [NSMutableArray array];
+        
         _iconNode.style.preferredSize = CGSizeMake(45, 45);
         _iconNode.style.spacingBefore = 13;
         _iconNode.style.flexGrow = 0;
@@ -413,6 +484,7 @@
         CGFloat imgWidth = kScreenWidth - 20;
         CGFloat imgHeight = imgWidth * 9 / 16.f;
 
+        
         // 名字和时间
         ASStackLayoutSpec *nameIconLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:5 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[_nameNode,_timeNode]];
         
@@ -424,7 +496,12 @@
         
         ASInsetLayoutSpec *upInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 0, 0, 0)) child:upLayout];
         
+        [allLayout addObject:upInset];
+        
         ASInsetLayoutSpec *commentInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 10, 10, 10)) child:_commentNode];
+        
+        [allLayout addObject:commentInset];
+        
         
         ASStackLayoutSpec *imglayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:10 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:self.imageNodes];
         
@@ -432,12 +509,16 @@
         
         ASOverlayLayoutSpec *imgOverLay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:imglayout overlay:insetPLay];
         
+        [allLayout addObject:imgOverLay];
+        
         // 点赞按钮层
         ASStackLayoutSpec *likeLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:10 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_likeNode,_contentNode]];
         
         ASStackLayoutSpec *centerLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_numberNode,likeLayout]];
         
         ASInsetLayoutSpec *centerInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(20, 10, 15, 10)) child:centerLayout];
+        
+        [allLayout addObject:centerInset];
         
         _lineNode.style.preferredSize = CGSizeMake(kScreenWidth - 30, 1);
         
@@ -456,7 +537,10 @@
         
         ASInsetLayoutSpec *lineInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 15, 0, 15)) child:_lineNode];
         
-        ASStackLayoutSpec *alllayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsStretch) children:@[upInset,commentInset, imgOverLay,centerInset,lineInset,_collectionNode]];
+        [allLayout addObject:lineInset];
+        [allLayout addObject:_collectionNode];
+        
+        ASStackLayoutSpec *alllayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsStretch) children:allLayout];
         
         ASBackgroundLayoutSpec *bgLayout = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:alllayout background:_bgNode];
         
@@ -464,6 +548,8 @@
         
     }
 
+    NSMutableArray *allLayout = [NSMutableArray array];
+    
     _iconNode.style.preferredSize = CGSizeMake(45, 45);
     _iconNode.style.spacingBefore = 13;
     _iconNode.style.flexGrow = 0;
@@ -487,15 +573,25 @@
     // 名字和头像
     ASStackLayoutSpec *iconNameLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:10 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_iconNode,nameIconLayout]];
 
-
-
     // 上面一层
     ASStackLayoutSpec *upLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsCenter) flexWrap:(ASStackLayoutFlexWrapWrap) alignContent:(ASStackLayoutAlignContentSpaceBetween) children:@[iconNameLayout,_followButton]];
 
     ASInsetLayoutSpec *upInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 0, 0, 0)) child:upLayout];
 
+    [allLayout addObject:upInset];
+    
     ASInsetLayoutSpec *commentInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(10, 10, 10, 10)) child:_commentNode];
+    
+    [allLayout addObject:commentInset];
 
+    if (_status.audio){
+        // 声音
+        ASOverlayLayoutSpec *voiceOverlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:_voiceButton overlay:[ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 0, 0, 5)) child:_voiceTimeNode]];
+        voiceOverlay.style.preferredSize = CGSizeMake(150, 54);
+        
+        ASInsetLayoutSpec *voiceInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 10, 0, kScreenWidth - 10 - 150)) child:voiceOverlay];
+        [allLayout addObject:voiceInset];
+    }
 //    ASStackLayoutSpec *imglayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:10 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:self.imageNodes];
 
 //    ASInsetLayoutSpec *insetPLay = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake((imgHeight - 50)/2, (imgWidth - 100)/2, (imgHeight - 50)/2, (imgWidth - 100)/2)) child:_playButton];
@@ -525,8 +621,12 @@
     _collectionNode.style.preferredSize = CGSizeMake(kScreenWidth, lineCount * 29 + (lineCount - 1) * (kScreenWidth - 290)/11.f + 20);
 
     ASInsetLayoutSpec *lineInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 15, 0, 15)) child:_lineNode];
+    
+    [allLayout addObject:centerInset];
+    [allLayout addObject:lineInset];
+    [allLayout addObject:_collectionNode];
 
-    ASStackLayoutSpec *alllayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsStretch) children:@[upInset,commentInset,centerInset,lineInset,_collectionNode]];
+    ASStackLayoutSpec *alllayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsStretch) children:allLayout];
 
     ASBackgroundLayoutSpec *bgLayout = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:alllayout background:_bgNode];
 

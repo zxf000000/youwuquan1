@@ -43,6 +43,8 @@
 
 - (void)updateHuDongMsgWith:(NSDictionary *)dic {
     
+    NSLog(@"%@----通知内容",dic);
+    
     NSArray *datas = (NSArray *)[self.msgCache objectForKey:kHuDongMsgCache];
     if (datas == nil) {
         

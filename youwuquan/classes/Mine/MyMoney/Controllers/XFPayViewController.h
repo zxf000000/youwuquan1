@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
 
-typedef NS_ENUM(NSInteger,XFPayVCType) {
+typedef NS_ENUM (NSInteger,XFPayVCType) {
 
     XFPayVCTypeVIP,
     XFPayVCTypeCharge

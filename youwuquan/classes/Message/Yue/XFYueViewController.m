@@ -13,6 +13,8 @@
 #import "XFCommentMessageTableViewCell.h"
 #import "XFStatusDetailViewController.h"
 #import "XFActivityViewController.h"
+#import "XFSystemMsgModel.h"
+#import "XFLikeCommentModel.h"
 
 @interface XFYueViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -26,7 +28,7 @@
     [super viewDidLoad];
     
     [self setupTableView];
-
+    
 }
 
 - (void)setupTableView {
@@ -42,56 +44,56 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    XFSystemMsgType type = [self.msgs[indexPath.row] integerValue];
+    //    XFSystemMsgType type = [self.msgs[indexPath.row] integerValue];
+    //
+    //    switch (type) {
+    //
+    //        case XFSystemMsgTypeSystem:
+    //        {
+    //            [XFToolManager showProgressInWindowWithString:@"查看详情"];
+    //        }
+    //            break;
+    //
+    //        case XFSystemMsgTypeActivity:
+    //        {
+    //            XFActivityViewController *activityVC = [[XFActivityViewController alloc] init];
+    //            [self.navigationController pushViewController:activityVC animated:YES];
+    //        }
+    //            break;
+    //
+    //        case XFSystemMsgTypeCommentNoPic:
+    //        {
+    //            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
+    //
+    //            [self.navigationController pushViewController:statusVC animated:YES];
+    //        }
+    //            break;
+    //
+    //        case XFSystemMsgTypeCommentPic:
+    //        {
+    //            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
+    //
+    //            [self.navigationController pushViewController:statusVC animated:YES];
+    //        }
+    //            break;
+    //
+    //        case XFSystemMsgTypeLikeNoPic:
+    //        {
+    //            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
+    //
+    //            [self.navigationController pushViewController:statusVC animated:YES];
+    //        }
+    //            break;
+    //        case XFSystemMsgTypelikePic:
+    //        {
+    //            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
+    //
+    //            [self.navigationController pushViewController:statusVC animated:YES];
+    //        }
+    //            break;
     
-    switch (type) {
-
-        case XFSystemMsgTypeSystem:
-        {
-            [XFToolManager showProgressInWindowWithString:@"查看详情"];
-        }
-            break;
-            
-        case XFSystemMsgTypeActivity:
-        {
-            XFActivityViewController *activityVC = [[XFActivityViewController alloc] init];
-            [self.navigationController pushViewController:activityVC animated:YES];
-        }
-            break;
-            
-        case XFSystemMsgTypeCommentNoPic:
-        {
-            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
-            
-            [self.navigationController pushViewController:statusVC animated:YES];
-        }
-            break;
-
-        case XFSystemMsgTypeCommentPic:
-        {
-            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
-            
-            [self.navigationController pushViewController:statusVC animated:YES];
-        }
-            break;
-
-        case XFSystemMsgTypeLikeNoPic:
-        {
-            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
-            
-            [self.navigationController pushViewController:statusVC animated:YES];
-        }
-            break;
-        case XFSystemMsgTypelikePic:
-        {
-            XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
-            
-            [self.navigationController pushViewController:statusVC animated:YES];
-        }
-            break;
-
-    }
-
+    //    }
+    
     
 }
 
@@ -103,52 +105,9 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    XFSystemMsgType type = [self.msgs[indexPath.row] integerValue];
-    
-    switch (type) {
-//        case -1:
-//        {
-//            XFYueTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFYueTableViewCell"];
-//
-//            if (cell == nil) {
-//
-//                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFYueTableViewCell" owner:nil options:nil] lastObject];
-//
-//            }
-//
-//            cell.clickDenyButtonBlock = ^{
-//
-//
-//            };
-//
-//            cell.clickAcceptButtonBlock = ^{
-//
-//                [self.msgs addObject:@(1)];
-//
-//                [self.tableView insertRow:self.msgs.count-1 inSection:0 withRowAnimation:(UITableViewRowAnimationFade)];
-//
-//                [self.tableView scrollToRow:self.msgs.count-1 inSection:0 atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
-//            };
-//
-//            return cell;
-//        }
-//            break;
-        case XFSystemMsgTypeSystem:
-        {
-            XFAcceptTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFAcceptTableViewCell"];
-
-            if (cell == nil) {
-
-                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFAcceptTableViewCell" owner:nil options:nil] lastObject];
-            }
+    switch (self.type) {
             
-            cell.commentLabel.text = @"活动期间参与微博美女举办的抽奖送红包活动，通过打开新浪微博app手机客户端扫码进入活动页面参与，按提示参与抢红包均可赢取到一份数额不等的支付宝现金红包奖励，活动期间官方号称将送出总额20万元支付宝现金奖励，所得奖励可以直接在新浪微博app内直接体现至支付宝无任何限制。活动资讯网的网友快去参加试试运气吧！";
-
-            return cell;
-        }
-            break;
-            
-        case XFSystemMsgTypeActivity:
+        case Activity:
         {
             XFAvtivityMsgTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFAvtivityMsgTableViewCell"];
             
@@ -157,103 +116,206 @@
                 cell = [[[NSBundle mainBundle] loadNibNamed:@"XFAvtivityMsgTableViewCell" owner:nil options:nil] lastObject];
             }
             
+            XFLikeCommentModel *model = self.msgs[indexPath.row];
+            NSData *jsonData = [model.extraJson dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *info = [NSJSONSerialization JSONObjectWithData:jsonData options:(NSJSONReadingMutableContainers) error:nil];
+            
+            if ([model.type isEqualToString:@"reward"]) {
+                
+                cell.titleLabel.text = @"打赏信息";
+                cell.detailLabel.text = [NSString stringWithFormat:@"%@打赏了你",info[@"nickName"]];
+                cell.desbutton.hidden = YES;
+            } else if ([model.type isEqualToString:@"yellowPicture"]) {
+                
+                cell.titleLabel.text = @"活动通知";
+                cell.detailLabel.text = @"活动报名成功";
+                
+            }
+            
+            return cell;
+        }
+            break;
+        case LikeComment:
+        {
+            // XFCommentMessageTableViewCell
+            XFCommentMessageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFCommentMessageTableViewCell"];
+            
+            if (cell == nil) {
+                
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFCommentMessageTableViewCell" owner:nil options:nil] lastObject];
+            }
+            
+            XFLikeCommentModel *model = self.msgs[indexPath.row];
+            NSData *jsonData = [model.extraJson dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *info = [NSJSONSerialization JSONObjectWithData:jsonData options:(NSJSONReadingMutableContainers) error:nil];
+            
+            if ([model.type isEqualToString:@"like"]) {
+                
+                cell.contentLabel.text = [NSString stringWithFormat:@"%@点赞了你的动态",info[@"nickname"]];
+                
+                if (info[@"imgUrl"]) {
+                    
+                    cell.statusPic.hidden = NO;
+                    cell.hasNoPicContrains.active = NO;
+                    cell.hasPicConstain.active = YES;
+                    
+                    [cell.statusPic setImageWithURL:[NSURL URLWithString:info[@"imgUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+                } else {
+                    cell.statusPic.hidden = YES;
+                    cell.hasNoPicContrains.active = YES;
+                    cell.hasPicConstain.active = NO;
+                }
+                
+                cell.likeButton.hidden = NO;
+                cell.commentBottomContrains.active = NO;
+                cell.likeBottomContrains.active = YES;
+                
+                return cell;
+                
+            } else {
+                
+                cell.contentLabel.text = [NSString stringWithFormat:@"%@评论了你的动态",info[@"nickname"]];
+                
+                if (info[@"imgUrl"]) {
+                    
+                    cell.statusPic.hidden = NO;
+                    cell.hasNoPicContrains.active = NO;
+                    cell.hasPicConstain.active = YES;
+                    
+                    [cell.statusPic setImageWithURL:[NSURL URLWithString:info[@"imgUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+                } else {
+                    cell.statusPic.hidden = YES;
+                    cell.hasNoPicContrains.active = YES;
+                    cell.hasPicConstain.active = NO;
+                }
+                
+                [cell layoutIfNeeded];
+                cell.likeButton.hidden = YES;
+                cell.commentBottomContrains.active = YES;
+                cell.likeBottomContrains.active = NO;
+
+            }
+            
+            [cell.iconView setImageWithURL:[NSURL URLWithString:info[@"headIconUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+
+            return cell;
+        }
+            break;
+        case System:
+        {
+            XFSystemMsgModel *model = self.msgs[indexPath.row];
+            
+            XFAcceptTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFAcceptTableViewCell"];
+            
+            if (cell == nil) {
+                
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFAcceptTableViewCell" owner:nil options:nil] lastObject];
+            }
+            cell.titleLabel.text = @"系统消息";
+            cell.commentLabel.text = model.text;
+            
             return cell;
         }
             break;
             
-        case XFSystemMsgTypeCommentNoPic:
-        {
-            // XFCommentMessageTableViewCell
-            XFCommentMessageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFCommentMessageTableViewCell"];
             
-            if (cell == nil) {
-                
-                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFCommentMessageTableViewCell" owner:nil options:nil] lastObject];
-            }
-
-            cell.contentLabel.text = @"比你好看的人平困了你的动态:我是你芭比";
-        
-            cell.statusPic.hidden = NO;
-            
-            cell.hasPicConstain.active = NO;
-            cell.hasNoPicContrains.active = YES;
-            cell.likeButton.hidden = YES;
-            cell.commentBottomContrains.active = YES;
-            cell.likeBottomContrains.active = NO;
-            return cell;
-        }
-        case XFSystemMsgTypeCommentPic:
-        {
-            // XFCommentMessageTableViewCell
-            XFCommentMessageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFCommentMessageTableViewCell"];
-            
-            if (cell == nil) {
-                
-                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFCommentMessageTableViewCell" owner:nil options:nil] lastObject];
-            }
-            
-            cell.contentLabel.text = @"比你好看的人平困了你的动态:我是你芭比";
-            
-            cell.statusPic.hidden = YES;
-            
-            cell.hasPicConstain.active = YES;
-            cell.hasNoPicContrains.active = NO;
-            
-            [cell layoutIfNeeded];
-            cell.likeButton.hidden = YES;
-            cell.commentBottomContrains.active = YES;
-            cell.likeBottomContrains.active = NO;
-            return cell;
-        }
-            
-        case XFSystemMsgTypeLikeNoPic:
-        {
-            // XFCommentMessageTableViewCell
-            XFCommentMessageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFCommentMessageTableViewCell"];
-            
-            if (cell == nil) {
-                
-                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFCommentMessageTableViewCell" owner:nil options:nil] lastObject];
-            }
-            
-            cell.contentLabel.text = @"比你好看的人平困了你的动态:我是你芭比";
-            
-            cell.statusPic.hidden = NO;
-            
-            cell.hasPicConstain.active = NO;
-            cell.hasNoPicContrains.active = YES;
-            
-            cell.likeButton.hidden = NO;
-            cell.commentBottomContrains.active = NO;
-            cell.likeBottomContrains.active = YES;
-            return cell;
-        }
-        case XFSystemMsgTypelikePic:
-        {
-            // XFCommentMessageTableViewCell
-            XFCommentMessageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFCommentMessageTableViewCell"];
-            
-            if (cell == nil) {
-                
-                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFCommentMessageTableViewCell" owner:nil options:nil] lastObject];
-            }
-            
-            cell.contentLabel.text = @"比你好看的人平困了你的动态:我是你芭比";
-            
-            cell.statusPic.hidden = YES;
-            
-            cell.hasPicConstain.active = YES;
-            cell.hasNoPicContrains.active = NO;
-            
-            cell.likeButton.hidden = NO;
-            cell.commentBottomContrains.active = NO;
-            cell.likeBottomContrains.active = YES;
-    
-            return cell;
-        }
     }
-
+    
     return nil;
 }
+
+
+
+//    switch (type) {
+//
+//        case XFSystemMsgTypeSystem:
+//        {
+//
+//        }
+//            break;
+//
+//        case XFSystemMsgTypeActivity:
+//        {
+
+//        }
+//            break;
+//
+//        case XFSystemMsgTypeCommentNoPic:
+//        {
+
+//        }
+//        case XFSystemMsgTypeCommentPic:
+//        {
+//            // XFCommentMessageTableViewCell
+//            XFCommentMessageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFCommentMessageTableViewCell"];
+//
+//            if (cell == nil) {
+//
+//                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFCommentMessageTableViewCell" owner:nil options:nil] lastObject];
+//            }
+//
+//            cell.contentLabel.text = @"比你好看的人平困了你的动态:我是你芭比";
+//
+//            cell.statusPic.hidden = YES;
+//
+//            cell.hasPicConstain.active = YES;
+//            cell.hasNoPicContrains.active = NO;
+//
+//            [cell layoutIfNeeded];
+//            cell.likeButton.hidden = YES;
+//            cell.commentBottomContrains.active = YES;
+//            cell.likeBottomContrains.active = NO;
+//            return cell;
+//        }
+//
+//        case XFSystemMsgTypeLikeNoPic:
+//        {
+//            // XFCommentMessageTableViewCell
+//            XFCommentMessageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFCommentMessageTableViewCell"];
+//
+//            if (cell == nil) {
+//
+//                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFCommentMessageTableViewCell" owner:nil options:nil] lastObject];
+//            }
+//
+//            cell.contentLabel.text = @"比你好看的人平困了你的动态:我是你芭比";
+//
+//            cell.statusPic.hidden = NO;
+//
+//            cell.hasPicConstain.active = NO;
+//            cell.hasNoPicContrains.active = YES;
+//
+//            cell.likeButton.hidden = NO;
+//            cell.commentBottomContrains.active = NO;
+//            cell.likeBottomContrains.active = YES;
+//            return cell;
+//        }
+//        case XFSystemMsgTypelikePic:
+//        {
+//            // XFCommentMessageTableViewCell
+//            XFCommentMessageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFCommentMessageTableViewCell"];
+//
+//            if (cell == nil) {
+//
+//                cell = [[[NSBundle mainBundle] loadNibNamed:@"XFCommentMessageTableViewCell" owner:nil options:nil] lastObject];
+//            }
+//
+//            cell.contentLabel.text = @"比你好看的人平困了你的动态:我是你芭比";
+//
+//            cell.statusPic.hidden = YES;
+//
+//            cell.hasPicConstain.active = YES;
+//            cell.hasNoPicContrains.active = NO;
+//
+//            cell.likeButton.hidden = NO;
+//            cell.commentBottomContrains.active = NO;
+//            cell.likeBottomContrains.active = YES;
+//
+//            return cell;
+//        }
+//    }
+
+//    return nil;
+
 
 @end

@@ -107,12 +107,12 @@
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
     
     _desNode.style.spacingBefore = 10;
-    _joinButton.style.spacingBefore = 15;
     
-    ASStackLayoutSpec *textLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:@[_titleNode,_desNode]];
+    ASStackLayoutSpec *textLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_titleNode,_desNode]];
     
+    ASCenterLayoutSpec *center = [ASCenterLayoutSpec centerLayoutSpecWithCenteringOptions:(ASCenterLayoutSpecCenteringXY) sizingOptions:(ASCenterLayoutSpecSizingOptionDefault) child:textLayout];
     
-    ASInsetLayoutSpec *insetTop = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(19, 10, 0, 0)) child:textLayout];
+    ASInsetLayoutSpec *insetTop = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 0, 0, 0)) child:center];
     
     // 图片比例 140/375
     _picNode.style.preferredSize = CGSizeMake(kScreenWidth, (kScreenWidth)*140/375.f);

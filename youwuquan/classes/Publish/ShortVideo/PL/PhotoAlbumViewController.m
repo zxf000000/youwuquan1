@@ -348,6 +348,21 @@ static NSString * const reuseIdentifier = @"Cell";
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBarHidden = YES;
+    
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    [super viewWillDisappear:animated];
+    
+    self.navigationController.navigationBarHidden = YES;
+    
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
@@ -484,8 +499,8 @@ static NSString * const reuseIdentifier = @"Cell";
     if (buttonIndex == alertView.firstOtherButtonIndex) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
     }
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
+//    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark <UICollectionViewDataSource>
@@ -574,7 +589,10 @@ static NSString * const reuseIdentifier = @"Cell";
 #pragma mark - 按钮的响应事件
 #pragma mark -- 返回
 - (void)cancelButtonClick:(UIButton *)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+//    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 竖屏、横屏分辨率
@@ -622,7 +640,10 @@ static NSString * const reuseIdentifier = @"Cell";
                 
                 MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
                 transCodeViewController.url = url;
-                [self presentViewController:transCodeViewController animated:YES completion:nil];
+                
+                [self.navigationController pushViewController:transCodeViewController animated:YES];
+                
+//                [self presentViewController:transCodeViewController animated:YES completion:nil];
             }];
             [imageToMovieComposer setFailureBlock:^(NSError *error) {
                 NSLog(@"imageToMovieComposer failed");
@@ -649,7 +670,10 @@ static NSString * const reuseIdentifier = @"Cell";
             if (self.urls.count == 1) {
                 MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
                 transCodeViewController.url = self.urls[0];
-                [self presentViewController:transCodeViewController animated:YES completion:nil];
+                
+                [self.navigationController pushViewController:transCodeViewController animated:YES];
+                
+//                [self presentViewController:transCodeViewController animated:YES completion:nil];
             }
             else {
                 [self loadActivityIndicatorView];
@@ -672,7 +696,11 @@ static NSString * const reuseIdentifier = @"Cell";
                     
                     MovieTransCodeViewController *transCodeViewController = [[MovieTransCodeViewController alloc] init];
                     transCodeViewController.url = url;
-                    [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
+                    
+                    [weakSelf.navigationController pushViewController:transCodeViewController animated:YES];
+
+                    
+//                    [weakSelf presentViewController:transCodeViewController animated:YES completion:nil];
                 }];
                 [self.movieComposer setFailureBlock:^(NSError *error) {
                     NSLog(@"movieComposer failed");

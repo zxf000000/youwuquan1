@@ -223,7 +223,7 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
         HUD.mode = MBProgressHUDModeAnnularDeterminate;
         HUD.progress = 0;
         
-        [XFFindNetworkManager publishWithType:type title:@"asdasd" unlockPrice:[self.diamondTextField.text longValue] labels:labels text:self.textView.text srcTypes:srcStr images:images videoCoverUrl:nil videoUrl:nil successBlock:^(id responseObj) {
+        [XFFindNetworkManager publishWithType:type title:@"asdasd" unlockPrice:[self.diamondTextField.text longValue] labels:labels text:self.textView.text srcTypes:srcStr images:images videoCoverUrl:nil videoUrl:nil videoWidth:0 videoHeight:0 successBlock:^(id responseObj) {
         
             dispatch_async(dispatch_get_main_queue(), ^{
                 
@@ -290,7 +290,7 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
             
             NSString *coverUrl = ((NSDictionary *)responseObj)[@"url"];
             // 上传视频
-            [XFFindNetworkManager publishWithType:@"video" title:@"test" unlockPrice:[self.diamondTextField.text longValue] labels:labels text:self.textView.text srcTypes:self.isOpenVideo?@"open":@"close" images:nil videoCoverUrl:coverUrl videoUrl:_videoPath successBlock:^(id responseObj) {
+            [XFFindNetworkManager publishWithType:@"video" title:@"test" unlockPrice:[self.diamondTextField.text longValue] labels:labels text:self.textView.text srcTypes:self.isOpenVideo?@"open":@"close" images:nil videoCoverUrl:coverUrl videoUrl:_videoPath videoWidth:0 videoHeight:0 successBlock:^(id responseObj) {
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     

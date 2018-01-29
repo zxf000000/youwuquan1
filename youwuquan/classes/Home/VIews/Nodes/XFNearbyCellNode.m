@@ -35,7 +35,7 @@
         
         _nameNode = [[ASTextNode alloc] init];
         
-        [_nameNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(868383) offset:0 text:kRandomName lineSpace:2 kern:0];
+        [_nameNode setFont:[UIFont systemFontOfSize:13] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(868383) offset:0 text:@"" lineSpace:2 kern:0];
         
         [self addSubnode:_nameNode];
         
@@ -46,9 +46,6 @@
         [_distanceButton setTitle:@"0.66km" withFont:[UIFont systemFontOfSize:12] withColor:UIColorHex(f72f5e) forState:(UIControlStateNormal)];
         
         [self addSubnode:_distanceButton];
-        
-//        self.backgroundColor = [UIColor redColor];
-        
         
 
     }
@@ -63,7 +60,7 @@
     _nameNode.style.spacingBefore = 15;
     _distanceButton.style.spacingBefore = 8;
     
-    _iconNode.style.flexGrow = YES;
+//    _iconNode.style.flexGrow = YES;
 
     ASStackLayoutSpec *alllayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_iconNode,_nameNode,_distanceButton]];
     

@@ -12,6 +12,7 @@
 #import "XFLoginManager.h"
 #import "XFTagsModel.h"
 #import "XFMineNetworkManager.h"
+#import "XFAddressViewController.h"
 
 @interface XFMyInfoViewController () <PGDatePickerDelegate>
 
@@ -78,7 +79,7 @@
         self.wxTextField.text = self.userInfo[@"info"][@"wechat"];
     }
     
-    self.phoneTexTField.text = [XFUserInfoManager sharedManager].userName;
+    self.phoneTexTField.text = self.userInfo[@"info"][@"phone"];
     
     if (dateStr.length > 0) {
         
@@ -199,6 +200,13 @@
     self.xzTextField.text = [NSString stringWithFormat:@"%@座",AstroW];
     
     
+    
+}
+- (IBAction)clickAddressButton:(id)sender {
+    
+    XFAddressViewController *addressVC = [[XFAddressViewController alloc] init];
+    
+    [self.navigationController pushViewController:addressVC animated:YES];
     
 }
 

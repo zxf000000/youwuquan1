@@ -77,8 +77,8 @@
     
     [self.flowerButton mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.top.mas_offset(0);
-        make.height.width.mas_equalTo(50);
+        make.top.mas_offset(10);
+        make.height.width.mas_equalTo(40);
         make.centerX.mas_offset(0);
     }];
     
@@ -613,18 +613,22 @@
 
     } else {
         
-        self.rewardButton.selected = NO;
-        self.giftButton.selected = YES;
-        _slideView.frame = CGRectMake(_giftButton.left, _giftButton.bottom + 5 * kRatio, 60, 2);
-        [self.scrollView setContentOffset:(CGPointMake(kGiftViewWidth, 0)) animated:YES];
-        _descriptLabel.hidden = NO;
-        self.numberTextField.text = @"9";
+        [XFToolManager showProgressInWindowWithString:@"暂无此类礼物"];
         
-        NSInteger singlePrice = 99;
+        return;
         
-        NSInteger number = [self.numberTextField.text intValue];
-        
-        [self setTotalNumberWith:[NSString stringWithFormat:@"%zd",singlePrice * number]];
+//        self.rewardButton.selected = NO;
+//        self.giftButton.selected = YES;
+//        _slideView.frame = CGRectMake(_giftButton.left, _giftButton.bottom + 5 * kRatio, 60, 2);
+//        [self.scrollView setContentOffset:(CGPointMake(kGiftViewWidth, 0)) animated:YES];
+//        _descriptLabel.hidden = NO;
+//        self.numberTextField.text = @"9";
+//
+//        NSInteger singlePrice = 99;
+//
+//        NSInteger number = [self.numberTextField.text intValue];
+//
+//        [self setTotalNumberWith:[NSString stringWithFormat:@"%zd",singlePrice * number]];
     }
     
 }
@@ -696,11 +700,7 @@
         XFGiftCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFGiftCell" forIndexPath:indexPath];
         
         XFGiftModel *model = self.gifts[indexPath.item];
-        
-        //    NSDictionary *info = self.gifts[indexPath.item];
-        
-        //    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icons"]] forState:(UIControlStateNormal)];
-        //    [cell.flowerButton setImage:[UIImage imageNamed:info[@"icon"]] forState:(UIControlStateSelected)];
+
         [cell.flowerButton setImageWithURL:[NSURL URLWithString:model.iconUrl] forState:(UIControlStateNormal) options:(YYWebImageOptionSetImageWithFadeAnimation)];
         [cell.flowerButton setBackgroundImage:[UIImage imageNamed:@"hua1none"] forState:(UIControlStateNormal)];
         [cell.flowerButton setBackgroundImage:[UIImage imageNamed:@"hua1"] forState:(UIControlStateSelected)];
@@ -715,6 +715,9 @@
                 XFGiftCell *cell = (XFGiftCell *)[collectionView cellForItemAtIndexPath:self.giftSelectedIndex];
                 
                 cell.flowerButton.selected = NO;
+                
+                cell.layer.borderColor = [UIColor clearColor].CGColor;
+                
                 
             }
             
@@ -731,7 +734,9 @@
             XFGiftCell *cell = (XFGiftCell *)[collectionView cellForItemAtIndexPath:indexPath];
             
             cell.flowerButton.selected = YES;
-            
+            cell.layer.borderColor = kMainRedColor.CGColor;
+            cell.layer.borderWidth = 1;
+            cell.layer.cornerRadius = 5;
             self.giftSelectedIndex = indexPath;
             
             //        NSDictionary *info = self.gifts[indexPath.row];

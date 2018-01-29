@@ -12,6 +12,7 @@ typedef NS_ENUM(NSInteger,XFAlertViewType) {
     
     XFAlertViewTypeUnlockStatus,
     XFAlertViewTypeChangeCoin,
+    XFAlertViewTypePayType,
     
 };
 

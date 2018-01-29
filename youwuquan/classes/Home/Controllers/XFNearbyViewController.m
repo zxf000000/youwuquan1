@@ -146,7 +146,7 @@
     }];
     UIAlertAction *actionAll = [UIAlertAction actionWithTitle:@"查看所有" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
         
-        self.gender = @"all";
+        self.gender = @"";
         [self getNearData];
         [self.collectionView reloadData];
 

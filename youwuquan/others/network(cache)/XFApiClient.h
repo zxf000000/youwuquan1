@@ -8,6 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
+
+//#define YBYHost @"http://192.168.1.150:8000/api/v1/"
+#define YBYHost @"http://47.104.153.152:80/api/v1/"
+//#define YBYHost @"http://192.168.123.179:80/api/v1/"
+
+// 用户登录
+#define YBYLogin @"signin"
+// 用户登出
+#define YBYLogout @"signout"
+
+// 注册账号
+#define YBYSignup @"signup"
+
 @interface XFApiClient : NSObject
 
 
@@ -575,7 +588,7 @@
 /**
  充值vip
 
- @param days
+ @param day
  @return url
  */
 + (NSString *)pathUrlForChargeVipWith:(NSString *)days;
@@ -653,12 +666,129 @@
  */
 + (NSString *)pathUrlForGetVipList;
 
-
 /**
  获取充值列表
 
  @return url
  */
 + (NSString *)pathUrlForGetCahrgeList;
+
+/**
+ 获取上传token
+
+ @return url
+ */
++ (NSString *)pathUrlForGetQiniuToken;
+
+
+/**
+ 第三方登录
+
+ @param type 类型(WeChat,Weibo,QQ)
+ @return url
+ */
++ (NSString *)pathUrlForSignupWith:(NSString *)type;
+
+
+/**
+ 更多网红
+
+ @return url
+ */
++ (NSString *)pathUrlForMoreNethot;
+/**
+ 更多尤物
+
+ @return url
+ */
++ (NSString *)pathUrlForGetMorePretty;
+
+/**
+ hd视频
+
+ @return url
+ */
++ (NSString *)pathUrlForGetHdVideoList;
+
+/**
+ vr视频
+
+ @return url
+ */
++ (NSString *)pathUrlForGetVrVideoList;
+
+/**
+ 更多主页shuju
+
+ @return url
+ */
++ (NSString *)pathUrlForGetHomeMoreData;
+
+
+
+/**
+ 地址列表
+
+ @return url
+ */
++ (NSString *)pathUrlForAddressList;
+
+/**
+ 添加地址
+
+ @return url
+ */
++ (NSString *)pathUrlForAddAddress;
+
+/**
+ 更新地址
+
+ @param addressId id
+ @return url
+ */
++ (NSString *)pathUrlForUpdateAddress:(NSString *)addressId;
+
+
+/**
+ 查看是否注册过(第三放)
+
+ @param uid uid
+ @return url
+ */
++ (NSString *)pathUrlForCheckIsHasUserWith:(NSString *)uid;
+
+
+/**
+ token登录
+
+ @return url
+ */
++ (NSString *)pathUrlForGetMyToken;
+
+/**
+ 获取token
+
+ @return url
+ */
++ (NSString *)pathUrlForLoginWithToken;
+
+// 解锁视频
++ (NSString *)pathUrlForUblockVideoWith:(NSString *)videoId;
+
+/**
+ 根据时间获取个人通知
+
+ @param date 上次时间
+ @return url
+ */
++ (NSString *)pathUrlForGetPersonNotification;
+
+/**
+ 根据时间获取系统通知
+
+ @param date 上次时间
+ @return url
+ */
++ (NSString *)pathUrlForGetSystemNotification;
 
 @end

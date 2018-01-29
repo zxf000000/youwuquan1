@@ -64,8 +64,9 @@
             <connections>
                 <outlet property="commentLabel" destination="xP2-Po-kuk" id="Oai-qV-hew"/>
                 <outlet property="contentBg" destination="RDQ-Ci-KcB" id="Bnz-f1-Oh0"/>
+                <outlet property="titleLabel" destination="Llv-hd-EFA" id="Gza-nv-1ki"/>
             </connections>
-            <point key="canvasLocation" x="-27" y="-20"/>
+            <point key="canvasLocation" x="88" y="-26"/>
         </tableViewCell>
     </objects>
     <resources>

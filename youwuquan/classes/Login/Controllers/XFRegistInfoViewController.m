@@ -138,6 +138,8 @@
         return;
     }
     
+
+    
 //    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 //    dateFormatter.dateFormat = @"yyyy-MM-dd";
 //    NSDate *birthday = [dateFormatter dateFromString:self.birthButton.currentTitle];
@@ -154,6 +156,16 @@
         
         // 成功,进入下个页面
         // 获取所有标签
+        
+        if (self.womanButton.selected) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"保存成功"];
+            // 女的不需要选标签
+            [self dismissViewControllerAnimated:YES completion:nil];
+            
+            return;
+            
+        }
         
         [XFMineNetworkManager getAllTagsWithSuccessBlock:^(id responseObj) {
             

@@ -10,7 +10,10 @@
 #import <AVFoundation/AVFoundation.h>
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import <PLPlayerKit/PLPlayerKit.h>
-#import "XFAddImageViewController.h"
+#import "XFPublishVideoViewController.h"
+#import "XFFindNetworkManager.h"
+#import <QiniuSDK.h>
+
 
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
 #define PLS_SCREEN_HEIGHT CGRectGetHeight([UIScreen mainScreen].bounds)
@@ -18,7 +21,7 @@
 #define PLS_RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1]
 
 static NSString *const kUploadToken = @"MqF35-H32j1PH8igh-am7aEkduP511g-5-F7j47Z:clOQ5Y4gJ15PnfZciswh7mQbBJ4=:eyJkZWxldGVBZnRlckRheXMiOjMwLCJzY29wZSI6InNob3J0LXZpZGVvIiwiZGVhZGxpbmUiOjE2NTUyNjAzNTd9";
-static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
+static NSString *const kURLPrefix = @"http://p2l82fhwg.bkt.clouddn.com";
 
 @interface PlayViewController ()
 <
@@ -292,15 +295,44 @@ UIGestureRecognizerDelegate
     if (self.actionType == PLSActionTypeGif) {
         key = [NSString stringWithFormat:@"short_video_%@.gif", [formatter stringFromDate:[NSDate date]]];
     }
-    PLSUploaderConfiguration * uploadConfig = [[PLSUploaderConfiguration alloc] initWithToken:kUploadToken videoKey:key https:YES recorder:nil];
-    self.shortVideoUploader = [[PLShortVideoUploader alloc] initWithConfiguration:uploadConfig];
-    self.shortVideoUploader.delegate = self;
+    
+    
+//    // 获取token
+//    [XFFindNetworkManager getUploadTokenWithsuccessBlock:^(id responseObj) {
+//
+//        NSDictionary *dic = (NSDictionary *)responseObj;
+//
+//        NSString *token = dic[@"token"];
+//
+//        NSLog(@"%@--token",token);
+//
+//        NSLog(@"%f-----",[[NSDate date] timeIntervalSince1970]);
+//
+//        NSDate *date = [NSDate date];
+//        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+//        formatter.dateFormat = @"yyyy-MM-dd-hh-mm-ss";
+//        NSString *uid = [XFUserInfoManager sharedManager].userName;
+//        NSString *dateStr = [formatter stringFromDate:date];
+//
+//        PLSUploaderConfiguration * uploadConfig = [[PLSUploaderConfiguration alloc] initWithToken:token videoKey:[NSString stringWithFormat:@"%@%@",dateStr,uid] https:YES recorder:nil];
+//        self.shortVideoUploader = [[PLShortVideoUploader alloc] initWithConfiguration:uploadConfig];
+//        self.shortVideoUploader.delegate = self;
+//
+//    } failBlock:^(NSError *error) {
+//
+//    } progress:^(CGFloat progress) {
+//
+//    }];
+    
 }
 
 #pragma mark -- 按钮的响应事件
 #pragma mark -- 返回
 - (void)backButtonClick {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+//    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 播放
@@ -311,17 +343,69 @@ UIGestureRecognizerDelegate
 #pragma mark -- 本地视频上传到云端
 - (void)uploadButtonClick:(id)sender {
     NSString *filePath = _url.path;
-    
     self.uploadButton.selected = !self.uploadButton.selected;
     
-    if (self.uploadButton.isSelected) {
-        self.progressView.hidden = NO;
-        // 截取封面
-        self.shotImage = [XFToolManager getImage:filePath];
-        [self.shortVideoUploader uploadVideoFile:filePath];
-    }else {
-        [self.shortVideoUploader cancelUploadVidoFile];
-    }
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
+    self.shotImage = [XFToolManager getImage:filePath];
+    
+    // 获取token
+    [XFFindNetworkManager getUploadTokenWithsuccessBlock:^(id responseObj) {
+        
+        NSDictionary *dic = (NSDictionary *)responseObj;
+        
+        NSString *token = dic[@"token"];
+        
+        NSLog(@"%@--token",token);
+        
+        NSLog(@"%f-----",[[NSDate date] timeIntervalSince1970]);
+        
+        NSDate *date = [NSDate date];
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = @"yyyy-MM-dd-hh-mm-ss";
+        NSString *uid = [XFUserInfoManager sharedManager].userName;
+        NSString *dateStr = [formatter stringFromDate:date];
+        
+        QNUploadManager *upManager = [[QNUploadManager alloc] init];
+        NSData *data = [NSData dataWithContentsOfFile:filePath];
+        [upManager putData:data key:[NSString stringWithFormat:@"%@%@.mp4",dateStr,uid] token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+            
+            if (info.error) {
+                
+                [XFToolManager changeHUD:HUD successWithText:@"上传失败"];
+                
+                return;
+            } else {
+                
+                [XFToolManager changeHUD:HUD successWithText:@"上传成功"];
+
+                XFPublishVideoViewController *addVC = [[XFPublishVideoViewController alloc] init];
+                
+                addVC.videoPath = [NSString stringWithFormat:@"%@%@",kQiniuResourceHost,resp[@"key"]];
+                addVC.videoImage = self.shotImage;
+                addVC.isOpenVideo = YES;
+                addVC.videoWidth = self.shotImage.size.width;
+                addVC.videoHeight = self.shotImage.size.height;
+                [self.navigationController pushViewController:addVC animated:YES];
+            }
+            
+        } option:nil];
+        
+    } failBlock:^(NSError *error) {
+        
+        [HUD hideAnimated:YES];
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
+//    if (self.uploadButton.isSelected) {
+//        self.progressView.hidden = NO;
+//        // 截取封面
+//        [self.shortVideoUploader uploadVideoFile:filePath];
+//    }else {
+//        [self.shortVideoUploader cancelUploadVidoFile];
+//    }
 }
 
 #pragma mark -- seekTo
@@ -347,51 +431,24 @@ UIGestureRecognizerDelegate
         [self showAlertWithMessage:[NSString stringWithFormat:@"上传失败，error: %@", info.error]];
         return ;
     }
-    NSString *urlString = [NSString stringWithFormat:@"%@/%@", kURLPrefix, uploadKey];
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@.mp4", kURLPrefix, uploadKey];
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = urlString;
     
     //    [self showAlertWithMessage:[NSString stringWithFormat:@"上传成功，地址：%@ 已复制到系统剪贴板", urlString]];
+    // 获取发布token
+    
     
 #pragma mark - 跳转到发布页面
     
-    XFAddImageViewController *addVC = [[XFAddImageViewController alloc] init];
+    XFPublishVideoViewController *addVC = [[XFPublishVideoViewController alloc] init];
     
     addVC.videoPath = urlString;
     addVC.videoImage = self.shotImage;
-    addVC.type = XFAddImgVCTypeVideo;
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"是否将视频设为私密" preferredStyle:(UIAlertControllerStyleAlert)];
-    
-    UIAlertAction *actionOpen = [UIAlertAction actionWithTitle:@"否" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-        addVC.isOpenVideo = YES;
-        
-        NSLog(@"%@--",self.navigationController);
-        
-        [self.navigationController pushViewController:addVC animated:YES];
-        
-    }];
-    
-    UIAlertAction *actionClose = [UIAlertAction actionWithTitle:@"是" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-        
-        addVC.isOpenVideo = NO;
-        [self.navigationController pushViewController:addVC animated:YES];
-        
-    }];
-    
-    [alert addAction:actionOpen];
-    [alert addAction:actionClose];
-    
-    [self presentViewController:alert animated:YES completion:nil];
-    
-    //    [self dismissViewControllerAnimated:YES completion:^{
-    //        if (self.uploadSuccessBlock) {
-    //
-    //            self.uploadSuccessBlock(self.shotImage, urlString);
-    //
-    //        }
-    //
-    //    }];
+    addVC.isOpenVideo = YES;
+    addVC.videoWidth = self.shotImage.size.width;
+    addVC.videoHeight = self.shotImage.size.height;
+    [self.navigationController pushViewController:addVC animated:YES];
     
     NSLog(@"uploadInfo: %@",info);
     NSLog(@"uploadKey:%@",uploadKey);

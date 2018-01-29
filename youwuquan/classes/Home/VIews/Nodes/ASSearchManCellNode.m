@@ -40,7 +40,7 @@
 
         _nameNode = [[ASTextNode alloc] init];
         
-        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:kRandomName];
+        NSMutableAttributedString *str = [[NSMutableAttributedString  alloc] initWithString:@""];
         
         str.attributes = @{
                            NSFontAttributeName : [UIFont systemFontOfSize:12.0],
@@ -134,7 +134,7 @@
         
         XFSearchManCollectioNCell *cell = [[XFSearchManCollectioNCell alloc] init];
         
-        cell.iconNode.defaultImage = [UIImage imageNamed:kRandomIcon];
+        cell.iconNode.defaultImage = [UIImage imageNamed:@"zhanweitu44"];
         
         return cell;
         

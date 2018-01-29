@@ -8,8 +8,11 @@
 
 #import "XFOtherMainViewController.h"
 
-
-
 @interface XFSecretphotoNotiViewController : XFOtherMainViewController
+
+@property (nonatomic,copy) NSArray *openpics;
+@property (nonatomic,copy) NSString *text;
+@property (nonatomic,copy) NSArray *tags;
+
 
 @end

@@ -12,6 +12,7 @@
 #import "XFCacheManager.h"
 #import "XFNetworking+RequestManager.h"
 #import "XFLoginVCViewController.h"
+#import "XFApiClient.h"
 
 #define YQ_ERROR_IMFORMATION @"网络出现错误，请检查网络连接"
 #define YQ_ERROR [NSError errorWithDomain:@"com.hyq.YQNetworking.ErrorDomain" code:-999 userInfo:@{ NSLocalizedDescriptionKey:YQ_ERROR_IMFORMATION}]
@@ -20,21 +21,23 @@
 static NSMutableArray *requestTaskPool;
 static NSDictionary *headers;
 static XFNetworkStatus networkStatus;
-static NSTimeInterval requestTimeout = 10.f;
+static NSTimeInterval requestTimeout = 20.f;
 
 @implementation XFNetworking
 
 #pragma mark - manager
+
+
 + (AFHTTPSessionManager *)sessionmanager {
     
     [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
     
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
+    static AFHTTPSessionManager *manager;
+    manager = [AFHTTPSessionManager manager];
     // 默认解析模式
     manager.requestSerializer = [AFHTTPRequestSerializer serializer];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
-    
+    //        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     // 配置相应序列化
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
                                                                               @"text/html",
@@ -45,32 +48,12 @@ static NSTimeInterval requestTimeout = 10.f;
                                                                               @"image/*",
                                                                               @"application/octet-stream",
                                                                               @"application/zip"]];
+
     // 配置请求序列化
-//    AFJSONResponseSerializer *serializer = [AFJSONResponseSerializer serializer];
-    
-//    [serializer setRemovesKeysWithNullValues:YES];
-    
-//    manager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
-//    manager.responseSerializer.stringEncoding = NSUTF8StringEncoding;
     manager.requestSerializer.timeoutInterval = requestTimeout;
-    
-//    for (NSString *key in headers.allKeys) {
-//
-//        if (headers[key] != nil) {
-//
-//            [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
-//
-//        }
-//
-//    }
 
-//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",@"text/json",@"text/javascript",@"text/html",nil];
-    
     [self checkNetworkStatus];
-    
     return manager;
-
-    
 }
 
 #pragma mark - 检查网络
@@ -96,7 +79,7 @@ static NSTimeInterval requestTimeout = 10.f;
             case AFNetworkReachabilityStatusReachableViaWiFi:
                 networkStatus = XFNetworkStatusReachableViaWifi;
                 break;
-            
+                
         }
         
     }];
@@ -115,12 +98,12 @@ static NSTimeInterval requestTimeout = 10.f;
 }
 #pragma mark - delete
 + (XFURLSEssionTask *)deleteWithUrl:(NSString *)url
-                  refreshRequest:(BOOL)refresh
-                           cache:(BOOL)cache
-                          praams:(NSDictionary *)params
-                   progressBlock:(XFGetPeogress)progressBlock
-                    successBlock:(XFRequestSuccessBlock)successBlock
-                       failBlock:(XFRequestFailBlock)failBlock {
+                     refreshRequest:(BOOL)refresh
+                              cache:(BOOL)cache
+                             praams:(NSDictionary *)params
+                      progressBlock:(XFGetPeogress)progressBlock
+                       successBlock:(XFRequestSuccessBlock)successBlock
+                          failBlock:(XFRequestFailBlock)failBlock {
     
     __block XFURLSEssionTask *session = nil;
     
@@ -144,10 +127,9 @@ static NSTimeInterval requestTimeout = 10.f;
     }
     
     session  =[manager DELETE:url parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        // 判断错误码
+
         if (successBlock) successBlock(responseObject);
-        
+
         if (cache) {
             
             [[XFCacheManager sharedManager] cacheResponseObject:responseObject requestUrl:url params:params];
@@ -162,7 +144,9 @@ static NSTimeInterval requestTimeout = 10.f;
             failBlock(error);
         }
         
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
+        [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+            
+        } success:^{
             
             
         }];
@@ -227,16 +211,17 @@ static NSTimeInterval requestTimeout = 10.f;
     }
     
     session = [manager GET:url parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
-       
+        
         if (progressBlock) {
             progressBlock(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
         }
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        // 判断错误码
-        if (successBlock) successBlock(responseObject);
+//        [self updateCookieForUrl:nil];
         
+        if (successBlock) successBlock(responseObject);
+
         if (cache) {
             
             [[XFCacheManager sharedManager] cacheResponseObject:responseObject requestUrl:url params:params];
@@ -246,39 +231,45 @@ static NSTimeInterval requestTimeout = 10.f;
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+
+        NSLog(@"%@",error);
         
         if (failBlock) {
             failBlock(error);
         }
         
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
-            
-            
-        }];
+            [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+                
+            } success:^{
+                
+                if (failBlock) failBlock(nil);
+                
+            }];
+
         
         [[self allTasks] removeObject:session];
         
     }];
     
     if ([self haveSameRequestInTasksPool:session] && !refresh) {
-        
+
         [session cancel];
-        
+
         return session;
-        
+
     } else {
-        
+
         // 无论是否有旧请求,先取消
         XFURLSEssionTask *oldtask = [self cancelSameRequestTasksPool:session];
-        
+
         if (oldtask) [[self allTasks] removeObject:oldtask];
         if (session) [[self allTasks] addObject:session];
-        
+
         [session resume];
-        
+
         return session;
     }
-
+    
     
     return nil;
     
@@ -308,10 +299,7 @@ static NSTimeInterval requestTimeout = 10.f;
     
     session = [manager PUT:url parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        // 判断错误码
-        
         if (successBlock) successBlock(responseObject);
-        
         if (cache) [[XFCacheManager sharedManager] cacheResponseObject:responseObject requestUrl:url params:params];
         
         if ([[self allTasks] containsObject:session]) {
@@ -322,7 +310,9 @@ static NSTimeInterval requestTimeout = 10.f;
         
         if (failBlock) failBlock(error);
         
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
+        [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+
+        } success:^{
             
             
         }];
@@ -348,7 +338,7 @@ static NSTimeInterval requestTimeout = 10.f;
     
     __block XFURLSEssionTask *session = nil;
     
-    AFHTTPSessionManager *manager = [self sessionmanager];
+    __block AFHTTPSessionManager *manager = [self sessionmanager];
     
     if (networkStatus == XFNetworkStatusNotReachable) {
         if (failBlock) failBlock(YQ_ERROR);
@@ -372,11 +362,8 @@ static NSTimeInterval requestTimeout = 10.f;
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        // 判断错误码
-        
         if (successBlock) successBlock(responseObject);
-            
-        
+
         if (cache) [[XFCacheManager sharedManager] cacheResponseObject:responseObject requestUrl:url params:params];
         
         if ([[self allTasks] containsObject:session]) {
@@ -384,16 +371,18 @@ static NSTimeInterval requestTimeout = 10.f;
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-
+        
         if (failBlock) failBlock(error);
-
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
+        
+        [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+            
+        } success:^{
             
             if (failBlock) failBlock(nil);
-
+            
         }];
         
-        NSLog(@"%@",error);
+        NSLog(@"%@",error.description);
         
         [[self allTasks] removeObject:session];
         
@@ -452,7 +441,7 @@ static NSTimeInterval requestTimeout = 10.f;
              4. mimeType：上传的文件的类型
              */
             [formData appendPartWithFileData:imageData name:@"images" fileName:fileName mimeType:@"image/jpeg"];
-
+            
         }
         
     } progress:^(NSProgress * _Nonnull uploadProgress) {
@@ -462,23 +451,26 @@ static NSTimeInterval requestTimeout = 10.f;
         NSLog(@"%zd / %zd",uploadProgress.completedUnitCount,uploadProgress.totalUnitCount);
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        // 判断错误码
+
         if (successBlock) successBlock(responseObject);
+
         [[self allTasks] removeObject:session];
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         
-
+        
         if (failBlock) failBlock(error);
         
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
+        [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+            
+        } success:^{
             
             
         }];
         
         [[self allTasks] removeObject:session];
     }];
+
     
     [session resume];
     
@@ -517,24 +509,24 @@ static NSTimeInterval requestTimeout = 10.f;
             
             [formData appendPartWithFileData:datas[i] name:names[i] fileName:fileName mimeType:mimeType];
         }
-    
+        
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         
         if (progressBlock) progressBlock (uploadProgress.completedUnitCount,uploadProgress.totalUnitCount);
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        // 判断错误码
-        
+
         if (successBlock) successBlock(responseObject);
-        
+
         [[self allTasks] removeObject:session];
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         
         if (failBlock) failBlock(error);
         
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
+        [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+            
+        } success:^{
             
             
         }];
@@ -579,7 +571,7 @@ static NSTimeInterval requestTimeout = 10.f;
         if (progressBlock) progressBlock (uploadProgress.completedUnitCount,uploadProgress.totalUnitCount);
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        // 判断错误码
+
         if (successBlock) successBlock(responseObject);
 
         [[self allTasks] removeObject:session];
@@ -587,8 +579,10 @@ static NSTimeInterval requestTimeout = 10.f;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         
         if (failBlock) failBlock(error);
-
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
+        
+        [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+            
+        } success:^{
             
             
         }];
@@ -640,17 +634,18 @@ static NSTimeInterval requestTimeout = 10.f;
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        // 判断错误码
-        
         if (successBlock) successBlock(responseObject);
-        
+
         [[self allTasks] removeObject:session];
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         
         if (failBlock) failBlock(error);
         
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
+        [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+        
+            
+        } success:^{
             
             
         }];
@@ -679,7 +674,7 @@ static NSTimeInterval requestTimeout = 10.f;
     
     dispatch_group_t uploadGroup = dispatch_group_create();
     NSInteger count = datas.count;
-
+    
     for (int i = 0; i < count; i ++) {
         
         __block XFURLSEssionTask *session = nil;
@@ -715,10 +710,10 @@ static NSTimeInterval requestTimeout = 10.f;
         if (session) {
             [sessions addObject:session];
         }
-
+        
     }
     [[self allTasks] addObjectsFromArray:sessions];
-
+    
     dispatch_group_notify(uploadGroup, dispatch_get_main_queue(), ^{
         
         if (responses.count) {
@@ -778,7 +773,7 @@ static NSTimeInterval requestTimeout = 10.f;
     
     session = [manager GET:url parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         if (progressBlock) progressBlock(downloadProgress.completedUnitCount, downloadProgress.totalUnitCount);
-
+        
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
@@ -793,14 +788,18 @@ static NSTimeInterval requestTimeout = 10.f;
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-    
+        
         if (failBlock) {
             
             failBlock (error);
             
         }
         
-        [self operateResponseCodeWithTask:task responseObj:error success:^{
+        [self operateResponseCodeWithTask:task responseObj:error url:url authDateout:^{
+            
+            
+            
+        } success:^{
             if (failBlock) {
                 
                 failBlock (nil);
@@ -808,12 +807,12 @@ static NSTimeInterval requestTimeout = 10.f;
             }
             
         }];
-
+        
         
     }];
     
     [session resume];
-
+    
     if (session) [[self allTasks] addObject:session];
     
     return session;
@@ -821,10 +820,8 @@ static NSTimeInterval requestTimeout = 10.f;
 }
 
 #pragma mark - 处理错误码
-+ (void)operateResponseCodeWithTask:(NSURLSessionDataTask *)task responseObj:(NSError *)error success:(void(^)(void))CancelResponseBlock {
++ (void)operateResponseCodeWithTask:(NSURLSessionDataTask *)task responseObj:(NSError *)error url:(NSString *)url authDateout:(void(^)(void))authDateoutBLock success:(void(^)(void))CancelResponseBlock  {
     
-    NSLog(@"%@",error.description);
-
     // 获取返回状态码
     NSString* errResponse = [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
     
@@ -834,7 +831,7 @@ static NSTimeInterval requestTimeout = 10.f;
     
     NSURLResponse *response = [task response];
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-
+    
     switch ([httpResponse statusCode]) {
             
         case 200:
@@ -869,13 +866,37 @@ static NSTimeInterval requestTimeout = 10.f;
             break;
         case 401:
         {
-            // 授权失败--重新登录
-            [XFToolManager showProgressInWindowWithString:@"登录过期"];
             
-            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
-            XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
-            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginVC];
-            [vc presentViewController:navi animated:YES completion:nil];
+            if ([XFUserInfoManager sharedManager].token) {
+                
+                [self postWithUrl:[XFApiClient pathUrlForLoginWithToken] refreshRequest:YES cache:NO praams:@{@"token":[XFUserInfoManager sharedManager].token} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+                    
+                } successBlock:^(id response) {
+                    
+                } failBlock:^(NSError *error) {
+                    // 授权失败--重新登录
+                    [XFToolManager showProgressInWindowWithString:@"登录过期"];
+                    
+                    XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
+                    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginVC];
+                    
+                    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+                    
+                    [vc presentViewController:navi animated:YES completion:nil];
+                }];
+            } else {
+                
+                // 授权失败--重新登录
+                [XFToolManager showProgressInWindowWithString:@"请先登录"];
+                
+                XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
+                UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginVC];
+                
+                UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+                
+                [vc presentViewController:navi animated:YES completion:nil];
+                
+            }
             
 
             
@@ -890,7 +911,7 @@ static NSTimeInterval requestTimeout = 10.f;
         case 404:
         {
             // NOT_FOUND
-//            [XFToolManager showProgressInWindowWithString:@"请求失败,请检查网络连接"];
+            //            [XFToolManager showProgressInWindowWithString:@"请求失败,请检查网络连接"];
             
             CancelResponseBlock();
             
@@ -900,20 +921,78 @@ static NSTimeInterval requestTimeout = 10.f;
         {
             // NOT_FOUND
             [XFToolManager showProgressInWindowWithString:@"请求失败,请检查网络连接"];
-
+            
         }
             break;
-
+            
         default:
         {
-            [XFToolManager showProgressInWindowWithString:@"请求失败,请检查网络连接"];
-
+//            [XFToolManager showProgressInWindowWithString:@"请求失败,请检查网络连接"];
+            
             
         }
             
     }
     
 }
+
++ (void)updateCookieForUrl:(NSURLSessionDataTask *)task {
+    
+    //获取cookie
+//    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    
+    /*
+     * 把cookie进行归档并转换为NSData类型
+     * 注意：cookie不能直接转换为NSData类型，否则会引起崩溃。
+     * 所以先进行归档处理，再转换为Data
+     */
+    NSData *cookiesData = [NSKeyedArchiver archivedDataWithRootObject:[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
+    
+    //存储归档后的cookie
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setObject:cookiesData forKey:@"cookie"];
+    [userDefaults synchronize];
+    //取出保存的cookie
+}
+
++ (void)setCookie {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+
+    //对取出的cookie进行反归档处理
+    NSArray *cookies1 = [NSKeyedUnarchiver unarchiveObjectWithData:[userDefaults objectForKey:@"cookie"]];
+    
+    if (cookies1) {
+        //设置cookie
+        NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (id cookie in cookies1) {
+            
+            [cookieStorage setCookie:cookie];
+            
+        }
+    }else{
+        NSLog(@"无cookie");
+    }
+    
+}
+
++(void)clearCookiesWithUrl:(NSString *)url {
+    
+    //获取所有cookies
+    NSArray*array = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:[NSURL URLWithString:url]];
+    
+    // NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:array];
+    
+    //删除
+    
+    for(NSHTTPCookie *cookie in array)
+        
+    {
+        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
+        
+    }
+    
+}
+
 
 #pragma mark - 其他
 + (void)setupTimeout:(NSTimeInterval)timeout {

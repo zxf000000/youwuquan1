@@ -41,7 +41,7 @@
     [self setupNavigationBar];
     [self setupTableNode];
     
-    [self.tableNode.view.mj_header beginRefreshing];
+//    [self.tableNode.view.mj_header beginRefreshing];
     
 
     self.page = 0;
@@ -392,12 +392,12 @@
     
     self.tableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-
-        [self loadDataWithProgress:NO indexpath:nil];
-
-    }];
-    
+//    self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+//
+//        [self loadDataWithProgress:NO indexpath:nil];
+//
+//    }];
+//
 //    self.tableNode.view.mj_footer = [MJRefreshAutoFooter footerWithRefreshingBlock:^{
 //
 //        [self loadMoreData];

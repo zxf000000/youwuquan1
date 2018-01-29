@@ -15,8 +15,11 @@
 @property (nonatomic,copy) NSString *headIconUrl;
 @property (nonatomic,copy) NSString *id;
 @property (nonatomic,copy) NSString *title;
-@property (nonatomic,copy) NSString *uid;
+@property (nonatomic,copy) NSDictionary *user;
 @property (nonatomic,copy) NSDictionary *video;
 @property (nonatomic,copy) NSString *viewNum;
+@property (nonatomic,copy) NSString *receivedDiamonds;
+@property (nonatomic,copy) NSString *diamonds;
+
 
 @end

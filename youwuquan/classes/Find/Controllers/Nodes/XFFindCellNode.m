@@ -7,7 +7,6 @@
 //
 
 #import "XFFindCellNode.h"
-#import "XFIconmanager.h"
 #import "UIImage+ImageEffects.h"
 #import "XFAuthManager.h"
 
@@ -74,34 +73,42 @@
         // 图像
         if (_model.video) {
             
-            ASNetworkImageNode *picNode = [[ASNetworkImageNode alloc] init];
-            picNode.defaultImage = [UIImage imageNamed:@"zhanweitu22"];
-            picNode.URL = [NSURL URLWithString:_model.video[@"video"][@"coverUrl"]];
+            XFNetworkImageNode *picNode = [[XFNetworkImageNode alloc] init];
+            picNode.image = [UIImage imageNamed:@"zhanweitu22"];
+            picNode.url = [NSURL URLWithString:_model.video[@"video"][@"coverUrl"]];
             picNode.cornerRadius = 10;
             picNode.clipsToBounds = YES;
             [self addSubnode:picNode];
             _picNodes = @[picNode];
             
+            [picNode addTarget:self action:@selector(clickPicNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
+
+            
         } else {
             
             NSMutableArray *nodes = [NSMutableArray array];
             NSMutableArray *closesNodes = [NSMutableArray array];
+            
             for (NSInteger i = 0 ; i < _model.pictures.count ; i ++ ) {
                 
                 NSDictionary *info = _model.pictures[i];
 
                 if ([info[@"albumType"] isEqualToString:@"open"]) {
                 
+                    self.openCount += 1;
+
                     XFNetworkImageNode *picNode = [[XFNetworkImageNode alloc] init];
                     picNode.image = [UIImage imageNamed:@"zhanweitu22"];
                     picNode.url = [NSURL URLWithString:info[@"image"][@"thumbImage300pxUrl"]];
                     picNode.cornerRadius = 10;
                     picNode.clipsToBounds = YES;
-                    [self addSubnode:picNode];
-                    [nodes addObject:picNode];
                     
-                    self.openCount += 1;
-                    
+                    if (self.openCount <= 9) {
+                        
+                        [self addSubnode:picNode];
+                        [nodes addObject:picNode];
+                    }
+                
                     [picNode addTarget:self action:@selector(clickPicNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
                     
                 } else {
@@ -121,10 +128,15 @@
             // 添加一张私密图片
             if (closesNodes.count > 0) {
 
+//                XFNetworkImageNode *node = closesNodes[0];
+                
+
                 [self addSubnode:closesNodes[0]];
                 [nodes addObject:closesNodes[0]];
 
                 _lockButton  = [[XFLockNode alloc] initWithNumber:self.closeCount];
+                
+                [_lockButton addTarget:self action:@selector(clickPicNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
 
                 [self addSubnode:_lockButton];
             }
@@ -148,31 +160,38 @@
             
         }
         
-        
         // 图像遮罩
         _imgShadowNode = [[ASImageNode alloc] init];
         [self addSubnode:_imgShadowNode];
         
-        // 打赏
-        //        _rewardButton = [[ASButtonNode alloc] init];
-        //
-        //        [_rewardButton setImage:[UIImage imageNamed:@"find_rewardbg"] forState:(UIControlStateNormal)];
-        //        _rewardButton.borderColor = [UIColor whiteColor].CGColor;
-        //        _rewardButton.borderWidth = 2;
-        //        [self addSubnode:_rewardButton];
-        //        _rewardButton.hidden = YES;
+        if (_model.audio) {
         
-        // 标签
-        NSArray *tags = _model.labels;
-        NSMutableArray *tagNodes = [NSMutableArray array];
-        for (int i = 0; i < tags.count; i ++ ) {
-            NSString *tag = tags[i];
-            ASTextNode *node = [[ASTextNode alloc] init];
-            [node setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:[NSString stringWithFormat:@"# %@",tag] lineSpace:0 kern:2];
-            [self addSubnode:node];
-            [tagNodes addObject:node];
+            _voiceButton = [[ASButtonNode alloc] init];
+            [_voiceButton setImage:[UIImage imageNamed:@"voice_bg"] forState:(UIControlStateNormal)];
+            [self addSubnode:_voiceButton];
+            
+            [_voiceButton addTarget:self action:@selector(clickVoiceButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
+            
+            _voiceTimeNode = [[ASTextNode alloc] init];
+            [_voiceTimeNode setFont:[UIFont systemFontOfSize:10] alignment:(NSTextAlignmentRight) textColor:[UIColor whiteColor] offset:-16 text:[NSString stringWithFormat:@"%zd\"",[_model.audio[@"audioSecond"] intValue]] lineSpace:0 kern:0];
+            //        _voiceTimeNode.backgroundColor = [UIColor redColor];
+            [self addSubnode:_voiceTimeNode];
+            
         }
-        self.tagNodes = tagNodes.copy;
+    
+        if (_model.labels) {
+            // 标签
+            NSArray *tags = _model.labels;
+            NSMutableArray *tagNodes = [NSMutableArray array];
+            for (int i = 0; i < tags.count; i ++ ) {
+                NSString *tag = tags[i];
+                ASTextNode *node = [[ASTextNode alloc] init];
+                [node setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:[UIColor blackColor] offset:0 text:[NSString stringWithFormat:@"# %@",tag] lineSpace:0 kern:2];
+                [self addSubnode:node];
+                [tagNodes addObject:node];
+            }
+            self.tagNodes = tagNodes.copy;
+        }
         
         // 文字
         _contentNode = [[ASTextNode alloc] init];
@@ -315,6 +334,17 @@
     return self;
 }
 
+// 点击声音
+- (void)clickVoiceButton {
+    
+    if ([self.delegate respondsToSelector:@selector(findCellNode:didClickVoiceButtonWithUrl:)]) {
+        
+        [self.delegate findCellNode:self didClickVoiceButtonWithUrl:self.model.audio[@"audioUrl"]];
+        
+    }
+    
+}
+
 // 点击图片
 - (void)clickPicNode:(ASNetworkImageNode *)imgNode {
     
@@ -322,7 +352,7 @@
     for (int i = 0 ; i < _model.pictures.count ; i ++ ) {
         
         NSDictionary *info = _model.pictures[i];
-        NSString *url = info[@"image"][@"thumbImage300pxUrl"];
+        NSString *url = info[@"image"][@"imageUrl"];
         [urls addObject:url];
     }
     
@@ -457,6 +487,8 @@
         img.style.preferredSize = CGSizeMake(12, 12);
         
     }
+    
+    NSMutableArray *allLayout = [NSMutableArray array];
     
     // 名字和时间
     ASStackLayoutSpec *nameTime = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_nameNode,_timeNode]];
@@ -698,54 +730,75 @@
         
         
         ASInsetLayoutSpec *picInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, kPicSpace, 0, kPicSpace)) child:picPlayLayout];
-        //            ASStackLayoutSpec *picButtonLayou = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:-40 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[picPlayLayout,_rewardButton]];
         
         picButtonLayout = picInset;
     }
     
+    [allLayout addObject:upLayout];
+    [allLayout addObject:picButtonLayout];
     
-    // 标签
-    NSMutableArray *textNodesArr = [NSMutableArray array];
-    NSMutableArray *horiNodeArr = [NSMutableArray array];
-    CGFloat totalSingleWidth = 0;
-    for (int i =  0 ; i < self.tagNodes.count ; i ++ ) {
+    if (_model.audio){
         
-        ASTextNode *node = self.tagNodes[i];
         
-        CGRect nodeRect = [node frameForTextRange:NSMakeRange(0, node.attributedText.length)];
-        CGFloat nodeWidth = nodeRect.size.width;
-        CGFloat nodeHeight = nodeRect.size.height;
-        node.style.preferredSize = CGSizeMake(nodeWidth, nodeHeight);
+        // 声音
+        ASOverlayLayoutSpec *voiceOverlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:_voiceButton overlay:[ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 0, 0, 5)) child:_voiceTimeNode]];
+        voiceOverlay.style.preferredSize = CGSizeMake(150, 54);
         
-        if (totalSingleWidth + nodeWidth + 5 <= (kScreenWidth - kPicSpace * 2)) {
+        ASInsetLayoutSpec *voiceInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, kPicSpace, 0, kScreenWidth - kPicSpace - 150)) child:voiceOverlay];
+        [allLayout addObject:voiceInset];
+    }
+    
+
+    if (_model.labels) {
+        
+        
+        // 标签
+        NSMutableArray *textNodesArr = [NSMutableArray array];
+        NSMutableArray *horiNodeArr = [NSMutableArray array];
+        CGFloat totalSingleWidth = 0;
+        for (int i =  0 ; i < self.tagNodes.count ; i ++ ) {
             
-            [horiNodeArr addObject:node];
-            totalSingleWidth += (5 + nodeWidth);
+            ASTextNode *node = self.tagNodes[i];
             
-            if (i == self.tagNodes.count - 1) {
+            CGRect nodeRect = [node frameForTextRange:NSMakeRange(0, node.attributedText.length)];
+            CGFloat nodeWidth = nodeRect.size.width;
+            CGFloat nodeHeight = nodeRect.size.height;
+            node.style.preferredSize = CGSizeMake(nodeWidth, nodeHeight);
+            
+            if (totalSingleWidth + nodeWidth + 5 <= (kScreenWidth - kPicSpace * 2)) {
+                
+                [horiNodeArr addObject:node];
+                totalSingleWidth += (5 + nodeWidth);
+                
+                if (i == self.tagNodes.count - 1) {
+                    
+                    NSArray *nodes = horiNodeArr.copy;
+                    ASStackLayoutSpec *horiStack = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:5 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:nodes];
+                    [textNodesArr addObject:horiStack];
+                }
+                
+            } else {
                 
                 NSArray *nodes = horiNodeArr.copy;
                 ASStackLayoutSpec *horiStack = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:5 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:nodes];
+                
+                horiNodeArr = [NSMutableArray array];
+                totalSingleWidth = 0;
                 [textNodesArr addObject:horiStack];
+                
             }
-            
-        } else {
-            
-            NSArray *nodes = horiNodeArr.copy;
-            ASStackLayoutSpec *horiStack = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:5 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:nodes];
-            
-            horiNodeArr = [NSMutableArray array];
-            totalSingleWidth = 0;
-            [textNodesArr addObject:horiStack];
             
         }
         
+        ASStackLayoutSpec *textNodesStack = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:5 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:textNodesArr.copy];
+        
+        ASInsetLayoutSpec *tagsInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, kPicSpace, 0, kPicSpace)) child:textNodesStack];
+        tagsInset.style.spacingBefore = 7;
+        
+        
+        [allLayout addObject:tagsInset];
     }
-    
-    ASStackLayoutSpec *textNodesStack = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:5 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsStart) children:textNodesArr.copy];
-    
-    ASInsetLayoutSpec *tagsInset = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, kPicSpace, 0, kPicSpace)) child:textNodesStack];
-    tagsInset.style.spacingBefore = 7;
+
     // 文字
     CGFloat textWidth = kScreenWidth - kPicSpace * 2;
     
@@ -819,10 +872,11 @@
     
     downLayout.style.spacingAfter = 19;
     
+    [allLayout addObjectsFromArray:@[contentInset,_lineNode,downLayout]];
+    
     // 全部布局
-    ASStackLayoutSpec *centerLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsStretch) children:@[upLayout,picButtonLayout,tagsInset,contentInset,_lineNode,downLayout]];
-    
-    
+    ASStackLayoutSpec *centerLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:0 justifyContent:(ASStackLayoutJustifyContentSpaceBetween) alignItems:(ASStackLayoutAlignItemsStretch) children:allLayout];
+
     ASBackgroundLayoutSpec *backLayout = [ASBackgroundLayoutSpec backgroundLayoutSpecWithChild:centerLayout background:_backNode];
     
     _backNode.shadowColor = [UIColor blackColor].CGColor;
@@ -830,8 +884,7 @@
     _backNode.shadowOpacity = 0.1;
     
     return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(0, 0, 11, 0)) child:backLayout];
-    
-    
+
 }
 
 

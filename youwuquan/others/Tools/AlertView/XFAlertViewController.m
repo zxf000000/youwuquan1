@@ -69,6 +69,11 @@
             [self setupUnlockAlertView];
         }
             break;
+            case XFAlertViewTypePayType:
+        {
+            [self setupPayView];
+        }
+            break;
         default:
             break;
     }
@@ -187,14 +192,19 @@
     
     [super viewWillAppear:animated];
     
-    POPSpringAnimation *animation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewScaleXY];
+        
+        POPSpringAnimation *animation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewScaleXY];
+        
+        animation.toValue = [NSValue valueWithCGPoint:(CGPointMake(1, 1))];
+        
+        animation.springSpeed = 20;
+        animation.springBounciness = 10;
+        
+        [self.alertView pop_addAnimation:animation forKey:@""];
+        
     
-    animation.toValue = [NSValue valueWithCGPoint:(CGPointMake(1, 1))];
     
-    animation.springSpeed = 20;
-    animation.springBounciness = 10;
-    
-    [self.alertView pop_addAnimation:animation forKey:@""];
+
     
 }
 
@@ -338,6 +348,12 @@
     
     [_addButton addTarget:self action:@selector(clickAddbutton:) forControlEvents:(UIControlEventTouchUpInside)];
     [_minusButton addTarget:self action:@selector(clickAddbutton:) forControlEvents:(UIControlEventTouchUpInside)];
+    
+}
+
+- (void)setupPayView {
+    
+
     
 }
 

@@ -10,10 +10,19 @@
 #import "XFMessageViewController.h"
 #import "XFChatViewController.h"
 #import "XFYueViewController.h"
+#import "XFMessageNetworkManager.h"
+#import "XFSystemMsgModel.h"
+#import "XFLikeCommentModel.h"
 
 @interface XFMessageListViewController ()
 
 @property (nonatomic,strong) XFMessageViewController *headerVC;
+
+@property (nonatomic,strong) __block UILabel *systemNumberLabel;
+
+@property (nonatomic,copy) NSArray *systemMsgs;
+@property (nonatomic,copy) NSArray *likeDatas;
+@property (nonatomic,copy) NSArray *otherDatas;
 
 @end
 
@@ -39,33 +48,15 @@
     
     // 系统消息
     UIButton *rightButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
+    rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, 50, 0, 0);
     [rightButton setImage:[UIImage imageNamed:@"msg_ring"] forState:(UIControlStateNormal)];
     
-    rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, 30, 0, 0);
-
-    if (@available (ios 11 , *)) {
-        
-        rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, -20, 0, 0);
-
-    }
-    
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-    UILabel *numberLabel  = [[UILabel alloc] init];
-    numberLabel.text = @"11";
-    numberLabel.font = [UIFont systemFontOfSize:10];
-    [rightButton addSubview:numberLabel];
-    numberLabel.backgroundColor = kMainRedColor;
-    numberLabel.textColor = [UIColor whiteColor];
-    [numberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.right.mas_offset(0);
-        make.top.mas_offset(-8);
-        make.height.width.mas_equalTo(20);
-    }];
-    numberLabel.layer.cornerRadius = 10;
-    numberLabel.layer.masksToBounds = YES;
-    numberLabel.textAlignment = NSTextAlignmentCenter;
+
     
+    self.navigationItem.rightBarButtonItem.badgeValue = @"99";
+    self.navigationItem.rightBarButtonItem.badgeBGColor = kMainRedColor;
+
     [rightButton addTarget:self action:@selector(clickRightButton) forControlEvents:(UIControlEventTouchUpInside)];
     
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRecieveNotification) name:kJPFNetworkDidReceiveMessageNotification object:nil];
@@ -73,28 +64,105 @@
     [self loadData];
 }
 
+
+
 - (void)loadData {
     
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
     
+    NSString *lastDate;
+    if ([XFUserInfoManager sharedManager].lastGetNotificationDate) {
+        
+        lastDate = [XFUserInfoManager sharedManager].lastGetNotificationDate;
+
+    } else {
+        
+        lastDate = @"2017-01-01 01:00:00";
+    }
     
+    lastDate = @"2017-01-01 01:00:00";
+
+    // 获取系统消息
+    [XFMessageNetworkManager getSystemNotificationWithDate:lastDate successBlock:^(id responseObj) {
+        
+        NSArray *datas = (NSArray *)responseObj;
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0; i < datas.count; i ++ ) {
+            
+            [arr addObject:[XFSystemMsgModel modelWithDictionary:datas[i]]];
+            
+        }
+        
+        self.systemMsgs = arr.copy;
+        
+        NSString *date = [dateFormatter stringFromDate:[NSDate date]];
+        
+        [[XFUserInfoManager sharedManager] updateLastDate:date];
+        
+        if (self.systemMsgs.count > 0) {
+            
+            self.navigationItem.rightBarButtonItem.badgeValue = [NSString stringWithFormat:@"%zd",self.systemMsgs.count];
+            
+        } else {
+            
+            self.systemNumberLabel.hidden = YES;
+
+        }
+        
+    } failBlock:^(NSError *error) {
+        
+        
+    } progressBlock:^(CGFloat progress) {
+        
+    }];
+    
+    [XFMessageNetworkManager getPersonalNotificationWithDate:lastDate type:@"like,comment,reward,gift,yellowPicture" successBlock:^(id responseObj) {
+    
+        NSArray *likeComments = (NSArray *)responseObj;
+        NSMutableArray *arrLike = [NSMutableArray array];
+        NSMutableArray *arrOther = [NSMutableArray array];
+
+        for (int i = 0 ; i < likeComments.count ; i ++ ) {
+            
+            NSDictionary *dic = likeComments[i];
+            
+            if ([dic[@"type"] isEqualToString:@"like"] || [dic[@"type"] isEqualToString:@"comment"]) {
+                [arrLike addObject:[XFLikeCommentModel modelWithDictionary:likeComments[i]]];
+
+                
+            } else {
+                
+                [arrOther addObject:[XFLikeCommentModel modelWithDictionary:likeComments[i]]];
+
+            }
+            
+        }
+        
+        self.likeDatas = arrLike.copy;
+        self.otherDatas = arrOther.copy;
+        self.headerVC.likeDatas = self.likeDatas;
+        self.headerVC.otherDatas = self.otherDatas;
+
+    } failBlock:^(NSError *error) {
+    
+    } progressBlock:^(CGFloat progress) {
+    
+    }];
+
 }
+
 
 - (void)clickRightButton {
     
-    
     XFYueViewController *chatVC = [[XFYueViewController alloc] init];
     chatVC.hidesBottomBarWhenPushed = YES;
-    chatVC.msgs = [NSMutableArray array];
-    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
-    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
-    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
-    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
-    [chatVC.msgs addObject:@(XFSystemMsgTypeSystem)];
-
+    chatVC.msgs = self.systemMsgs;
     chatVC.title = @"系统通知";
     chatVC.hasSeprator = NO;
+    chatVC.type = System;
     [self.navigationController pushViewController:chatVC animated:YES];
-    
+    self.navigationItem.rightBarButtonItem.badge.hidden = YES;
 }
 
 - (void)onSelectedTableRow:(RCConversationModelType)conversationModelType
@@ -104,7 +172,7 @@
     XFChatViewController *conversationVC = [[XFChatViewController alloc]init];
     conversationVC.conversationType = model.conversationType;
     conversationVC.targetId = model.targetId;
-    conversationVC.title = @"小美同学";
+    conversationVC.title = model.conversationTitle;
     conversationVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:conversationVC animated:YES];
 }
@@ -114,12 +182,19 @@
     self.headerVC = [[XFMessageViewController alloc] init];
     [self addChildViewController:self.headerVC];
     
-//    __weak typeof(self) weakSelf = self;
-//    self.headerVC.changeHeaderHeightBlock = ^(CGFloat height) {
-//
-//        weakSelf.headerVC.view.frame = CGRectMake(0, 0, kScreenWidth, height);
-//
-//    };
+    __weak typeof(self) weakSelf = self;
+    self.headerVC.refreshMsgBlock = ^(NSArray *systemMsgs) {
+        
+        if (systemMsgs.count == 0) {
+            
+            weakSelf.systemNumberLabel.hidden = YES;
+            
+        } else {
+            
+            weakSelf.systemNumberLabel.text = [NSString stringWithFormat:@"%zd",systemMsgs.count];
+        }
+        
+    };
 
     self.headerVC.view.frame = CGRectMake(0, 0, kScreenWidth, self.headerVC.headerHeight);
     self.conversationListTableView.tableHeaderView = self.headerVC.view;

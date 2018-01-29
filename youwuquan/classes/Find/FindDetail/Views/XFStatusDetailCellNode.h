@@ -8,7 +8,16 @@
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
 #import "XFStatusModel.h"
+#import "XFLockNode.h"
+@class XFNetworkImageNode;
 @class XFStatusDetailCellNode;
+
+
+@interface XFCloseImgNode : XFNetworkImageNode
+
+@property (nonatomic,strong) XFLockNode *lockNode;
+
+@end
 
 
 
@@ -28,6 +37,8 @@
 - (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickLikeButton:(ASButtonNode *)followButton;
 
 - (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickIconNode:(ASButtonNode *)iconNode;
+
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickVoiceNodeWithUrl:(NSString *)url;
 
 @end
 
@@ -77,6 +88,8 @@
 
 @property (nonatomic,assign) BOOL isUnlock;
 
-
+// 语音
+@property (nonatomic,strong) ASButtonNode *voiceButton;
+@property (nonatomic,strong) ASTextNode *voiceTimeNode;
 
 @end

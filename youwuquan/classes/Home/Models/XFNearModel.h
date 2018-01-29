@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface XFNearModel : NSObject
+@interface XFNearModel : NSObject <NSCoding>
 
 @property (nonatomic,copy) NSString *identifications;
 @property (nonatomic,copy) NSString *nickname;

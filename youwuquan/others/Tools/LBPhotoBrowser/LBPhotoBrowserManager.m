@@ -19,9 +19,9 @@
 
 #else
 
-#import "SDWebImageManager.h"
-#import "UIImageView+WebCache.h"
-#import "UIImage+MultiFormat.h"
+//#import "SDWebImageManager.h"
+//#import "UIImageView+WebCache.h"
+//#import "UIImage+MultiFormat.h"
 
 #endif
 
@@ -431,7 +431,9 @@ static inline void resetManagerData(LBPhotoBrowserView *photoBrowseView, LBUrlsM
     // 异步查询图片
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [[SDImageCache sharedImageCache] queryDiskCacheForKey:currentUrl.absoluteString done:^(UIImage *image, SDImageCacheType cacheType) {
+        
+        
+        [[[YYWebImageManager sharedManager] cache] getImageForKey:[[YYWebImageManager sharedManager] cacheKeyForURL:currentUrl] withType:(YYImageCacheTypeAll) withBlock:^(UIImage * _Nullable image, YYImageCacheType type) {
             
             __block NSData *data_block = UIImageJPEGRepresentation(image, 1);
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -451,7 +453,30 @@ static inline void resetManagerData(LBPhotoBrowserView *photoBrowseView, LBUrlsM
                 wself.displayLink.paused = NO;
                 wself.spareData = nil;
             });
+
         }];
+        
+//        [[SDImageCache sharedImageCache] queryDiskCacheForKey:currentUrl.absoluteString done:^(UIImage *image, SDImageCacheType cacheType) {
+//
+//            __block NSData *data_block = UIImageJPEGRepresentation(image, 1);
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                wself.currentGifImage = image;
+//                if (image.images.count == 0) {
+//                    return ;
+//                }
+//                if (!data_block) {
+//                    data_block = wself.spareData;
+//                }
+//                if (!data_block) {
+//                    return;
+//                }
+//                wself.currentShowImageView.image = image.images.firstObject;
+//                [image lb_animatedGIFData:data_block];
+//                wself.accumulator = 0;
+//                wself.displayLink.paused = NO;
+//                wself.spareData = nil;
+//            });
+//        }];
 //
 //        [[SDImageCache sharedImageCache] queryCacheOperationForKey:currentUrl.absoluteString done:^(UIImage * _Nullable image, NSData * _Nullable data, SDImageCacheType cacheType) {
 //

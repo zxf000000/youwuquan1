@@ -37,6 +37,9 @@
     [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_sendgift"] title:@"送礼物" tag:9004];
 
     [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_dateher"] title:@"约她" tag:9005];
+    
+    [self.conversationMessageCollectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"UICollectionReusableView"];
+
 
 }
 
@@ -78,6 +81,23 @@
 
 }
 
+//- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+//
+//    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
+//
+//        UICollectionReusableView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"UICollectionReusableView" forIndexPath:indexPath];
+//        header.backgroundColor = [UIColor redColor];
+//
+//        return header;
+//    }
+//    return nil;
+//}
+
+//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
+//
+//    return CGSizeMake(kScreenWidth, 300);
+//
+//}
 
 -(RCMessageBaseCell *)rcConversationCollectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {

@@ -25,8 +25,9 @@
     
     if (self = [super init]) {
         
-        _networkImageNode = [[ASNetworkImageNode alloc] init];
+        _networkImageNode = [[ASNetworkImageNode alloc] initWithCache:[XFImageNodeManager sharedImageManager] downloader:[XFImageNodeManager sharedImageManager]];
     
+//        _networkImageNode = [YYWebImageManager imageNode];
         _imageNode = [[ASImageNode alloc] init];
         
         [self addSubnode:_networkImageNode];
@@ -57,24 +58,21 @@
     
     _url = url;
     
-    PINRemoteImageManager *cacheManager = [PINRemoteImageManager sharedImageManager];
-    [cacheManager imageFromCacheWithURL:url processorKey:nil options:(PINRemoteImageManagerDownloadOptionsNone) completion:^(PINRemoteImageManagerResult * _Nonnull result) {
+    [[[YYWebImageManager sharedManager] cache] getImageForKey:[[YYWebImageManager sharedManager] cacheKeyForURL:url]  withType:(YYImageCacheTypeAll) withBlock:^(UIImage * _Nullable image, YYImageCacheType type) {
         
-        if (result.image) {
+        if (image) {
             
-            _imageNode.image = result.image;
+            _imageNode.image = image;
             
         } else {
             
             _networkImageNode.image = nil;
             _networkImageNode.URL = _url ? _url : [NSURL URLWithString:@""];
-
+            
         }
         
     }];
-    
-    
-    
+
 }
 
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {

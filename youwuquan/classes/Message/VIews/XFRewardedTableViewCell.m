@@ -7,6 +7,7 @@
 //
 
 #import "XFRewardedTableViewCell.h"
+#import "XFNearModel.h"
 
 @implementation XFMessageRewardedCollectionCell
 
@@ -14,7 +15,7 @@
     
     if (self = [super initWithFrame:frame]) {
         
-        _iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:kRandomIcon]];
+        _iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zhanweitu44"]];
         _iconView.layer.cornerRadius = 30;
         _iconView.layer.masksToBounds = YES;
         [self.contentView addSubview:_iconView];
@@ -22,7 +23,7 @@
         _nameLabel = [[UILabel alloc] init];
         _nameLabel.textColor = UIColorHex(868383);
         _nameLabel.font = [UIFont systemFontOfSize:12];
-        _nameLabel.text = kRandomName;
+//        _nameLabel.text = kRandomName;
         [self.contentView addSubview:_nameLabel];
         
         [self setNeedsUpdateConstraints];
@@ -75,16 +76,29 @@
     
 }
 
+- (void)setDatas:(NSArray *)datas {
+    
+    _datas = datas;
+    
+    [self.collectionView reloadData];
+    
+}
+
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
-    return 10;
+    return self.datas.count;
     
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     XFMessageRewardedCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFMessageRewardedCollectionCell" forIndexPath:indexPath];
+    
+    XFNearModel *model = self.datas[indexPath.item];
+    
+    cell.nameLabel.text = model.nickname;
+    [cell.iconView setImageWithURL:[NSURL URLWithString:model.headIconUrl] options:(YYWebImageOptionProgressiveBlur)];
     
     return cell;
     

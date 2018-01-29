@@ -20,6 +20,8 @@
 
 - (void)saveContext;
 
+@property (nonatomic,assign) BOOL isLogin;
+
 
 @end
 

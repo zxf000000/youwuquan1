@@ -8,22 +8,21 @@
 
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
-typedef NS_ENUM(NSInteger,XFSystemMsgType) {
+
+typedef NS_ENUM (NSInteger,XFYueVCType) {
     
-    XFSystemMsgTypeActivity,
-    XFSystemMsgTypelikePic,
-    XFSystemMsgTypeLikeNoPic,
-    XFSystemMsgTypeCommentPic,
-    XFSystemMsgTypeCommentNoPic,
-    XFSystemMsgTypeSystem,
-    
+    LikeComment,
+    System,
+    Activity,
 };
 
 @interface XFYueViewController : XFOtherMainViewController
 
-@property (nonatomic,strong) NSMutableArray *msgs;
+@property (nonatomic,copy) NSArray *msgs;
 
 @property (nonatomic,assign) BOOL hasSeprator;
+
+@property (nonatomic,assign) XFYueVCType type;
 
 
 @end

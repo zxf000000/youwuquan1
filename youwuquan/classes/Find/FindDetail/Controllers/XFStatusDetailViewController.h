@@ -49,5 +49,7 @@ typedef NS_ENUM(NSInteger,XFStatusDetailVCType) {
 
 @property (nonatomic,copy) void(^likeBlock)(XFStatusModel *model, BOOL liked);
 
+@property (nonatomic,copy) void(^deleteSUccessBlock)(void);
+
 
 @end

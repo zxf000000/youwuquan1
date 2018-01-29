@@ -149,7 +149,7 @@
                 <outlet property="timeButton" destination="qyh-3R-RwG" id="rZL-oF-CSA"/>
                 <outlet property="typeButton" destination="2a1-5V-ZFG" id="l6Y-l5-ltV"/>
             </connections>
-            <point key="canvasLocation" x="-169" y="8"/>
+            <point key="canvasLocation" x="-173" y="-195"/>
         </tableViewCell>
     </objects>
     <resources>

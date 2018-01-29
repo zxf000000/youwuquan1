@@ -12,6 +12,11 @@
 #import "XFChatViewController.h"
 #import "XFYueViewController.h"
 #import "XFMessageCacheManager.h"
+#import "XFHomeCacheManger.h"
+#import "XFNearModel.h"
+#import "XFMessageNetworkManager.h"
+#import "XFSystemMsgModel.h"
+#import "XFLikeCommentModel.h"
 
 @interface XFMessageViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -20,6 +25,13 @@
 @property (nonatomic,copy) NSArray *cellTitles;
 
 @property (nonatomic,copy) NSArray *cellIcons;
+
+@property (nonatomic,copy) NSArray *nearData;
+
+@property (nonatomic,copy) NSArray *systemNOtification;
+@property (nonatomic,copy) NSArray *activityNotification;
+@property (nonatomic,copy) NSArray *statusNotification;
+@property (nonatomic,assign) NSInteger *likeCommentCount;
 
 @end
 
@@ -40,37 +52,34 @@
     self.title = @"消息";
     
     [self setupTableView];
-
+    
+    if ([XFHomeCacheManger sharedManager].nearData) {
+        
+        self.nearData = [XFHomeCacheManger sharedManager].nearData;
+        
+        [self.tableView reloadData];
+        
+    }
+    
+    
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)setLikeDatas:(NSArray *)likeDatas {
     
-    [super viewWillAppear:animated];
+    _likeDatas = likeDatas;
     
+    [_tableView reloadSection:2 withRowAnimation:(UITableViewRowAnimationNone)];
+    
+}
+
+- (void)setOtherDatas:(NSArray *)otherDatas {
+    
+    _otherDatas = otherDatas;
+    
+    [_tableView reloadSection:0 withRowAnimation:(UITableViewRowAnimationNone)];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-        NSDictionary *info = (NSDictionary *)[[XFMessageCacheManager sharedManager].msgCache objectForKey:@"msgCache"];
-    
-    if (!info) {
-        
-        return;
-    }
-    
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:nil];
-    
-        NSString *infoStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:infoStr preferredStyle:(UIAlertControllerStyleAlert)];
-    
-    UIAlertAction *actionCacnel = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:nil];
-    [alert addAction:actionCacnel];
-        [self presentViewController:alert animated:YES completion:nil];
-        
-
-    
-    return;
     
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     
@@ -80,30 +89,20 @@
         
         XFYueViewController *chatVC = [[XFYueViewController alloc] init];
         chatVC.hidesBottomBarWhenPushed = YES;
-        chatVC.msgs = [NSMutableArray array];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeActivity)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeActivity)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeActivity)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeActivity)];
+        chatVC.msgs = self.otherDatas;
         chatVC.title = @"综合消息";
         chatVC.hasSeprator = NO;
+        chatVC.type = Activity;
         [self.navigationController pushViewController:chatVC animated:YES];
         
     } else {
         
         XFYueViewController *chatVC = [[XFYueViewController alloc] init];
         chatVC.hidesBottomBarWhenPushed = YES;
-        chatVC.msgs = [NSMutableArray array];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeLikeNoPic)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypelikePic)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeLikeNoPic)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentPic)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentNoPic)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentNoPic)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentPic)];
-        [chatVC.msgs addObject:@(XFSystemMsgTypeCommentPic)];
+        chatVC.msgs = self.likeDatas;
         chatVC.title = @"动态互动";
         chatVC.hasSeprator = YES;
+        chatVC.type = LikeComment;
         [self.navigationController pushViewController:chatVC animated:YES];
     }
 }
@@ -219,7 +218,7 @@
     if (indexPath.section == 1) {
         
         XFRewardedTableViewCell *cell = [[[NSBundle mainBundle] loadNibNamed:@"XFRewardedTableViewCell" owner:nil options:nil] lastObject];
-        
+        cell.datas = self.nearData;
         return cell;
     }
     
@@ -237,6 +236,41 @@
         
         cell.iconImage.image = [UIImage imageNamed:@"message_gg"];
         cell.titleLabel.text = @"综合消息";
+        cell.countLabel.text = [NSString stringWithFormat:@"%zd",self.otherDatas.count];
+        
+        if (self.otherDatas.count == 0) {
+            
+            cell.countLabel.hidden = YES;
+        }
+        
+        XFLikeCommentModel *model = [self.otherDatas firstObject];
+        
+        if ([XFUserInfoManager sharedManager].lastGetNotificationDate) {
+            
+            cell.timeLabel.text = [[XFUserInfoManager sharedManager].lastGetNotificationDate substringWithRange:(NSMakeRange(5, 5))];
+            
+        } else {
+            
+            cell.timeLabel.hidden = YES;
+        }
+        
+        if (model) {
+            
+            cell.timeLabel.text = [XFToolManager changeLongToDateWith:model.creatTime];
+            
+            NSData *jsonData = [model.extraJson dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *info = [NSJSONSerialization JSONObjectWithData:jsonData options:(NSJSONReadingMutableContainers) error:nil];
+            
+            if ([model.type isEqualToString:@"reward"]) {
+                
+                cell.detailLabel.text = [NSString stringWithFormat:@"%@打赏了你",info[@"nickname"]];
+                
+            } else if ([model.type isEqualToString:@"yellowPicture"]) {
+                
+                cell.detailLabel.text = @"有新的活动消息";
+                
+            }
+        }
     }
     
     if (indexPath.section == 1 || indexPath.row == 7) {
@@ -247,23 +281,36 @@
     
     if (indexPath.section == 2) {
         
-        if (indexPath.row < 5) {
+        cell.countLabel.text = [NSString stringWithFormat:@"%zd",self.likeDatas.count];
+        
+        if (self.likeDatas.count == 0) {
             
-            cell.iconImage.image = [UIImage imageNamed:self.cellIcons[indexPath.row]];
-            cell.titleLabel.text = self.cellTitles[indexPath.row];
-            
-        }else {
-            
-            cell.iconImage.image = [UIImage imageNamed:@"zhanweitu44"];
-            cell.titleLabel.text = @"小妖精";
-            
+            cell.countLabel.hidden = YES;
         }
-    }
-    
-    if (indexPath.row == 3) {
+        cell.iconImage.image = [UIImage imageNamed:@"message_like"];
+        cell.titleLabel.text = @"动态互动";
+        XFLikeCommentModel *model = [self.likeDatas firstObject];
         
-        self.tableView.frame = CGRectMake(0, 0, kScreenWidth, self.tableView.contentSize.height - 64);
+        if (model) {
+            
+            cell.timeLabel.text = [XFToolManager changeLongToDateWith:model.creatTime];
+
+            
+            NSData *jsonData = [model.extraJson dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *info = [NSJSONSerialization JSONObjectWithData:jsonData options:(NSJSONReadingMutableContainers) error:nil];
+            
+            if ([model.type isEqualToString:@"like"]) {
+                
+                cell.detailLabel.text = [NSString stringWithFormat:@"%@点赞了你的动态",info[@"nickname"]];
+                
+            } else {
+                
+                cell.detailLabel.text = [NSString stringWithFormat:@"%@评论了你的动态",info[@"nickname"]];
+                
+            }
+        }
         
+
         
     }
 

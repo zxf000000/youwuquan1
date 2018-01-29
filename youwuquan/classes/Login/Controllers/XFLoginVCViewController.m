@@ -12,6 +12,7 @@
 #import "XFLoginNetworkManager.h"
 #import "XFMineNetworkManager.h"
 #import <UMSocialCore/UMSocialCore.h>
+#import "XFBindPhoneViewController.h"
 
 
 @interface XFLoginVCViewController ()
@@ -67,6 +68,38 @@
     [self.view setNeedsUpdateConstraints];
     
     self.navigationController.navigationBar.hidden = YES;
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bindPhoneSuccess) name:@"kBindPhoneSuccess" object:nil];
+    
+}
+
+- (void)bindPhoneSuccess {
+//
+//    [self saveUserInfo];
+//
+//    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view withText:@"正在登陆"];
+//    // 获取个人信息
+//    [XFMineNetworkManager getAllInfoWithsuccessBlock:^(id responseObj) {
+//
+//        [XFToolManager changeHUD:HUD successWithText:@"登陆成功"];
+//
+//        // 保存用户信息
+//        [[XFUserInfoManager sharedManager] updateUserInfo:responseObj];
+//
+//        [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+//
+//        [self dismissViewControllerAnimated:YES completion:nil];
+//
+//    } failedBlock:^(NSError *error) {
+//
+//        [HUD hideAnimated:YES];
+//
+//    } progressBlock:^(CGFloat progress) {
+//
+//
+//    }];
+
+    
 }
 
 // 登录
@@ -75,54 +108,51 @@
     [self.view endEditing:YES];
     
     if (![self.phoneTextField.text isPhoneNumber]) {
-        
+
         [XFToolManager showProgressInWindowWithString:@"请输入正确的手机号"];
-        
+
         return;
-        
+
     }
-    
+
     if (![self.pwdTextField.text isHasContent]) {
-        
-        [XFToolManager showProgressInWindowWithString:@"请输入正确的手机号"];
-        
+
+        [XFToolManager showProgressInWindowWithString:@"请输入密码"];
+
         return;
 
     }
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view withText:@"正在登陆"];
     
-    [XFLoginNetworkManager loginWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
+    [XFLoginNetworkManager loginWithPhone:self.phoneTextField.text pwd:[XFToolManager md5:self.pwdTextField.text] longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
         
         
     } successBlock:^(id responseObj) {
     
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            // 获取个人信息
-            [XFMineNetworkManager getAllInfoWithsuccessBlock:^(id responseObj) {
-                
-                [XFToolManager changeHUD:HUD successWithText:@"登陆成功"];
-                
-                // 保存用户信息
-                [[XFUserInfoManager sharedManager] updateUserInfo:responseObj];
-                [XFUserInfoManager sharedManager].userName = self.phoneTextField.text;
-                [XFUserInfoManager sharedManager].pwd = self.pwdTextField.text;
-                
-                [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
-                
-                [self dismissViewControllerAnimated:YES completion:nil];
+            [XFLoginNetworkManager getMyTokenWithsuccessBlock:^(id responseObj) {
+               
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [HUD hideAnimated:YES];
 
+                });
+
+                [[XFUserInfoManager sharedManager] updateToken:((NSDictionary *)responseObj)[@"token"]];
+                [[XFUserInfoManager sharedManager] updateTokenDate:[NSDate date]];
+                
+                [self saveUserInfoWithUsername:self.phoneTextField.text pwd:self.pwdTextField.text];
+
+                
             } failedBlock:^(NSError *error) {
                 
-                [HUD hideAnimated:YES];
-                
-            } progressBlock:^(CGFloat progress) {
-                
-                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [HUD hideAnimated:YES];
+                    
+                });
             }];
+            
+            
 
-        });
         
     } failBlock:^(NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -132,6 +162,30 @@
         });
         
 
+    }];
+    
+}
+
+- (void)saveUserInfoWithUsername:(NSString *)username pwd:(NSString *)pwd {
+    
+    // 获取个人信息
+    [XFMineNetworkManager getAllInfoWithsuccessBlock:^(id responseObj) {
+        
+        // 保存用户信息
+        [[XFUserInfoManager sharedManager] updateUserInfo:responseObj];
+        
+        [XFUserInfoManager sharedManager].userName = username;
+        [XFUserInfoManager sharedManager].pwd = pwd;
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
+        
+        [self dismissViewControllerAnimated:YES completion:nil];
+        
+    } failedBlock:^(NSError *error) {
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
     }];
     
 }
@@ -188,6 +242,70 @@
             
             // 第三方平台SDK源数据
             NSLog(@"QQ originalResponse: %@", resp);
+            
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
+            [XFLoginNetworkManager checkIsHasUserWith:resp.openid successBlock:^(id responseObj) {
+                
+                // 登录
+
+                [XFLoginNetworkManager loginWithPhone:resp.openid pwd:resp.accessToken longitude:[NSString stringWithFormat:@"%f",[XFUserInfoManager sharedManager].userLong] latitude:[NSString stringWithFormat:@"%@",@([XFUserInfoManager sharedManager].userLati)] progress:^(CGFloat progress) {
+                    
+                    
+                } successBlock:^(id responseObj) {
+                    
+                    [XFLoginNetworkManager getMyTokenWithsuccessBlock:^(id responseObj) {
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [HUD hideAnimated:YES];
+                            
+                        });
+                        
+                        [[XFUserInfoManager sharedManager] updateToken:((NSDictionary *)responseObj)[@"token"]];
+                        [[XFUserInfoManager sharedManager] updateTokenDate:[NSDate date]];
+                        
+                         [self saveUserInfoWithUsername:resp.openid pwd:resp.accessToken];
+
+                    } failedBlock:^(NSError *error) {
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [HUD hideAnimated:YES];
+                            
+                        });
+                    }];
+
+                } failBlock:^(NSError *error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        [HUD hideAnimated:YES];
+                    });
+                    
+                }];
+                
+                
+            } failedBlock:^(NSError *error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    if (error) {
+                        
+                        [HUD hideAnimated:YES];
+                        
+                        // 调出绑定手机页面
+                        XFBindPhoneViewController *bindVC = [[XFBindPhoneViewController alloc] init];
+                        bindVC.type = @"QQ";
+                        bindVC.iconUrl = resp.iconurl;
+                        bindVC.openId =  resp.openid;
+                        bindVC.token = resp.accessToken;
+                        [self.navigationController pushViewController:bindVC animated:YES];
+                    }
+
+                });
+
+            }];
+            
+            
+  
         }
     }];
 }
@@ -214,8 +332,78 @@
             
             // 第三方平台SDK源数据
             NSLog(@"Wechat originalResponse: %@", resp.originalResponse);
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
+            [XFLoginNetworkManager checkIsHasUserWith:resp.openid successBlock:^(id responseObj) {
+                
+
+                [XFLoginNetworkManager loginWithPhone:resp.openid pwd:resp.accessToken longitude:[NSString stringWithFormat:@"%f",[XFUserInfoManager sharedManager].userLong] latitude:[NSString stringWithFormat:@"%@",@([XFUserInfoManager sharedManager].userLati)] progress:^(CGFloat progress) {
+                    
+                    
+                } successBlock:^(id responseObj) {
+                    
+                    [XFLoginNetworkManager getMyTokenWithsuccessBlock:^(id responseObj) {
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [HUD hideAnimated:YES];
+                            
+                        });
+                        
+                        [[XFUserInfoManager sharedManager] updateToken:((NSDictionary *)responseObj)[@"token"]];
+                        [[XFUserInfoManager sharedManager] updateTokenDate:[NSDate date]];
+
+                         [self saveUserInfoWithUsername:resp.openid pwd:resp.accessToken];
+
+                         } failedBlock:^(NSError *error) {
+                             
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 [HUD hideAnimated:YES];
+                                 
+                             });
+                    }];
+
+                    
+                } failBlock:^(NSError *error) {
+                    
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        [HUD hideAnimated:YES];
+                    });
+
+                }];
+                
+            } failedBlock:^(NSError *error) {
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    if (error) {
+                        [HUD hideAnimated:YES];
+                        
+                        // 调出绑定手机页面
+                        XFBindPhoneViewController *bindVC = [[XFBindPhoneViewController alloc] init];
+                        bindVC.type = @"WeChat";
+                        bindVC.iconUrl = resp.iconurl;
+                        bindVC.openId =  resp.openid;
+                        bindVC.token = resp.accessToken;
+                        [self.navigationController pushViewController:bindVC animated:YES];
+                    }
+                });
+                
+
+                
+            }];
+            
+            // 登录
+
+            
+//            // 调出绑定手机页面
+//            XFBindPhoneViewController *bindVC = [[XFBindPhoneViewController alloc] init];
+//            [self presentViewController:bindVC animated:YES completion:nil];
         }
     }];
+    
+    
 }
 
 - (void)clickwbButton {
@@ -238,6 +426,72 @@
             
             // 第三方平台SDK源数据
             NSLog(@"Sina originalResponse: %@", resp.originalResponse);
+            
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
+            [XFLoginNetworkManager checkIsHasUserWith:resp.uid successBlock:^(id responseObj) {
+                
+
+                [XFLoginNetworkManager loginWithPhone:resp.uid pwd:resp.accessToken longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
+                    
+                } successBlock:^(id responseObj) {
+
+                    
+                    [XFLoginNetworkManager getMyTokenWithsuccessBlock:^(id responseObj) {
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [HUD hideAnimated:YES];
+                            
+                        });
+                        
+                        [[XFUserInfoManager sharedManager] updateToken:((NSDictionary *)responseObj)[@"token"]];
+                        [[XFUserInfoManager sharedManager] updateTokenDate:[NSDate date]];
+                        
+                        [self saveUserInfoWithUsername:resp.uid pwd:resp.accessToken];
+
+                    } failedBlock:^(NSError *error) {
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [HUD hideAnimated:YES];
+                            
+                        });
+                    }];
+
+
+                    
+                } failBlock:^(NSError *error) {
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        [HUD hideAnimated:YES];
+                    });
+
+                }];
+                
+            } failedBlock:^(NSError *error) {
+                if (error) {
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [HUD hideAnimated:YES];
+                    
+                    
+                        // 调出绑定手机页面
+                        XFBindPhoneViewController *bindVC = [[XFBindPhoneViewController alloc] init];
+                        bindVC.type = @"Weibo";
+                        bindVC.iconUrl = resp.iconurl;
+                        bindVC.openId =  resp.uid;
+                        bindVC.token = resp.accessToken;
+                        [self.navigationController pushViewController:bindVC animated:YES];
+                        //                [self presentViewController:bindVC animated:YES completion:nil];
+                    
+                });
+                }
+
+                
+                
+
+            }];
+            
         }
     }];
     
@@ -470,6 +724,22 @@
     }];
     
     [super updateViewConstraints];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
+    
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    [super viewWillDisappear:animated];
+    
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+    
 }
 
 

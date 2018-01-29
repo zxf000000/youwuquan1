@@ -42,6 +42,7 @@
 
 #import "XFTabBarControllerConfig.h"
 #import "CYLPlusButtonSubclass.h"
+#import "XFMineNetworkManager.h"
 
 #define kRongyunAppkey @"mgb7ka1nmwztg"
 #define kJPUSHAppKey @"1b12000e632a36af7363f2c7"
@@ -58,7 +59,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // bugly
     [Bugly startWithAppId:@"2a434deb91"];
-
+    
+    
+    [self autoLogin];
     #pragma mark - 捕获
     // app接受通知之后开启
     // 捕获通知
@@ -66,13 +69,9 @@
 
     if (remoteNotificationUserInfo) {
         
-        [[XFMessageCacheManager sharedManager] updateCacheWith:remoteNotificationUserInfo];
+        NSLog(@"%@",remoteNotificationUserInfo);
         
     }
-    
-    // 设置badge为0
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-
     
     /* 打开调试日志 */
     [[UMSocialManager defaultManager] openLog:YES];
@@ -136,7 +135,9 @@
         // NSSet<UIUserNotificationCategory *> *categories for iOS8 and iOS9
     }
     [JPUSHService registerForRemoteNotificationConfig:entity delegate:self];
-    
+    // 设置badge为0
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    [JPUSHService resetBadge];
     // Optional
     // 获取IDFA
     // 如需使用IDFA功能请添加此代码并在初始化方法的advertisingIdentifier参数中填写对应值
@@ -164,49 +165,10 @@
         
     }
     
-    
-    if ([XFUserInfoManager sharedManager].userName) {
-        
-//        [XFLoginNetworkManager loginWithPhone:[XFUserInfoManager sharedManager].userName pwd:[XFUserInfoManager sharedManager].pwd longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
-//
-//
-//        } successBlock:^(id responseObj) {
-//
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//
-//                [self.window makeKeyAndVisible];
-//
-//            });
-//
-//
-//        } failBlock:^(NSError *error) {
-//
-//        }];
-        
-//        [XFUserInfoManager sharedManager].userName = @"13040886496";
-//        [XFUserInfoManager sharedManager].pwd = @"1234567a";
- 
-        [XFLoginNetworkManager loginWithPhone:[XFUserInfoManager sharedManager].userName pwd:[XFUserInfoManager sharedManager].pwd longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
-            
-            
-        } successBlock:^(id responseObj) {
-            
-            NSLog(@"重新登录成功");
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                
-            });
-            
-            
-        } failBlock:^(NSError *error) {
-            
-        }];
-        
-    }
-    
+    [self addReachabilityManager];
     
     [CYLPlusButtonSubclass registerPlusButton];
-    
+
     XFTabBarControllerConfig *tabBarControllerConfig = [[XFTabBarControllerConfig alloc] init];
     
     CYLTabBarController *tabBarController = tabBarControllerConfig.tabBarController;
@@ -223,6 +185,42 @@
     
     return YES;
 }
+
+
+
+
+/**
+ 实时检查当前网络状态
+ */
+- (void)addReachabilityManager {
+    AFNetworkReachabilityManager *afNetworkReachabilityManager = [AFNetworkReachabilityManager sharedManager];
+    
+    [afNetworkReachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        
+        
+        switch (status) {
+            case AFNetworkReachabilityStatusNotReachable:{
+                NSLog(@"网络不通：%@",@(status) );
+                break;
+            }
+            case AFNetworkReachabilityStatusReachableViaWiFi:{
+                NSLog(@"网络通过WIFI连接：%@",@(status));
+                break;
+            }
+            case AFNetworkReachabilityStatusReachableViaWWAN:{
+                NSLog(@"网络通过无线连接：%@",@(status) );
+                break;
+            }
+            default:
+                break;
+        }
+        
+
+    }];
+    
+    [afNetworkReachabilityManager startMonitoring];  //开启网络监视器；
+}
+
 
 
 - (void)customizeInterfaceWithTabBarController:(CYLTabBarController *)tabBarController {
@@ -267,21 +265,32 @@
 #pragma mark - 会话用户消息获取
 - (void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion {
     
-    RCUserInfo *info;
+    __block RCUserInfo *info;
     
-    NSLog(@"%@------userId",userId);
+    NSLog(@"%@",userId);
     
-    if ([userId isEqualToString:@"13140886496"]) {
+    if ([userId intValue] == [[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"uid"] intValue]) {
         
-         info = [[RCUserInfo alloc] initWithUserId:@"13140886496" name:@"小魂淡" portrait:@"http://d.hiphotos.baidu.com/image/pic/item/9f2f070828381f3062643d7ba3014c086f06f0e7.jpg"];
-
+        info = [[RCUserInfo alloc] initWithUserId:[NSString stringWithFormat:@"%@",[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"uid"]] name:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"nickname"] portrait:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"headIconUrl"]];
+        
     } else {
         
-         info = [[RCUserInfo alloc] initWithUserId:@"13040886496" name:@"网吧淡" portrait:@"http://d.hiphotos.baidu.com/image/pic/item/9f2f070828381f3062643d7ba3014c086f06f0e7.jpg"];
-
+        [XFMineNetworkManager getOtherInfoWithUid:userId successBlock:^(id responseObj) {
+            
+            NSDictionary *userInfo = (NSDictionary *)responseObj;
+            
+            info = [[RCUserInfo alloc] initWithUserId:[NSString stringWithFormat:@"%@",userInfo[@"bar"][@"uid"]] name:userInfo[@"bar"][@"nickname"] portrait:userInfo[@"bar"][@"headIconUrl"]];
+            
+            completion(info);
+            
+            
+        } failedBlock:^(NSError *error) {
+            
+        } progressBlock:^(CGFloat progress) {
+            
+        }];
     }
-    
-    
+
     completion(info);
     
 }
@@ -302,9 +311,8 @@
     
     if (index == 2 || index == 3) {
         
-        if ([XFUserInfoManager sharedManager].userName == nil || [XFUserInfoManager sharedManager].userName.length == 0) {
+        if ([XFUserInfoManager sharedManager].token == nil || [XFUserInfoManager sharedManager].token.length == 0) {
             
-//            [[NSNotificationCenter defaultCenter] postNotificationName:@"presentLoginVCNotification" object:nil];
             XFLoginVCViewController *loginVC = [[XFLoginVCViewController alloc] init];
             
             UINavigationController *naviLogin = [[UINavigationController alloc] initWithRootViewController:loginVC];
@@ -319,12 +327,10 @@
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectControl:(UIControl *)control {
     
-
-    
     // 即使 PlusButton 也添加了点击事件，点击 PlusButton 后也会触发该代理方法。
     if ([control cyl_isPlusButton]) {
 
-        if ([XFUserInfoManager sharedManager].userName != nil && [XFUserInfoManager sharedManager].userName.length > 0) {
+        if ([XFUserInfoManager sharedManager].token != nil && [XFUserInfoManager sharedManager].token.length > 0) {
             
             XFPublishViewController *publishVC = [[XFPublishViewController alloc] init];
             XFPublishNaviViewController *navi = [[XFPublishNaviViewController alloc] initWithRootViewController:publishVC];
@@ -416,7 +422,6 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     
     // 程序在后台的时候接受到推送消息
-    
     // Required, iOS 7 Support
     [JPUSHService handleRemoteNotification:userInfo];
     completionHandler(UIBackgroundFetchResultNewData);
@@ -529,11 +534,16 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    
+    [self autoLogin];
+
 }
 
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    [self autoLogin];
+
 }
 
 
@@ -587,6 +597,106 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
         NSLog(@"Unresolved error %@, %@", error, error.userInfo);
         abort();
     }
+}
+
+
+- (void)autoLogin {
+    
+    // 判断是否有用户
+    if ([XFUserInfoManager sharedManager].token) {
+        
+        NSCalendar *calendar = [NSCalendar currentCalendar];
+        
+        unsigned int unitFlags = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+        
+        NSDateComponents *day = [calendar components:unitFlags fromDate:[XFUserInfoManager sharedManager].tokenDate toDate:[NSDate date] options:0];
+        // 判断时间
+        if (day.day > 10) {
+            
+            // 重新获取token
+            [XFLoginNetworkManager getMyTokenWithsuccessBlock:^(id responseObj) {
+                
+                NSString *token = ((NSDictionary *)responseObj)[@"token"];
+                
+                [XFLoginNetworkManager loginWithToken:token successBlock:^(id responseObj) {
+                    
+                    // 刷新token和时间
+                    [[XFUserInfoManager sharedManager] updateTokenDate:[NSDate date]];
+                    [[XFUserInfoManager sharedManager] updateToken:token];
+                    // 成功之后获取融云token
+                    [XFLoginNetworkManager getImTokenWithprogress:^(CGFloat progress) {
+                        
+                        
+                    } successBlock:^(id responseObj) {
+                        
+                        NSString *token = responseObj[@"token"];
+                        // 成功之后登录融云
+                        [XFLoginNetworkManager loginRongyunWithRongtoken:token successBlock:^(id responseObj) {
+                            
+                            [XFUserInfoManager sharedManager].rongToken = token;
+                            self.isLogin = YES;
+                            
+                        } failedBlock:^(NSError *error) {
+                            self.isLogin = NO;
+                            
+                            NSLog(@"登录融云失败");
+                        }];
+                        
+                    } failBlock:^(NSError *error) {
+                        self.isLogin = NO;
+                        
+                        NSLog(@"获取融云失败");
+                        
+                    }];
+                    
+                    
+                } failedBlock:^(NSError *error) {
+                    self.isLogin = NO;
+                    
+                }];
+                
+            } failedBlock:^(NSError *error) {
+                
+            }];
+            
+        } else {
+            
+            [XFLoginNetworkManager loginWithToken:[XFUserInfoManager sharedManager].token successBlock:^(id responseObj) {
+                // 成功之后获取融云token
+                [XFLoginNetworkManager getImTokenWithprogress:^(CGFloat progress) {
+                    
+                    
+                } successBlock:^(id responseObj) {
+                    
+                    NSString *token = responseObj[@"token"];
+                    // 成功之后登录融云
+                    [XFLoginNetworkManager loginRongyunWithRongtoken:token successBlock:^(id responseObj) {
+                        
+                        [XFUserInfoManager sharedManager].rongToken = token;
+                        self.isLogin = YES;
+                        
+                    } failedBlock:^(NSError *error) {
+                        self.isLogin = NO;
+                        
+                        NSLog(@"登录融云失败");
+                    }];
+                    
+                } failBlock:^(NSError *error) {
+                    self.isLogin = NO;
+                    
+                    NSLog(@"获取融云失败");
+                    
+                }];
+                
+            } failedBlock:^(NSError *error) {
+                self.isLogin = NO;
+                
+            }];
+            
+        }
+        
+    }
+    
 }
 
 @end

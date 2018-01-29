@@ -20,10 +20,10 @@
 #import <SDWebImage/SDImageCacheConfig.h>
 #import <SDWebImage/UIImage+MultiFormat.h>
 #else
-#import "SDWebImageManager.h"
-#import "UIImageView+WebCache.h"
+//#import "SDWebImageManager.h"
+//#import "UIImageView+WebCache.h"
 //#import "SDImageCacheC/onfig.h"
-#import "UIImage+MultiFormat.h"
+//#import "UIImage+MultiFormat.h"
 #endif
 
 static inline CGRect moveSizeToCenter(CGSize size) {

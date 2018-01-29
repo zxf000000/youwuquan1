@@ -148,9 +148,14 @@
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)getOtherStatusListWithUserId:(NSString *)userId successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock {
++ (void)getOtherStatusListWithUserId:(NSString *)userId
+                                page:(NSInteger)page
+                                size:(NSInteger)size
+                        successBlock:(FindRequestSuccessBlock)successBlock
+                           failBlock:(FindRequestFailedBlock)failBlock
+                            progress:(FindRequestProgressBlock)progressBlock {
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetOtherStatusWith:userId] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetOtherStatusWith:userId] refreshRequest:YES cache:NO praams:@{@"page":@(page),@"size":@(size)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
@@ -182,7 +187,7 @@
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)publishWithType:(NSString *)type title:(NSString *)title unlockPrice:(long)unlockPrice labels:(NSString *)labels text:(NSString *)text srcTypes:(NSString *)srcTypes images:(NSArray *)images videoCoverUrl:(NSString *)videoCoverUrl videoUrl:(NSString *)videoUrl successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock {
++ (void)publishWithType:(NSString *)type title:(NSString *)title unlockPrice:(long)unlockPrice labels:(NSString *)labels text:(NSString *)text srcTypes:(NSString *)srcTypes images:(NSArray *)images videoCoverUrl:(NSString *)videoCoverUrl videoUrl:(NSString *)videoUrl videoWidth:(NSInteger)videoWidth videoHeight:(NSInteger)videoHeight successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock {
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:type forKey:@"type"];
@@ -199,7 +204,8 @@
         [params setObject:videoUrl forKey:@"videoUrl"];
         [params setObject:videoCoverUrl forKey:@"videoCoverUrl"];
         [params setObject:srcTypes forKey:@"srcTypes"];
-
+        [params setObject:@(videoWidth) forKey:@"videoWidth"];
+        [params setObject:@(videoHeight) forKey:@"videoHeight"];
         
     } else {
 
@@ -221,6 +227,30 @@
     }];
 
     
+}
+
++ (void)publishVoiceWithType:(NSString *)type title:(NSString *)title labels:(NSString *)labels text:(NSString *)text audioPath:(NSString *)url audioSecond:(NSInteger)audioSecond successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock {
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:type forKey:@"type"];
+    [params setObject:title forKey:@"title"];
+    [params setObject:text forKey:@"text"];
+    if (labels) [params setObject:labels forKey:@"labels"];
+    [params setObject:url forKey:@"audioUrl"];
+    [params setObject:@(audioSecond) forKey:@"audioSecond"];
+    
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForPublishStatus] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
 }
 
 /**
@@ -614,6 +644,32 @@
         
     }];
     
+}
+
+/**
+ 获取七牛token
+ 
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getUploadTokenWithsuccessBlock:(FindRequestSuccessBlock)successBlock
+                             failBlock:(FindRequestFailedBlock)failBlock
+                              progress:(FindRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetQiniuToken] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
 }
 
 @end

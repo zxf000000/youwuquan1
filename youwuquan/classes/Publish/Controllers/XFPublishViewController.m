@@ -14,6 +14,7 @@
 #import <Photos/Photos.h>
 #import "XFShortVideoViewController.h"
 #import "IQAudioRecorderViewController.h"
+#import "XFPublishPicViewController.h"
 //#if SDK_VERSION == SDK_VERSION_BASE
 //#import <AliyunVideoSDK/AliyunVideoSDK.h>
 //#else
@@ -53,7 +54,6 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self setupViews];
 
-    [self setupPreview];
 
 }
 
@@ -301,16 +301,23 @@
 
 - (void)pushOutAddImgVC {
     
-    XFAddImageViewController *addimgVC = [[XFAddImageViewController alloc] init];
-    self.navigationController.delegate = addimgVC;
+    XFPublishPicViewController *publichPicVC = [[XFPublishPicViewController alloc] init];
+    self.navigationController.delegate = publichPicVC;
+    [self.navigationController pushViewController:publichPicVC animated:YES];
+
     
-    [self.navigationController pushViewController:addimgVC animated:YES];
+//    XFAddImageViewController *addimgVC = [[XFAddImageViewController alloc] init];
+//    self.navigationController.delegate = addimgVC;
+//
+//    [self.navigationController pushViewController:addimgVC animated:YES];
     
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     
     [super viewWillAppear:animated];
+    
+
     
     self.navigationController.navigationBarHidden = YES;
     
@@ -389,6 +396,7 @@
     CGFloat height = 100;
     CGFloat width = 60;
     UIButton *button = [[UIButton alloc] init];
+    button.enabled = NO;
     [self.view addSubview:button];
     button.frame = CGRectMake(padding + (width + padding) * i, kScreenHeight, width, height);
     UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:self.imgs[i]]];
@@ -416,10 +424,16 @@
     
     animation.springSpeed = 20;
     
-    animation.completionBlock = ^(POPAnimation *anim, BOOL finished) {
-        
+    if (self.buttonCount == 2) {
+    
+        animation.completionBlock = ^(POPAnimation *anim, BOOL finished) {
+            
+            [self setupPreview];
 
-    };
+        };
+
+    }
+
     
     [button pop_addAnimation:animation forKey:@""];
     
@@ -431,6 +445,7 @@
             
             [self addbutton];
         } else {
+            
             
             return;
         }
@@ -559,12 +574,17 @@
         make.centerY.mas_equalTo(imgView.mas_bottom).offset(25);
         
     }];
+    [self.captureSession startRunning];
 
 }
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    [self.captureSession startRunning];
+    
+    for (UIButton *button in self.buttons) {
+        
+        button.enabled = YES;
+    }
 }
 
 -(void)viewDidDisappear:(BOOL)animated{

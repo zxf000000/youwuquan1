@@ -13,6 +13,9 @@
 
 + (instancetype)sharedManager;
 
+// token存储时间
+@property (nonatomic,strong) NSDate *tokenDate;
+
 // 融云token
 @property (nonatomic,copy) NSString *rongToken;
 // 用户token
@@ -52,12 +55,25 @@
 @property (nonatomic,assign) CGFloat userLong;
 @property (nonatomic,assign) CGFloat userLati;
 
+// 上次拉取消息的时间
+@property (nonatomic,copy) NSString *lastGetNotificationDate;
+
 
 @property (nonatomic,strong) YYCache *userCache;
 
 @property (nonatomic,copy) NSDictionary *userInfo;
 
+@property (nonatomic,copy) NSString *cookie;
+
+- (void)updateToken:(NSString *)token;
+
+- (void)updateTokenDate:(NSDate *)tokenDate;
+
 - (void)updateUserInfo:(id)userInfo;
+
+- (void)updateCookieWith:(NSString *)cookie;
+
+- (void)updateLastDate:(NSString *)lastData;
 
 /**
  删除所有信息

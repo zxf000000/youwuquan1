@@ -19,6 +19,8 @@
 #import "XFYwqAlertView.h"
 #import "XFShareManager.h"
 #import "XFFIndCacheManager.h"
+#import "XFLoginNetworkManager.h"
+#import "XFTagsModel.h"
 
 // 缓存历史记录
 #import <YYCache.h>
@@ -168,9 +170,33 @@
 
 - (void)loadData {
     
-//    self.datas = [XFFIndCacheManager sharedManager].searchData;
-    
-    [self.resultNode reloadData];
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+    // 获取标签
+    [XFLoginNetworkManager getAllTagsWithprogress:^(CGFloat progress) {
+        
+        
+    } successBlock:^(id responseObj) {
+        
+        [HUD hideAnimated:YES];
+        
+        NSArray *datas = (NSArray *)responseObj;
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFTagsModel modelWithJSON:datas[i]]];
+            
+        }
+        
+        self.titleArr = arr.copy;
+        
+        [self.historyView reloadData];
+        
+    } failBlock:^(NSError *error) {
+        [HUD hideAnimated:YES];
+        
+    }];
 }
 
 - (void)getHistoryData {
@@ -444,15 +470,16 @@
                 break;
             case 1:
             {
-                cell.titleLabel.text = self.titleArr[indexPath.item];
+                XFTagsModel *model = self.titleArr[indexPath.item];
+                cell.titleLabel.text = model.tagName;
 
             }
                 break;
         }
     } else {
         
-        cell.titleLabel.text = self.titleArr[indexPath.item];
-
+        XFTagsModel *model = self.titleArr[indexPath.item];
+        cell.titleLabel.text = model.tagName;
     }
     
     return cell;
@@ -471,14 +498,18 @@
                 break;
             case 1:
             {
-                self.searchBar.text = self.titleArr[indexPath.item];
+                XFTagsModel *model = self.titleArr[indexPath.item];
+       
+                self.searchBar.text = model.tagName;
                 
             }
                 break;
         }
     } else {
         
-        self.searchBar.text = self.titleArr[indexPath.item];
+        XFTagsModel *model = self.titleArr[indexPath.item];
+        
+        self.searchBar.text = model.tagName;
         
     }
     
@@ -659,25 +690,7 @@
     
     
     return ^ASCellNode *{
-        
-        NSMutableArray *mutableArr = [NSMutableArray array];
-        for (NSInteger i = 0 ; i < indexPath.row % 10 ; i ++ ) {
-            
-            [mutableArr addObject:kRandomPic];
-        }
-        
-        BOOL isOpen;
-        
-        if (self.isOpenIndexPath == indexPath) {
-            
-            isOpen = YES;
-            
-        } else {
-            
-            isOpen = NO;
-        }
-        
-        
+    
         XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.datas[indexPath.row -1]];
         
         node.index = indexPath;
@@ -719,14 +732,7 @@
     [super updateViewConstraints];
 }
 
-- (NSArray *)titleArr {
 
-    if (_titleArr == nil) {
-        
-        _titleArr = @[@"写真秀",@"小萝莉",@"小清新",@"火辣",@"摩登",@"有人",@"历史",@"女仆装",@"美腿",@"酥胸",@"运动",@"制服诱惑",@"魅族"];
-    }
-    return _titleArr;
-}
 
 - (NSMutableArray *)historyArr {
     

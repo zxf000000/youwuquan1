@@ -14,7 +14,13 @@
 
 + (void)getHomeDataWithSuccessBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock {
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForHomePage] refreshRequest:YES cache:YES praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    NSDictionary *params = @{@"longitude":@([XFUserInfoManager sharedManager].userLong),
+                             @"latitude":@([XFUserInfoManager sharedManager].userLati),
+                             @"distance":@(100),
+                             @"gender":@""
+                             };
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForHomePage] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
        
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
@@ -32,7 +38,7 @@
 
 + (void)getHomeAdWithSuccessBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock {
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForHomeAd] refreshRequest:YES cache:YES praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForHomeAd] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
@@ -65,6 +71,23 @@
     }];
 }
 
++ (void)getHotMoreDataWithPage:(NSInteger)page size:(NSInteger)size successBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForMoreNethot] refreshRequest:YES cache:NO praams:@{@"page":@(page),@"size":@(size)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+    
+}
+
 + (void)getYouwuDataWithSuccessBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock {
     
     [XFNetworking getWithUrl:[XFApiClient pathUrlForPrettyGirl] refreshRequest:YES cache:YES praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
@@ -81,6 +104,22 @@
         
     }];
     
+}
+
++ (void)getYouwuMoreDataWithPage:(NSInteger)page size:(NSInteger)size successBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetMorePretty] refreshRequest:YES cache:NO praams:@{@"page":@(page),@"size":@(size)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
 }
 
 + (void)getVideoWithSuccessBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock {
@@ -102,7 +141,7 @@
 
 + (void)getVideoAdWithSuccessBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock {
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForVideoPageAd] refreshRequest:YES cache:YES praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForVideoPageAd] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
@@ -311,7 +350,114 @@
                              @"size":@(size)
                              };
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetNearby] refreshRequest:NO cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetNearby] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        NSLog(@"%@",error.description);
+        
+        failBlock(error);
+        
+    }];
+    
+}
+
++ (void)likeSomeoneWithUid:(NSString *)uid
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForLikeOther:uid] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+    
+    
+    
+}
+
++ (void)unlikeSomeoneWithUid:(NSString *)uid
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking deleteWithUrl:[XFApiClient pathUrlForUnLikeOther:uid] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+
+}
+
+/**
+ 高清视频列表
+ 
+ @param page 0
+ @param size 0
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)getHDVideoWithPage:(NSInteger)page
+                      size:(NSInteger)size
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetHdVideoList] refreshRequest:YES cache:NO praams:@{@"page":@(page),@"size":@(size)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+}
+
+/**
+ vr视频列表
+ 
+ @param page 0
+ @param size 0
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)getVRVideoWithPage:(NSInteger)page
+                      size:(NSInteger)size
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetVrVideoList] refreshRequest:YES cache:NO praams:@{@"page":@(page),@"size":@(size)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
@@ -327,5 +473,46 @@
     
 }
 
++ (void)getMoreHomeDataWithPage:(NSInteger)page
+                           size:(NSInteger)size
+                   successBlock:(HomeRequestSuccessBlock)successBlock
+                      failBlock:(HomeRequestFailedBlock)failBlock
+                       progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetHomeMoreData] refreshRequest:YES cache:NO praams:@{@"page":@(page),@"size":@(size)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+    
+}
+
++ (void)unlockVideoWithId:(NSString *)videoId
+             successBlock:(HomeRequestSuccessBlock)successBlock
+                failBlock:(HomeRequestFailedBlock)failBlock
+                 progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForUblockVideoWith:videoId] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+    
+}
 
 @end

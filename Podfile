@@ -26,6 +26,8 @@ pod 'UMengUShare/UI'
 
 # 集成微信(精简版0.2M)
 pod 'UMengUShare/Social/ReducedWeChat'
+pod 'WechatOpenSDK'
+
 
 # 集成微信(完整版14.4M)
 #pod 'UMengUShare/Social/WeChat'
@@ -58,6 +60,9 @@ pod 'Qiniu'
 pod 'PLPlayerKit'
 
 pod 'Bugly'
+
+pod 'DZNEmptyDataSet'
+
 
 end
 

@@ -15,4 +15,6 @@
 
 - (instancetype)initWithNumber:(NSInteger)number;
 
+- (void)addTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask;
+
 @end

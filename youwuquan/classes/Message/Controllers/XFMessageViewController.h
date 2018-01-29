@@ -17,9 +17,12 @@
 
 @interface XFMessageViewController : UIViewController
 
-@property (nonatomic,copy) void(^changeHeaderHeightBlock)(CGFloat height);
+@property (nonatomic,copy) void(^refreshMsgBlock)(NSArray *systemMsgs);
 
 @property (nonatomic,assign) CGFloat headerHeight;
 
+@property (nonatomic,copy) NSArray *likeDatas;
+@property (nonatomic,copy) NSArray *otherDatas;
 
+- (void)reloadData;
 @end

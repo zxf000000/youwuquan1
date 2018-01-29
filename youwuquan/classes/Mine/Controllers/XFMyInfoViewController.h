@@ -25,4 +25,6 @@
 
 @property (nonatomic,copy) NSDictionary *userInfo;
 
+- (IBAction)clickSaveButton:(id)sender;
+
 @end

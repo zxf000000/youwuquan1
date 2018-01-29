@@ -58,7 +58,7 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)getOtherStatusListWithUserId:(NSString *)userId successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
++ (void)getOtherStatusListWithUserId:(NSString *)userId page:(NSInteger)page size:(NSInteger)size successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
 
 
 /**
@@ -77,7 +77,22 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
  @param failBlock 失败
  @param progressBlock 进度
  */
-+ (void)publishWithType:(NSString *)type title:(NSString *)title unlockPrice:(long)unlockPrice labels:(NSString *)labels text:(NSString *)text srcTypes:(NSString *)srcTypes images:(NSArray *)images videoCoverUrl:(NSString *)videoCoverUrl videoUrl:(NSString *)videoUrl successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
++ (void)publishWithType:(NSString *)type title:(NSString *)title unlockPrice:(long)unlockPrice labels:(NSString *)labels text:(NSString *)text srcTypes:(NSString *)srcTypes images:(NSArray *)images videoCoverUrl:(NSString *)videoCoverUrl videoUrl:(NSString *)videoUrl videoWidth:(NSInteger)videoWidth videoHeight:(NSInteger)videoHeight successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
+
+
+/**
+发布语音
+
+ @param type 类型
+ @param title 标题
+ @param labels 标签吗
+ @param text 文字
+ @param url 语音地址
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)publishVoiceWithType:(NSString *)type title:(NSString *)title  labels:(NSString *)labels text:(NSString *)text audioPath:(NSString *)url audioSecond:(NSInteger)audioSecond successBlock:(FindRequestSuccessBlock)successBlock failBlock:(FindRequestFailedBlock)failBlock progress:(FindRequestProgressBlock)progressBlock;
 
 /**
  删除一条动态
@@ -262,5 +277,18 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
                 successBlock:(FindRequestSuccessBlock)successBlock
                    failBlock:(FindRequestFailedBlock)failBlock
                     progress:(FindRequestProgressBlock)progressBlock;
+
+
+/**
+ 获取七牛token
+
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getUploadTokenWithsuccessBlock:(FindRequestSuccessBlock)successBlock
+                             failBlock:(FindRequestFailedBlock)failBlock
+                              progress:(FindRequestProgressBlock)progressBlock;
+
 
 @end

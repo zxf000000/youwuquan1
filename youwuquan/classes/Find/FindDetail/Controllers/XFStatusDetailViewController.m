@@ -21,6 +21,7 @@
 #import "XFMineNetworkManager.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import "XFMyVideoStatusViewController.h"
+#import <AVKit/AVKit.h>
 
 @implementation XFStatusCenterNode
 
@@ -124,6 +125,10 @@
 
 @property (nonatomic,copy) NSArray *indexPathsTobeReload;
 
+@property (nonatomic,strong) NSURL  *voiceUrl;
+@property (nonatomic,assign) BOOL isPlaying;
+@property (nonatomic,strong) AVPlayer *audioPLayer;
+
 @end
 
 
@@ -136,6 +141,17 @@
     self.title = @"详情";
     
     self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    if (self.type == Mine) {
+        
+        UIButton *deleteButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
+//        [deleteButton setImage:[UIImage imageNamed:@"status_delete"] forState:(UIControlStateNormal)];
+        [deleteButton setTitle:@"删除" forState:(UIControlStateNormal)];
+        [deleteButton setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
+        deleteButton.imageEdgeInsets = UIEdgeInsetsMake(0, 37, 0, 0);
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:deleteButton];
+        [deleteButton addTarget:self action:@selector(clickdeleteButton) forControlEvents:(UIControlEventTouchUpInside)];
+    }
     
     // 返回按钮
     UIButton *backButton = [UIButton naviBackButton];
@@ -347,7 +363,7 @@
             [self.tableNode.view.mj_footer endRefreshing];
         } else {
             
-            [XFToolManager showProgressInWindowWithString:@"没有更多"];
+//            [XFToolManager showProgressInWindowWithString:@"没有更多"];
             
         }
 
@@ -363,6 +379,49 @@
     
     
 }
+
+- (void)clickdeleteButton {
+             
+             UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"确认删除本条动态?" preferredStyle:(UIAlertControllerStyleAlert)];
+             
+             UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
+                 
+                 
+             }];
+             
+             UIAlertAction *actionDone = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+                 
+                 MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+                 
+                 // 删除本条
+                 [XFFindNetworkManager deleteStatusWithStatusId:self.status.id successBlock:^(id responseObj) {
+                     
+                     [XFToolManager changeHUD:HUD successWithText:@"删除成功"];
+                     
+                     if (self.deleteSUccessBlock) {
+                         self.deleteSUccessBlock();
+                     }
+                     
+                     [self.navigationController popViewControllerAnimated:YES];
+                     
+                 } failBlock:^(NSError *error) {
+                     
+                     [HUD hideAnimated:YES];
+                     
+                 } progress:^(CGFloat progress) {
+                     
+                     
+                 }];
+             }];
+             
+             [alert addAction:actionCancel];
+             [alert addAction:actionDone];
+             
+             [self presentViewController:alert animated:YES completion:nil];
+             
+             
+}
+
 
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -397,9 +456,21 @@
             // 判断是否解锁
             if (self.status.video[@"video"][@"srcUrl"]) {
                 // 直接跳转
-                XFMyVideoStatusViewController *playerVC = [[XFMyVideoStatusViewController alloc] init];
-                playerVC.url = [NSURL URLWithString:self.status.video[@"video"][@"srcUrl"]];
-                [self presentViewController:playerVC animated:YES completion:nil];
+                
+                // 播放视频
+                NSURL * videoURL = [NSURL URLWithString:self.status.video[@"video"][@"srcUrl"]];
+                
+                AVPlayerViewController *avPlayer = [[AVPlayerViewController alloc] init];
+                
+                avPlayer.player = [[AVPlayer alloc] initWithURL:videoURL];
+                
+                avPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
+                
+                [self presentViewController:avPlayer animated:YES completion:nil];
+                
+//                XFMyVideoStatusViewController *playerVC = [[XFMyVideoStatusViewController alloc] init];
+//                playerVC.url = [NSURL URLWithString:self.status.video[@"video"][@"srcUrl"]];
+//                [self presentViewController:playerVC animated:YES completion:nil];
                 
             } else {
                 // 解锁
@@ -435,10 +506,20 @@
     if (self.status.video) {
         // 判断是否解锁
         if (self.status.video[@"video"][@"srcUrl"]) {
-            // 直接跳转
-            XFMyVideoStatusViewController *playerVC = [[XFMyVideoStatusViewController alloc] init];
-            playerVC.url = [NSURL URLWithString:self.status.video[@"video"][@"srcUrl"]];
-            [self presentViewController:playerVC animated:YES completion:nil];
+//            // 直接跳转
+//            XFMyVideoStatusViewController *playerVC = [[XFMyVideoStatusViewController alloc] init];
+//            playerVC.url = [NSURL URLWithString:self.status.video[@"video"][@"srcUrl"]];
+//            [self presentViewController:playerVC animated:YES completion:nil];
+            // 播放视频
+            NSURL * videoURL = [NSURL URLWithString:self.status.video[@"video"][@"srcUrl"]];
+            
+            AVPlayerViewController *avPlayer = [[AVPlayerViewController alloc] init];
+            
+            avPlayer.player = [[AVPlayer alloc] initWithURL:videoURL];
+            
+            avPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
+            
+            [self presentViewController:avPlayer animated:YES completion:nil];
             
         } else {
             // 解锁
@@ -850,7 +931,40 @@
     
 }
 
-#pragma mark - 关注按钮点击
+#pragma mark - 点击声音
+- (void)playbackFinished:(NSNotification *)notice {
+    
+    self.isPlaying = NO;
+    
+}
+
+- (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickVoiceNodeWithUrl:(NSString *)url {
+    
+    self.voiceUrl = [NSURL URLWithString:url];
+    AVPlayerItem * songItem = [[AVPlayerItem alloc] initWithURL:self.voiceUrl];
+    if (!self.audioPLayer) {
+        self.audioPLayer = [[AVPlayer alloc]initWithPlayerItem:songItem];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:songItem];
+    }
+    
+    [self.audioPLayer replaceCurrentItemWithPlayerItem:songItem];
+    
+    if (self.isPlaying) {
+        [self.audioPLayer pause];
+        self.isPlaying = NO;
+        
+    } else {
+        
+        [self.audioPLayer play];
+        self.isPlaying = YES;
+        self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        [_HUD hideAnimated:YES afterDelay:0.5];
+        
+    }
+    
+}
+
+#pragma mark - 关注按钮点
 
 - (void)statusCellNode:(XFStatusDetailCellNode *)statusCell didClickFollowButton:(ASButtonNode *)followButton {
     

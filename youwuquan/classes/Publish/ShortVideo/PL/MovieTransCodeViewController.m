@@ -286,7 +286,10 @@ PLSSelectionViewDelegate
 #pragma mark -- UIButton 按钮响应事件
 #pragma mark -- 返回
 - (void)backButtonClick {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+//    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 下一步
@@ -325,7 +328,10 @@ PLSSelectionViewDelegate
             
             ClipMovieViewController *clipMovieViewController = [[ClipMovieViewController alloc] init];
             clipMovieViewController.url = url;
-            [weakSelf presentViewController:clipMovieViewController animated:YES completion:nil];
+            
+            [weakSelf.navigationController pushViewController:clipMovieViewController animated:YES];
+            
+//            [weakSelf presentViewController:clipMovieViewController animated:YES completion:nil];
         });
     }];
     
@@ -388,6 +394,19 @@ PLSSelectionViewDelegate
     self.shortVideoTranscoder = nil;
     
     NSLog(@"dealloc: %@", [[self class] description]);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBarHidden = YES;
+    
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    self.navigationController.navigationBarHidden = NO;
 }
 
 @end

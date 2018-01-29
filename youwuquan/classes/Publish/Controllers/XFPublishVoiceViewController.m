@@ -20,6 +20,7 @@
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import "CustomeImagePicker.h"
 #import "XFFindNetworkManager.h"
+#import <QiniuSDK.h>
 
 
 #define kImgInset 12
@@ -66,7 +67,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     self.view.backgroundColor = UIColorHex(e0e0e0);
     self.title = @"发布";
     
@@ -86,68 +87,95 @@
     
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    [super viewWillDisappear:animated];
+    
+    [self.audioPlayer stop];
+    
+}
+
 - (void)clickPublishButton {
     
-        NSString *labels = @"";
+    NSString *labels = @"";
+    
+    if (self.labelsArr.count > 1) {
         
-        if (self.labelsArr.count > 1) {
+        for (NSInteger i = 0 ; i < self.labelsArr.count - 1; i ++) {
             
-            for (NSInteger i = 0 ; i < self.labelsArr.count - 1; i ++) {
+            if (i == 0) {
                 
-                if (i == 0) {
-                    
-                    labels = [labels stringByAppendingString:self.labelsArr[i]];
-                    
-                } else {
-                    labels = [labels stringByAppendingString:[NSString stringWithFormat:@",%@",self.labelsArr[i]]];
-                    
-                }
+                labels = [labels stringByAppendingString:self.labelsArr[i]];
+                
+            } else {
+                labels = [labels stringByAppendingString:[NSString stringWithFormat:@",%@",self.labelsArr[i]]];
+                
             }
-            
-        } else {
-            
-            labels = nil;
-            
         }
+        
+    } else {
+        
+        labels = nil;
+        
+    }
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     HUD.mode = MBProgressHUDModeAnnularDeterminate;
     HUD.progress = 0;
     
-    [XFFindNetworkManager publishWithType:@"audio" title:@"asdasd" unlockPrice:0 labels:labels text:self.textView.text srcTypes:nil images:nil videoCoverUrl:nil videoUrl:nil successBlock:^(id responseObj) {
+    // 获取token
+    [XFFindNetworkManager getUploadTokenWithsuccessBlock:^(id responseObj) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        NSDictionary *dic = (NSDictionary *)responseObj;
+        
+        NSString *token = dic[@"token"];
+        
+        NSLog(@"%@--token",token);
+        
+        NSLog(@"%f-----",[[NSDate date] timeIntervalSince1970]);
+        
+        NSDate *date = [NSDate date];
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = @"yyyy-MM-dd-hh-mm-ss";
+        NSString *uid = [XFUserInfoManager sharedManager].userName;
+        NSString *dateStr = [formatter stringFromDate:date];
+        
+        QNUploadManager *upManager = [[QNUploadManager alloc] init];
+        NSData *data = [NSData dataWithContentsOfFile:_recordingFilePath];
+        [upManager putData:data key:[NSString stringWithFormat:@"%@%@.mp3",dateStr,uid] token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
             
-            [XFToolManager changeHUD:HUD successWithText:@"发布成功"];
+            if (info.error) {
+                
+                [XFToolManager changeHUD:HUD successWithText:@"上传失败"];
+                
+                return;
+            }
             
-            [self dismissViewControllerAnimated:YES completion:^{
-                //                     刷新动态页面通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshCareStatusNotification object:nil];
+            [XFFindNetworkManager publishVoiceWithType:@"audio" title:@"asda" labels:labels text:self.textView.text audioPath:[NSString stringWithFormat:@"%@%@",kQiniuResourceHost,resp[@"key"]] audioSecond:self.totalSeconds successBlock:^(id responseObj) {
+                
+                [XFToolManager changeHUD:HUD successWithText:@"发布成功"];
+                
+                [self dismissViewControllerAnimated:YES completion:nil];
+                
+            } failBlock:^(NSError *error) {
+                
+                [HUD hideAnimated:YES];
+
+            } progress:^(CGFloat progress) {
                 
             }];
-            
-            
-        });
-        
+
+        } option:nil];
         
     } failBlock:^(NSError *error) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            [HUD hideAnimated:YES];
-            
-        });
-        
+        [HUD hideAnimated:YES];
         
     } progress:^(CGFloat progress) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            HUD.progress = progress;
-            
-        });
     }];
     
+
 }
 
 - (void)setupOtherView {
@@ -215,19 +243,19 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
     
-        XFSelectLabelViewController *selectLabelVC = [[XFSelectLabelViewController alloc] init];
-        
-        NSMutableArray *arr = [NSMutableArray arrayWithArray:self.labelsArr];
-        
-        [arr removeLastObject];
-        
-        selectLabelVC.labelsArr = arr;
-        
-        selectLabelVC.delegate = self;
-        
-        [self.navigationController pushViewController:selectLabelVC animated:YES];
-        
-        return;
+    XFSelectLabelViewController *selectLabelVC = [[XFSelectLabelViewController alloc] init];
+    
+    NSMutableArray *arr = [NSMutableArray arrayWithArray:self.labelsArr];
+    
+    [arr removeLastObject];
+    
+    selectLabelVC.labelsArr = arr;
+    
+    selectLabelVC.delegate = self;
+    
+    [self.navigationController pushViewController:selectLabelVC animated:YES];
+    
+    return;
     
 }
 
@@ -237,57 +265,57 @@
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     
-        if (self.labelsArr.count > 1) {
-            
-            return self.labelsArr.count;
-            
-        } else {
-            
-            return self.titleArr.count;
-            
-        }
+    if (self.labelsArr.count > 1) {
+        
+        return self.labelsArr.count;
+        
+    } else {
+        
+        return self.titleArr.count;
+        
+    }
     return 0;
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     
     
-        XFLabelCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"history" forIndexPath:indexPath];
-        cell.indexPath = indexPath;
-        
-        if (self.labelsArr.count > 1) {
-            // 赋值
-            cell.tagStr = self.labelsArr[indexPath.item];
-            cell.textLabel.textColor = kMainRedColor;
-            cell.deleteButton.hidden = NO;
-            if (indexPath.item == self.labelsArr.count - 1) {
-                cell.deleteButton.hidden = YES;
-            }
-            
-        } else {
-            // 赋值
-            cell.tagStr = self.titleArr[indexPath.item];
-            cell.textLabel.textColor = UIColorHex(808080);
+    XFLabelCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"history" forIndexPath:indexPath];
+    cell.indexPath = indexPath;
+    
+    if (self.labelsArr.count > 1) {
+        // 赋值
+        cell.tagStr = self.labelsArr[indexPath.item];
+        cell.textLabel.textColor = kMainRedColor;
+        cell.deleteButton.hidden = NO;
+        if (indexPath.item == self.labelsArr.count - 1) {
             cell.deleteButton.hidden = YES;
-            
         }
         
-        cell.clickDeleteButtonForIndex = ^(NSIndexPath *indexpath) {
-            
-            // 删除相应的标
-            [self.labelsArr removeObjectAtIndex:indexpath.item];
-            
-            [self.centerView reloadSections:[NSIndexSet indexSetWithIndex:0]];
-            
-            // 计算高度
-            // 计算标签栏高度
-            
-            [self setScrollContent];
-            
-        };
+    } else {
+        // 赋值
+        cell.tagStr = self.titleArr[indexPath.item];
+        cell.textLabel.textColor = UIColorHex(808080);
+        cell.deleteButton.hidden = YES;
         
-        return cell;
+    }
+    
+    cell.clickDeleteButtonForIndex = ^(NSIndexPath *indexpath) {
         
-  
+        // 删除相应的标
+        [self.labelsArr removeObjectAtIndex:indexpath.item];
+        
+        [self.centerView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+        
+        // 计算高度
+        // 计算标签栏高度
+        
+        [self setScrollContent];
+        
+    };
+    
+    return cell;
+    
+    
     
     return nil;
 }
@@ -330,9 +358,9 @@
         make.width.mas_equalTo(kScreenWidth);
         
     }];
-
+    
     [self.voiceView mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.top.mas_equalTo(self.centerView.mas_bottom).offset(20);
         make.left.right.mas_offset(0);
         make.height.mas_equalTo(100);
@@ -340,7 +368,7 @@
     }];
     
     [self.voiceButton mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.left.mas_offset(20);
         make.top.mas_offset(0);
         make.width.mas_equalTo(150);
@@ -349,14 +377,14 @@
     }];
     
     [self.voiceTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-       
+        
         make.right.mas_equalTo(self.voiceButton.mas_right).offset(-8);
         make.centerY.mas_equalTo(self.voiceButton.mas_centerY).offset(-5);
         
     }];
     
     self.topHeight = 175;
-
+    
     [super updateViewConstraints];
 }
 
@@ -411,21 +439,21 @@
     if (_audioPlayer.isPlaying) {
         
         [_audioPlayer pause];
-
+        
     } else {
         
         
         [_audioPlayer prepareToPlay];
         [_audioPlayer play];
     }
-
+    
     
 }
 
 - (void)setupVoiceView {
     
     self.voiceView = [[UIView alloc] init];
-//    self.voiceView.backgroundColor = [UIColor whiteColor];
+    //    self.voiceView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.voiceView];
     
     self.voiceButton = [[UIButton alloc] init];

@@ -41,6 +41,12 @@
 
 @property (nonatomic,strong) id <XFHomeNodedelegate> delegate;
 
-- (instancetype)initWithModel:(XFHomeDataModel *)model;
+- (instancetype)initWithModel:(XFHomeDataModel *)model isBottom:(BOOL)isBottom;
+
+@property (nonatomic,assign) BOOL isBottomCell;
+
+@property (nonatomic,strong) ASImageNode *tagNode;
+@property (nonatomic,strong) ASTextNode *tagTextNode;
+
 
 @end

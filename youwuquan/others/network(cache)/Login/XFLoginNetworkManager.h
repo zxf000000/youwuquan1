@@ -99,4 +99,54 @@ typedef void(^LoginRequestProgressBlock)(CGFloat progress);
  */
 + (void)getAllTagsWithprogress:(LoginRequestProgressBlock)progressBlock successBlock:(LoginRequestSuccessBlock)successBlock failBlock:(LoginRequestFailedBlock)failBlock;
 
+/**
+ 第三方绑定账号
+
+ @param type 类型
+ @param username 账户
+ @param token token
+ @param phone 手机
+ @param code 验证码
+ @param progressBlock 进度
+ @param successBlock 成功
+ @param failBlock 失败
+ */
++ (void)signUpWithType:(NSString *)type username:(NSString *)username token:(NSString *)token phone:(NSString *)phone code:(NSString *)code progress:(LoginRequestProgressBlock)progressBlock successBlock:(LoginRequestSuccessBlock)successBlock failBlock:(LoginRequestFailedBlock)failBlock;
+
++ (void)loginRongyunWithRongtoken:(NSString *)rongToken successBlock:(LoginRequestSuccessBlock)success failedBlock:(LoginRequestFailedBlock)failed;
+
+
+/**
+ 查看是否注册过
+
+ @param uid uid
+ @param success 成功
+ @param failed 失败
+ */
++ (void)checkIsHasUserWith:(NSString *)uid
+              successBlock:(LoginRequestSuccessBlock)success
+               failedBlock:(LoginRequestFailedBlock)failed;
+
+
+/**
+ 刷新/获取token
+
+ @param success 0
+ @param failed 0
+ */
++ (void)getMyTokenWithsuccessBlock:(LoginRequestSuccessBlock)success
+                       failedBlock:(LoginRequestFailedBlock)failed;
+
+
+/**
+ token登录
+
+ @param token token
+ @param success 0
+ @param failed 0
+ */
++ (void)loginWithToken:(NSString *)token
+          successBlock:(LoginRequestSuccessBlock)success
+           failedBlock:(LoginRequestFailedBlock)failed;
+
 @end

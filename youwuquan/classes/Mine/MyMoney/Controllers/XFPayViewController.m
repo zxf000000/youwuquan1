@@ -17,6 +17,7 @@
 #import "XFVipModel.h"
 #import "XFChargeCollectionViewCell.h"
 #import "XFChargeModel.h"
+#import "XFPayAlertViewController.h"
 
 @interface XFPayViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFVipTableViewCellDelegate,XChargeTableViewCellDelegate>
 
@@ -248,29 +249,26 @@
 
 - (void)selectChargeType {
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"请选择充值类型" message:nil preferredStyle:(UIAlertControllerStyleActionSheet)];
+    XFPayAlertViewController *alertVC = [[XFPayAlertViewController alloc] init];
     
-    UIAlertAction *actionWechat = [UIAlertAction actionWithTitle:@"微信" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+    [alertVC addButtonWithImage:nil title:@"取消" handle:^{
+        
+        
+    }];
+    
+    [alertVC addButtonWithImage:[UIImage imageNamed:@"date_wechat"] title:@"微信支付" handle:^{
         
         [self charge];
-    }];
-    
-    UIAlertAction *actionAlipay = [UIAlertAction actionWithTitle:@"支付宝" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
 
+    }];
+    [alertVC addButtonWithImage:[UIImage imageNamed:@"date_zhifubao"] title:@"支付宝" handle:^{
+        
         [self charge];
+        
+    }];
+    
+    [self presentViewController:alertVC animated:YES completion:nil];
 
-    }];
-    
-    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
-        
-        
-    }];
-    
-    [alertController addAction:actionWechat];
-    [alertController addAction:actionAlipay];
-    [alertController addAction:actionCancel];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
     
 }
 
@@ -385,11 +383,18 @@
     
     XFVipModel *model = self.vipList[self.selectedVipIndex.item];
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"请选择充值类型" message:nil preferredStyle:(UIAlertControllerStyleActionSheet)];
+    XFPayAlertViewController *alertVC = [[XFPayAlertViewController alloc] init];
     
-    UIAlertAction *actionWechat = [UIAlertAction actionWithTitle:@"微信" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    [alertVC addButtonWithImage:nil title:@"取消" handle:^{
+        
+        
+    }];
+    
+    [alertVC addButtonWithImage:[UIImage imageNamed:@"date_wechat"] title:@"微信支付" handle:^{
+        
 
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        
         // 微信
         [XFMineNetworkManager buyVipWithWechatWithDays:[model.day intValue] successBlock:^(id responseObj) {
             
@@ -405,12 +410,11 @@
         } progressBlock:^(CGFloat progress) {
             
         }];
-        
     }];
-    
-    UIAlertAction *actionAlipay = [UIAlertAction actionWithTitle:@"支付宝" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+    [alertVC addButtonWithImage:[UIImage imageNamed:@"date_zhifubao"] title:@"支付宝" handle:^{
+        
         MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-
+        
         // 支付宝
         [XFMineNetworkManager buyVipWithAlipayWithDays:[model.day intValue] successBlock:^(id responseObj) {
             
@@ -427,41 +431,31 @@
         } progressBlock:^(CGFloat progress) {
             
         }];
-        
     }];
     
-    UIAlertAction *actionDiamonds = [UIAlertAction actionWithTitle:@"钻石" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-
-        // 钻石
-        [XFMineNetworkManager buyVipWithDiamondsWithDays:[model.day intValue] successBlock:^(id responseObj) {
-            
-            [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
-            XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
-            
-            successVC.type = XFSuccessViewTypeVipSuccess;
-            
-            [self.navigationController pushViewController:successVC animated:YES];
-            
-        } failedBlock:^(NSError *error) {
-            [HUD hideAnimated:YES];
-            
-        } progressBlock:^(CGFloat progress) {
-            
-        }];
+    [alertVC addButtonWithImage:[UIImage imageNamed:@"charge_zuanshi"] title:@"钻石" handle:^{
+        
+                MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        
+                // 钻石
+                [XFMineNetworkManager buyVipWithDiamondsWithDays:[model.day intValue] successBlock:^(id responseObj) {
+        
+                    [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
+                    XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
+        
+                    successVC.type = XFSuccessViewTypeVipSuccess;
+        
+                    [self.navigationController pushViewController:successVC animated:YES];
+        
+                } failedBlock:^(NSError *error) {
+                    [HUD hideAnimated:YES];
+        
+                } progressBlock:^(CGFloat progress) {
+        
+                }];
     }];
     
-    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
-        
-        
-    }];
-    
-    [alertController addAction:actionWechat];
-    [alertController addAction:actionAlipay];
-    [alertController addAction:actionDiamonds];
-    [alertController addAction:actionCancel];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentViewController:alertVC animated:YES completion:nil];
 
 }
 - (void)chargeTableViewCell:(XFChargeTableViewCell *)cell didClickPayButton:(UIButton *)payButton {

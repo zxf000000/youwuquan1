@@ -19,7 +19,7 @@
         _picView.layer.cornerRadius = 10;
         _picView.layer.masksToBounds = YES;
         _picView.contentMode = UIViewContentModeScaleAspectFill;
-        _picView.image = [UIImage imageNamed:kRandomPhoto];
+        _picView.image = [UIImage imageNamed:@"zhanweitu22"];
         [self.contentView addSubview:_picView];
         
         UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];

@@ -137,8 +137,8 @@
         _collectionNode.delegate = self;
         _collectionNode.dataSource = self;
         
-        _imgs = @[@"me_zl",@"me_rz",@"me_jn",@"me_cf",@"me_fh",@"me_xc"];
-        _titles = @[@"我的资料",@"我的认证",@"我的技能",@"我的财富",@"VIP富豪榜",@"我的相册"];
+        _imgs = @[@"me_zl",@"me_rz",@"mine_vip",@"me_cf",@"me_fh",@"me_jn"];
+        _titles = @[@"我的资料",@"我的认证",@"VIP中心",@"我的财富",@"VIP富豪榜",@"我的技能"];
 
 
     }

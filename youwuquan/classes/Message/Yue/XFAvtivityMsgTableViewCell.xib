@@ -78,6 +78,9 @@
             <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
             <connections>
                 <outlet property="contentBg" destination="hbP-I7-zlr" id="DQO-JW-zEq"/>
+                <outlet property="desbutton" destination="tln-wq-YBe" id="J4x-MI-CXG"/>
+                <outlet property="detailLabel" destination="5dC-8R-Ra3" id="lri-Jg-hcY"/>
+                <outlet property="titleLabel" destination="LKi-l7-Dc8" id="BPf-s2-qLn"/>
             </connections>
             <point key="canvasLocation" x="172" y="13"/>
         </tableViewCell>

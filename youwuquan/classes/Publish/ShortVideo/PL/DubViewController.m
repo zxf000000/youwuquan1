@@ -76,6 +76,8 @@ PLSEditPlayerDelegate
     [self.shortVideoRecorder startCaptureSession];
 
     [self.editPlayer play];
+    
+    self.navigationController.navigationBarHidden = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -88,6 +90,9 @@ PLSEditPlayerDelegate
     if (self.shortVideoRecorder.isRecording) {
         [self.shortVideoRecorder cancelRecording];
     }
+    
+    self.navigationController.navigationBarHidden = NO;
+
 }
 
 #pragma mark -- 配置顶部视图
@@ -189,7 +194,10 @@ PLSEditPlayerDelegate
 
 #pragma mark -- 返回
 - (void)backButtonClick {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+//    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 保存

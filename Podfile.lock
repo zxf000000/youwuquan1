@@ -16,6 +16,7 @@ PODS:
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
   - Bugly (2.5.0)
+  - DZNEmptyDataSet (1.8.1)
   - HappyDNS (0.3.12)
   - HJDanmaku (2.0.1)
   - IQKeyboardManager (4.0.13)
@@ -79,6 +80,7 @@ PODS:
   - UMengUShare/UI (6.4.8):
     - UMengUShare/Core
   - VIMVideoPlayer (6.0.1)
+  - WechatOpenSDK (1.8.1)
   - YYKit (1.0.9):
     - YYKit/no-arc (= 1.0.9)
   - YYKit/no-arc (1.0.9)
@@ -87,6 +89,7 @@ DEPENDENCIES:
   - ActionSheetPicker-3.0
   - AFNetworking
   - Bugly
+  - DZNEmptyDataSet
   - HJDanmaku
   - IQKeyboardManager
   - JPush
@@ -107,12 +110,14 @@ DEPENDENCIES:
   - UMengUShare/Social/ReducedWeChat
   - UMengUShare/UI
   - VIMVideoPlayer (~> 6.0.1)
+  - WechatOpenSDK
   - YYKit
 
 SPEC CHECKSUMS:
   ActionSheetPicker-3.0: eef157d75e151f255c5333d26656c7fbfe905a51
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   Bugly: 3ca9f255c01025582df26f9222893b383c7e4b4e
+  DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
   HappyDNS: 691a3041128055d09866f86e6e9ca90f24da1f18
   HJDanmaku: d36112c97b085b0b1b518590eeb0d5fcef0c93b4
   IQKeyboardManager: 8eab4d8111418414619d1df8e4779ce5d0f8d7e2
@@ -133,8 +138,9 @@ SPEC CHECKSUMS:
   Texture: a5526314780eab35f642d956627f09316b9514e8
   UMengUShare: 7a0ab762ccd445ccfcf11bde8e7f81b29b9f5e1c
   VIMVideoPlayer: f4ed0a9986294ec3684a2e6bdc738e30051ef4ef
+  WechatOpenSDK: 491d965d79335070328571d3e79f714549e79a5e
   YYKit: 7cda43304a8dc3696c449041e2cb3107b4e236e7
 
-PODFILE CHECKSUM: f67f63b964b6f11849528d399bc5cf7a2fcb2a49
+PODFILE CHECKSUM: c4e88d57e81a5e436da4b56e270764606a7a9db6
 
 COCOAPODS: 1.3.1

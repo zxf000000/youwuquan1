@@ -11,10 +11,11 @@
 
 #import "XFHomeTableNode.h"
 #import <MBProgressHUD.h>
+#import <MJRefresh.h>
 
 typedef void(^completeBlock)(void);
 
-@interface XFToolManager : NSObject
+@interface XFToolManager : NSObject 
 
 
 /**
@@ -172,5 +173,7 @@ typedef void(^completeBlock)(void);
  @return string
  */
 + (NSString *)changeDateToStringWithDate:(NSDate *)date;
+
++ (MJRefreshGifHeader *)refreshHeaderWithBlock:(void(^)(void))block;
 
 @end

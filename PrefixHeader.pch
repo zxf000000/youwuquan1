@@ -89,25 +89,10 @@
 #define kUserSignKey @"synopsis"
 
 #import "XFUserInfoManager.h"
-#import "XFIconmanager.h"
 
 #import "NSDictionary+ChangeNuLL.h"
 
-#define kRandomPic [XFIconmanager sharedManager].homeImages[arc4random() % 46]
-#define kRandomComment [XFIconmanager sharedManager].comments[arc4random() % 8]
-#define kRandomName [XFIconmanager sharedManager].names[arc4random() % 17]
-#define kRandomPl [XFIconmanager sharedManager].pingluns[arc4random() % 12]
-#define kRandomPhoto [XFIconmanager sharedManager].videoPics[arc4random() % 7]
-
-#define kRandomIcon [XFIconmanager sharedManager].headImages[arc4random() % 7]
-
-#define kRandomVideo [XFIconmanager sharedManager].findImages[arc4random() % 2]
-
-
-// 相册
-#define kWallPhotoAlbumId [XFUserInfoManager sharedManager].userInfo[@"albums"][0][@"id"]
-#define kOpenPhotoAlbumId [XFUserInfoManager sharedManager].userInfo[@"albums"][1][@"id"]
-#define kSecPhotoAlbumId [XFUserInfoManager sharedManager].userInfo[@"albums"][2][@"id"]
+#import "UIBarButtonItem+Badge.h"
 
 
 // cacheName
@@ -125,6 +110,10 @@
 #define kAuthCache @"allAuthCache"
 
 #import "XFAuthManager.h"
+
+#define kQiniuResourceHost @"http://p2l82fhwg.bkt.clouddn.com/"
+
+#import "XFImageNodeManager.h"
 
 #endif /* PrefixHeader_pch */
 

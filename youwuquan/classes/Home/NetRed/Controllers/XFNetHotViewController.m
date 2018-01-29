@@ -320,7 +320,7 @@
     
     XFHomeDataParamentModel *paModel = self.models[indexPath.section];
     
-    XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:paModel.data[indexPath.row]];
+    XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:paModel.data[indexPath.row] isBottom:NO];
     
     node.delegate = self;
     

@@ -9,6 +9,17 @@
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
 
+@interface XFDownPicModel : NSObject
+
+@property (nonatomic,copy) NSString *creatTime;
+@property (nonatomic,copy) NSString *id;
+@property (nonatomic,copy) NSString *uid;
+@property (nonatomic,copy) NSString *deleteFlag;
+@property (nonatomic,copy) NSDictionary *image;
+
+@end
+
+
 @interface XFDownloadPicCell : UICollectionViewCell
 
 @property (nonatomic,strong) UIImageView *picView;

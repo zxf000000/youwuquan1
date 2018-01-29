@@ -71,6 +71,22 @@
     [self configBottomToolBar];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBarHidden = YES;
+    
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    [super viewWillDisappear:animated];
+    
+    self.navigationController.navigationBarHidden = YES;
+    
+}
+
 #pragma mark - private
 - (void)showProgressHUDText:(NSString *)text isTop:(BOOL)isTop {
     [self hideProgressHUD];

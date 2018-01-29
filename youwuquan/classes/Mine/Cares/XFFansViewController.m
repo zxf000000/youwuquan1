@@ -142,8 +142,7 @@
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     
-    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-        
+    self.tableView.mj_header = [XFToolManager refreshHeaderWithBlock:^{
         [self loadData];
         
     }];

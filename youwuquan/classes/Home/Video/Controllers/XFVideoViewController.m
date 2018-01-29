@@ -37,10 +37,15 @@
 @property (nonatomic,copy) NSArray *pics2;
 
 
-@property (nonatomic,copy) NSArray *hdvideos;
-@property (nonatomic,copy) NSArray *VRVideos;
+@property (nonatomic,strong) NSMutableArray *hdvideos;
+@property (nonatomic,strong) NSMutableArray *VRVideos;
 
 @property (nonatomic,copy) NSArray *videos;
+
+@property (nonatomic,assign) NSInteger hdPage;
+@property (nonatomic,assign) NSInteger vrPage;
+
+@property (nonatomic,copy) NSDictionary *adDatas;
 
 @end
 
@@ -66,7 +71,11 @@
     
     [XFHomeNetworkManager getVideoAdWithSuccessBlock:^(id responseObj) {
         
+        NSArray *adData = (NSArray *)responseObj;
         
+        self.adDatas = adData[0];
+        
+        [self.headerPicView setImageWithURL:_adDatas[@"image"][@"imageUrl"] options:(YYWebImageOptionSetImageWithFadeAnimation)];
         
     } failBlock:^(NSError *error) {
         
@@ -80,50 +89,177 @@
     
     [self loadAdData];
     
-    [XFHomeNetworkManager getVideoWithSuccessBlock:^(id responseObj) {
+    if (self.videoType == Hightdefinition) {
+        self.hdPage = 0;
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        
+        [XFHomeNetworkManager getHDVideoWithPage:self.hdPage size:10 successBlock:^(id responseObj) {
+            
+            NSDictionary *datas = (NSDictionary *)responseObj;
+            NSArray *hdDatas = datas[@"content"];
+            
+            NSMutableArray *hdarr = [NSMutableArray array];
+            for (NSInteger i = 0 ; i < hdDatas.count ; i ++ ) {
+                
+                [hdarr addObject:[XFVideoModel modelWithDictionary:hdDatas[i]]];
+            }
+            
+            self.hdvideos = hdarr;
+            
+            self.videos = self.hdvideos;
+            
+            [self.tableView reloadData];
+            [self.tableView.mj_header endRefreshing];
+            [HUD hideAnimated:YES];
+        } failBlock:^(NSError *error) {
+            [self.tableView.mj_header endRefreshing];
+            [HUD hideAnimated:YES];
+            
+        } progress:^(CGFloat progress) {
+            
+        }];
+    } else {
+        
+        [self loadVrData];
+    }
+
+//    [XFHomeNetworkManager getVideoWithSuccessBlock:^(id responseObj) {
+//
+//        NSDictionary *datas = (NSDictionary *)responseObj;
+//        NSArray *hdDatas = datas[@"hd"];
+//        NSArray *vrDatas = datas[@"vr"];
+//
+//        NSMutableArray *hdarr = [NSMutableArray array];
+//        NSMutableArray *vrArr = [NSMutableArray array];
+//
+//        for (NSInteger i = 0 ; i < hdDatas.count ; i ++ ) {
+//
+//            [hdarr addObject:[XFVideoModel modelWithDictionary:hdDatas[i]]];
+//        }
+//
+//        self.hdvideos = hdarr.copy;
+//
+//        for (NSInteger i = 0 ; i < vrDatas.count ; i ++ ) {
+//
+//            [vrArr addObject:[XFVideoModel modelWithDictionary:vrDatas[i]]];
+//        }
+//
+//        self.VRVideos = vrArr.copy;
+//
+//        self.videos = self.hdvideos;
+//
+//        [self.tableView reloadData];
+//        [self.tableView.mj_header endRefreshing];
+//
+//
+//    } failBlock:^(NSError *error) {
+//
+//        [self.tableView.mj_header endRefreshing];
+//
+//    } progress:^(CGFloat progress) {
+//
+//
+//    }];
+    
+}
+
+- (void)loadVrData {
+    
+    self.vrPage = 0;
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
+    [XFHomeNetworkManager getVRVideoWithPage:self.vrPage size:10 successBlock:^(id responseObj) {
         
         NSDictionary *datas = (NSDictionary *)responseObj;
-        NSArray *hdDatas = datas[@"hd"];
-        NSArray *vrDatas = datas[@"vr"];
+        NSArray *vrDatas = datas[@"content"];
         
-        NSMutableArray *hdarr = [NSMutableArray array];
         NSMutableArray *vrArr = [NSMutableArray array];
 
-        for (NSInteger i = 0 ; i < hdDatas.count ; i ++ ) {
-            
-            [hdarr addObject:[XFVideoModel modelWithDictionary:hdDatas[i]]];
-        }
-        
-        self.hdvideos = hdarr.copy;
-        
         for (NSInteger i = 0 ; i < vrDatas.count ; i ++ ) {
             
             [vrArr addObject:[XFVideoModel modelWithDictionary:vrDatas[i]]];
         }
         
-        self.VRVideos = vrArr.copy;
+        self.VRVideos = vrArr;
         
-        self.videos = self.hdvideos;
+        self.videos = self.VRVideos;
         
         [self.tableView reloadData];
         [self.tableView.mj_header endRefreshing];
-
-        
+        [HUD hideAnimated:YES];
     } failBlock:^(NSError *error) {
-        
         [self.tableView.mj_header endRefreshing];
+        [HUD hideAnimated:YES];
 
     } progress:^(CGFloat progress) {
-        
         
     }];
     
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)loadMoreData {
     
-    [super viewWillAppear:animated];
+    NSLog(@"刷新----");
     
+    if (self.videoType == Hightdefinition) {
+        self.hdPage += 1;
+        
+        [XFHomeNetworkManager getHDVideoWithPage:self.hdPage size:10 successBlock:^(id responseObj) {
+            
+            
+            NSDictionary *datas = (NSDictionary *)responseObj;
+            NSArray *hdDatas = datas[@"content"];
+            
+            NSMutableArray *hdarr = [NSMutableArray array];
+            for (NSInteger i = 0 ; i < hdDatas.count ; i ++ ) {
+                
+                [hdarr addObject:[XFVideoModel modelWithDictionary:hdDatas[i]]];
+            }
+            
+            [self.hdvideos addObjectsFromArray:hdarr.copy];
+            self.videos = self.hdvideos;
+            
+            [self.tableView reloadData];
+            
+            [self.tableView.mj_footer endRefreshing];
+            
+        } failBlock:^(NSError *error) {
+            [self.tableView.mj_footer endRefreshing];
+            
+            
+        } progress:^(CGFloat progress) {
+            
+        }];
+        
+    } else {
+        
+        self.vrPage += 1;
+        [XFHomeNetworkManager getVRVideoWithPage:self.vrPage size:10 successBlock:^(id responseObj) {
+            [self.tableView.mj_footer endRefreshing];
+            
+            NSDictionary *datas = (NSDictionary *)responseObj;
+            NSArray *vrDatas = datas[@"content"];
+            
+            NSMutableArray *vrArr = [NSMutableArray array];
+            
+            for (NSInteger i = 0 ; i < vrDatas.count ; i ++ ) {
+                
+                [vrArr addObject:[XFVideoModel modelWithDictionary:vrDatas[i]]];
+            }
+            
+            [self.VRVideos addObjectsFromArray:vrArr.copy];
+            
+            self.videos = self.VRVideos;
+            
+            [self.tableView reloadData];
+            
+        } failBlock:^(NSError *error) {
+            [self.tableView.mj_footer endRefreshing];
+            
+        } progress:^(CGFloat progress) {
+            
+        }];
+    }
 }
 
 - (void)clickTopButton:(UIButton *)sender {
@@ -133,17 +269,16 @@
         self.gqButton.selected = YES;
         self.vrButton.selected = NO;
         
-        self.videos = self.hdvideos;
         self.videoType = Hightdefinition;
-
+        
+        [self loadData];
 
     } else {
         
         self.gqButton.selected = NO;
         self.vrButton.selected = YES;
-        self.videos = self.VRVideos;
         self.videoType = VRVideo;
-
+        [self loadVrData];
 
     }
     
@@ -156,18 +291,12 @@
         
     }];
     
-    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-    
-    [HUD hideAnimated:YES afterDelay:0.5];
-    
     [UIView animateWithDuration:0.25 animations:^{
-       
+
         [self.view layoutIfNeeded];
-        
+
     }];
     
-    [self.tableView reloadData];
-
 }
 
 #pragma mark - videoCelldelegate
@@ -177,10 +306,11 @@
     XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
     
     XFVideoModel *model = self.self.videos[indexpath.row];
-    detailVC.userName  = model.title;
-    detailVC.userId = model.uid;
+    
+    detailVC.userName  = model.user[@"nickname"];
+    detailVC.userId = model.user[@"uid"];
     detailVC.hidesBottomBarWhenPushed = YES;
-    detailVC.iconUrl = model.headIconUrl;
+    detailVC.iconUrl = model.user[@"headIconUrl"];
     [self.navigationController pushViewController:detailVC animated:YES];
     
 }
@@ -243,15 +373,37 @@
     
     self.tableView.showsVerticalScrollIndicator = NO;
     
-    self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
+    self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+    
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 49, 0);
     
     [self.view addSubview:self.tableView];
     
-    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-       
+    if (@available (ios 11 , * )) {
+        self.tableView.estimatedRowHeight = 0;
+        self.tableView.estimatedSectionHeaderHeight = 0;
+        self.tableView.estimatedSectionFooterHeight = 0;
+        self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        
+    }
+    
+//    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+//
+//
+//    }];
+    
+    self.tableView.mj_header = [XFToolManager refreshHeaderWithBlock:^{
         [self loadData];
+
+    }];
+    
+    self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+       
+        [self loadMoreData];
         
     }];
+    
+    
     
 }
 

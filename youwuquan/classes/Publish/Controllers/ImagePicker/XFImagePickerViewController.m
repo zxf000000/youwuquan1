@@ -139,7 +139,7 @@
     
     cell.indexPath = indexPath;
     
-    if (self.selectedIndexPaths.count + self.selectedNumber == 9) {
+    if (self.selectedIndexPaths.count + self.selectedNumber == self.maxNumber) {
         
         cell.canSeleted = NO;
         
@@ -152,7 +152,7 @@
     
     cell.selectedEnoughBlock = ^{
         
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"图片超限" message:@"只能选择9张" preferredStyle:(UIAlertControllerStyleAlert)];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"图片超限" message:[NSString stringWithFormat:@"只能选择%zd张",self.maxNumber] preferredStyle:(UIAlertControllerStyleAlert)];
         
         [self presentViewController:alertController animated:YES completion:nil];
         
@@ -180,7 +180,7 @@
             
         }
         
-        self.numberLabel.text = [NSString stringWithFormat:@"%zd/9张已选择",self.selectedIndexPaths.count + self.selectedNumber];
+        self.numberLabel.text = [NSString stringWithFormat:@"%zd/%zd张已选择",self.selectedIndexPaths.count + self.selectedNumber,self.maxNumber];
         
         if ([self.selectedIndexPaths containsObject:indexPath]) {
             
@@ -193,7 +193,7 @@
             
         }
         
-        if (self.selectedIndexPaths.count + self.selectedNumber >= 9) {
+        if (self.selectedIndexPaths.count + self.selectedNumber >= self.maxNumber) {
         
             [[NSNotificationCenter defaultCenter] postNotificationName:@"imageCountEnough" object:self.selectedIndexPaths];
         

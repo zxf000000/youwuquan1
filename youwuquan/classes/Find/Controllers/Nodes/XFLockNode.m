@@ -33,4 +33,10 @@
     
 }
 
+- (void)addTarget:(id)target action:(SEL)action forControlEvents:(ASControlNodeEvent)controlEventMask {
+    
+    [_imgNode addTarget:target action:action forControlEvents:controlEventMask];
+    [_titleNode addTarget:target action:action forControlEvents:controlEventMask];
+}
+
 @end

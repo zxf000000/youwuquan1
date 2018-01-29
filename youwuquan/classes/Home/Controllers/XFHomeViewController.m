@@ -28,18 +28,22 @@
 #import "XFVideoDetailViewController.h"
 #import "XFHomeCacheManger.h"
 #import "XFYwqAlertView.h"
-#import "SDCycleScrollView.h"
+#import "XFSDCycleScrollView.h"
 #import "XFHomeNetworkManager.h"
 #import "XFMyAuthViewController.h"
 #import "XFMineNetworkManager.h"
 #import "XFMineNetworkManager.h"
 #import "XFHomeDataParamentModel.h"
 #import "XFNearModel.h"
+#import "ZXCycleScrollView.h"
+#import "XFHomeSectionFooter.h"
+#import "XFYouwuViewController.h"
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 #define kHomeHeaderHeight (15 + 15 + 17 + 210 + 15 + 100 + 15 + 15 + 17)
 #define kSecondHeaderHeight (195 + 15 + 17 + 15)
 
-@interface XFHomeViewController () <ASTableDelegate,ASTableDataSource,UICollectionViewDelegateFlowLayout,XFHomeSectionHeaderDelegate,XFHomeNodedelegate,CLLocationManagerDelegate,XFNearbyCellNodeDelegate,SDCycleScrollViewDelegate>
+@interface XFHomeViewController () <ASTableDelegate,ASTableDataSource,UICollectionViewDelegateFlowLayout,XFHomeSectionHeaderDelegate,XFHomeNodedelegate,CLLocationManagerDelegate,XFNearbyCellNodeDelegate,ZXCycleScrollViewDelegate,DZNEmptyDataSetSource,DZNEmptyDataSetDelegate>
 
 @property (nonatomic,copy) NSArray *titleButtons;
 
@@ -55,13 +59,13 @@
 
 @property (nonatomic,strong) ASTableNode *tableNode;
 
-@property (nonatomic,weak) SDCycleScrollView *headScroll;
+@property (nonatomic,strong) ZXCycleScrollView *headScroll;
 
 @property (nonatomic,strong) NSMutableArray *selectedIndexs;
 //@property (nonatomic,strong) XFActorViewController *actorVC;
 
-@property (nonatomic,strong) XFNetHotViewController *actorVC;
-@property (nonatomic,strong) XFNetHotViewController *netHotVC;
+@property (nonatomic,strong) XFYouwuViewController *actorVC;
+@property (nonatomic,strong) XFYouwuViewController *netHotVC;
 @property (nonatomic,strong) XFVideoViewController *videoVC;
 
 // 定位
@@ -72,17 +76,12 @@
 @property (nonatomic,weak) UIButton *positionButton;
 
 // 数据
-@property (nonatomic,copy) NSArray *homeData;
-@property (nonatomic,copy) NSArray *ywData;
-@property (nonatomic,copy) NSArray *whData;
-@property (nonatomic,copy) NSArray *videoData;
-@property (nonatomic,copy) NSArray *nearDatas;
+
 // 所有View数组
 @property (nonatomic,copy) NSArray *allMainViews;
 
 @property (nonatomic,strong) UIScrollView *scrollView;
 
-@property (nonatomic,copy) NSArray *adDatas;
 
 @property (nonatomic,copy) NSArray *authList;
 
@@ -91,6 +90,13 @@
 // 第二层
 
 // 第三层
+@property (nonatomic,copy) NSArray *youwuDatas;
+@property (nonatomic,copy) NSArray *adDatas;
+@property (nonatomic,copy) NSArray *hotDatas;
+@property (nonatomic,strong) NSMutableArray *moreDatas;
+@property (nonatomic,copy) NSArray *nearDatas;
+
+@property (nonatomic,assign) NSInteger page;
 
 
 @end
@@ -113,10 +119,6 @@
     // Do any additional setup after loading the view.
     self.title = @"首页";
 
-    self.ywData = [XFHomeCacheManger sharedManager].ywData;
-    self.whData = [XFHomeCacheManger sharedManager].whData;
-    self.videoData = [XFHomeCacheManger sharedManager].videoData;
-
     [self setupTableNode];
 
     [self setupNavigationbar];
@@ -124,22 +126,22 @@
     [self setupVideos];
 
     [self network];
+    [self getLocation];
+
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(changeHomeViewVIsiable) name:@"ChangeHomePAgeVisiable" object:nil];
     
     
     [self.view setNeedsUpdateConstraints];
-    
 
-    
 }
 
 - (void)network {
     
     // 获取广告
     NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
-        [self loadAdData];
+//        [self loadAdData];
     }];
     // 获取认证信息列表
     NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
@@ -151,12 +153,13 @@
         [self loadHomeData];
     }];
     
-    NSBlockOperation *operation4 = [NSBlockOperation blockOperationWithBlock:^{
-        [self getLocation];
-    }];
+//    NSBlockOperation *operation4 = [NSBlockOperation blockOperationWithBlock:^{
+//        [self getLocation];
+//    }];
+    
     //设置依赖
     [operation3 addDependency:operation2];      //任务3依赖任务2
-    [operation4 addDependency:operation3];      //任务3依赖任务2
+//    [operation4 addDependency:operation3];      //任务3依赖任务2
 
     //创建队列
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
@@ -185,61 +188,95 @@
 
 - (void)getNearDataWithSex:(NSString *)gender {
     
-    [XFHomeNetworkManager getNearbyDataWithSex:gender longitude:[XFUserInfoManager sharedManager].userLong latitude:[XFUserInfoManager sharedManager].userLati distance:100 page:0 size:10 successBlock:^(id responseObj) {
-        
-        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
-        NSMutableArray *arr = [NSMutableArray array];
-        for (int i = 0; i < datas.count ; i ++ ) {
-            
-            [arr addObject:[XFNearModel modelWithDictionary:datas[i]]];
-            
-        }
-        
-        self.nearDatas = arr.copy;
-        // 成功之后
-        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationFade)];
-        
-    } failBlock:^(NSError *error) {
-        
-    } progress:^(CGFloat progress) {
-        
-    }];
-    
+//    [XFHomeNetworkManager getNearbyDataWithSex:@"" longitude:[XFUserInfoManager sharedManager].userLong latitude:[XFUserInfoManager sharedManager].userLati distance:100 page:0 size:10 successBlock:^(id responseObj) {
+//
+//        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+//        NSMutableArray *arr = [NSMutableArray array];
+//        for (int i = 0; i < datas.count ; i ++ ) {
+//
+//            [arr addObject:[XFNearModel modelWithDictionary:datas[i]]];
+//
+//        }
+//        self.nearDatas = arr.copy;
+//        // 成功之后
+////        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationFade)];
+//
+//        [self.tableNode reloadData];
+//    } failBlock:^(NSError *error) {
+//
+//    } progress:^(CGFloat progress) {
+//
+//    }];
+
 }
 
 - (void)loadHomeData {
+    
+    self.page = 0;
+    
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
     [XFHomeNetworkManager getHomeDataWithSuccessBlock:^(id responseObj) {
         dispatch_semaphore_signal(sema);
 
-        NSArray *datas = (NSArray *)responseObj;
+        NSDictionary *datas = (NSDictionary *)responseObj;
+        NSArray *youwuData = datas[@"youwu"];
+        NSMutableArray *youwuArr = [NSMutableArray array];
+        for (int i = 0 ; i < youwuData.count ; i ++ ) {
+            
+            [youwuArr addObject:[XFHomeDataModel modelWithDictionary:youwuData[i]]];
+            
+        }
+        self.youwuDatas = youwuArr.copy;
+        
+        NSArray *adData = datas[@"advertisements"];
+        self.adDatas = adData;
         NSMutableArray *arr = [NSMutableArray array];
         
-        for (int i = 0 ; i < datas.count ; i ++ ) {
+        for (NSInteger i = 0 ; i < adData.count ; i ++ ) {
             
-            NSDictionary *dic = datas[i];
-            XFHomeDataParamentModel *paramentModel = [[XFHomeDataParamentModel alloc] init];
-            paramentModel.categoryTitle = dic[@"categoryTitle"];
-            NSArray *modelDatas  = dic[@"data"];
-            NSMutableArray *mutarr = [NSMutableArray array];
-            for (int j= 0 ; j < modelDatas.count ; j ++ ) {
-                
-                [mutarr addObject:[XFHomeDataModel modelWithDictionary:modelDatas[j]]];
-            }
-            paramentModel.data = mutarr.copy;
-            [arr addObject:paramentModel];
+            [arr addObject:adData[i][@"image"][@"thumbImage500pxUrl"]];
+            
         }
+        self.headScroll.sourceDataArr = arr.copy;
         
-        self.homeData = arr.copy;
+        NSArray *hotData = datas[@"hotperson"];
+        NSMutableArray *hotArr = [NSMutableArray array];
+        for (int i = 0 ; i < hotData.count ; i ++ ) {
+            
+            [hotArr addObject:[XFHomeDataModel modelWithDictionary:hotData[i]]];
+            
+        }
+        self.hotDatas = hotArr.copy;
+        
+        NSArray *moreData = datas[@"more"][@"content"];
+        NSMutableArray *moreArr = [NSMutableArray array];
+        for (int i = 0 ; i < moreData.count ; i ++ ) {
+            
+            [moreArr addObject:[XFHomeDataModel modelWithDictionary:moreData[i]]];
+            
+        }
+        self.moreDatas = moreArr;
+        
+        NSArray *nearData = datas[@"nearby"][@"content"];
+        NSMutableArray *nearArr = [NSMutableArray array];
+        for (int i = 0 ; i < nearData.count ; i ++ ) {
+            
+            [nearArr addObject:[XFNearModel modelWithDictionary:nearData[i]]];
+            
+        }
+        self.nearDatas = nearArr.copy;
+        
+        [[XFHomeCacheManger sharedManager] updateNearData:self.nearDatas];
+        
+        dispatch_semaphore_signal(sema);
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
+            [self.tableNode.view.mj_header endRefreshing];
             [self.tableNode reloadData];
 
-            [self.tableNode.view.mj_header endRefreshing];
         });
-        
         
     } failBlock:^(NSError *error) {
         
@@ -255,6 +292,32 @@
     }];
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 
+}
+
+- (void)loadMoreHomeData {
+    
+    self.page += 1;
+    [XFHomeNetworkManager getMoreHomeDataWithPage:self.page size:10 successBlock:^(id responseObj) {
+        NSArray *moreData = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *moreArr = [NSMutableArray array];
+        for (int i = 0 ; i < moreData.count ; i ++ ) {
+            
+            [moreArr addObject:[XFHomeDataModel modelWithDictionary:moreData[i]]];
+            
+        }
+        [self.moreDatas addObjectsFromArray:moreArr];
+        
+        [self.tableNode reloadData];
+        
+        [self.tableNode.view.mj_footer endRefreshing];
+        
+    } failBlock:^(NSError *error) {
+        [self.tableNode.view.mj_footer endRefreshing];
+
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
 }
 
 - (void)loadAuthData {
@@ -290,7 +353,7 @@
     [XFHomeNetworkManager getHomeAdWithSuccessBlock:^(id responseObj) {
         
         NSArray *datas = (NSArray *)responseObj;
-        self.adDatas = datas;
+//        self.adDatas = datas;
         NSMutableArray *arr = [NSMutableArray array];
         
         for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
@@ -298,7 +361,7 @@
             [arr addObject:datas[i][@"image"][@"thumbImage500pxUrl"]];
             
         }
-        self.headScroll.imageURLStringsGroup = arr.copy;
+        self.headScroll.sourceDataArr = arr.copy;
         
     } failBlock:^(NSError *error) {
         
@@ -316,19 +379,6 @@
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0) {
         self.tabBarController.tabBar.subviews[0].subviews[1].hidden = YES;
     }
-    
-//    self.tableNode.hidden = YES;
-//    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-//
-//    [self.tableNode reloadDataWithCompletion:^{
-//
-//        [HUD hideAnimated:YES];
-//
-//        self.tableNode.hidden = NO;
-//
-//    }];
-//
-//
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -406,27 +456,34 @@
     
     self.CLManager = [[CLLocationManager alloc] init];
     self.CLManager.delegate = self;
-    self.CLManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.CLManager.desiredAccuracy = kCLLocationAccuracyKilometer;
     self.CLManager.pausesLocationUpdatesAutomatically = YES;
-    
     
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
     
-    [self.positionButton setTitle:@"正在定位" forState:(UIControlStateNormal)];
+    dispatch_async(dispatch_get_main_queue(), ^{
     
-    if ([self.CLManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        
-        [self.CLManager requestAlwaysAuthorization];
-        
-    }
+        [self.positionButton setTitle:@"正在定位" forState:(UIControlStateNormal)];
+    });
 
-    if (status == kCLAuthorizationStatusNotDetermined) {
+        if ([self.CLManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+            
+            [self.CLManager requestAlwaysAuthorization];
+            
+        }
         
-        [self.CLManager requestWhenInUseAuthorization];
+        if (status == kCLAuthorizationStatusNotDetermined) {
+            
+            [self.CLManager requestWhenInUseAuthorization];
+            
+        }
+        // 调用代理方法
+        [self.CLManager startUpdatingLocation];
         
-    }
-    // 调用代理方法
-    [self.CLManager startUpdatingLocation];
+        
+    
+    
+
 }
 
 #pragma mark - locationDelegate
@@ -443,7 +500,7 @@
 
     // 更新位置
     
-    if ([XFUserInfoManager sharedManager].userName) {
+    if ([XFUserInfoManager sharedManager].cookie) {
         
         [XFHomeNetworkManager refreshUserLocationWithlon:coordinate.longitude lat:coordinate.latitude successBlock:^(id responseObj) {
             
@@ -456,7 +513,6 @@
     
     [self loadNearData];
 
-    
     _geoC = [[CLGeocoder alloc] init];
 
     [_geoC reverseGeocodeLocation:location completionHandler:^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
@@ -469,10 +525,7 @@
             
             [self.positionButton setTitle:city forState:(UIControlStateNormal)];
             
-            
-
-        }else
-        {
+        } else {
             NSLog(@"错误");
         }
         
@@ -577,15 +630,10 @@
     if (sender == _whButton) {
         
         centerOffset = -60;
-        
-
-    
     }
     if (sender == _yyButton) {
         
         centerOffset = 0;
-        
-
     }
     
     if (sender == _spButton) {
@@ -601,16 +649,7 @@
         make.centerX.mas_offset(centerOffset);
         make.height.mas_equalTo(2);
     }];
-    
-    
 
-//    [UIView animateWithDuration:0.2 animations:^{
-//        [self.titleView layoutIfNeeded];
-//
-//
-//
-//    }];
-    
     if (self.slideView.hidden == YES) {
         
         self.slideView.hidden = NO;
@@ -630,7 +669,6 @@
     
     self.scrollView.hidden = NO;
 
-    
     switch (sender.tag) {
             case 1001:
             {
@@ -640,7 +678,7 @@
                 
                 static dispatch_once_t onceToken;
                 dispatch_once(&onceToken, ^{
-                    [self.netHotVC firstLoadData];
+                    [self.netHotVC loadData];
                     
                 });
 
@@ -654,7 +692,7 @@
             
             static dispatch_once_t onceToken;
             dispatch_once(&onceToken, ^{
-                [self.actorVC firstLoadData];
+                [self.actorVC loadData];
                 
             });
         }
@@ -682,7 +720,7 @@
 }
 
 #pragma mark - headerScrollDelegate
-- (void)cycleScrollView:(SDCycleScrollView *)cycleScrollView didSelectItemAtIndex:(NSInteger)index {
+- (void)xfcycleScrollView:(XFSDCycleScrollView *)cycleScrollView didSelectItemAtIndex:(NSInteger)index {
     // 活动页面
     [self tapHeaderAdView];
     
@@ -707,34 +745,103 @@
     self.tableNode = [[ASTableNode alloc] init];
     
     self.tableNode.view.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
-    
+//    self.tableNode.backgroundColor = kRGBColorWith(241, 241, 241);
     [self.view addSubnode:self.tableNode];
     
     self.tableNode.delegate = self;
     self.tableNode.dataSource = self;
-    
+    self.tableNode.view.contentInset = UIEdgeInsetsMake(0, 0, 49, 0);
     self.tableNode.view.showsVerticalScrollIndicator = NO;
     self.tableNode.view.contentInset = UIEdgeInsetsMake(0, 0, -49, 0);
-    UIView *header = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, 190/375.f*kScreenWidth))];
-    
-    SDCycleScrollView *headerScroll = [SDCycleScrollView cycleScrollViewWithFrame:header.bounds imageNamesGroup:@[@"home21",@"home21",@"home21"]];
-    
-    headerScroll.delegate = self;
-    headerScroll.contentMode = UIViewContentModeScaleAspectFill;
-    [header addSubview:headerScroll];
+    UIView *header = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, 207/375.f*kScreenWidth))];
+//    [self.view addSubview:header];
+    header.backgroundColor = kRGBColorWith(241, 241, 241);
+    _headScroll = [ZXCycleScrollView  initWithFrame:CGRectMake(0, 10, header.bounds.size.width, header.bounds.size.height - 27) withMargnPadding:10 withImgWidth:kScreenWidth - 28 dataArray:@[@"http://d.hiphotos.baidu.com/image/pic/item/b7fd5266d016092408d4a5d1dd0735fae7cd3402.jpg"]] ;
+    _headScroll.delegate = self;
+    [header addSubview:_headScroll];
 
-    self.headScroll = headerScroll;
-    self.tableNode.view.tableHeaderView = header;
+    _headScroll.otherPageControlColor = [UIColor blueColor];
+    _headScroll.curPageControlColor = [UIColor whiteColor];
     
+//    _headScroll.sourceDataArr = @[@"home21",@"home21",@"home21"];
+    
+    _headScroll.autoScroll = YES;
+
+    self.tableNode.view.tableHeaderView = header;
+
     self.tableNode.view.tableFooterView = [[UIView alloc] init];
     
     [self.tableNode layoutIfNeeded];
     
-    self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-       
+    self.tableNode.view.mj_header = [XFToolManager refreshHeaderWithBlock:^{
         [self network];
         
     }];
+    
+    self.tableNode.view.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+       
+        [self loadMoreHomeData];
+        
+    }];
+    
+    if (@available (ios 11 , * )) {
+        self.tableNode.view.estimatedRowHeight = 0;
+        self.tableNode.view.estimatedSectionHeaderHeight = 0;
+        self.tableNode.view.estimatedSectionFooterHeight = 0;
+        self.tableNode.view.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        
+    }
+    
+    // 空视图设置
+//    self.tableNode.view.emptyDataSetSource = self;
+//    self.tableNode.view.emptyDataSetDelegate = self;
+    
+}
+
+#pragma mark - 空视图代理
+- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView {
+    
+    return [UIImage imageNamed:@"logo"];
+    
+}
+
+- (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView {
+    
+    return [UIColor whiteColor];
+    
+}
+
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView {
+    
+    NSString *title = @"网络断开了哦";
+    NSDictionary *attributes = @{NSFontAttributeName : [UIFont systemFontOfSize:12],
+                                 NSForegroundColorAttributeName : [UIColor blackColor],
+                                 };
+    
+    return [[NSAttributedString alloc] initWithString:title attributes:attributes];
+    
+}
+
+- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView {
+    
+    
+    if (self.youwuDatas.count == 0) {
+    
+        
+    }
+    
+    return NO;
+}
+
+- (BOOL)emptyDataSetShouldFadeIn:(UIScrollView *)scrollView {
+    
+    return YES;
+    
+}
+
+- (BOOL)emptyDataSetShouldBeForcedToDisplay:(UIScrollView *)scrollView {
+    
+    return YES;
 }
 
 #pragma mark - headerTap
@@ -761,37 +868,37 @@
 }
 
 #pragma mark - scrollViewDelegate
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-    
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
-    
-    //竖直滑动时 判断是上滑还是下滑
-    if(velocity.y>0){
-        //上滑
-
-        [UIView animateWithDuration:0.15 animations:^{
-
-            self.tabBarController.tabBar.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 49);
-
-        }];
-    }else{
-        
-        CGAffineTransform transform = CGAffineTransformIdentity;
-        animation.toValue = [NSValue valueWithCGAffineTransform:transform];
-        animation.fillMode = kCAFillModeRemoved;
-        animation.removedOnCompletion = YES;
-        [self.tabBarController.tabBar.layer addAnimation:animation forKey:nil];
-        
-        //下滑
-        [UIView animateWithDuration:0.15 animations:^{
-
-            self.tabBarController.tabBar.frame = CGRectMake(0, kScreenHeight - 49, kScreenWidth, 49);
-
-        }];
-    }
-    
-}
+//
+//- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+//
+//    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
+//
+//    //竖直滑动时 判断是上滑还是下滑
+//    if(velocity.y>0){
+//        //上滑
+//
+//        [UIView animateWithDuration:0.15 animations:^{
+//
+//            self.tabBarController.tabBar.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 49);
+//
+//        }];
+//    }else{
+//
+//        CGAffineTransform transform = CGAffineTransformIdentity;
+//        animation.toValue = [NSValue valueWithCGAffineTransform:transform];
+//        animation.fillMode = kCAFillModeRemoved;
+//        animation.removedOnCompletion = YES;
+//        [self.tabBarController.tabBar.layer addAnimation:animation forKey:nil];
+//
+//        //下滑
+//        [UIView animateWithDuration:0.15 animations:^{
+//
+//            self.tabBarController.tabBar.frame = CGRectMake(0, kScreenHeight - 49, kScreenWidth, 49);
+//
+//        }];
+//    }
+//
+//}
 
 //去掉UItableview headerview黏性
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -804,35 +911,54 @@
         } else if (scrollView.contentOffset.y>=sectionHeaderHeight) {
             scrollView.contentInset = UIEdgeInsetsMake(-sectionHeaderHeight, 0, 0, 0);
         }
-        
-        
     }
-    
-    
-    
 }
 
 #pragma mark - cellDelegate
 - (void)homeNode:(XFHomeTableNode *)node didClickLikeButtonWithIndex:(NSIndexPath *)indexPath {
-
-    node.likeNode.selected = !node.likeNode.selected;
-    // 弹性动画
-    [XFToolManager popanimationForLikeNode:node.likeNode.imageNode.layer complate:^{
+    
+    XFHomeDataModel *model = node.model;
+    
+    if (model.likeIt) {
         
+        [XFHomeNetworkManager unlikeSomeoneWithUid:model.uid successBlock:^(id responseObj) {
+            
+            [self refreshLikeStatusWithUid:model likeIt:NO];
+            
+        } failBlock:^(NSError *error) {
+            
+        } progress:^(CGFloat progress) {
+            
+        }];
+
+    } else {
         
-    }];
-    
-    XFHomeDataModel *model = self.homeData[indexPath.section][indexPath.row];
-    
-    model.isLiked = [model.isLiked intValue] == 0 ? @"1" : @"0";
-    NSString *liked = [NSString stringWithFormat:@"%zd",[model.likeNumer intValue] + 1] ;
-    NSString *unLiked = [NSString stringWithFormat:@"%zd",[model.likeNumer intValue] - 1] ;
-    
-    model.likeNumer = node.likeNode.selected ? liked : unLiked;
-    
-    [node.likeNode setTitle:model.likeNumer withFont:[UIFont systemFontOfSize:13] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+        [XFHomeNetworkManager likeSomeoneWithUid:model.uid successBlock:^(id responseObj) {
+            
+            [self refreshLikeStatusWithUid:model likeIt:YES];
 
 
+        } failBlock:^(NSError *error) {
+            
+        } progress:^(CGFloat progress) {
+            
+        }];
+    }
+    
+
+}
+
+- (void)refreshLikeStatusWithUid:(XFHomeDataModel *)model likeIt:(BOOL)likeIt {
+
+
+
+                model.likeIt = likeIt;
+                model.likeNum = [NSString stringWithFormat:@"%zd",likeIt ? [model.likeNum intValue] + 1 : [model.likeNum intValue] - 1 ];
+ 
+    
+    
+    [self.tableNode reloadData];
+    
 }
 
 
@@ -847,18 +973,38 @@
         
     } else {
 
-        NSInteger index = indexPath.section < 2 ? indexPath.section : indexPath.section - 1;
         
-        XFHomeDataParamentModel *paModel = self.homeData[index];
-        XFHomeDataModel *model = paModel.data[indexPath.row];
+        XFHomeDataModel *model;
         
         // 查看详情
+        
+        switch (indexPath.section) {
+            case 0:
+                {
+                    model = self.youwuDatas[indexPath.row];
+                }
+                break;
+            case 1:
+            {
+                model = self.hotDatas[indexPath.row];
+
+            }
+                break;
+            case 3:
+            {
+                model = self.moreDatas[indexPath.row];
+
+            }
+                break;
+            default:
+                break;
+        }
+        
         XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+        detailVC.hidesBottomBarWhenPushed = YES;
         detailVC.userId = model.uid;
         detailVC.userName = model.nickname;
         detailVC.iconUrl = model.headIconUrl;
-        detailVC.hidesBottomBarWhenPushed = YES;
-        
         [self.navigationController pushViewController:detailVC animated:YES];
         
     }
@@ -866,9 +1012,51 @@
 
 }
 
+
 - (NSInteger)numberOfSectionsInTableNode:(ASTableNode *)tableNode {
     
-    return self.homeData.count + 1;
+    return 4;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    
+    if (section < 2) {
+        
+        XFHomeSectionFooter *footer = [[XFHomeSectionFooter alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, 70))];
+        footer.section = section;
+        footer.clickMoreButtonForSection = ^(NSInteger section) {
+            
+            switch (section) {
+                    
+                case 0:
+                {
+                    [self clickTopButton:self.whButton];
+                }
+                    break;
+                    
+                case 1:
+                {
+                    [self clickTopButton:self.yyButton];
+                }
+                    break;
+            }
+            
+        };
+        
+        return footer;
+    }
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    
+    if (section < 2) {
+        
+        return 70;
+
+    }
+    return 0;
     
 }
 
@@ -886,23 +1074,52 @@
             
         }
             break;
-            
-        default:
+           
+        case 0:
         {
-            NSInteger index = indexPath.section < 2 ? indexPath.section : indexPath.section - 1;
+            XFHomeDataModel *model = self.youwuDatas[indexPath.row];
+            XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:model isBottom:indexPath.section > 2 ? YES : NO];
             
-            XFHomeDataParamentModel *paModel = self.homeData[index];
-            XFHomeDataModel *model = paModel.data[indexPath.row];
-            
-            XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:model];
-            
-            node.shadowNode.image = [UIImage imageNamed:@"home_hongse"];
             
             node.delegate = self;
             
             node.neverShowPlaceholders = YES;
             
             return node;
+        }
+            break;
+            
+        case 1:
+        {
+            XFHomeDataModel *model = self.hotDatas[indexPath.row];
+            XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:model isBottom:indexPath.section > 2 ? YES : NO];
+            
+            
+            node.delegate = self;
+            
+            node.neverShowPlaceholders = YES;
+            
+            return node;
+        }
+            break;
+        case 3:
+        {
+            XFHomeDataModel *model = self.moreDatas[indexPath.row];
+            XFHomeTableNode *node = [[XFHomeTableNode alloc] initWithModel:model isBottom:indexPath.section > 2 ? YES : NO];
+            
+            
+            node.delegate = self;
+            
+            node.neverShowPlaceholders = YES;
+            
+            return node;
+        }
+            break;
+        default:
+        {
+            
+            
+
             
         }
             break;
@@ -1000,19 +1217,38 @@
     
     XFHomeSectionHeader *header = [[XFHomeSectionHeader alloc] init];
     
-    header.backgroundColor = [UIColor whiteColor];
+    header.backgroundColor = kRGBColorWith(241, 241, 241);
     
-    if (section == 2) {
+    switch (section) {
+        case 0:
+            {
+                header.titleLabel.text = @"尤物";
+            }
+            break;
+        case 1:
+        {
+            header.titleLabel.text = @"网红";
+        }
+            break;
+        case 2:
+        {
+            header.titleLabel.text = @"附近的人";
+
+        }
+            break;
+        case 3:
+        {
+            header.titleLabel.text = @"最热尤物";
+
+        }
+            break;
+        default:
+            break;
+    }
+    
+    if (section < 2) {
         
-        header.titleLabel.text = @"附近的人";
-        
-    } else {
-        
-        NSInteger index = section < 2 ? section : section - 1;
-        
-        XFHomeDataParamentModel *paModel = self.homeData[index];
-        
-        header.titleLabel.text = paModel.categoryTitle;
+        header.moreButton.hidden = YES;
     }
     
     header.section = section;
@@ -1024,18 +1260,30 @@
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
-    if (section == 2) {
-        
-        return 1;
-    } else {
-        
-        NSInteger index = section < 2 ? section : section - 1;
-        
-        XFHomeDataParamentModel *paModel = self.homeData[index];
-        
-        return paModel.data.count;
+    switch (section) {
+        case 0:
+        {
+            return self.youwuDatas.count;
+        }
+            break;
+        case 1:
+        {
+            return self.hotDatas.count;
+        }
+            break;
+        case 2:
+        {
+            return 1;
+        }
+            break;
+        case 3:
+        {
+            return self.moreDatas.count;
+        }
+            break;
+        default:
+            break;
     }
-    
     return 0;
 }
 
@@ -1145,18 +1393,16 @@
     [self.scrollView removeGestureRecognizer:self.scrollView.panGestureRecognizer];
     [self.view addSubview:self.scrollView];
     
-    self.netHotVC = [[XFNetHotViewController alloc] init];
+    self.netHotVC = [[XFYouwuViewController alloc] init];
     self.netHotVC.view.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
-    self.netHotVC.type = XFNetHotVCTypeYW;
-    self.netHotVC.datas = self.ywData;
+    self.netHotVC.type = Youwu;
     [self addChildViewController:self.netHotVC];
     
     [self.scrollView addSubview:self.netHotVC.view];
     
-    self.actorVC = [[XFNetHotViewController alloc] init];
+    self.actorVC = [[XFYouwuViewController alloc] init];
     self.actorVC.view.frame = CGRectMake(kScreenWidth, 0, kScreenWidth, kScreenHeight - 64 - 49);
-    self.actorVC.type = XFNetHotVCTypeWh;
-    self.actorVC.datas = self.whData;
+    self.actorVC.type = Nethot;
     [self addChildViewController:self.actorVC];
     
     [self.scrollView addSubview:self.actorVC.view];

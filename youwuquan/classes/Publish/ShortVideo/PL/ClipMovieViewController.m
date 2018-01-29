@@ -76,12 +76,16 @@
     
     [self.player seekToTime:CMTimeMake(self.startTime * 1e9, 1e9) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     [self.player play];
+    
+    self.navigationController.navigationBarHidden = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
     [self.player pause];
+//    self.navigationController.navigationBarHidden = NO;
+
 }
 
 #pragma mark -- 配置视图
@@ -141,7 +145,10 @@
 #pragma mark -- UIButton 按钮响应事件
 #pragma mark -- 返回
 - (void)backButtonClick {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+//    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -- 下一步
@@ -163,7 +170,10 @@
     EditViewController *videoEditViewController = [[EditViewController alloc] init];
     videoEditViewController.settings = outputSettings;
     videoEditViewController.filesURLArray = @[self.url];
-    [self presentViewController:videoEditViewController animated:YES completion:nil];
+    videoEditViewController.navigationController.navigationBarHidden = YES;
+    [self.navigationController pushViewController:videoEditViewController animated:YES];
+    
+//    [self presentViewController:videoEditViewController animated:YES completion:nil];
 }
 
 #pragma mark - PLSClipMovieView delegate

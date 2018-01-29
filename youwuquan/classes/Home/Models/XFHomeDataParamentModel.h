@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "XFHomeDataModel.h"
 
-@interface XFHomeDataParamentModel : NSObject
+@interface XFHomeDataParamentModel : NSObject <NSCoding>
 
 @property (nonatomic,copy) NSArray *data;
 @property (nonatomic,copy) NSString *categoryTitle;

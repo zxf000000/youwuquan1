@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger,XFPresenttransationType) {
     Dismiss,
     GiftPresent,
     GiftDismiss,
+    SheetPresent,
     Push,
     Pop,
     

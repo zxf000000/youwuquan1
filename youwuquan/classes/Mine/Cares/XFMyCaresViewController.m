@@ -50,7 +50,7 @@
         
         for (NSInteger i = 0; i < 4; i ++ ) {
             
-            UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[XFIconmanager sharedManager].authIcons[i]]];
+            UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zhanweitu44"]];
             
             [_authIcons addObject:imgView];
             
@@ -277,8 +277,7 @@
     
     self.tableView.tableFooterView = [[UIView alloc] init];
     
-    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-        
+    self.tableView.mj_header = [XFToolManager refreshHeaderWithBlock:^{
         [self loadData];
         
     }];

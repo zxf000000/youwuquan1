@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger,XFImagePickerType) {
 
 @property (nonatomic,strong) MBProgressHUD *HUD;
 
+@property (nonatomic,assign) NSInteger maxNumber;
 
 
 @end

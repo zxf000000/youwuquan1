@@ -11,7 +11,6 @@
 #import "XFFindCellNode.h"
 #import "XFFIndHeaderCell.h"
 #import "XFSlideView.h"
-
 #import "XFFindDetailViewController.h"
 #import "XFStatusDetailViewController.h"
 #import "XFYwqAlertView.h"
@@ -28,6 +27,9 @@
 #import "XFFindSearchNode.h"
 #import "XFSearchViewController.h"
 #import "LBPhotoBrowserManager.h"
+#import <AVKit/AVKit.h>
+#import "XFAlertViewController.h"
+#import "XFPayViewController.h"
 
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
@@ -69,6 +71,10 @@
 
 @property (nonatomic,strong) MBProgressHUD *HUD;
 
+@property (nonatomic,strong) NSURL  *voiceUrl;
+@property (nonatomic,assign) BOOL isPlaying;
+@property (nonatomic,strong) AVPlayer *audioPLayer;
+
 @end
 
 @implementation XFFindTextureViewController
@@ -76,15 +82,15 @@
 - (instancetype)init
 {
     self = [super init];
-
+    
     if (self) {
         
         _inviteDatas = [NSMutableArray array];
         _careDatas = [NSMutableArray array];
         _indexPathsTobeReload = [NSMutableArray array];
-
+        
     }
-
+    
     return self;
 }
 
@@ -92,7 +98,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     self.title = @"发现";
     
     self.hdCount = 0;
@@ -115,9 +121,9 @@
     
     self.topView = [[XFSlideView alloc] initWithTitle:@[@"推荐",@"关注"]];
     self.navigationItem.titleView = self.topView;
-
+    
     self.topView.frame = CGRectMake(0, 0, kScreenWidth, 44);
-
+    
     if (@available (ios 11 , *)) {
         
         [self.topView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -129,7 +135,7 @@
     
     self.isInvite = YES;
     __weak typeof(self) weakSelf = self;
-
+    
     self.topView.clickButtonBlock = ^(NSInteger tag) {
         
         switch (tag) {
@@ -138,26 +144,23 @@
             {
                 weakSelf.isInvite = YES;
                 [weakSelf.scrollView setContentOffset:(CGPointMake(0, 0)) animated:YES];
-            
                 
-//                [weakSelf network];
-
             }
                 break;
                 
             case 1002:
             {
                 weakSelf.isInvite = NO;
-
+                
                 [weakSelf.scrollView setContentOffset:(CGPointMake(kScreenWidth, 0)) animated:YES];
                 
                 static dispatch_once_t onceToken;
                 dispatch_once(&onceToken, ^{
                     [weakSelf loadFollowData];
-
+                    
                 });
                 
-
+                
             }
                 break;
                 
@@ -165,22 +168,22 @@
     };
     
     [self setupScrollView];
-
+    
     [self network];
-//    [self getAdData];
+    //    [self getAdData];
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshLikeStatus:) name:kRefreshLikeStatusNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshCareStatus:) name:kRefreshCareStatusNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshModelWith:) name:kRefreshLockStatusForModelNotification object:nil];
-
+    
     
 }
 
 - (void)network {
-
+    
     self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-
+    
     // 获取活动
     NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
         [self getAdData];
@@ -189,14 +192,14 @@
     NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
         [self loadinviteData];
     }];
-
+    
     //设置依赖
     [operation2 addDependency:operation1];      //任务3依赖任务2
-
+    
     //创建队列
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperations:@[operation2, operation1] waitUntilFinished:NO];
-
+    
 }
 
 
@@ -245,20 +248,18 @@
     
     XFStatusModel *model = notification.object[@"status"];
     BOOL followed = [notification.object[@"followed"] boolValue];
-
-        for (XFStatusModel *status in self.inviteDatas) {
+    
+    for (XFStatusModel *status in self.inviteDatas) {
+        
+        if ([model.user[@"uid"] intValue] == [status.user[@"uid"] intValue]) {
             
-            if ([model.user[@"uid"] intValue] == [status.user[@"uid"] intValue]) {
-                
-                [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:followed];
-                self.isChanged = YES;
-                
-            }
+            [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:followed reload:NO];
+            self.isChanged = YES;
             
         }
-    
-    [self loadFollowData];
         
+    }
+    
 }
 
 #pragma mark - 刷新解锁状态
@@ -271,7 +272,7 @@
         if ([status.id isEqualToString:model.id]) {
             status.pictures = model.pictures;
             self.isChanged = YES;
-
+            
         }
     }
     
@@ -280,7 +281,7 @@
         if ([status.id isEqualToString:model.id]) {
             status.pictures = model.pictures;
             self.isChanged = YES;
-
+            
         }
     }
     
@@ -289,9 +290,9 @@
 
 - (void)getAdData {
     
-
+    
     [XFFindNetworkManager getFindAdWithPage:0 size:6 SuccessBlock:^(id responseObj) {
-       
+        
         NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
         NSMutableArray *arr = [NSMutableArray array];
         for (int i = 0 ; i < datas.count; i ++ ) {
@@ -301,15 +302,15 @@
         
         self.adDatas = arr.copy;
         self.hdCount = self.adDatas.count >= 2 ? 2 : self.adDatas.count;
-
+        
         [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
         
     } failBlock:^(NSError *error) {
-
+        
     } progress:^(CGFloat progress) {
         
     }];
-
+    
     
 }
 
@@ -322,9 +323,9 @@
         [self reloadLeftData];
         [self reloadrihtData];
         
-    
+        
         self.isChanged = NO;
-
+        
     }
     
 }
@@ -339,6 +340,8 @@
         
         NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
         
+        NSLog(@"%@",datas);
+        
         NSMutableArray *arr = [NSMutableArray array];
         
         for (NSInteger i = 0 ; i< datas.count ; i ++ ) {
@@ -351,15 +354,15 @@
         [self reloadrihtData];
         
         [HUD hideAnimated:YES];
-
+        
         [self.rightNode.view.mj_header endRefreshing];
-
+        
     } failBlock:^(NSError *error) {
         
         [HUD hideAnimated:YES];
-
+        
         [self.rightNode.view.mj_header endRefreshing];
-
+        
     } progress:^(CGFloat progress) {
         
         
@@ -397,11 +400,11 @@
     } failBlock:^(NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.HUD hideAnimated:YES];
-
+            
             [self.tableNode.view.mj_header endRefreshing];
-
+            
         });
-
+        
     } progress:^(CGFloat progress) {
         
         
@@ -412,44 +415,49 @@
 #pragma mark - 刷新
 - (void)reloadLeftData {
     
-    NSInteger count = [self.tableNode numberOfRowsInSection:1];
-    if ( count > 0 ) {
+    NSArray *cells = self.tableNode.visibleNodes;
+    
+    for (ASCellNode *node in cells) {
         
-        // 将肉眼可见的cell添加进indexPathesToBeReloaded中
-        for (int i = 0 ; i < 2 ; i ++ ) {
+        if ([node isKindOfClass:[XFFindCellNode class]]) {
             
-            for (int j = 0 ; j < 5 ; j ++ ) {
-                
-                [_indexPathsTobeReload appendObject:[NSIndexPath indexPathForRow:j inSection:i]];
+            [_indexPathsTobeReload addObject:node.indexPath];
 
-            }
-        
         }
+        
+    }
+    
+    for (int i = 0 ; i < 7 ; i ++ ) {
+        
+        
+        [_indexPathsTobeReload addObject:[NSIndexPath indexPathForItem:i inSection:0]];
 
     }
-
-    [self.tableNode reloadData];
+    
+    [self.tableNode reloadDataWithCompletion:^{
+        
+        _indexPathsTobeReload = [NSMutableArray array];
+        
+    }];
 }
 
 - (void)reloadrihtData {
     
-    NSInteger count = [self.rightNode numberOfRowsInSection:0];
-    if ( count > 0 ) {
+    NSArray *cells = self.rightNode.visibleNodes;
+    
+    for (ASCellNode *node in cells) {
         
-        // 将肉眼可见的cell添加进indexPathesToBeReloaded中
-        for (int i = 0 ; i < 2 ; i ++ ) {
-            
-            for (int j = 0 ; j < 5 ; j ++ ) {
-                
-                [_indexPathsTobeReload appendObject:[NSIndexPath indexPathForRow:j inSection:i]];
-                
-            }
-            
-        }
+        [_indexPathsTobeReload addObject:node.indexPath];
+
         
     }
     
-    [self.rightNode reloadData];
+    
+    [self.rightNode reloadDataWithCompletion:^{
+        
+        _indexPathsTobeReload = [NSMutableArray array];
+        
+    }];
 }
 
 #pragma mark - 插入更多数据----智能预加载
@@ -481,11 +489,11 @@
                 
             }
             [self.tableNode.view.mj_footer endRefreshing];
-
+            
         } failBlock:^(NSError *error) {
             
             [self.tableNode.view.mj_footer endRefreshing];
-
+            
         } progress:^(CGFloat progress) {
             
             
@@ -497,7 +505,7 @@
         
         [XFFindNetworkManager getFollowsDataWithPage:self.carePage rows:10 SuccessBlock:^(id responseObj) {
             
-
+            
             NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
             
             NSMutableArray *arr = [NSMutableArray array];
@@ -517,24 +525,24 @@
                 
             }
             [self.rightNode.view.mj_footer endRefreshing];
-
+            
         } failBlock:^(NSError *error) {
             
             [self.rightNode.view.mj_footer endRefreshing];
-
+            
         } progress:^(CGFloat progress) {
             
             
         }];
         
     }
-
+    
 }
 
 - (void)insertNewRowsInTableNode:(NSArray *)newDatas {
     
     if (self.isInvite) {
-    
+        
         NSInteger section = 1;
         
         NSMutableArray *indexPaths = [NSMutableArray array];
@@ -567,12 +575,12 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             [self.rightNode insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
-
+            
         });
         
     }
     
-
+    
 }
 
 //  预加载
@@ -594,7 +602,7 @@
 - (void)viewWillLayoutSubviews
 {
     self.scrollView.contentSize = CGSizeMake(kScreenWidth * 2, 0);
-
+    
 }
 
 
@@ -627,29 +635,29 @@
         } else {
             
             XFStatusModel *model = self.inviteDatas[indexPath.row];
-
-                XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
-                statusVC.hidesBottomBarWhenPushed = YES;
-                statusVC.type = Other;
-                statusVC.status = model;
-        
-                [self.navigationController pushViewController:statusVC animated:YES];
             
-        }
-        
-    } else {
-        
-        XFStatusModel *model = self.careDatas[indexPath.row];
-
             XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
             statusVC.hidesBottomBarWhenPushed = YES;
             statusVC.type = Other;
             statusVC.status = model;
             
             [self.navigationController pushViewController:statusVC animated:YES];
+            
+        }
+        
+    } else {
+        
+        XFStatusModel *model = self.careDatas[indexPath.row];
+        
+        XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
+        statusVC.hidesBottomBarWhenPushed = YES;
+        statusVC.type = Other;
+        statusVC.status = model;
+        
+        [self.navigationController pushViewController:statusVC animated:YES];
         
     }
-
+    
 }
 
 - (NSInteger)numberOfSectionsInTableNode:(ASTableNode *)tableNode {
@@ -674,7 +682,7 @@
             return self.inviteDatas.count;
         }
     }
-
+    
     return self.careDatas.count;
 }
 
@@ -693,8 +701,8 @@
     self.tableNode.dataSource = self;
     self.tableNode.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
     self.tableNode.view.showsVerticalScrollIndicator = NO;
-//    self.tableNode.leadingScreensForBatching = 2;
-
+    //    self.tableNode.leadingScreensForBatching = 2;
+    
     [self.scrollView addSubnode:self.tableNode];
     if (@available (ios 11 , * )) {
         self.tableNode.view.estimatedRowHeight = 0;
@@ -702,9 +710,9 @@
         self.tableNode.view.estimatedSectionFooterHeight = 0;
         self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         self.tableNode.view.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-
+        
     }
-
+    
     self.tableNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
     // 关注
     self.rightNode = [[ASTableNode alloc] init];
@@ -712,8 +720,8 @@
     self.rightNode.dataSource = self;
     self.rightNode.frame = CGRectMake(kScreenWidth, 0, kScreenWidth, kScreenHeight - 64);
     self.rightNode.view.showsVerticalScrollIndicator = NO;
-//    self.rightNode.leadingScreensForBatching = 2;
-
+    //    self.rightNode.leadingScreensForBatching = 2;
+    
     [self.scrollView addSubnode:self.rightNode];
     
     if (@available (ios 11 , * )) {
@@ -721,23 +729,38 @@
         self.rightNode.view.estimatedSectionHeaderHeight = 0;
         self.rightNode.view.estimatedSectionFooterHeight = 0;
         self.tableNode.view.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-
+        
     }
     
     self.rightNode.view.contentInset = UIEdgeInsetsMake(5, 0, 0, 0);
     
     self.rightNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
+
+    NSMutableArray *images = [NSMutableArray array];
+    for (int i= 1 ; i < 75 ; i ++ ) {
+        
+        [images addObject:[UIImage imageNamed:[NSString stringWithFormat:@"图层%zd",i]]];
+        
+    }
     
-    self.tableNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-        
-        [self loadinviteData];
-        
-    }];
+    MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(network)];
+    // 设置普通状态的动画图片
+    [header setImages:images duration:2 forState:MJRefreshStateIdle];
+    // 设置即将刷新状态的动画图片（一松开就会刷新的状态）
+    [header setImages:images duration:2 forState:MJRefreshStatePulling];
+    // 设置正在刷新状态的动画图片
+    [header setImages:images duration:2 forState:MJRefreshStateRefreshing];
+    header.lastUpdatedTimeLabel.hidden = YES;
+    header.stateLabel.hidden = YES;
+
+    // 设置header
+    self.tableNode.view.mj_header = header;
+
     
     self.tableNode.view.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
-       
+        
         [self retrieveNextPageWithCompletion:^(NSArray *datas) {
-           
+            
             [self insertNewRowsInTableNode:datas];
             
             [self.tableNode.view.mj_footer endRefreshing];
@@ -747,10 +770,10 @@
     }];
     
     [self.tableNode.view.mj_footer setAutomaticallyHidden:YES];
-
-    self.rightNode.view.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-        
+    
+    self.rightNode.view.mj_header = [XFToolManager refreshHeaderWithBlock:^{
         [self loadFollowData];
+        
     }];
     
     self.rightNode.view.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
@@ -767,61 +790,203 @@
 }
 
 #pragma mark - cellNodeDelegate点赞
+- (void)playbackFinished:(NSNotification *)notice {
+    
+    self.isPlaying = NO;
+    
+}
+
+// 播放语音
+- (void)findCellNode:(XFFindCellNode *)node didClickVoiceButtonWithUrl:(NSString *)url {
+    
+    self.voiceUrl = [NSURL URLWithString:url];
+    AVPlayerItem * songItem = [[AVPlayerItem alloc] initWithURL:self.voiceUrl];
+    if (!self.audioPLayer) {
+        self.audioPLayer = [[AVPlayer alloc]initWithPlayerItem:songItem];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:songItem];
+    }
+    
+    [self.audioPLayer replaceCurrentItemWithPlayerItem:songItem];
+    
+    if (self.isPlaying) {
+        [self.audioPLayer pause];
+        self.isPlaying = NO;
+        
+    } else {
+        
+        [self.audioPLayer play];
+        self.isPlaying = YES;
+        self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        [_HUD hideAnimated:YES afterDelay:0.5];
+        
+    }
+    
+}
+
+- (void)buyTheStatusWithStatus:(XFStatusModel *)status {
+    
+    XFAlertViewController *alertVC = [[XFAlertViewController alloc] init];
+    alertVC.type = XFAlertViewTypeUnlockStatus;
+    alertVC.unlockPrice = status.unlockPrice;
+    alertVC.clickOtherButtonBlock = ^(XFAlertViewController *alert) {
+        // 充值页面
+        XFPayViewController *payVC = [[XFPayViewController alloc] init];
+        
+        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+        
+        [self presentViewController:navi animated:YES completion:nil];
+        
+    };
+    
+    alertVC.clickDoneButtonBlock = ^(XFAlertViewController *alert) {
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+        
+        [XFFindNetworkManager unlockStatusWithStatusId:status.id successBlock:^(id responseObj) {
+            // 重新获取数据
+            [XFToolManager changeHUD:HUD successWithText:@"解锁成功"];
+            // 重新获取数据,刷新
+            [XFFindNetworkManager getOneStatusWithStatusId:status.id successBlock:^(id responseObj) {
+            
+                XFStatusModel *model = [XFStatusModel modelWithDictionary:(NSDictionary *)responseObj];
+                
+                if (self.isInvite) {
+                    
+                    NSInteger index = [self.inviteDatas indexOfObject:status];
+                    [self.inviteDatas replaceObjectAtIndex:index withObject:model];
+                    [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:(UITableViewRowAnimationNone)];
+                } else {
+                    
+                    NSInteger index = [self.careDatas indexOfObject:status];
+                    [self.careDatas replaceObjectAtIndex:index withObject:model];
+
+                    [self.rightNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
+                    
+                }
+                
+            } failBlock:^(NSError *error) {
+                
+            } progress:^(CGFloat progress) {
+                
+            }];
+            // 刷新上层数据
+            
+        } failBlock:^(NSError *error) {
+            // 解锁失败
+            [HUD hideAnimated:YES];
+            // 获取返回状态码
+            if (!error) {
+                // 余额不足
+                // 充值页面
+                XFPayViewController *payVC = [[XFPayViewController alloc] init];
+                
+                UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+                
+                [self presentViewController:navi animated:YES completion:nil];
+                
+            }
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+        
+        
+    };
+    [self presentViewController:alertVC animated:YES completion:nil];
+    
+}
 
 - (void)findCellNode:(XFFindCellNode *)node didClickImageWithIndex:(NSInteger)index urls:(NSArray *)urls {
     
-    NSMutableArray *items = @[].mutableCopy;
-    for (int i = 0; i < node.picNodes.count; i++) {
-        // Get the large image url
-        XFNetworkImageNode *imgNode = node.picNodes[i];
-        UIImageView *imgView = [[UIImageView alloc] init];
+    XFStatusModel *model = node.model;
+    
+    if (model.video) {
         
-        CGRect rect = CGRectZero;
-        
-        if ([imgNode isKindOfClass:[XFNetworkImageNode class]]) {
+        // 是否是私密
+        if ([model.video[@"videoType"] isEqualToString:@"close"]) {
             
-            rect = [node.view convertRect:imgNode.view.frame toView:self.view];
-            imgView.frame = rect;
+            // 解锁
+            [self buyTheStatusWithStatus:node.model];
             
         } else {
             
-            ASOverlayLayoutSpec *overlay = (ASOverlayLayoutSpec *)imgNode;
-            for (ASDisplayNode *picNode in overlay.children) {
-                
-                if ([picNode isKindOfClass:[XFNetworkImageNode class]]) {
-                    
-                    rect = [node.view convertRect:picNode.view.frame toView:self.view];
-                    imgView.frame = rect;
+            // 播放视频
+            NSURL * videoURL = [NSURL URLWithString:model.video[@"video"][@"srcUrl"]];
+            
+            AVPlayerViewController *avPlayer = [[AVPlayerViewController alloc] init];
+            
+            avPlayer.player = [[AVPlayer alloc] initWithURL:videoURL];
+            
+            avPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
+            [[avPlayer player] play];
+            
+            [self presentViewController:avPlayer animated:YES completion:nil];
+            
+        }
+        
 
+        return;
+    }
+    
+    if (index < node.openCount) {
+        
+        NSMutableArray *items = @[].mutableCopy;
+        
+        for (int i = 0; i < node.picNodes.count; i++) {
+            
+            XFNetworkImageNode *imgNode = node.picNodes[i];
+            UIImageView *imgView = [[UIImageView alloc] init];
+            
+            CGRect rect = CGRectZero;
+            
+            if ([imgNode isKindOfClass:[XFNetworkImageNode class]]) {
+                
+                rect = [node.view convertRect:imgNode.view.frame toView:self.view];
+                imgView.frame = rect;
+                
+            } else if ([imgNode isKindOfClass:[ASOverlayLayoutSpec class]]){
+                
+                ASOverlayLayoutSpec *overlay = (ASOverlayLayoutSpec *)imgNode;
+                for (ASDisplayNode *picNode in overlay.children) {
+                    
+                    if ([picNode isKindOfClass:[XFNetworkImageNode class]]) {
+                        
+                        rect = [node.view convertRect:picNode.view.frame toView:self.view];
+                        imgView.frame = rect;
+                        
+                    }
+                    
                 }
                 
             }
             
+            LBPhotoWebItem *item = [[LBPhotoWebItem alloc] initWithURLString:urls[i] frame:rect];
+            [items addObject:item];
         }
-            
-            
-
-
-        LBPhotoWebItem *item = [[LBPhotoWebItem alloc] initWithURLString:urls[i] frame:rect];
-        [items addObject:item];
+        
+        [LBPhotoBrowserManager.defaultManager showImageWithWebItems:items selectedIndex:index fromImageViewSuperView:self.view].lowGifMemory = YES;
+        
+        [[[LBPhotoBrowserManager.defaultManager addLongPressShowTitles:@[@"保存",@"识别二维码",@"取消"]] addTitleClickCallbackBlock:^(UIImage *image, NSIndexPath *indexPath, NSString *title) {
+            LBPhotoBrowserLog(@"%@",title);
+        }]addPhotoBrowserWillDismissBlock:^{
+            LBPhotoBrowserLog(@"即将销毁");
+        }].needPreloading = NO;// 这里关掉预加载功能
+    } else {
+        
+        [self buyTheStatusWithStatus:node.model];
+        
     }
+    
 
-    [LBPhotoBrowserManager.defaultManager showImageWithWebItems:items selectedIndex:index fromImageViewSuperView:self.view].lowGifMemory = YES;
-
-    [[[LBPhotoBrowserManager.defaultManager addLongPressShowTitles:@[@"保存",@"识别二维码",@"取消"]] addTitleClickCallbackBlock:^(UIImage *image, NSIndexPath *indexPath, NSString *title) {
-        LBPhotoBrowserLog(@"%@",title);
-    }]addPhotoBrowserWillDismissBlock:^{
-        LBPhotoBrowserLog(@"即将销毁");
-    }].needPreloading = NO;// 这里关掉预加载功能
-
+    
 }
 
 - (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
     
     XFStatusModel *model;
     if (self.isInvite) {
-        model = self.inviteDatas[inexPath.row];
         
+        model = self.inviteDatas[inexPath.row];
         
     } else {
         
@@ -852,13 +1017,13 @@
     } else {
         
         model = self.careDatas[indexPath.row];
-
+        
     }
     
     if (model.likedIt) {
         
         [XFFindNetworkManager unlikeWithStatusId:model.id successBlock:^(id responseObj) {
-        
+            
             [self refreshlikeStatusWithModel:model witfFollowed:NO];
             
         } failBlock:^(NSError *error) {
@@ -905,7 +1070,7 @@
     detailVC.userName = model.user[@"nickname"];
     detailVC.iconUrl = model.user[@"headIconUrl"];
     [self.navigationController pushViewController:detailVC animated:YES];
-
+    
 }
 
 - (void)findCellNode:(XFFindCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath {
@@ -951,14 +1116,14 @@
         
         // 取消关注
         [XFMineNetworkManager unCareSomeoneWithUid:model.user[@"uid"] successBlock:^(id responseObj) {
-
+            
             [HUD hideAnimated:YES];
-            [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:NO] ;
-
-
+            [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:NO reload:YES] ;
+            
+            
         } failedBlock:^(NSError *error) {
             [HUD hideAnimated:YES];
-
+            
             
         } progressBlock:^(CGFloat progress) {
             
@@ -966,23 +1131,23 @@
         }];
         
     } else {
+        
+        [XFMineNetworkManager careSomeoneWithUid:model.user[@"uid"] successBlock:^(id responseObj) {
+            [HUD hideAnimated:YES];
             
-            [XFMineNetworkManager careSomeoneWithUid:model.user[@"uid"] successBlock:^(id responseObj) {
-                [HUD hideAnimated:YES];
-
-                [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:YES];
-                
-            } failedBlock:^(NSError *error) {
-                
-                [HUD hideAnimated:YES];
-
-            } progressBlock:^(CGFloat progress) {
-                
-                
-            }];
+            [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:YES reload:YES];
             
-        }
-
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+    }
+    
 }
 
 - (void)refreshlikeStatusWithModel:(XFStatusModel *)model witfFollowed:(BOOL)liked {
@@ -993,9 +1158,9 @@
         
         model.likeNum = status.likeNum;
         model.likedIt = !model.likedIt;
-
+        
         XFFindCellNode *node;
-
+        
         if (self.isInvite) {
             
             NSInteger index = [self.inviteDatas indexOfObject:model];
@@ -1006,7 +1171,7 @@
             NSInteger index = [self.careDatas indexOfObject:model];
             [self.rightNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
             node = [self.rightNode nodeForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-
+            
         }
         
         
@@ -1023,10 +1188,10 @@
     
 }
 
-- (void)refreshFollowStatusWithUid:(NSString *)uid witfFollowed:(BOOL)followed {
+- (void)refreshFollowStatusWithUid:(NSString *)uid witfFollowed:(BOOL)followed reload:(BOOL)reload {
     
-    if (self.isInvite) {
-        
+//    if (self.isInvite) {
+    
         for (XFStatusModel *model in self.inviteDatas) {
             
             if ([model.user[@"uid"] intValue] == [uid intValue]) {
@@ -1036,13 +1201,53 @@
                 [dic setObject:@(followed) forKey:@"followed"];
                 
                 model.user = dic.copy;
+                
+                if (followed) {
+                    
+                    [self.careDatas addObject:model];
+                }
             }
-        
+            
         }
         
-        // 分开刷新
-        [self reloadLeftData];
-    }
+        if (reload) {
+            
+            // 分开刷新
+            [self reloadLeftData];
+        }
+
+//    } else {
+    
+        NSMutableArray *datas = [NSMutableArray array];
+        for (XFStatusModel *model in self.careDatas) {
+            
+            if ([model.user[@"uid"] intValue] == [uid intValue]) {
+                
+                if (!followed) {
+                    
+                    NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:model.user];
+
+                    [dic setObject:@(followed) forKey:@"followed"];
+
+                    model.user = dic.copy;
+                    
+                }
+
+            } else {
+                
+                [datas addObject:model];
+                
+            }
+            
+        }
+        
+        self.careDatas = datas;
+        if (reload) {
+            
+            // 分开刷新
+            [self reloadrihtData];
+        }
+//    }
     
 }
 
@@ -1062,7 +1267,7 @@
     self.hdIsopen = NO;
     [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:(UITableViewRowAnimationFade)];
     [self.tableNode scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
-
+    
 }
 
 - (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
@@ -1080,11 +1285,11 @@
     if (self.scrollView.contentOffset.x == 0) {
         
         [self reloadLeftData];
-
+        
     } else {
         
         [self reloadrihtData];
-
+        
     }
     
 }
@@ -1101,14 +1306,26 @@
                     
                     XFFindSearchNode *searchNode = [[XFFindSearchNode alloc] init];
                     
+                    if ([_indexPathsTobeReload containsObject:indexPath]) {
+                        
+                        ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                        
+                        searchNode.neverShowPlaceholders = YES;
+                        oldCellNode.neverShowPlaceholders = YES;
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            searchNode.neverShowPlaceholders = NO;
+                            
+                            
+                        });
+                        
+                    }
+                    
                     return searchNode;
                     
-                }
-                
+                } else {
                     XFFIndHeaderCell *node = [[XFFIndHeaderCell alloc] initWithModel:self.adDatas[indexPath.row - 1]];
                     
                     node.delegate = self;
-                
                     if (indexPath.row == self.hdCount) {
                         
                         node.isEnd = YES;
@@ -1118,7 +1335,29 @@
                         
                         node.isEnd = NO;
                     }
+                    
+                    if ([_indexPathsTobeReload containsObject:indexPath]) {
+                        
+                        ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                        
+                        node.neverShowPlaceholders = YES;
+                        oldCellNode.neverShowPlaceholders = YES;
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            node.neverShowPlaceholders = NO;
+                        
+                        });
+                    }
+                    return node;
+                }
+            }
+                break;
+            case 1:
+            {
                 
+                XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.inviteDatas[indexPath.row]];
+                node.delegate = self;
+                node.index = indexPath;
+                node.neverShowPlaceholders = YES;
                 if ([_indexPathsTobeReload containsObject:indexPath]) {
                     
                     ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
@@ -1128,43 +1367,12 @@
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                         node.neverShowPlaceholders = NO;
                         
-                        NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
-                        
-                        [self.indexPathsTobeReload removeObjectAtIndex:index];
                         
                     });
                     
                 }
                 
-                    return node;
-                
-            }
-                break;
-            case 1:
-            {
-                    
-                XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.inviteDatas[indexPath.row]];
-                node.delegate = self;
-                node.index = indexPath;
-                node.neverShowPlaceholders = YES;
-                    if ([_indexPathsTobeReload containsObject:indexPath]) {
-                        
-                        ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
-                        
-                        node.neverShowPlaceholders = YES;
-                        oldCellNode.neverShowPlaceholders = YES;
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                            node.neverShowPlaceholders = NO;
-                            
-                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
-                            
-                            [self.indexPathsTobeReload removeObjectAtIndex:index];
-                            
-                        });
-                        
-                    }
-                    
-                    return node;
+                return node;
             }
                 break;
             default:
@@ -1172,12 +1380,12 @@
         }
     } else {
         
-            XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.careDatas[indexPath.row]];
-
-            node.index = indexPath;
-
+        XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.careDatas[indexPath.row]];
+        
+        node.index = indexPath;
+        
         node.delegate = self;
-
+        
         if ([_indexPathsTobeReload containsObject:indexPath]) {
             
             ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
@@ -1190,13 +1398,13 @@
             });
             
         }
-            
-            return node;
+        
+        return node;
         
     }
     
     return nil;
-
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

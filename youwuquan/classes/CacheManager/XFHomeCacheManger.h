@@ -26,9 +26,11 @@
 
 @property (nonatomic,strong) NSArray *videoData;
 
+@property (nonatomic,copy) NSArray *nearData;
+
 + (instancetype)sharedManager;
 
 - (void)removeAllData;
 
-
+- (void)updateNearData:(NSArray *)nearData;
 @end

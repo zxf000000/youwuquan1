@@ -30,7 +30,9 @@
 #import "XFPayViewController.h"
 #import "XFAlertViewController.h"
 #import "XFMineNetworkManager.h"
-
+#import "XFMyDetailViewController.h"
+#import "XFVIPCenterViewController.h"
+#import "XFRefreshInfoViewController.h"
 
 #define kHeaderHeight (kScreenWidth * 195/375.f)
 
@@ -116,6 +118,9 @@
 @property (nonatomic,strong) UIButton *addDiamondsButton;
 @property (nonatomic,strong) UIButton *addGoldButton;
 
+@property (nonatomic,assign) BOOL isChanged;
+
+
 @end
 
 @implementation XFMineViewController
@@ -123,8 +128,8 @@
 - (instancetype)init {
     
     if (self = [super init]) {
-        _titles = @[@"每日任务",@"下载",@"设置"];
-        _imgs = @[@"me_rw",@"me_xz",@"me_sz"];
+        _titles = @[@"下载",@"设置"];
+        _imgs = @[@"me_xz",@"me_sz"];
 
     }
     return self;
@@ -151,9 +156,14 @@
     
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     
+    if (self.isChanged) {
+        
+        [self refreshUserInfo];
+        [self loadBalanceInfo];
+    }
+    
     //    [self loadData];
-    [self refreshUserInfo];
-    [self loadBalanceInfo];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -211,9 +221,14 @@
         
         [[XFUserInfoManager sharedManager] updateUserInfo:responseObj];
         
-        self.userInfo = responseObj;
+        if (self.userInfo != responseObj) {
+            
+            self.userInfo = responseObj;
+            [self refreshData];
+
+        }
         
-        [self refreshData];
+        
         
     } failedBlock:^(NSError *error) {
         
@@ -249,11 +264,18 @@
 // 动态哦
 - (void)headerDidClickStatuslabel {
     
-    XFAllMyStatusViewController *myStatusVC = [[XFAllMyStatusViewController alloc] init];
+    XFMyDetailViewController *detailVC = [[XFMyDetailViewController alloc] init];
+    detailVC.userId = self.userInfo[@"basicInfo"][@"uid"];
+    detailVC.userName = self.userInfo[@"basicInfo"][@"nickname"];
+    detailVC.iconUrl = self.userInfo[@"basicInfo"][@"headIconUrl"];
+    detailVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:detailVC animated:YES];
     
-    myStatusVC.hidesBottomBarWhenPushed = YES;
-    
-    [self.navigationController pushViewController:myStatusVC animated:YES];
+//    XFAllMyStatusViewController *myStatusVC = [[XFAllMyStatusViewController alloc] init];
+//
+//    myStatusVC.hidesBottomBarWhenPushed = YES;
+//
+//    [self.navigationController pushViewController:myStatusVC animated:YES];
     
 }
 // 关注
@@ -298,13 +320,17 @@
         case 0:
         {
             // 我的资料
-            XFMyInfoViewController *infoVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFMyInfoViewController"];
             
-            infoVC.hidesBottomBarWhenPushed = YES;
-            
-            infoVC.userInfo = self.userInfo;
-            
-            [self.navigationController pushViewController:infoVC animated:YES];
+            XFRefreshInfoViewController *refreshInfoVC = [[XFRefreshInfoViewController alloc] init];
+            refreshInfoVC.userInfo = self.userInfo;
+            refreshInfoVC.refreshInfoBlock = ^{
+              
+                [self refreshUserInfo];
+                [self loadBalanceInfo];
+                
+            };
+            refreshInfoVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:refreshInfoVC animated:YES];
             
         }
             break;
@@ -320,15 +346,10 @@
             break;
         case 2:
         {
-            // 我的技能
-            [XFToolManager showProgressInWindowWithString:@"敬请期待"];
-            
-            return;
-//            XFSkillsViewController *skillVC = [[XFSkillsViewController alloc] init];
-//
-//            skillVC.hidesBottomBarWhenPushed = YES;
-//
-//            [self.navigationController pushViewController:skillVC animated:YES];
+            // vip中心
+            XFVIPCenterViewController *vipVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFVIPCenterViewController"];
+            vipVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:vipVC animated:YES];
             
         }
             break;
@@ -352,13 +373,24 @@
         case 5:
         {
             // 我的相册
-            XFMyPhotoViewController *photoVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFMyPhotoViewController"];
+//            XFMyPhotoViewController *photoVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFMyPhotoViewController"];
+//
+//            photoVC.hidesBottomBarWhenPushed = YES;
+//
+//            photoVC.photoAlbums = self.userInfo[@"albums"];
+//            [self.navigationController pushViewController:photoVC animated:YES];
             
-            photoVC.hidesBottomBarWhenPushed = YES;
+            // 我的技能
+            [XFToolManager showProgressInWindowWithString:@"敬请期待"];
             
-            photoVC.photoAlbums = self.userInfo[@"albums"];
-            [self.navigationController pushViewController:photoVC animated:YES];
+            return;
+            //            XFSkillsViewController *skillVC = [[XFSkillsViewController alloc] init];
+            //
+            //            skillVC.hidesBottomBarWhenPushed = YES;
+            //
+            //            [self.navigationController pushViewController:skillVC animated:YES];
             
+
         }
             break;
     }
@@ -392,22 +424,18 @@
             
         case 1:
         {
-            XFEverydayMissionViewController *missionVC = [[XFEverydayMissionViewController alloc] init];
-            missionVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:missionVC animated:YES];
-        }
-            break;
-        case 2:
-        {
             // 下载页面
             XFDownloadViewController *downLoadVC = [[XFDownloadViewController alloc] init];
             downLoadVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:downLoadVC animated:YES];
-            
+//            XFEverydayMissionViewController *missionVC = [[XFEverydayMissionViewController alloc] init];
+//            missionVC.hidesBottomBarWhenPushed = YES;
+//            [self.navigationController pushViewController:missionVC animated:YES];
         }
             break;
-        case 3:
+        case 2:
         {
+            
             XFSetViewController *setVC  =[[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFSetViewController"];
             
             setVC.hidesBottomBarWhenPushed = YES;
@@ -415,6 +443,16 @@
             setVC.tabbarVC = (XFMainTabbarViewController *)self.tabBarController;
             
             [self.navigationController pushViewController:setVC animated:YES];
+
+            
+        }
+            break;
+        case 3:
+        {
+            // 下载页面
+            XFDownloadViewController *downLoadVC = [[XFDownloadViewController alloc] init];
+            downLoadVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:downLoadVC animated:YES];
         }
             break;
     }
@@ -667,14 +705,14 @@
     self.nameLabel.font = [UIFont systemFontOfSize:16];
     self.nameLabel.textColor = [UIColor whiteColor];
     
-    self.vipButton = [[UIButton alloc] init];
-    [self.vipButton setImage:[UIImage imageNamed:@"mine_vip"] forState:(UIControlStateNormal)];
-    [self.vipButton setImage:[UIImage imageNamed:@"mine_vip"] forState:(UIControlStateSelected)];
-    [self.vipButton setTitle:@"会员" forState:(UIControlStateNormal)];
-    self.vipButton.titleLabel.font = [UIFont systemFontOfSize:12];
-    [self.vipButton addTarget:self action:@selector(clickVipButton) forControlEvents:(UIControlEventTouchUpInside)];
-    self.vipButton.contentMode = UIViewContentModeScaleToFill;
-    [self.headerInfoView addSubview:self.vipButton];
+//    self.vipButton = [[UIButton alloc] init];
+//    [self.vipButton setImage:[UIImage imageNamed:@"mine_vip"] forState:(UIControlStateNormal)];
+//    [self.vipButton setImage:[UIImage imageNamed:@"mine_vip"] forState:(UIControlStateSelected)];
+//    [self.vipButton setTitle:@"会员" forState:(UIControlStateNormal)];
+//    self.vipButton.titleLabel.font = [UIFont systemFontOfSize:12];
+//    [self.vipButton addTarget:self action:@selector(clickVipButton) forControlEvents:(UIControlEventTouchUpInside)];
+//    self.vipButton.contentMode = UIViewContentModeScaleToFill;
+//    [self.headerInfoView addSubview:self.vipButton];
     
     self.locationLabel = [[UILabel alloc] init];
     [self.headerInfoView addSubview:self.locationLabel];
@@ -684,29 +722,29 @@
     self.locationLabel.textColor = [UIColor whiteColor];
 
     
-    self.diamondsButton = [[UIButton alloc] init];
-    [self.diamondsButton setImage:[UIImage imageNamed:@"zuanshi"] forState:(UIControlStateNormal)];
-    [self.diamondsButton setTitle:@"12345" forState:(UIControlStateNormal)];
-    self.diamondsButton.titleLabel.font = [UIFont systemFontOfSize:12];
-    [self.headerInfoView addSubview:self.diamondsButton];
+//    self.diamondsButton = [[UIButton alloc] init];
+//    [self.diamondsButton setImage:[UIImage imageNamed:@"zuanshi"] forState:(UIControlStateNormal)];
+//    [self.diamondsButton setTitle:@"12345" forState:(UIControlStateNormal)];
+//    self.diamondsButton.titleLabel.font = [UIFont systemFontOfSize:12];
+//    [self.headerInfoView addSubview:self.diamondsButton];
     
-    self.goldButton = [[UIButton alloc] init];
-    [self.goldButton setImage:[UIImage imageNamed:@"money_jinbi"] forState:(UIControlStateNormal)];
-    [self.goldButton setTitle:@"12345" forState:(UIControlStateNormal)];
-    self.goldButton.titleLabel.font = [UIFont systemFontOfSize:12];
+//    self.goldButton = [[UIButton alloc] init];
+//    [self.goldButton setImage:[UIImage imageNamed:@"money_jinbi"] forState:(UIControlStateNormal)];
+//    [self.goldButton setTitle:@"12345" forState:(UIControlStateNormal)];
+//    self.goldButton.titleLabel.font = [UIFont systemFontOfSize:12];
 
-    [self.headerInfoView addSubview:self.goldButton];
-    
-    self.addDiamondsButton = [[UIButton alloc] init];
-    [self.addDiamondsButton setImage:[UIImage imageNamed:@"money_addwhite"] forState:(UIControlStateNormal)];
-    [self.headerInfoView addSubview:self.addDiamondsButton];
-    
-    self.addGoldButton = [[UIButton alloc] init];
-    [self.addGoldButton setImage:[UIImage imageNamed:@"money_addwhite"] forState:(UIControlStateNormal)];
-    [self.headerInfoView addSubview:self.addGoldButton];
-    
-    [self.addGoldButton addTarget:self action:@selector(clickAddMoneyButton:) forControlEvents:(UIControlEventTouchUpInside)];
-    [self.addDiamondsButton addTarget:self action:@selector(clickAddMoneyButton:) forControlEvents:(UIControlEventTouchUpInside)];
+//    [self.headerInfoView addSubview:self.goldButton];
+//
+//    self.addDiamondsButton = [[UIButton alloc] init];
+//    [self.addDiamondsButton setImage:[UIImage imageNamed:@"money_addwhite"] forState:(UIControlStateNormal)];
+//    [self.headerInfoView addSubview:self.addDiamondsButton];
+//
+//    self.addGoldButton = [[UIButton alloc] init];
+//    [self.addGoldButton setImage:[UIImage imageNamed:@"money_addwhite"] forState:(UIControlStateNormal)];
+//    [self.headerInfoView addSubview:self.addGoldButton];
+//
+//    [self.addGoldButton addTarget:self action:@selector(clickAddMoneyButton:) forControlEvents:(UIControlEventTouchUpInside)];
+//    [self.addDiamondsButton addTarget:self action:@selector(clickAddMoneyButton:) forControlEvents:(UIControlEventTouchUpInside)];
 
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
        
@@ -760,42 +798,42 @@
 //
 //    }];
     
-        [self.addGoldButton mas_makeConstraints:^(MASConstraintMaker *make) {
-
-            make.bottom.mas_offset(-7);
-            make.right.mas_equalTo(self.headerInfoView.mas_centerX).offset(-70);
-            make.height.width.mas_equalTo(20);
-
-        }];
-
-        [self.goldButton mas_makeConstraints:^(MASConstraintMaker *make) {
-
-            make.right.mas_equalTo(self.addGoldButton.mas_left).offset(-10);
-            make.centerY.mas_equalTo(self.addGoldButton);
-
-        }];
-
-            [self.diamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
-
-                make.bottom.mas_equalTo(self.goldButton.mas_top).offset(-7);
-                make.right.mas_equalTo(self.goldButton);
-
-            }];
-
-            [self.addDiamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
-
-                make.right.height.width.mas_equalTo(self.addGoldButton);
-                make.centerY.mas_equalTo(self.diamondsButton);
-
-            }];
-
-        [self.vipButton mas_makeConstraints:^(MASConstraintMaker *make) {
-
-            make.right.mas_offset(-20);
-            make.width.height.mas_equalTo(70);
-            make.centerY.mas_equalTo(self.goldButton.mas_top).offset(-3);
-
-        }];
+//        [self.addGoldButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//            make.bottom.mas_offset(-7);
+//            make.right.mas_equalTo(self.headerInfoView.mas_centerX).offset(-70);
+//            make.height.width.mas_equalTo(20);
+//
+//        }];
+//
+//        [self.goldButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//            make.right.mas_equalTo(self.addGoldButton.mas_left).offset(-10);
+//            make.centerY.mas_equalTo(self.addGoldButton);
+//
+//        }];
+//
+//            [self.diamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//                make.bottom.mas_equalTo(self.goldButton.mas_top).offset(-7);
+//                make.right.mas_equalTo(self.goldButton);
+//
+//            }];
+//
+//            [self.addDiamondsButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//                make.right.height.width.mas_equalTo(self.addGoldButton);
+//                make.centerY.mas_equalTo(self.diamondsButton);
+//
+//            }];
+//
+//        [self.vipButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//
+//            make.right.mas_offset(-20);
+//            make.width.height.mas_equalTo(70);
+//            make.centerY.mas_equalTo(self.goldButton.mas_top).offset(-3);
+//
+//        }];
     
     self.iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"me_tou1"]];
     
@@ -806,11 +844,11 @@
     self.iconView.layer.cornerRadius = 45;
     self.iconView.layer.masksToBounds = YES;
     
-    // TODO:
-    UITapGestureRecognizer *tapHeader = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickTapImage)];
-    self.iconView.userInteractionEnabled = YES;
-    [self.iconView addGestureRecognizer:tapHeader];
-    
+//    // TODO:
+//    UITapGestureRecognizer *tapHeader = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickTapImage)];
+//    self.iconView.userInteractionEnabled = YES;
+//    [self.iconView addGestureRecognizer:tapHeader];
+//
 }
 
 - (void)clickVipButton {

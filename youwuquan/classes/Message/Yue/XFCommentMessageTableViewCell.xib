@@ -68,16 +68,17 @@
                 <outlet property="contentLabel" destination="ryw-Vm-iKh" id="8Ng-0F-HGo"/>
                 <outlet property="hasNoPicContrains" destination="adL-oN-dmo" id="9UL-aw-dqI"/>
                 <outlet property="hasPicConstain" destination="4gW-4q-bt5" id="6SB-CR-fzE"/>
+                <outlet property="iconView" destination="S4e-2k-bEJ" id="P51-Ds-MPs"/>
                 <outlet property="likeBottomContrains" destination="ymO-gL-dHq" id="HOW-Sl-Aol"/>
                 <outlet property="likeButton" destination="H2f-Mw-OcX" id="GVA-bb-3GG"/>
                 <outlet property="statusPic" destination="drh-eC-U3G" id="hur-bI-UNq"/>
             </connections>
-            <point key="canvasLocation" x="-39" y="80"/>
+            <point key="canvasLocation" x="309" y="-7"/>
         </tableViewCell>
     </objects>
     <resources>
         <image name="find13" width="500" height="750"/>
         <image name="find_icon2" width="45" height="45"/>
-        <image name="home_liked" width="20" height="18"/>
+        <image name="home_liked" width="20" height="16"/>
     </resources>
 </document>

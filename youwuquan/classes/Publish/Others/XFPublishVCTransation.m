@@ -76,10 +76,54 @@
             [self popAnimation:transitionContext];
         }
             break;
-            
+        case SheetPresent:
+        {
+            [self sheetPresent:transitionContext];
+        }
+            break;
         default:
             break;
     }
+    
+}
+
+- (void)sheetPresent:(id<UIViewControllerContextTransitioning>)transitionContext {
+
+    XFGiftViewController *toVC = (XFGiftViewController *)[transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+    UIViewController *fromVC = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    
+    toVC.shadowView = [[UIView alloc] init];
+    toVC.shadowView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+    toVC.shadowView.backgroundColor = [UIColor blackColor];
+    toVC.shadowView.alpha = 0;
+    
+    UIView *containerView = [transitionContext containerView];
+    [containerView addSubview:toVC.shadowView];
+    [containerView addSubview:toVC.view];
+    
+    toVC.view.frame = CGRectMake(0, containerView.height,containerView.width, containerView.height);
+    
+    POPSpringAnimation *animation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+    
+    animation.toValue = [NSValue valueWithCGRect:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+    
+    [toVC.view pop_addAnimation:animation forKey:@""];
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        
+        toVC.shadowView.alpha = 0.7;
+        
+    } completion:^(BOOL finished) {
+        
+        [transitionContext completeTransition:finished];
+        
+        if ([transitionContext transitionWasCancelled]) {
+            //失败后，我们要把vc1显示出来
+            fromVC.view.hidden = NO;
+        }
+        
+    }];
+    
     
 }
 

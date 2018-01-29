@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "XFNearModel.h"
+#import "XFHomeDataModel.h"
 
 @interface XFNearbyTableViewCell : UICollectionViewCell
 
@@ -18,6 +19,10 @@
 @property (nonatomic,copy) NSArray *iconImages;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 
+@property (nonatomic,strong) NSMutableArray *iconsVIew;
+
 @property (nonatomic,strong) XFNearModel *model;
+
+@property (nonatomic,strong) XFHomeDataModel *homeModel;
 
 @end

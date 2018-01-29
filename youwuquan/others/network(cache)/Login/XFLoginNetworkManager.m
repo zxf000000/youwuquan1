@@ -79,11 +79,12 @@
 + (void)loginWithPhone:(NSString *)phone pwd:(NSString *)pwd longitude:(NSString *)longitude latitude:(NSString *)latitude progress:(LoginRequestProgressBlock)progressBlock successBlock:(LoginRequestSuccessBlock)successBlock failBlock:(LoginRequestFailedBlock)failBlock {
     
     NSDictionary *params = @{@"username":phone,
-                             @"password":[XFToolManager md5:pwd],
+                             @"password":pwd,
                              @"remember-me":@(YES),
                              @"longitude":@([longitude doubleValue]),
                              @"latitude":@([latitude doubleValue])
                              };
+    
     
     [XFNetworking postWithUrl:[XFApiClient pathUrlForLogin] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
@@ -276,6 +277,117 @@
     } failBlock:^(NSError *error) {
         
         failBlock(error);
+        
+    }];
+    
+}
+
++ (void)signUpWithType:(NSString *)type username:(NSString *)username token:(NSString *)token phone:(NSString *)phone code:(NSString *)code progress:(LoginRequestProgressBlock)progressBlock successBlock:(LoginRequestSuccessBlock)successBlock failBlock:(LoginRequestFailedBlock)failBlock {
+    
+        
+        NSDictionary *params = @{@"username":username,
+                                 @"token":token,
+                                 @"phone":phone,
+                                 @"code":code
+                                 };
+    NSLog(@"%@",type);
+    
+        [XFNetworking postWithUrl:[XFApiClient pathUrlForSignupWith:type] refreshRequest:NO cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+            
+            progressBlock(bytesRead/(CGFloat)totalBytes);
+            
+        } successBlock:^(id response) {
+            
+            // 获取融云
+            [self getImTokenWithprogress:^(CGFloat progress) {
+                
+            } successBlock:^(id responseObj) {
+                
+                NSString *token = responseObj[@"token"];
+                
+                // 成功之后登录融云
+                [self loginRongyunWithRongtoken:token successBlock:^(id responseObj) {
+                    
+                    [XFUserInfoManager sharedManager].rongToken = token;
+                    
+                    successBlock(responseObj);
+                    
+                } failedBlock:^(NSError *error) {
+                    
+                    failBlock(error);
+                    
+                }];
+
+            } failBlock:^(NSError *error) {
+                failBlock(error);
+            }];
+            
+        } failBlock:^(NSError *error) {
+            
+            failBlock(error);
+            
+        }];
+        
+        
+    
+}
+
++ (void)checkIsHasUserWith:(NSString *)uid
+              successBlock:(LoginRequestSuccessBlock)success
+               failedBlock:(LoginRequestFailedBlock)failed {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForCheckIsHasUserWith:uid] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+    } successBlock:^(id response) {
+        success(response);
+
+    } failBlock:^(NSError *error) {
+        failed(error);
+
+    }];
+    
+}
+
+/**
+ 刷新/获取token
+ 
+ @param success 0
+ @param failed 0
+ */
++ (void)getMyTokenWithsuccessBlock:(LoginRequestSuccessBlock)success
+                       failedBlock:(LoginRequestFailedBlock)failed {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetMyToken] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+    } successBlock:^(id response) {
+        success(response);
+        
+    } failBlock:^(NSError *error) {
+        failed(error);
+        
+    }];
+    
+}
+
+
+/**
+ token登录
+ 
+ @param token token
+ @param success 0
+ @param failed 0
+ */
++ (void)loginWithToken:(NSString *)token
+          successBlock:(LoginRequestSuccessBlock)success
+           failedBlock:(LoginRequestFailedBlock)failed {
+    
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForLoginWithToken] refreshRequest:YES cache:NO praams:@{@"token":token} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+    } successBlock:^(id response) {
+        success(response);
+        
+    } failBlock:^(NSError *error) {
+        failed(error);
         
     }];
     

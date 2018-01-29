@@ -120,6 +120,10 @@
 
 @property (nonatomic,assign) NSInteger picCount;
 
+// 声音
+@property (nonatomic,strong) ASButtonNode *voiceButton;
+@property (nonatomic,strong) ASTextNode *voiceTimeNode;
+
 @property (nonatomic,strong) ASButtonNode *playButton;
 
 @property (nonatomic,copy) NSArray *allImgs;

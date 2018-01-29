@@ -8,7 +8,8 @@
 
 #import "XFApiClient.h"
 
-#define YBYHost @"http://47.104.153.152:80/api/v1/"
+//#define YBYHost @"http://192.168.1.150:8000/api/v1/"
+//#define YBYHost @"http://47.104.153.152:80/api/v1/"
 //#define YBYHost @"http://192.168.123.179:80/api/v1/"
 
 // 用户登录
@@ -18,9 +19,6 @@
 
 // 发送验证码
 #define YBYSendCode(phone) [NSString stringWithFormat:@"signup/sendcode/%@",(phone)]
-
-// 注册账号
-#define YBYSignup @"signup"
 // 修改密码
 #define YBYResetPwd @"reset-password"
 
@@ -49,7 +47,7 @@
 
 
 // 附近的人
-#define YBYNearby @"nearby"
+#define YBYNearby @"page/homepage/nearby"
 
 // 查看视频详情
 #define YBYVideoDetail(videoId) [NSString stringWithFormat:@"video/%@",(videoId)]
@@ -119,23 +117,31 @@
 // 公开相册
 #define YBYGEtMyOpenPhoto @"user/picture/open"
 // 下载相册
-#define YBYGetDownPics @"photography"
+#define YBYGetDownPics @"photographs"
 
 // 相册封面
 #define YBYGetPhotoCover @"user/cover"
 
 // 首页数据
 #define YBYHomeData @"page/homepage"
+#define YBYHomeDataMore @"page/homepage/more"
+
 // 首页广告
 #define YBYHomeAd @"page/homepage/advertisements"
 // 网红页面
 #define YBYNetHotData @"page/hot-person"
+#define YBYNetHotDataMore @"page/hot-person/more"
+
 // 视频页面
 #define YBYVideoPage @"page/video"
+#define YBYVideoPageHD @"page/video/hd"
+#define YBYVideoPageVR @"page/video/vr"
+
 // 视频页面广告
 #define YBYVideoAd @"page/video/advertisements"
 // 尤物页面
 #define YBYPrettyGirl @"page/youwu"
+#define YBYPrettyGirlMore @"page/youwu/more"
 
 //------------------------------------------- 可爱的分割线 --------------------------------------//
 // 账户相关
@@ -206,6 +212,33 @@
 #define YBYGetVipList @"user/vip/list"
 // 更新用户位置
 #define YBYRefreshUserLocation @"position"
+
+// 获取七牛上传token
+#define YBYGetQiniuUploadToken @"qiuniu/token"
+
+// 第三番登录绑定
+#define YBYSignUpWith(type) [NSString stringWithFormat:@"signup/%@",(type)]
+
+// 获取地址列表
+#define YBYGetAddressList @"user/address/list"
+// 添加地址
+#define YBYAddAddress @"user/address"
+// 修改地址
+#define YBYUpdateaddressWith(id) [NSString stringWithFormat:@"user/address/%@",(id)]
+
+// 查看是否注册过
+#define YBYCheckIsHasUserWithId(id) [NSString stringWithFormat:@"signup/%@",(id)]
+
+#define YBYGetMyToken @"token"
+
+#define YBYLoginWithToken @"signin/use-token"
+
+#define YBYUnlockVideoWithId(videoId) [NSString stringWithFormat:@"unlock/video/%@",(videoId)]
+
+// 根据上次日期获取时间节点的个人通知
+#define YBYGetNotificationsByDate @"message/personal/by-date"
+// 根据上次日期获取节点时间系统通知
+#define YBYGetSystemNotificationWithDate @"message/system/by-date"
 
 @implementation XFApiClient
 
@@ -697,6 +730,88 @@
 + (NSString *)pathUrlForGetCahrgeList {
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetChargeList];
+}
+
++ (NSString *)pathUrlForGetQiniuToken {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetQiniuUploadToken];
+}
+
++ (NSString *)pathUrlForSignupWith:(NSString *)type {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYSignUpWith(type)];
+}
+
++ (NSString *)pathUrlForMoreNethot {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYNetHotDataMore];
+}
+
++ (NSString *)pathUrlForGetMorePretty {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYPrettyGirlMore];
+}
+
++ (NSString *)pathUrlForGetHdVideoList {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYVideoPageHD];
+}
+
++ (NSString *)pathUrlForGetVrVideoList {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYVideoPageVR];
+}
+
+
++ (NSString *)pathUrlForGetHomeMoreData {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYHomeDataMore];
+}
+
++ (NSString *)pathUrlForAddressList {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetAddressList];
+}
+
++ (NSString *)pathUrlForAddAddress {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYAddAddress];
+}
+
++ (NSString *)pathUrlForUpdateAddress:(NSString *)addressId {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYUpdateaddressWith(addressId)];
+}
+
++ (NSString *)pathUrlForCheckIsHasUserWith:(NSString *)uid
+{
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYCheckIsHasUserWithId(uid)];
+}
+
++ (NSString *)pathUrlForGetMyToken {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetMyToken];
+}
+
++ (NSString *)pathUrlForLoginWithToken {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYLoginWithToken];
+}
+
++ (NSString *)pathUrlForUblockVideoWith:(NSString *)videoId {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYUnlockVideoWithId(videoId)];
+}
+
++ (NSString *)pathUrlForGetPersonNotification {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetNotificationsByDate];
+}
+
++ (NSString *)pathUrlForGetSystemNotification {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetSystemNotificationWithDate];
 }
 
 

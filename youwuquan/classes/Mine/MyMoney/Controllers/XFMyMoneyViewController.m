@@ -190,45 +190,21 @@
       
         XFPayViewController *payVC = [[XFPayViewController alloc] init];
         
-        payVC.type = XFPayVCTypeCharge;
+//        payVC.type = XFPayVCTypeCharge;
         
         [self.navigationController pushViewController:payVC animated:YES];
         
-        return;
-        
-//        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:@"正在充值"];
-//        // 充值
-//        [XFMoneyNetworkManager chargeDiamondWithNUm:@"1000" successBlock:^(NSDictionary *responseDic) {
-//
-//            if (responseDic) {
-//
-//                [XFToolManager changeHUD:HUD successWithText:@"充值成功"];
-//
-//                [self loadDataWithoutProgress];
-//
-//            } else {
-//
-//                [HUD hideAnimated:YES];
-//
-//            }
-//
-//        } failedBlock:^(NSError *error) {
-//
-//            [HUD hideAnimated:YES];
-//
-//        }];
-        
     };
     
-    cell.clickChouJiangBlock = ^{
-      
-        XFCHouJiangViewController *choujiangVC = [[XFCHouJiangViewController alloc] init];
-        
-        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:choujiangVC];
-        
-        [self presentViewController:navi animated:YES completion:nil];
-        
-    };
+//    cell.clickChouJiangBlock = ^{
+//
+//        XFCHouJiangViewController *choujiangVC = [[XFCHouJiangViewController alloc] init];
+//
+//        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:choujiangVC];
+//
+//        [self presentViewController:navi animated:YES completion:nil];
+//
+//    };
     
     cell.clickShareButtonBlock = ^{
         

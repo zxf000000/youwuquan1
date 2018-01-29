@@ -23,16 +23,16 @@
         _weChatButton.cornerRadius = 4;
         [self addSubnode:_weChatButton];
         
-        _phoneNode = [[ASButtonNode alloc] init];
-        _phoneNode.backgroundColor = UIColorHex(6D67E1);
-        [_phoneNode setTitle:@"查看电话" withFont:[UIFont systemFontOfSize:14] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-        [_phoneNode setImage:[UIImage imageNamed:@"find_phone"] forState:(UIControlStateNormal)];
-        _phoneNode.cornerRadius = 4;
-        _phoneNode.backgroundColor = kMainRedColor;
-        [self addSubnode:_phoneNode];
+//        _phoneNode = [[ASButtonNode alloc] init];
+//        _phoneNode.backgroundColor = UIColorHex(6D67E1);
+//        [_phoneNode setTitle:@"查看电话" withFont:[UIFont systemFontOfSize:14] withColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+//        [_phoneNode setImage:[UIImage imageNamed:@"find_phone"] forState:(UIControlStateNormal)];
+//        _phoneNode.cornerRadius = 4;
+//        _phoneNode.backgroundColor = kMainRedColor;
+//        [self addSubnode:_phoneNode];
         
         [_weChatButton addTarget:self action:@selector(clickWxButton:) forControlEvents:(ASControlNodeEventTouchUpInside)];
-        [_phoneNode addTarget:self action:@selector(clickNumberButton:) forControlEvents:(ASControlNodeEventTouchUpInside)];
+//        [_phoneNode addTarget:self action:@selector(clickNumberButton:) forControlEvents:(ASControlNodeEventTouchUpInside)];
 
     }
     return self;
@@ -58,10 +58,10 @@
 
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
     
-    _weChatButton.style.preferredSize = _phoneNode.style.preferredSize = CGSizeMake((kScreenWidth - 35)/2, 45);
-    ASStackLayoutSpec *stackLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_weChatButton,_phoneNode]];
+    _weChatButton.style.preferredSize = CGSizeMake((kScreenWidth - 35), 45);
+//    ASStackLayoutSpec *stackLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:0 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_weChatButton,_phoneNode]];
     
-    return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(16, 17, 16, 17)) child:stackLayout];
+    return [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(16, 17, 16, 17)) child:_weChatButton];
     
 }
 

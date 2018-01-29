@@ -12,6 +12,7 @@
 #import <CoreText/CoreText.h>
 #import <Photos/Photos.h>
 #import <Accelerate/Accelerate.h>
+//#import "UIImage+GIF.h"
 
 @implementation XFToolManager
 
@@ -44,27 +45,68 @@
     
 }
 
++ (MJRefreshGifHeader *)refreshHeaderWithBlock:(void(^)(void))block {
+    
+    MJRefreshGifHeader *header = [MJRefreshGifHeader headerWithRefreshingBlock:block];
+    
+    NSMutableArray *images = [NSMutableArray array];
+    for (int i= 1 ; i < 75 ; i ++ ) {
+        
+        [images addObject:[UIImage imageNamed:[NSString stringWithFormat:@"图层%zd",i]]];
+        
+    }
+    // 设置普通状态的动画图片
+    [header setImages:images duration:2 forState:MJRefreshStateIdle];
+    // 设置即将刷新状态的动画图片（一松开就会刷新的状态）
+    [header setImages:images duration:2 forState:MJRefreshStatePulling];
+    // 设置正在刷新状态的动画图片
+    [header setImages:images duration:2 forState:MJRefreshStateRefreshing];
+    header.lastUpdatedTimeLabel.hidden = YES;
+    header.stateLabel.hidden = YES;
+    
+    return header;
+}
+
 + (MBProgressHUD *)showJiaHUDToView:(UIView *)view string:(NSString *)text {
     
     MBProgressHUD *HUD = [self showProgressHUDtoView:view];
-    HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
-    HUD.contentColor = [UIColor whiteColor];
+//    HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+//    HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
+//    HUD.contentColor = [UIColor whiteColor];
+//
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        HUD.mode = MBProgressHUDModeCustomView;
+//        HUD.detailsLabel.text = text;
+//        UIImageView *img = [[UIImageView alloc] init];
+//        img.image = [UIImage imageNamed:@"ds_ok"];
+//        HUD.customView = img;
+//        HUD.tintColor = [UIColor blackColor];
+//        HUD.animationType = MBProgressHUDAnimationZoom;
+//        [HUD hideAnimated:YES afterDelay:0.4];
+//    });
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        HUD.mode = MBProgressHUDModeCustomView;
-        HUD.detailsLabel.text = text;
-        UIImageView *img = [[UIImageView alloc] init];
-        img.image = [UIImage imageNamed:@"ds_ok"];
-        HUD.customView = img;
-        HUD.tintColor = [UIColor blackColor];
-        HUD.animationType = MBProgressHUDAnimationZoom;
-        [HUD hideAnimated:YES afterDelay:0.4];
-    });
+    
+    HUD.mode = MBProgressHUDModeCustomView;
+    HUD.animationType = MBProgressHUDAnimationZoom;
+    HUD.removeFromSuperViewOnHide = YES;
+    //    HUD.contentColor = kMainRedColor;
+    //    #881FD9 100%
+    HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+    //    HUD.bezelView.backgroundColor = [UIColor colorWithRed:247/255.f green:47/255.f blue:94/255.f alpha:0.7];
+    HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.4];
+    
+    YYAnimatedImageView *img = [[YYAnimatedImageView alloc] init];
+    img.autoPlayAnimatedImage = YES;
+
+    img.image = [YYImage imageNamed:@"loading"];
+    HUD.customView = img;
+    
+    HUD.minSize = CGSizeMake(80, 80);
     
     return HUD;
     
 }
+
 
 + (NSString*)DataTOjsonString:(id)object
 {
@@ -125,24 +167,50 @@
     
     
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:view animated:YES];
-    
-    HUD.mode = MBProgressHUDModeIndeterminate;
-    //    HUD.contentColor = [UIColor whiteColor];
-    HUD.progress = 0.9;
-    //    HUD.dimBackground = YES;
+//
+    HUD.mode = MBProgressHUDModeCustomView;
     HUD.animationType = MBProgressHUDAnimationZoom;
-    HUD.minShowTime = 0.3;
     HUD.removeFromSuperViewOnHide = YES;
-    //    [HUD showWhileExecuting:@selector(myProgressTask) onTarget:self withObject:nil animated:YES];
-    //    [HUD show:YES];
-    HUD.contentColor = [UIColor whiteColor];
-    
-    HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    HUD.bezelView.backgroundColor = [UIColor blackColor];
+//    HUD.mode = MBProgressHUDModeIndeterminate;
+//    //    HUD.contentColor = [UIColor whiteColor];
+//    HUD.progress = 0.9;
+//    //    HUD.dimBackground = YES;
+//    HUD.animationType = MBProgressHUDAnimationZoom;
+//    HUD.minShowTime = 0.3;
+//    HUD.removeFromSuperViewOnHide = YES;
+//    //    [HUD showWhileExecuting:@selector(myProgressTask) onTarget:self withObject:nil animated:YES];
+//    //    [HUD show:YES];
+//    HUD.contentColor = [UIColor whiteColor];
+//
+//    HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+//    HUD.bezelView.backgroundColor = [UIColor blackColor];
 //    [HUD hideAnimated:YES afterDelay:0.7];
     
-    HUD.label.text = text;
+//    HUD.label.text = text;
     
+    //    HUD.contentColor = kMainRedColor;
+    //    #881FD9 100%
+    HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+    //    HUD.bezelView.backgroundColor = [UIColor colorWithRed:247/255.f green:47/255.f blue:94/255.f alpha:0.7];
+    HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.4];
+    //    HUD.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
+    //    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    //    gradientLayer.colors = @[(__bridge id)[UIColor whiteColor].CGColor, (__bridge id)kMainRedColor.CGColor];
+    //    gradientLayer.locations = @[@0, @0.7];
+    //    gradientLayer.startPoint = CGPointMake(0.3, 0);
+    //    gradientLayer.endPoint = CGPointMake(1, 0.3);
+    //
+    //    gradientLayer.frame = CGRectMake(0, 0, 100, 100);
+    //
+    //    [HUD.bezelView.layer insertSublayer:gradientLayer atIndex:0];
+    YYAnimatedImageView *img = [[YYAnimatedImageView alloc] init];
+    img.autoPlayAnimatedImage = YES;
+    img.image = [YYImage imageNamed:@"loading"];
+
+
+    HUD.customView = img;
+
+
     return HUD;
 }
 
@@ -157,25 +225,22 @@
     
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:view animated:YES];
     
-    HUD.mode = MBProgressHUDModeIndeterminate;
+    HUD.mode = MBProgressHUDModeCustomView;
     HUD.animationType = MBProgressHUDAnimationZoom;
     HUD.removeFromSuperViewOnHide = YES;
-    HUD.contentColor = kMainRedColor;
+//    HUD.contentColor = kMainRedColor;
 //    #881FD9 100%
     HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
 //    HUD.bezelView.backgroundColor = [UIColor colorWithRed:247/255.f green:47/255.f blue:94/255.f alpha:0.7];
-    HUD.bezelView.backgroundColor = [UIColor clearColor];
-//    HUD.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-//    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-//    gradientLayer.colors = @[(__bridge id)[UIColor whiteColor].CGColor, (__bridge id)kMainRedColor.CGColor];
-//    gradientLayer.locations = @[@0, @0.7];
-//    gradientLayer.startPoint = CGPointMake(0.3, 0);
-//    gradientLayer.endPoint = CGPointMake(1, 0.3);
-//
-//    gradientLayer.frame = CGRectMake(0, 0, 100, 100);
-//
-//    [HUD.bezelView.layer insertSublayer:gradientLayer atIndex:0];
+    HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.4];
 
+    YYAnimatedImageView *img = [[YYAnimatedImageView alloc] init];
+    img.autoPlayAnimatedImage = YES;
+    img.image = [YYImage imageNamed:@"loading"];
+    HUD.customView = img;
+    img.contentMode = UIViewContentModeScaleAspectFit;
+    HUD.minSize = CGSizeMake(80, 80);
+    
     return HUD;
     
 }

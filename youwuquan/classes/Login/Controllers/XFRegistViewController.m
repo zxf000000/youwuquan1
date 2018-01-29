@@ -133,24 +133,36 @@
         [XFUserInfoManager sharedManager].pwd = self.pwdTextField.text;
         // 登录
         
-        [XFLoginNetworkManager loginWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
+        [XFLoginNetworkManager loginWithPhone:self.phoneTextField.text pwd:[XFToolManager md5:self.pwdTextField.text] longitude:@"100" latitude:@"100" progress:^(CGFloat progress) {
             
             NSLog(@"%f",progress);
             
         } successBlock:^(id responseObj) {
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                [XFToolManager changeHUD:HUD successWithText:@"注册成功"];
-                
-                // 完善信息界面
-                XFRegistInfoViewController *infoVC = [[UIStoryboard storyboardWithName:@"Login" bundle:nil] instantiateViewControllerWithIdentifier:@"XFRegistInfoViewController"];
-                
-                [self.navigationController pushViewController:infoVC animated:YES];
-                
-            });
-
             
+            [XFLoginNetworkManager getMyTokenWithsuccessBlock:^(id responseObj) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [XFToolManager changeHUD:HUD successWithText:@"注册成功"];
+                    
+                    // 完善信息界面
+                    XFRegistInfoViewController *infoVC = [[UIStoryboard storyboardWithName:@"Login" bundle:nil] instantiateViewControllerWithIdentifier:@"XFRegistInfoViewController"];
+                    
+                    [self.navigationController pushViewController:infoVC animated:YES];
+                });
+                
+                [[XFUserInfoManager sharedManager] updateToken:((NSDictionary *)responseObj)[@"token"]];
+                [[XFUserInfoManager sharedManager] updateTokenDate:[NSDate date]];
+                
+                
+                
+            } failedBlock:^(NSError *error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [HUD hideAnimated:YES];
+                    
+                });
+            }];
         } failBlock:^(NSError *error) {
             
             dispatch_async(dispatch_get_main_queue(), ^{

@@ -16,5 +16,6 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *commentBottomContrains;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *likeBottomContrains;
 @property (weak, nonatomic) IBOutlet UIButton *likeButton;
+@property (weak, nonatomic) IBOutlet UIImageView *iconView;
 
 @end

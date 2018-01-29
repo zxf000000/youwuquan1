@@ -1187,4 +1187,125 @@
     
 }
 
+/**
+ 获取地址列表
+ 
+ @param successBlock 0
+ @param failedBlock 0
+ @param progressBlock 0
+ */
++ (void)getAddressListWithsuccessBlock:(MineRequestSuccessBlock)successBlock
+                           failedBlock:(MineRequestFailedBlock)failedBlock
+                         progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForAddressList] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+    
+}
+
+
+/**
+ 添加地址
+ 
+ @param uid uid
+ @param province 省份
+ @param city 城市
+ @param detail 详细
+ @param postcode 右边
+ @param phone 电话
+ @param successBlock 0
+ @param failedBlock 0
+ @param progressBlock 0
+ */
++ (void)addAddressWithName:(NSString *)name
+                 province:(NSString *)province
+                     city:(NSString *)city
+                   detail:(NSString *)detail
+                 postcode:(NSString *)postcode
+                    phone:(NSString *)phone
+             successBlock:(MineRequestSuccessBlock)successBlock
+              failedBlock:(MineRequestFailedBlock)failedBlock
+            progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    NSDictionary *params = @{@"name":name,
+                             @"province":province,
+                             @"city":city,
+                             @"detail":detail,
+                             @"postcode":postcode,
+                             @"phone":phone
+                             };
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForAddAddress] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+    
+}
+
+/**
+ 添加地址
+ 
+ @param uid uid
+ @param province 省份
+ @param city 城市
+ @param detail 详细
+ @param postcode 右边
+ @param phone 电话
+ @param successBlock 0
+ @param failedBlock 0
+ @param progressBlock 0
+ */
++ (void)updateAddressWithId:(NSInteger)addressId
+                        name:(NSString *)name
+                   province:(NSString *)province
+                       city:(NSString *)city
+                     detail:(NSString *)detail
+                   postcode:(NSString *)postcode
+                      phone:(NSString *)phone
+               successBlock:(MineRequestSuccessBlock)successBlock
+                failedBlock:(MineRequestFailedBlock)failedBlock
+              progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    NSDictionary *params = @{@"id":@(addressId),
+                             @"name":name,
+                             @"province":province,
+                             @"city":city,
+                             @"detail":detail,
+                             @"postcode":postcode,
+                             @"phone":phone
+                             };
+    [XFNetworking putWithUrl:[XFApiClient pathUrlForUpdateAddress:[NSString stringWithFormat:@"%zd",addressId]] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+}
+
 @end

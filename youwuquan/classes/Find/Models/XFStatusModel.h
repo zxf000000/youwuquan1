@@ -53,6 +53,7 @@
 
 @property (nonatomic,copy) NSString *unlockPrice;
 
+@property (nonatomic,copy) NSDictionary *audio;
 
 //@property (nonatomic,copy) NSString *title;
 //

@@ -41,6 +41,19 @@ typedef void(^HomeRequestProgressBlock)(CGFloat progress);
  */
 + (void)getHotDataWithSuccessBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock;
 
+
+/**
+ 更多网红
+
+ @param page 0
+ @param size 0
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getHotMoreDataWithPage:(NSInteger)page size:(NSInteger)size successBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock;
+
+
 /**
  尤物数据
 
@@ -49,6 +62,18 @@ typedef void(^HomeRequestProgressBlock)(CGFloat progress);
  @param progressBlock 进度
  */
 + (void)getYouwuDataWithSuccessBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock;
+
+/**
+ 获取更多尤物
+
+ @param page 0
+ @param size 0
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)getYouwuMoreDataWithPage:(NSInteger)page size:(NSInteger)size successBlock:(HomeRequestSuccessBlock)successBlock failBlock:(HomeRequestFailedBlock)failBlock progress:(HomeRequestProgressBlock)progressBlock;
+
 
 /**
  视频页面广告
@@ -173,4 +198,92 @@ typedef void(^HomeRequestProgressBlock)(CGFloat progress);
                 successBlock:(HomeRequestSuccessBlock)successBlock
                    failBlock:(HomeRequestFailedBlock)failBlock
                     progress:(HomeRequestProgressBlock)progressBlock;
+
+
+/**
+ 点赞某人
+
+ @param uid uid
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)likeSomeoneWithUid:(NSString *)uid
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock;
+
+/**
+ 取消点赞某人
+ 
+ @param uid uid
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)unlikeSomeoneWithUid:(NSString *)uid
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock;
+
+/**
+ 高清视频列表
+
+ @param page 0
+ @param size 0
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)getHDVideoWithPage:(NSInteger)page
+                      size:(NSInteger)size
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock;
+
+/**
+ vr视频列表
+
+ @param page 0
+ @param size 0
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)getVRVideoWithPage:(NSInteger)page
+                      size:(NSInteger)size
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock;
+
+
+/**
+主页衡多数据
+ @param page 0
+ @param size 0
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)getMoreHomeDataWithPage:(NSInteger)page
+                      size:(NSInteger)size
+              successBlock:(HomeRequestSuccessBlock)successBlock
+                 failBlock:(HomeRequestFailedBlock)failBlock
+                  progress:(HomeRequestProgressBlock)progressBlock;
+
+
+
+/**
+ 解锁视频
+
+ @param videoId vid
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)unlockVideoWithId:(NSString *)videoId
+             successBlock:(HomeRequestSuccessBlock)successBlock
+                failBlock:(HomeRequestFailedBlock)failBlock
+                 progress:(HomeRequestProgressBlock)progressBlock;
+
 @end

@@ -14,9 +14,13 @@
 
 @property (nonatomic,strong) UILabel *nameLabel;
 
+
 @end
 
 @interface XFRewardedTableViewCell : UITableViewCell <UICollectionViewDelegate,UICollectionViewDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+
+@property (nonatomic,copy) NSArray *datas;
+
 
 @end

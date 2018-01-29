@@ -12,5 +12,7 @@
 
 @property (nonatomic,copy) NSString *authId;
 
+@property (nonatomic,assign) BOOL isIdAuth;
+
 
 @end

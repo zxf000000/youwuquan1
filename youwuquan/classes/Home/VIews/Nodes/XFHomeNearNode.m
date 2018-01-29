@@ -83,7 +83,7 @@
         node.iconNode.URL  = [NSURL URLWithString:imgStr];
         node.nameNode.attributedText  = [[NSMutableAttributedString alloc] initWithString:model.nickname];
         
-        [node.distanceButton setTitle:[NSString stringWithFormat:@"%@km",model.distance] withFont:[UIFont systemFontOfSize:11] withColor:kMainRedColor forState:(UIControlStateNormal)];
+        [node.distanceButton setTitle:[NSString stringWithFormat:@"%.2fkm",[model.distance floatValue]] withFont:[UIFont systemFontOfSize:11] withColor:kMainRedColor forState:(UIControlStateNormal)];
         
         if (self.type == Search) {
             

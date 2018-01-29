@@ -138,7 +138,7 @@
 
 - (void)tabbarDidClickPlusButton:(XFTabBar *)tabbar {
     
-    if ([XFUserInfoManager sharedManager].userName != nil && [XFUserInfoManager sharedManager].userName.length > 0) {
+    if ([XFUserInfoManager sharedManager].token != nil && [XFUserInfoManager sharedManager].token.length > 0) {
         
         XFPublishViewController *publishVC = [[XFPublishViewController alloc] init];
         XFPublishNaviViewController *navi = [[XFPublishNaviViewController alloc] initWithRootViewController:publishVC];

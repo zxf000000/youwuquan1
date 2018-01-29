@@ -30,9 +30,32 @@
     return self;
 }
 
+- (void)updateLastDate:(NSString *)lastData {
+    
+    [_userCache setObject:lastData forKey:@"lastGetNotificationDate"];
+    
+}
+
+- (NSString *)lastGetNotificationDate {
+    
+    return (NSString *)[_userCache objectForKey:@"lastGetNotificationDate"];
+}
+
 - (void)removeAllData {
     
     [_userCache removeAllObjects];
+    
+}
+
+- (void)updateTokenDate:(NSDate *)tokenDate {
+    
+    [_userCache setObject:tokenDate forKey:@"tokenDate"];
+
+}
+
+- (NSDate *)tokenDate {
+    
+    return (NSDate *)[_userCache objectForKey:@"tokenDate"];
     
 }
 
@@ -42,13 +65,44 @@
     
 }
 
+- (void)updateCookieWith:(NSString *)cookie {
+
+    NSArray *cookies = [cookie componentsSeparatedByString:@";"];
+    for (NSString *str in cookies) {
+        
+        NSArray *subcookies = [str componentsSeparatedByString:@","];
+        
+        for (NSString *subStr in subcookies) {
+            
+            if ([subStr containsString:@"JSESSIONID"]) {
+                
+                [_userCache setObject:subStr forKey:@"JSESSIONID"];
+            }
+            if ([subStr containsString:@"remember-me"]) {
+
+                [_userCache setObject:subStr forKey:@"remember-me"];
+            }
+            
+        }
+
+    }
+
+}
+
+- (NSString *)cookie {
+
+//    NSString *cookie = [NSString stringWithFormat:@"%@; %@",(NSString *)[_userCache objectForKey:@"JSESSIONID"],(NSString *)[_userCache objectForKey:@"remember-me"]];
+    
+    return (NSString *)[_userCache objectForKey:@"remember-me"];
+}
+
 - (NSString *)rongToken {
     
     return (NSString *)[_userCache objectForKey:kRongTokenKey];
     
 }
 
-- (void)setToken:(NSString *)token {
+- (void)updateToken:(NSString *)token {
     
     [_userCache setObject:token forKey:kUserTokenKey];
     

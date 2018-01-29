@@ -26,6 +26,12 @@
 #import "XFCommentModel.h"
 #import "XFMineNetworkManager.h"
 #import <IQKeyboardManager.h>
+#import "XFAlertViewController.h"
+#import "XFPayViewController.h"
+
+
+
+
 
 #define kVideoVideHeight (9/16.f * kScreenWidth)
 
@@ -107,6 +113,8 @@
 
 @property (nonatomic,strong) NSMutableArray *indexPathsTobeReload;
 
+@property (nonatomic,strong) UIView *unlockView;
+
 @end
 
 @implementation XFVideoDetailViewController
@@ -152,7 +160,7 @@
     
     //    [self.view bringSubviewToFront:self.inputView];
     self.inputView.frame = CGRectMake(0, kScreenHeight - 44, kScreenWidth, 44);
-    
+    [self setupUnlockView];
     [self loadData];
 }
 
@@ -211,7 +219,9 @@
             
             [self loadCommentData];
             self.videoInputTf.text = nil;
+            
         } failBlock:^(NSError *error) {
+            
             NSLog(@"%@",error.description);
             
         } progress:^(CGFloat progress) {
@@ -219,8 +229,6 @@
         }];
         
     }
-    
-    
     
 }
 
@@ -254,6 +262,7 @@
     
 }
 
+
 - (void)reloadData {
     
     NSArray *nodes = [self.tableNode visibleNodes];
@@ -274,16 +283,56 @@
     
 }
 
+- (void)setupUnlockView {
+    
+    if (!self.model.video[@"srcUrl"]) {
+        
+        // 需要解锁的操作
+        self.unlockView = [[UIView alloc] init];
+        [self.videoView addSubview:self.unlockView];
+        self.unlockView.frame = self.videoView.bounds;
+        self.unlockView.backgroundColor = [UIColor redColor];
+        
+        UIImageView *coverImg = [[UIImageView alloc] init];
+        [self.unlockView addSubview:coverImg];
+        [coverImg setImageWithURL:[NSURL URLWithString:self.model.coverImage[@"thumbImage500pxUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        
+        coverImg.frame = self.unlockView.bounds;
+        
+        UIButton *ublockButton = [[UIButton alloc] init];
+        
+        [ublockButton setImage:[UIImage imageNamed:@"find_lock"] forState:(UIControlStateNormal)];
+        [self.unlockView addSubview:ublockButton];
+        
+        [ublockButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            
+            make.center.mas_offset(0);
+            
+        }];
+        
+        [ublockButton addTarget:self action:@selector(clickUnlockButton) forControlEvents:(UIControlEventTouchUpInside)];
+        
+        [self.videoView bringSubviewToFront:self.backButton];
+        
+    } else {
+        
+                [self.plPlayer play];
+    }
+    
+}
+
 #pragma mark - 初始化VR占位区域
 - (void)setupVrView {
+    
+    [self.vrView removeFromSuperview];
+    self.vrView = nil;
+
     
     // 设置Vr播放器的占位图
     self.vrView = [[UIView alloc] init];
     self.vrView.frame = CGRectMake(0, 0, kScreenWidth, kScreenWidth * 9/16.f);
     [self.view addSubview:self.vrView];
     self.vrView.backgroundColor = [UIColor redColor];
-    
-    
     
     self.bgImgView = [[UIImageView alloc] init];
     [self.bgImgView setImageWithURL:[NSURL URLWithString:self.model.video[@"coverUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
@@ -407,6 +456,7 @@
     
 }
 
+
 - (void)clickSegmentControl {
     
     if (self.segment.selectedSegmentIndex == 0) {
@@ -519,7 +569,7 @@
     
     [super viewWillAppear:animated];
     
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
     
     [[IQKeyboardManager sharedManager] setEnable:NO];
     [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
@@ -532,7 +582,9 @@
     [self.timer invalidate];
     self.timer = nil;
     
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [self.plPlayer stop];
+    
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
     
     [[IQKeyboardManager sharedManager] setEnable:YES];
     [IQKeyboardManager sharedManager].enableAutoToolbar = YES;
@@ -747,7 +799,7 @@
     //添加播放器视图到需要展示的界面上
     [self.view addSubview:self.videoView];
     
-    [self.plPlayer play];
+//    [self.plPlayer play];
     
     // 添加点按事件
     
@@ -926,6 +978,97 @@
     //    [self.videoView jp_playerIsMute];
     //
     //    self.videoView.jp_videoPlayerDelegate = self;
+
+}
+
+- (void)clickUnlockButton {
+    
+    // 解锁
+        XFAlertViewController *alertVC = [[XFAlertViewController alloc] init];
+        alertVC.type = XFAlertViewTypeUnlockStatus;
+        alertVC.unlockPrice = _model.diamonds;
+        alertVC.clickOtherButtonBlock = ^(XFAlertViewController *alert) {
+            // 充值页面
+            XFPayViewController *payVC = [[XFPayViewController alloc] init];
+            
+            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+            
+            [self presentViewController:navi animated:YES completion:nil];
+            
+        };
+        
+        alertVC.clickDoneButtonBlock = ^(XFAlertViewController *alert) {
+            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+            
+            [XFHomeNetworkManager unlockVideoWithId:self.model.id successBlock:^(id responseObj) {
+                // 重新获取数据
+                [XFToolManager changeHUD:HUD successWithText:@"解锁成功"];
+                
+                [self loadData];
+                
+                [self.unlockView removeFromSuperview];
+
+            } failBlock:^(NSError *error) {
+                [HUD hideAnimated:YES];
+
+                // 获取返回状态码
+                if (!error) {
+                    // 余额不足
+                    // 充值页面
+                    XFPayViewController *payVC = [[XFPayViewController alloc] init];
+                    
+                    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+                    
+                    [self presentViewController:navi animated:YES completion:nil];
+                    
+                }
+            } progress:^(CGFloat progress) {
+                
+            }];
+            
+//            [XFFindNetworkManager unlockStatusWithStatusId:status.id successBlock:^(id responseObj) {
+//
+//                // 重新获取数据,刷新
+//
+//
+//                [XFFindNetworkManager getOneStatusWithStatusId:status.id successBlock:^(id responseObj) {
+//
+//                    XFStatusModel *model = [XFStatusModel modelWithDictionary:(NSDictionary *)responseObj];
+//
+//                    if (self.isInvite) {
+//
+//                        NSInteger index = [self.inviteDatas indexOfObject:status];
+//                        [self.inviteDatas replaceObjectAtIndex:index withObject:model];
+//                        [self.tableNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:(UITableViewRowAnimationNone)];
+//                    } else {
+//
+//                        NSInteger index = [self.careDatas indexOfObject:status];
+//                        [self.careDatas replaceObjectAtIndex:index withObject:model];
+//
+//                        [self.rightNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
+//
+//                    }
+//
+//                } failBlock:^(NSError *error) {
+//
+//                } progress:^(CGFloat progress) {
+//
+//                }];
+                // 刷新上层数据
+                
+//            } failBlock:^(NSError *error) {
+//                // 解锁失败
+//
+//
+//            } progress:^(CGFloat progress) {
+//
+//
+//            }];
+            
+            
+        };
+        [self presentViewController:alertVC animated:YES completion:nil];
+        
     
 }
 
@@ -1323,9 +1466,6 @@
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                     cell.neverShowPlaceholders = NO;
                     
-                    //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
-                    //
-                    //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
                     
                 });
                 
@@ -1343,9 +1483,14 @@
                 
                 self.model = model;
                 
-                [self setupVideoView];
-                
-                //                    self.plPlayer.URL = [NSURL URLWithString:self.model.video[@"srcUrl"]];
+                if ([self.model.category isEqualToString:@"hd"]) {
+                    
+                    [self setupVideoView];
+
+                } else {
+                    
+                    [self setupVrView];
+                }
                 
                 [self loadData];
                 
@@ -1697,13 +1842,22 @@
                 
                 cell.didSelectedVideoBLock = ^(XFVideoModel *model) {
                     
-                    self.model = model;
+                    XFVideoDetailViewController *videoDetailVC = [[XFVideoDetailViewController alloc] init];
                     
-                    [self setupVideoView];
+                    if ([model.category isEqualToString:@"hd"]) {
+                        
+                        videoDetailVC.type = Hightdefinition;
+
+                    } else {
+                        
+                        videoDetailVC.type = VRVideo;
+
+                    }
                     
-                    //                    self.plPlayer.URL = [NSURL URLWithString:self.model.video[@"srcUrl"]];
                     
-                    [self loadData];
+                    videoDetailVC.model = model;
+                    
+                    [self.navigationController pushViewController:videoDetailVC animated:YES];
                     
                 };
                 

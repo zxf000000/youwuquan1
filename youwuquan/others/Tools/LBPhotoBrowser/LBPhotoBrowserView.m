@@ -18,10 +18,10 @@
 #import <SDWebImage/SDImageCacheConfig.h>
 #import <SDWebImage/UIImage+MultiFormat.h>
 #else
-#import "SDWebImageManager.h"
-#import "UIImageView+WebCache.h"
+//#import "SDWebImageManager.h"
+//#import "UIImageView+WebCache.h"
 //#import "SDImageCacheConfig.h"
-#import "UIImage+MultiFormat.h"
+//#import "UIImage+MultiFormat.h"
 #endif
 
 static CGFloat const itemSpace = 20.0;
@@ -82,14 +82,16 @@ static CGFloat const itemSpace = 20.0;
         return;
     }
     //Code=-999 "已取消"
-    self.opreation = [[SDWebImageManager sharedManager] downloadImageWithURL:self.url  options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+    
+    self.opreation = [[YYWebImageManager sharedManager] requestImageWithURL:self.url options:(YYWebImageOptionSetImageWithFadeAnimation) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         
-    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+    } transform:nil completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
+        
         __block UIImage *downloadedImage = image;
         dispatch_async(dispatch_get_main_queue(), ^{
             wself.opreation = nil;
             if (wself.loadImageCompletedBlock) {
-                wself.loadImageCompletedBlock(wself, downloadedImage, UIImageJPEGRepresentation(image, 1), error, finished, imageURL);
+                wself.loadImageCompletedBlock(wself, downloadedImage, UIImageJPEGRepresentation(image, 1), error, YES, url);
             }else {
                 if (error) {
                     downloadedImage = [LBPhotoBrowserManager defaultManager].errorImage;
@@ -102,6 +104,12 @@ static CGFloat const itemSpace = 20.0;
             }
         });
     }];
+    
+//    self.opreation = [[SDWebImageManager sharedManager] downloadImageWithURL:self.url  options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+//
+//    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+//
+//    }];
 
 }
 
@@ -157,7 +165,8 @@ static CGFloat const itemSpace = 20.0;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter]removeObserver:self];
-    SDDispatchQueueRelease(_preloadingQueue);
+
+//    SDDispatchQueueRelease(_preloadingQueue);
 }
 
 - (NSMutableArray *)models {
@@ -475,21 +484,23 @@ static CGFloat const itemSpace = 20.0;
 - (UIImage *)getCacheImageForModel:(LBScrollViewStatusModel *)model {
     __block UIImage *localImage = nil;
     LBPhotoBrowserManager *mgr = [LBPhotoBrowserManager defaultManager];
-    NSString *address = model.url.absoluteString;
+//    NSString *address = model.url.absoluteString;
     
-    localImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:address];
+    localImage = [[[YYWebImageManager sharedManager] cache] getImageForKey:[[YYWebImageManager sharedManager] cacheKeyForURL:model.url]];
+    
+//    localImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:address];
     if (localImage && localImage.images.count > 0) {//gif 图片
         if (mgr.lowGifMemory == YES) {
             return localImage;
         }else{
             
-//            [[SDImageCache sharedImageCache] queryDiskCacheForKey:model.url.absoluteString  done:^(UIImage *image, SDImageCacheType cacheType) {
-//                localImage = [UIImage sdOverdue_animatedGIFWithData:data];
-//
-//            }];
-//
-//            [[SDImageCache sharedImageCache] queryCacheOperationForKey:model.url.absoluteString done:^(UIImage * _Nullable image, NSData * _Nullable data, SDImageCacheType cacheType) {
-//            }];
+            [[[YYWebImageManager sharedManager] cache] getImageForKey:[[YYWebImageManager sharedManager] cacheKeyForURL:model.url] withType:(YYImageCacheTypeAll) withBlock:^(UIImage * _Nullable image, YYImageCacheType type) {
+                
+                localImage = [UIImage sdOverdue_animatedGIFWithData:UIImageJPEGRepresentation(image, 1)];
+
+            }];
+            
+
             return localImage;
         }
     }else if (localImage) { // 图片存在

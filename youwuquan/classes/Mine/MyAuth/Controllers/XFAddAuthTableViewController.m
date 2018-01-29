@@ -21,7 +21,6 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
 @interface XFAddAuthTableViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *addButton;
 @property (weak, nonatomic) IBOutlet UIView *detailView;
-@property (weak, nonatomic) IBOutlet UILabel *detailLabel;
 @property (weak, nonatomic) IBOutlet UIButton *certificateButton;
 @property (weak, nonatomic) IBOutlet UIButton *idCardUpButton;
 @property (weak, nonatomic) IBOutlet UIButton *idCardDownButton;
@@ -31,10 +30,14 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
 @property (weak, nonatomic) IBOutlet UITextField *phoneTextField;
 @property (weak, nonatomic) IBOutlet UITextField *nameTextField;
 @property (weak, nonatomic) IBOutlet UITextField *waterNumber;
+@property (weak, nonatomic) IBOutlet UILabel *detailLabel;
 
 @property (nonatomic,assign) ImagePickerType pickerType;
 
 @property (nonatomic,copy) NSDictionary *authDatas;
+@property (strong, nonatomic) IBOutletCollection(UILabel) NSArray *desLabels;
+@property (weak, nonatomic) IBOutlet UIButton *clickCard3button;
+- (IBAction)card3ButtonCliced:(id)sender;
 
 @end
 
@@ -57,6 +60,22 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
     if (info[@"info"][@"wechat"]) {
         
         self.wxTextField.text = info[@"info"][@"wechat"];
+    }
+    
+    
+    if (self.isIdAuth) {
+        
+        self.detailLabel.text = @"请上传身份证正反面和手持身份证大头照";
+
+        
+    } else {
+        
+        self.detailLabel.text = @"请上传照片";
+        for (UILabel *label in self.desLabels) {
+            
+            label.hidden = YES;
+            
+        }
     }
     
     [self loadData];
@@ -220,7 +239,7 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
             case Cer:
             {
                 UIImage *image = info[UIImagePickerControllerOriginalImage];
-                [self.certificateButton setImage:image forState:(UIControlStateNormal)];
+                [self.clickCard3button setImage:image forState:(UIControlStateNormal)];
             }
                 break;
                 
@@ -273,13 +292,6 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-
-- (IBAction)clickcertificateButton:(id)sender {
-    
-    [self callPhotoLibraryWithType:Cer];
-    
-}
-
 - (IBAction)clickIdUpButton:(id)sender {
 
     [self callPhotoLibraryWithType:IdCardUp];
@@ -292,4 +304,9 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
 
 }
 
+- (IBAction)card3ButtonCliced:(id)sender {
+    
+    [self callPhotoLibraryWithType:Cer];
+
+}
 @end

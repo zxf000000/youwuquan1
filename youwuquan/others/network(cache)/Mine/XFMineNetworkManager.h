@@ -607,4 +607,64 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
                               failedBlock:(MineRequestFailedBlock)failedBlock
                             progressBlock:(MineRequestProgressBlock)progressBlock;
 
+
+/**
+ 获取地址列表
+
+ @param successBlock 0
+ @param failedBlock 0
+ @param progressBlock 0
+ */
++ (void)getAddressListWithsuccessBlock:(MineRequestSuccessBlock)successBlock
+                           failedBlock:(MineRequestFailedBlock)failedBlock
+                         progressBlock:(MineRequestProgressBlock)progressBlock;
+
+
+/**
+ 添加地址
+
+ @param uid uid
+ @param province 省份
+ @param city 城市
+ @param detail 详细
+ @param postcode 右边
+ @param phone 电话
+ @param successBlock 0
+ @param failedBlock 0
+ @param progressBlock 0
+ */
++ (void)addAddressWithName:(NSString *)name
+                 province:(NSString *)province
+                     city:(NSString *)city
+                   detail:(NSString *)detail
+                 postcode:(NSString *)postcode
+                    phone:(NSString *)phone
+             successBlock:(MineRequestSuccessBlock)successBlock
+              failedBlock:(MineRequestFailedBlock)failedBlock
+            progressBlock:(MineRequestProgressBlock)progressBlock;
+
+/**
+ 添加地址
+ 
+ @param uid uid
+ @param province 省份
+ @param city 城市
+ @param detail 详细
+ @param postcode 右边
+ @param phone 电话
+ @param successBlock 0
+ @param failedBlock 0
+ @param progressBlock 0
+ */
++ (void)updateAddressWithId:(NSInteger)addressId
+                        name:(NSString *)name
+                   province:(NSString *)province
+                       city:(NSString *)city
+                     detail:(NSString *)detail
+                   postcode:(NSString *)postcode
+                      phone:(NSString *)phone
+               successBlock:(MineRequestSuccessBlock)successBlock
+                failedBlock:(MineRequestFailedBlock)failedBlock
+              progressBlock:(MineRequestProgressBlock)progressBlock;
+
 @end

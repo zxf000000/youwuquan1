@@ -14,6 +14,9 @@
     [super awakeFromNib];
 
     self.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    _iconView.layer.cornerRadius = 22.5;
+    _iconView.layer.masksToBounds = YES;
 
 }
 

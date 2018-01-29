@@ -9,6 +9,11 @@
 #import "XFDownloadViewController.h"
 #import "XFMineNetworkManager.h"
 
+@implementation XFDownPicModel
+
+
+@end
+
 @implementation XFDownloadPicCell
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -118,6 +123,58 @@
     [self loadData];
 }
 
+- (void)clickDownloadButton {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    __block NSInteger count = 0;
+    HUD.label.text = [NSString stringWithFormat:@"%zd/%zd",count,self.datas.count];
+    
+    for (NSInteger i = 0 ; i < self.datas.count; i ++ ) {
+        XFDownPicModel *model = self.datas[i];
+        [[YYWebImageManager sharedManager] requestImageWithURL:[NSURL URLWithString:model.image[@"imageUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+            
+        } transform:nil completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
+           
+            UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
+
+            count += 1;
+            if (count == self.datas.count) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [HUD hideAnimated:YES];
+
+                });
+                
+                
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    HUD.label.text = [NSString stringWithFormat:@"%zd/%zd",count,self.datas.count];
+
+                });
+            }
+            
+        }];
+        
+    }
+    
+}
+
+//回调方法
+- (void)image: (UIImage *) image didFinishSavingWithError: (NSError *) error contextInfo: (void *) contextInfo
+{
+    NSString *msg = nil ;
+    if(error != NULL){
+        msg = @"保存图片失败" ;
+    }else{
+        msg = @"保存图片成功" ;
+    }
+    
+}
+
+
+
 - (void)loadData {
     
     MBProgressHUD *HUD  = [XFToolManager showProgressHUDtoView:self.navigationController.view];
@@ -125,8 +182,19 @@
     [XFMineNetworkManager getMyDownloadPicsWithsuccessBlock:^(id responseObj) {
         
         [HUD hideAnimated:YES];
-        // TODO:
-        // 处理数据
+        
+        NSDictionary *dic = (NSDictionary *)responseObj;
+        NSArray *datas = dic[@"photographs"][@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFDownPicModel modelWithDictionary:datas[i]]];
+            
+        }
+        
+        self.datas = arr.copy;
+
+        [self.picView reloadData];
         
         
     } failedBlock:^(NSError *error) {
@@ -174,7 +242,8 @@
     
     XFDownloadPicCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"XFDownloadPicCell" forIndexPath:indexPath];
     
-    cell.picView.image = [UIImage imageNamed:self.datas[indexPath.item]];
+    XFDownPicModel *model = self.datas[indexPath.item];
+    [cell.picView setImageWithURL:[NSURL URLWithString:model.image[@"thumbImage300pxUrl"]] options:YYWebImageOptionProgressiveBlur | YYWebImageOptionSetImageWithFadeAnimation];
     
     return cell;
 }
@@ -207,6 +276,8 @@
     [self.downloadButton setTitle:@"下载" forState:(UIControlStateNormal)];
     self.downloadButton.backgroundColor = kMainRedColor;
     [self.view addSubview:self.downloadButton];
+    
+    [self.downloadButton addTarget:self action:@selector(clickDownloadButton) forControlEvents:(UIControlEventTouchUpInside)];
     
 }
 

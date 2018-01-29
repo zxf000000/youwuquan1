@@ -130,6 +130,10 @@
  */
 @property (nonatomic,strong) NSArray *tagNodes;
 
+// 声音
+@property (nonatomic,strong) ASButtonNode *voiceButton;
+@property (nonatomic,strong) ASTextNode *voiceTimeNode;
+
 @property (nonatomic,strong) ASButtonNode *lockButton;
 
 @property (nonatomic,strong) ASButtonNode *moneyButton;
