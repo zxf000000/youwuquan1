@@ -7,12 +7,14 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
-
+@class XFSearchUserModel;
 @interface XFSearchManCollectioNCell : ASCellNode
 
 @property (nonatomic,strong) ASNetworkImageNode *iconNode;
 
 @property (nonatomic,strong) ASTextNode *nameNode;
+
+@property (nonatomic,strong) XFSearchUserModel *model;
 
 @end
 
@@ -22,6 +24,10 @@
 
 @property (nonatomic,strong) ASTextNode *titleNode;
 
-@property (nonatomic,copy) void (^didSelecSearchMan)(void);
+@property (nonatomic,copy) void (^didSelecSearchMan)(XFSearchUserModel *model);
+
+@property (nonatomic,copy) NSArray *datas;
+
+- (instancetype)initWithDatas:(NSArray *)datas;
 
 @end

@@ -22,9 +22,22 @@
 #import "XFLoginNetworkManager.h"
 #import "XFTagsModel.h"
 #import "XFHomeNetworkManager.h"
+#import "XFMineNetworkManager.h"
+#import "FTPopOverMenu.h"
+#import <AVKit/AVKit.h>
+#import "XFAlertViewController.h"
+#import "XFPayViewController.h"
+#import "XFFindNetworkManager.h"
+#import "LBPhotoBrowserManager.h"
+#import "XFGiftViewController.h"
 
 // 缓存历史记录
 #import <YYCache.h>
+
+@implementation XFSearchUserModel
+
+
+@end
 
 @implementation XFSearchDeleteHeader
 
@@ -137,7 +150,16 @@
 
 @property (nonatomic,strong) NSIndexPath *isOpenIndexPath;
 
-@property (nonatomic,strong) NSArray *datas;
+@property (nonatomic,strong) NSMutableArray *datas;
+@property (nonatomic,copy) NSArray *userDatas;
+
+@property (nonatomic,assign) BOOL isPlaying;
+
+@property (nonatomic,strong) NSURL *voiceUrl;
+
+@property (nonatomic,strong) AVPlayer *audioPLayer;
+
+@property (nonatomic,strong) MBProgressHUD *HUD;
 
 @end
 
@@ -217,31 +239,74 @@
 }
 
 - (void)beginSearchWithtext:(NSString *)text {
-    
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    
-    [HUD hideAnimated:YES afterDelay:1];
-    
-    // 储存搜索历史记录
-    if (![self.historyArr containsObject:text]) {
+
+    [XFHomeNetworkManager searchUsersWithword:text Page:0 size:20 successBlock:^(id responseObj) {
         
-        [self.historyArr addObject:text];
-        if (self.historyArr.count > 6) {
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0 ; i < datas.count ; i++) {
             
-            [self.historyArr removeObjectAtIndex:0];
+            [arr addObject:[XFSearchUserModel modelWithDictionary:datas[i]]];
             
         }
-//        [self.historyView reloadData];
         
-        [self.historyCache setObject:self.historyArr forKey:kSearchHistoryKey];
+        self.userDatas = arr.copy;
         
-    }
+        [self.resultNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
+        
+        
+    } failBlock:^(NSError *error) {
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
     
+    [XFHomeNetworkManager searchPublishsWithword:text Page:0 size:10 successBlock:^(id responseObj) {
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (int i= 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFStatusModel modelWithDictionary:datas[i]]];
+        }
+        
+        self.datas = arr;
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.resultNode reloadData];
+        
         [self.searchBar resignFirstResponder];
         self.historyView.hidden = YES;
         self.resultNode.hidden = NO;
+        
+        // 储存搜索历史记录
+        if (![self.historyArr containsObject:text]) {
+            
+            [self.historyArr addObject:text];
+            if (self.historyArr.count > 6) {
+                
+                [self.historyArr removeObjectAtIndex:0];
+                
+            }
+            //        [self.historyView reloadData];
+            
+            [self.historyCache setObject:self.historyArr forKey:kSearchHistoryKey];
+
+        }
+
+
+        
+    } failBlock:^(NSError *error) {
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
+    
+
+    
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
     });
     
 
@@ -302,15 +367,13 @@
 
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    XFStatusDetailViewController *statusDestaiVC = [[XFStatusDetailViewController alloc] init];
-
-    [self.navigationController pushViewController:statusDestaiVC animated:YES];
+    XFStatusModel *model = self.datas[indexPath.row - 1];
     
-//    XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
-//
-//    detailVC.hidesBottomBarWhenPushed = YES;
-//
-//    [self.navigationController pushViewController:detailVC animated:YES];
+    XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
+    statusVC.hidesBottomBarWhenPushed = YES;
+    statusVC.type = Other;
+    statusVC.status = model;
+    [self.navigationController pushViewController:statusVC animated:YES];
     
 }
 
@@ -576,87 +639,7 @@
 }
 
 #pragma mark - cellNodeDelegate点赞
-- (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
-    
-    // 分享
-    
-    XFStatusModel *model = self.datas[inexPath.row];
-//    [XFShareManager sharedUrl:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"] image:[UIImage imageNamed:model.headUrl] title:model.userNike detail:@"我在尤物圈等你哦"];
-    
-}
 
-
-- (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
-    
-    node.likeButton.selected = !node.likeButton.selected;
-    
-    [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{
-        
-    }];
-    
-}
-
-- (void)findCellNode:(XFFindCellNode *)node didClickIconForIndex:(NSIndexPath *)indexPath {
-    
-    XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
-    
-    detailVC.hidesBottomBarWhenPushed = YES;
-    
-    [self.navigationController pushViewController:detailVC animated:YES];
-    
-}
-
-- (void)findCellNode:(XFFindCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath {
-    
-    XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"打赏用户" icon:@"" remainNUmber:@"100"];
-    
-    [alertView dsShowanimation];
-    
-    alertView.doneBlock = ^{
-        
-        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-        HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-        HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
-        HUD.contentColor = [UIColor whiteColor];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            HUD.mode = MBProgressHUDModeCustomView;
-            HUD.detailsLabel.text = @"打赏成功!";
-            UIImageView *img = [[UIImageView alloc] init];
-            img.image = [UIImage imageNamed:@"ds_ok"];
-            HUD.customView = img;
-            HUD.tintColor = [UIColor blackColor];
-            HUD.animationType = MBProgressHUDAnimationZoom;
-            [HUD hideAnimated:YES afterDelay:0.4];
-        });
-        
-        
-        
-    };
-    
-    alertView.cancelBlock = ^{
-        
-        
-    };
-    
-}
-
-- (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen {
-    
-    if (isOpen) {
-        self.isOpenIndexPath = index;
-        
-    } else {
-        
-        self.isOpenIndexPath = nil;
-        
-    }
-    self.resultNode.hidden = YES;
-    
-    [self.resultNode reloadRowsAtIndexPaths:@[index] withRowAnimation:(UITableViewRowAnimationFade)];
-    self.resultNode.hidden = NO;
-
-}
 
 - (NSInteger)numberOfSectionsInTableNode:(ASTableNode *)tableNode {
     
@@ -675,15 +658,18 @@
         
          return ^ASCellNode *() {
             
-            ASSearchManCellNode *node = [[ASSearchManCellNode alloc] init];
+            ASSearchManCellNode *node = [[ASSearchManCellNode alloc] initWithDatas:self.userDatas];
              
-             node.didSelecSearchMan = ^{
-               
-                 XFNearbyViewController *nearByVC = [[XFNearbyViewController alloc] init];
-                 nearByVC.type = SearchMan;
-                 [self.navigationController pushViewController:nearByVC animated:YES];
+             node.didSelecSearchMan = ^(XFSearchUserModel *model) {
                  
+                 XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+                 detailVC.userId = model.uid;
+                 detailVC.userName = model.nickname;
+                 detailVC.iconUrl = model.headIconUrl;
+                 detailVC.hidesBottomBarWhenPushed = YES;
+                 [self.navigationController pushViewController:detailVC animated:YES];
              };
+             
              
             return node;
         };
@@ -711,6 +697,411 @@
 
 }
 
+#pragma mark - cellNodeDelegate点赞
+
+- (void)findCellNode:(XFFindCellNode *)node didClickJuBaoButtonWithButton:(ASButtonNode *)jubaoButton {
+    
+    
+    FTPopOverMenuConfiguration *configuration = [FTPopOverMenuConfiguration defaultConfiguration];
+    configuration.menuRowHeight = 40;
+    configuration.menuWidth = 80;
+    [FTPopOverMenu showForSender:jubaoButton.view
+                   withMenuArray:@[@"举报"]
+                      imageArray:@[@"find_jubao"]
+                       doneBlock:^(NSInteger selectedIndex) {
+                           // 举报操作
+                           MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view];
+                           
+                           dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                               
+                               [XFToolManager changeHUD:HUD successWithText:@"举报成功!"];
+                               
+                           });
+                           
+                       } dismissBlock:^{
+                           
+                           
+                           
+                       }];
+    
+    
+}
+
+- (void)playbackFinished:(NSNotification *)notice {
+    
+    self.isPlaying = NO;
+    
+}
+
+// 播放语音
+- (void)findCellNode:(XFFindCellNode *)node didClickVoiceButtonWithUrl:(NSString *)url {
+    
+    self.voiceUrl = [NSURL URLWithString:url];
+    AVPlayerItem * songItem = [[AVPlayerItem alloc] initWithURL:self.voiceUrl];
+    if (!self.audioPLayer) {
+        self.audioPLayer = [[AVPlayer alloc]initWithPlayerItem:songItem];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:songItem];
+    }
+    
+    [self.audioPLayer replaceCurrentItemWithPlayerItem:songItem];
+    
+    if (self.isPlaying) {
+        [self.audioPLayer pause];
+        self.isPlaying = NO;
+        
+    } else {
+        
+        [self.audioPLayer play];
+        self.isPlaying = YES;
+        self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+        [_HUD hideAnimated:YES afterDelay:0.5];
+        
+    }
+    
+}
+
+- (void)buyTheStatusWithStatus:(XFStatusModel *)status {
+    
+    XFAlertViewController *alertVC = [[XFAlertViewController alloc] init];
+    alertVC.type = XFAlertViewTypeUnlockStatus;
+    alertVC.unlockPrice = status.unlockPrice;
+    alertVC.clickOtherButtonBlock = ^(XFAlertViewController *alert) {
+        // 充值页面
+        XFPayViewController *payVC = [[XFPayViewController alloc] init];
+        
+        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+        
+        [self presentViewController:navi animated:YES completion:nil];
+        
+    };
+    
+    alertVC.clickDoneButtonBlock = ^(XFAlertViewController *alert) {
+        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+        
+        [XFFindNetworkManager unlockStatusWithStatusId:status.id successBlock:^(id responseObj) {
+            // 重新获取数据
+            [XFToolManager changeHUD:HUD successWithText:@"解锁成功"];
+            // 重新获取数据,刷新
+            [XFFindNetworkManager getOneStatusWithStatusId:status.id successBlock:^(id responseObj) {
+                
+                XFStatusModel *model = [XFStatusModel modelWithDictionary:(NSDictionary *)responseObj];
+                
+                NSInteger index = [self.datas indexOfObject:status];
+
+                [self.datas replaceObjectAtIndex:index withObject:model];
+                [self.resultNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index + 1 inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
+
+                
+            } failBlock:^(NSError *error) {
+                
+            } progress:^(CGFloat progress) {
+                
+            }];
+            // 刷新上层数据
+            
+        } failBlock:^(NSError *error) {
+            // 解锁失败
+            [HUD hideAnimated:YES];
+            // 获取返回状态码
+            if (!error) {
+                // 余额不足
+                // 充值页面
+                XFPayViewController *payVC = [[XFPayViewController alloc] init];
+                
+                UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:payVC];
+                
+                [self presentViewController:navi animated:YES completion:nil];
+                
+            }
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+        
+        
+    };
+    [self presentViewController:alertVC animated:YES completion:nil];
+    
+}
+
+- (void)findCellNode:(XFFindCellNode *)node didClickImageWithIndex:(NSInteger)index urls:(NSArray *)urls {
+    
+    XFStatusModel *model = node.model;
+    
+    if (model.video) {
+        
+        // 是否是私密
+        if ([model.video[@"videoType"] isEqualToString:@"close"]) {
+            
+            // 解锁
+            [self buyTheStatusWithStatus:node.model];
+            
+        } else {
+            
+            // 播放视频
+            NSURL * videoURL = [NSURL URLWithString:model.video[@"video"][@"srcUrl"]];
+            
+            AVPlayerViewController *avPlayer = [[AVPlayerViewController alloc] init];
+            
+            avPlayer.player = [[AVPlayer alloc] initWithURL:videoURL];
+            
+            avPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
+            [[avPlayer player] play];
+            [self presentViewController:avPlayer animated:YES completion:nil];
+            
+        }
+        
+        
+        return;
+    }
+    
+    if (index < node.openCount) {
+        
+        NSMutableArray *items = @[].mutableCopy;
+        
+        for (int i = 0; i < node.picNodes.count; i++) {
+            
+            if (i < node.openCount) {
+                
+                XFNetworkImageNode *imgNode = node.picNodes[i];
+                UIImageView *imgView = [[UIImageView alloc] init];
+                
+                CGRect rect = CGRectZero;
+                
+                if ([imgNode isKindOfClass:[XFNetworkImageNode class]]) {
+                    
+                    rect = [node.view convertRect:imgNode.view.frame toView:self.view];
+                    imgView.frame = rect;
+                    
+                } else if ([imgNode isKindOfClass:[ASOverlayLayoutSpec class]]){
+                    
+                    ASOverlayLayoutSpec *overlay = (ASOverlayLayoutSpec *)imgNode;
+                    for (ASDisplayNode *picNode in overlay.children) {
+                        
+                        if ([picNode isKindOfClass:[XFNetworkImageNode class]]) {
+                            
+                            rect = [node.view convertRect:picNode.view.frame toView:self.view];
+                            imgView.frame = rect;
+                            
+                        }
+                        
+                    }
+                }
+                
+                LBPhotoWebItem *item = [[LBPhotoWebItem alloc] initWithURLString:urls[i] frame:rect];
+                [items addObject:item];
+            }
+            
+        }
+        
+        [LBPhotoBrowserManager.defaultManager showImageWithWebItems:items selectedIndex:index fromImageViewSuperView:self.view].lowGifMemory = YES;
+        
+        [[[LBPhotoBrowserManager.defaultManager addLongPressShowTitles:@[@"保存",@"识别二维码",@"取消"]] addTitleClickCallbackBlock:^(UIImage *image, NSIndexPath *indexPath, NSString *title) {
+            LBPhotoBrowserLog(@"%@",title);
+        }]addPhotoBrowserWillDismissBlock:^{
+            LBPhotoBrowserLog(@"即将销毁");
+        }].needPreloading = NO;// 这里关掉预加载功能
+    } else {
+        
+        [self buyTheStatusWithStatus:node.model];
+        
+    }
+    
+    
+    
+}
+
+- (void)findCellNode:(XFFindCellNode *)node didClickShareButtonWithIndex:(NSIndexPath *)inexPath {
+    
+    XFStatusModel *model = node.model;
+
+    [[YYWebImageManager sharedManager] requestImageWithURL:[NSURL URLWithString:model.user[@"headIconUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        
+    } transform:^UIImage * _Nullable(UIImage * _Nonnull image, NSURL * _Nonnull url) {
+        
+        return image;
+    } completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSString *baseUrl = @"http://118.126.102.173:8081/share/index.html";
+            NSString *shareUrl = [NSString stringWithFormat:@"%@?publishId=%@",baseUrl,model.id];
+            
+            [XFShareManager sharedUrl:shareUrl image:image title:model.user[@"nickname"] detail:@"我在尤物圈等你"];
+        });
+        
+        
+    }];
+    
+    
+}
+
+- (void)findCellNode:(XFFindCellNode *)node didClickLikeButtonForIndex:(NSIndexPath *)indexPath {
+    XFStatusModel *model = node.model;
+
+    if (model.likedIt) {
+        
+        [XFFindNetworkManager unlikeWithStatusId:model.id successBlock:^(id responseObj) {
+            
+            [self refreshlikeStatusWithModel:model witfFollowed:NO];
+            
+        } failBlock:^(NSError *error) {
+            
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+        
+    } else {
+        
+        [XFFindNetworkManager likeWithStatusId:model.id successBlock:^(id responseObj) {
+            
+            [self refreshlikeStatusWithModel:model witfFollowed:YES];
+            
+        } failBlock:^(NSError *error) {
+            
+            
+        } progress:^(CGFloat progress) {
+            
+            
+        }];
+    }
+    
+}
+
+- (void)findCellNode:(XFFindCellNode *)node didClickIconForIndex:(NSIndexPath *)indexPath {
+    
+    XFStatusModel *model = node.model;
+
+    
+    XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+    
+    detailVC.hidesBottomBarWhenPushed = YES;
+    detailVC.userId = [NSString stringWithFormat:@"%@",model.user[@"uid"]];
+    detailVC.userName = model.user[@"nickname"];
+    detailVC.iconUrl = model.user[@"headIconUrl"];
+    [self.navigationController pushViewController:detailVC animated:YES];
+    
+}
+
+- (void)findCellNode:(XFFindCellNode *)node didClickRewardButtonWithIndex:(NSIndexPath *)inexPath {
+    
+    XFStatusModel *model = node.model;
+
+    XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
+    
+    giftVC.userName = model.user[@"nickname"];
+    giftVC.uid = model.user[@"uid"];
+    giftVC.iconUrl = model.user[@"headIconUrl"];
+    
+    [self presentViewController:giftVC animated:YES completion:nil];
+    
+    return;
+    
+}
+
+// 关注
+- (void)findCellNode:(XFFindCellNode *)node didClickFollowButtonWithIndex:(NSIndexPath *)inexPath {
+    
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    XFStatusModel *model = node.model;
+
+    
+    if ([model.user[@"followed"] boolValue]) {
+        
+        // 取消关注
+        [XFMineNetworkManager unCareSomeoneWithUid:model.user[@"uid"] successBlock:^(id responseObj) {
+            
+            [HUD hideAnimated:YES];
+            [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:NO reload:YES] ;
+            
+            
+        } failedBlock:^(NSError *error) {
+            [HUD hideAnimated:YES];
+            
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+    } else {
+        
+        [XFMineNetworkManager careSomeoneWithUid:model.user[@"uid"] successBlock:^(id responseObj) {
+            [HUD hideAnimated:YES];
+            
+            [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:YES reload:YES];
+            
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+            
+        } progressBlock:^(CGFloat progress) {
+            
+            
+        }];
+        
+    }
+    
+}
+
+- (void)refreshlikeStatusWithModel:(XFStatusModel *)model witfFollowed:(BOOL)liked {
+    
+    [XFFindNetworkManager getOneStatusWithStatusId:model.id successBlock:^(id responseObj) {
+        
+        XFStatusModel *status = [XFStatusModel modelWithDictionary:(NSDictionary *)responseObj];
+        
+        model.likeNum = status.likeNum;
+        model.likedIt = !model.likedIt;
+        
+        XFFindCellNode *node;
+        
+            NSInteger index = [self.datas indexOfObject:model];
+            [self.resultNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index + 1 inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
+            node = [self.resultNode nodeForRowAtIndexPath:[NSIndexPath indexPathForRow:index + 1 inSection:0]];
+
+        
+        [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{}];
+        
+    } failBlock:^(NSError *error) {
+        
+        
+        
+    } progress:^(CGFloat progress) {
+        
+        
+    }];
+    
+}
+
+
+- (void)refreshFollowStatusWithUid:(NSString *)uid witfFollowed:(BOOL)followed reload:(BOOL)reload {
+    
+    //    if (self.isInvite) {
+    
+    for (XFStatusModel *model in self.datas) {
+        
+        if ([model.user[@"uid"] intValue] == [uid intValue]) {
+            
+            NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:model.user];
+            
+            [dic setObject:@(followed) forKey:@"followed"];
+            
+            model.user = dic.copy;
+            
+
+        }
+        
+    }
+
+    if (reload) {
+        [self.resultNode reloadData];
+    }
+    
+}
 - (void)updateViewConstraints {
 
     

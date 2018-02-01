@@ -9,6 +9,7 @@
 #import "XFMineNetworkManager.h"
 #import "XFNetworking.h"
 #import "XFApiClient.h"
+#import <AFHTTPSessionManager.h>
 
 @implementation XFMineNetworkManager
 
@@ -617,25 +618,44 @@
  @param progressBlock 进度
  */
 + (void)chargeWithNumber:(NSString *)number
+                    type:(NSString *)type
             successBlock:(MineRequestSuccessBlock)successBlock
              failedBlock:(MineRequestFailedBlock)failedBlock
            progressBlock:(MineRequestProgressBlock)progressBlock {
     
-    NSDictionary *params = @{@"price":@([number intValue])};
+    NSDictionary *params = @{@"payMethod":type,
+                             @"price":@([number doubleValue]),
+                             };
     
-    [XFNetworking postWithUrl:[XFApiClient pathUrlForCharge] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
+                                                                              @"text/html",
+                                                                              @"text/json",
+                                                                              @"text/plain",
+                                                                              @"text/javascript",
+                                                                              @"text/xml",
+                                                                              @"image/*",
+                                                                              @"text/*",
+                                                                              @"application/octet-stream",
+                                                                              @"application/zip"]];
+    [manager POST:[XFApiClient pathUrlForCharge] parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
+
+
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+
         
-        progressBlock(bytesRead/(CGFloat)totalBytes);
+        NSString *str = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
         
-    } successBlock:^(id response) {
-        
-        successBlock(response);
-        
-    } failBlock:^(NSError *error) {
-        
+        successBlock(str);
+
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+
         failedBlock(error);
-        
+
     }];
+    
 }
 
 /**

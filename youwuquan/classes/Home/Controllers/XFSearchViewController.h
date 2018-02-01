@@ -9,6 +9,19 @@
 #import <UIKit/UIKit.h>
 #import "XFMainViewController.h"
 
+@interface XFSearchUserModel : NSObject
+
+@property (nonatomic,copy) NSString *followed;
+@property (nonatomic,copy) NSString *gender;
+@property (nonatomic,copy) NSString *headIconUrl;
+@property (nonatomic,copy) NSString *identifications;
+@property (nonatomic,copy) NSString *liked;
+@property (nonatomic,copy) NSString *nickname;
+@property (nonatomic,copy) NSString *uid;
+@property (nonatomic,copy) NSString *vip;
+
+@end
+
 @interface XFSearchDeleteHeader : UICollectionReusableView
 
 @property (nonatomic,strong) UILabel *titleLabel;

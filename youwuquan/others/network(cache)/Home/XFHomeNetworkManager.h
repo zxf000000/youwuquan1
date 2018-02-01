@@ -299,4 +299,38 @@ typedef void(^HomeRequestProgressBlock)(CGFloat progress);
                                 progress:(HomeRequestProgressBlock)progressBlock;
 
 
+
+/**
+ 搜索用户
+
+ @param page 0
+ @param size 0
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)searchUsersWithword:(NSString *)word
+                       Page:(NSInteger)page
+                       size:(NSInteger)size
+               successBlock:(HomeRequestSuccessBlock)successBlock
+                  failBlock:(HomeRequestFailedBlock)failBlock
+                   progress:(HomeRequestProgressBlock)progressBlock;
+
+/**
+ 搜索动态
+ 
+ @param page 0
+ @param size 0
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)searchPublishsWithword:(NSString *)word
+                       Page:(NSInteger)page
+                       size:(NSInteger)size
+               successBlock:(HomeRequestSuccessBlock)successBlock
+                  failBlock:(HomeRequestFailedBlock)failBlock
+                   progress:(HomeRequestProgressBlock)progressBlock;
+
+
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "ASSearchManCellNode.h"
+#import "XFSearchViewController.h"
 
 @implementation XFSearchManCollectioNCell
 
@@ -56,6 +57,14 @@
     return self;
 }
 
+- (void)setModel:(XFSearchUserModel *)model{
+    
+    _model = model;
+    _iconNode.URL = [NSURL URLWithString:_model.headIconUrl];
+    [_nameNode setFont:[UIFont systemFontOfSize:12] alignment:(NSTextAlignmentCenter) textColor:UIColorHex(808080) offset:0 text:_model.nickname lineSpace:0 kern:1];
+    
+}
+
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
     
     
@@ -78,9 +87,11 @@
 
 @implementation ASSearchManCellNode
 
-- (instancetype)init {
+- (instancetype)initWithDatas:(NSArray *)datas {
     
     if (self = [super init]) {
+        
+        _datas = datas;
         
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
@@ -118,14 +129,14 @@
 - (void)collectionNode:(ASCollectionNode *)collectionNode didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
     if (self.didSelecSearchMan) {
-        self.didSelecSearchMan();
+        self.didSelecSearchMan(self.datas[indexPath.item]);
     }
     
 }
 
 - (NSInteger)collectionNode:(ASCollectionNode *)collectionNode numberOfItemsInSection:(NSInteger)section {
     
-    return 10;
+    return self.datas.count;
 }
 
 - (ASCellNodeBlock)collectionNode:(ASCollectionNode *)collectionNode nodeBlockForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -135,6 +146,8 @@
         XFSearchManCollectioNCell *cell = [[XFSearchManCollectioNCell alloc] init];
         
         cell.iconNode.defaultImage = [UIImage imageNamed:@"zhanweitu44"];
+        
+        cell.model = self.datas[indexPath.item];
         
         return cell;
         

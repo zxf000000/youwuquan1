@@ -812,4 +812,18 @@
  */
 + (NSString *)pathUrlForGetSharePicrures;
 
+/**
+ 搜索用户
+
+ @return url
+ */
++ (NSString *)pathUrlForSearchUsers;
+/**
+ 搜索动态
+
+ @return url
+ */
++ (NSString *)pathUrlForSearchPuhlishs;
+
+
 @end

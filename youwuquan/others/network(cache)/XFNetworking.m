@@ -37,7 +37,7 @@ static NSTimeInterval requestTimeout = 20.f;
     // 默认解析模式
     manager.requestSerializer = [AFHTTPRequestSerializer serializer];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
-    //        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//            manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     // 配置相应序列化
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
                                                                               @"text/html",
@@ -46,6 +46,7 @@ static NSTimeInterval requestTimeout = 20.f;
                                                                               @"text/javascript",
                                                                               @"text/xml",
                                                                               @"image/*",
+                                                                              @"text/*",
                                                                               @"application/octet-stream",
                                                                               @"application/zip"]];
 
@@ -354,6 +355,8 @@ static NSTimeInterval requestTimeout = 20.f;
         }
         
     }
+    
+    NSLog(@"%@---参数",params);
     
     session = [manager POST:url parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
         

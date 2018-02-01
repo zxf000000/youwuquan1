@@ -43,6 +43,8 @@
 #import "XFTabBarControllerConfig.h"
 #import "CYLPlusButtonSubclass.h"
 #import "XFMineNetworkManager.h"
+#import <AlipaySDK/AlipaySDK.h>
+
 
 #define kRongyunAppkey @"mgb7ka1nmwztg"
 #define kJPUSHAppKey @"1b12000e632a36af7363f2c7"
@@ -484,6 +486,8 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_Sina appKey:@"894460001"  appSecret:@"be21a2fc174295f968f8b951d935a05a" redirectURL:@"https://sns.whalecloud.com/sina2/callback"];
     
 }
+
+
 // 支持所有iOS系统
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
@@ -492,6 +496,32 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     if (!result) {
         // 其他如支付等SDK的回调
     }
+    
+    if ([url.host isEqualToString:@"safepay"]) {
+        // 支付跳转支付宝钱包进行支付，处理支付结果
+        [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
+            NSLog(@"result = %@",resultDic);
+        }];
+        
+        // 授权跳转支付宝钱包进行支付，处理支付结果
+        [[AlipaySDK defaultService] processAuth_V2Result:url standbyCallback:^(NSDictionary *resultDic) {
+            NSLog(@"result = %@",resultDic);
+            // 解析 auth code
+            NSString *result = resultDic[@"result"];
+            NSString *authCode = nil;
+            if (result.length>0) {
+                NSArray *resultArr = [result componentsSeparatedByString:@"&"];
+                for (NSString *subResult in resultArr) {
+                    if (subResult.length > 10 && [subResult hasPrefix:@"auth_code="]) {
+                        authCode = [subResult substringFromIndex:10];
+                        break;
+                    }
+                }
+            }
+            NSLog(@"授权结果 authCode = %@", authCode?:@"");
+        }];
+    }
+    
     return result;
 }
 

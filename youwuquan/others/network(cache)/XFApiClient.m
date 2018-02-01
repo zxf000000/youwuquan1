@@ -245,6 +245,11 @@
 #define YBYGetSearchKeyword @"search/words"
 // 获取分享插图
 #define YBYGetShareCardPics @"share/pictures"
+// 搜索用户
+#define YBYSearchUsers @"search/users"
+// 搜索动态
+#define YBYsearchStatus @"search/publishs"
+
 
 @implementation XFApiClient
 
@@ -835,5 +840,14 @@
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetShareCardPics];
 }
 
++ (NSString *)pathUrlForSearchUsers {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYSearchUsers];
+}
+
++ (NSString *)pathUrlForSearchPuhlishs {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYsearchStatus];
+}
 
 @end

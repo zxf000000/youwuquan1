@@ -363,6 +363,7 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
  @param progressBlock 进度
  */
 + (void)chargeWithNumber:(NSString *)number
+                    type:(NSString *)type
             successBlock:(MineRequestSuccessBlock)successBlock
              failedBlock:(MineRequestFailedBlock)failedBlock
            progressBlock:(MineRequestProgressBlock)progressBlock;

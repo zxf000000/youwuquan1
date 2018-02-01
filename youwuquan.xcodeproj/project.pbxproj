@@ -537,6 +537,14 @@
 		B7EB67CD1FB199B700AAD65D /* XFHomeNearNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67C91FB199B600AAD65D /* XFHomeNearNode.m */; };
 		B7EB67CE1FB199B700AAD65D /* XFHomeSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67CC1FB199B700AAD65D /* XFHomeSectionHeader.m */; };
 		B7EB67D11FB1ADCF00AAD65D /* XFNearbyCellNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EB67D01FB1ADCF00AAD65D /* XFNearbyCellNode.m */; };
+		B7EDEA292022C97D004C578E /* AlipaySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7EDEA272022C97D004C578E /* AlipaySDK.framework */; };
+		B7EDEA2A2022C97D004C578E /* AlipaySDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B7EDEA282022C97D004C578E /* AlipaySDK.bundle */; };
+		B7EDEA2C2022C999004C578E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7EDEA2B2022C999004C578E /* SystemConfiguration.framework */; };
+		B7EDEA2E2022C9A1004C578E /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7EDEA2D2022C9A1004C578E /* CoreTelephony.framework */; };
+		B7EDEA302022C9AC004C578E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7EDEA2F2022C9AC004C578E /* QuartzCore.framework */; };
+		B7EDEA322022C9B6004C578E /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7EDEA312022C9B6004C578E /* CoreText.framework */; };
+		B7EDEA342022C9C3004C578E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7EDEA332022C9C3004C578E /* CoreGraphics.framework */; };
+		B7EDEA362022C9CE004C578E /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7EDEA352022C9CE004C578E /* CoreMotion.framework */; };
 		B7F8AF831FDA241B00C9173D /* XFAllMyStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F8AF821FDA241B00C9173D /* XFAllMyStatusViewController.m */; };
 		B7F8AF861FDA2BCF00C9173D /* XFMyStatusCellNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F8AF841FDA2BCE00C9173D /* XFMyStatusCellNode.m */; };
 		B7F8AF911FDA807500C9173D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B7F8AF8B1FDA805000C9173D /* libz.tbd */; };
@@ -1461,6 +1469,14 @@
 		B7EB67CC1FB199B700AAD65D /* XFHomeSectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFHomeSectionHeader.m; sourceTree = "<group>"; };
 		B7EB67CF1FB1ADCF00AAD65D /* XFNearbyCellNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFNearbyCellNode.h; sourceTree = "<group>"; };
 		B7EB67D01FB1ADCF00AAD65D /* XFNearbyCellNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFNearbyCellNode.m; sourceTree = "<group>"; };
+		B7EDEA272022C97D004C578E /* AlipaySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlipaySDK.framework; sourceTree = "<group>"; };
+		B7EDEA282022C97D004C578E /* AlipaySDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = AlipaySDK.bundle; sourceTree = "<group>"; };
+		B7EDEA2B2022C999004C578E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		B7EDEA2D2022C9A1004C578E /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		B7EDEA2F2022C9AC004C578E /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		B7EDEA312022C9B6004C578E /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		B7EDEA332022C9C3004C578E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		B7EDEA352022C9CE004C578E /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		B7F8AF811FDA241B00C9173D /* XFAllMyStatusViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFAllMyStatusViewController.h; sourceTree = "<group>"; };
 		B7F8AF821FDA241B00C9173D /* XFAllMyStatusViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFAllMyStatusViewController.m; sourceTree = "<group>"; };
 		B7F8AF841FDA2BCE00C9173D /* XFMyStatusCellNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XFMyStatusCellNode.m; path = youwuquan/classes/Find/Controllers/Nodes/XFMyStatusCellNode.m; sourceTree = SOURCE_ROOT; };
@@ -1501,11 +1517,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7EDEA362022C9CE004C578E /* CoreMotion.framework in Frameworks */,
+				B7EDEA342022C9C3004C578E /* CoreGraphics.framework in Frameworks */,
+				B7EDEA322022C9B6004C578E /* CoreText.framework in Frameworks */,
+				B7EDEA302022C9AC004C578E /* QuartzCore.framework in Frameworks */,
+				B7EDEA2E2022C9A1004C578E /* CoreTelephony.framework in Frameworks */,
+				B7EDEA2C2022C999004C578E /* SystemConfiguration.framework in Frameworks */,
 				B7F8AFA11FDA80C800C9173D /* libsqlite3.tbd in Frameworks */,
 				B7F8AF9F1FDA80B900C9173D /* libc++.tbd in Frameworks */,
 				B7F8AF9D1FDA80AF00C9173D /* OpenAL.framework in Frameworks */,
 				B7F8AF9B1FDA80A600C9173D /* MediaPlayer.framework in Frameworks */,
 				B7F8AF991FDA809D00C9173D /* VideoToolbox.framework in Frameworks */,
+				B7EDEA292022C97D004C578E /* AlipaySDK.framework in Frameworks */,
 				B7F8AF951FDA808A00C9173D /* CoreMedia.framework in Frameworks */,
 				B7F8AF931FDA807F00C9173D /* ImageIO.framework in Frameworks */,
 				B7F8AF911FDA807500C9173D /* libz.tbd in Frameworks */,
@@ -1521,6 +1544,12 @@
 		012C7C6FCB1D7CF314AA6F9A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B7EDEA352022C9CE004C578E /* CoreMotion.framework */,
+				B7EDEA332022C9C3004C578E /* CoreGraphics.framework */,
+				B7EDEA312022C9B6004C578E /* CoreText.framework */,
+				B7EDEA2F2022C9AC004C578E /* QuartzCore.framework */,
+				B7EDEA2D2022C9A1004C578E /* CoreTelephony.framework */,
+				B7EDEA2B2022C999004C578E /* SystemConfiguration.framework */,
 				B7F8AFA21FDA80DD00C9173D /* libiconv.tbd */,
 				B7F8AFA01FDA80C800C9173D /* libsqlite3.tbd */,
 				B7F8AF9E1FDA80B900C9173D /* libc++.tbd */,
@@ -2150,6 +2179,7 @@
 		B74AE9AE1FA30834002BD4A6 /* classes */ = {
 			isa = PBXGroup;
 			children = (
+				B7EDEA262022C962004C578E /* Alipay */,
 				B70CCC511FE5216C00F5B7F3 /* CacheManager */,
 				B74AE9B91FA30834002BD4A6 /* Main */,
 				B75ECB271FB93F2200952713 /* Login */,
@@ -3464,6 +3494,15 @@
 			path = Nodes;
 			sourceTree = "<group>";
 		};
+		B7EDEA262022C962004C578E /* Alipay */ = {
+			isa = PBXGroup;
+			children = (
+				B7EDEA282022C97D004C578E /* AlipaySDK.bundle */,
+				B7EDEA272022C97D004C578E /* AlipaySDK.framework */,
+			);
+			path = Alipay;
+			sourceTree = "<group>";
+		};
 		B7FD7AE520036BE000B6112B /* SDCycleScrollView */ = {
 			isa = PBXGroup;
 			children = (
@@ -3574,6 +3613,7 @@
 				B774596F1FE3B2DF00BEC7F7 /* XFAcceptTableViewCell.xib in Resources */,
 				B72B21DD200F1CA60081B32D /* XFChargeCollectionViewCell.xib in Resources */,
 				B757DA9F1FCBFD1D002C0F3D /* XFLeaderboardTableViewCell.xib in Resources */,
+				B7EDEA2A2022C97D004C578E /* AlipaySDK.bundle in Resources */,
 				B77459741FE3B75A00BEC7F7 /* XFAvtivityMsgTableViewCell.xib in Resources */,
 				B72A4C0D200EE99E0013157A /* co.mp4 in Resources */,
 				B72A4BD8200EE99E0013157A /* icon_gif.png in Resources */,
@@ -4322,6 +4362,7 @@
 					"$(PROJECT_DIR)/youwuquan/classes/Publish/ShortVideo/PL/KiwiFaceSDK",
 					"$(PROJECT_DIR)/youwuquan/classes/Publish/ShortVideo/PL/EasyARSDK",
 					"$(PROJECT_DIR)/youwuquan/classes/Publish/ShortVideo/KiwiFaceSDK",
+					"$(PROJECT_DIR)/youwuquan/classes/Alipay",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -4420,6 +4461,7 @@
 					"$(PROJECT_DIR)/youwuquan/classes/Publish/ShortVideo/PL/KiwiFaceSDK",
 					"$(PROJECT_DIR)/youwuquan/classes/Publish/ShortVideo/PL/EasyARSDK",
 					"$(PROJECT_DIR)/youwuquan/classes/Publish/ShortVideo/KiwiFaceSDK",
+					"$(PROJECT_DIR)/youwuquan/classes/Alipay",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
