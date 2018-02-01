@@ -554,22 +554,6 @@
         return;
     }
     
-//    // 解锁
-//    if (index > 1) {
-//        // TODO:
-//
-//
-//
-//
-//    } else {
-//
-//        XFMyStatusViewController *photoVC = [[XFMyStatusViewController alloc] init];
-//        photoVC.type = XFMyStatuVCTypeOther;
-//        photoVC.model = self.status;
-//        [self.navigationController pushViewController:photoVC animated:YES];
-//    }
-
-    
 }
 #pragma mark - tableNodeDelegate
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

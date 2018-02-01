@@ -107,7 +107,7 @@
     
     [self.view endEditing:YES];
     
-    if (![self.phoneTextField.text isPhoneNumber]) {
+    if (![self.phoneTextField.text isHasContent]) {
 
         [XFToolManager showProgressInWindowWithString:@"请输入正确的手机号"];
 

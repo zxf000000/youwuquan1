@@ -1347,4 +1347,23 @@
     }];
 }
 
++ (void)getTradeStatusWithOrderId:(NSString *)orderId
+                     successBlock:(MineRequestSuccessBlock)successBlock
+                      failedBlock:(MineRequestFailedBlock)failedBlock
+                    progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetOrderStatusWith:orderId] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+}
+
 @end

@@ -113,8 +113,6 @@
         make.centerY.mas_offset(0);
         
     }];
-
-    
     [super updateConstraints];
 }
 @end

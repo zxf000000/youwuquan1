@@ -680,5 +680,19 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
                         failedBlock:(MineRequestFailedBlock)failedBlock
                       progressBlock:(MineRequestProgressBlock)progressBlock;
 
+/**
+ 获取订单状态
+
+ @param orderId oid
+ @param successBlock 成功
+ @param failedBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getTradeStatusWithOrderId:(NSString *)orderId
+                     successBlock:(MineRequestSuccessBlock)successBlock
+                      failedBlock:(MineRequestFailedBlock)failedBlock
+                    progressBlock:(MineRequestProgressBlock)progressBlock;
+
+
 
 @end

@@ -109,7 +109,7 @@
      */
     [[RCIMClient sharedRCIMClient] registerMessageType:XFDiamondMessageContent.class];
     
-    [[RCIM sharedRCIM] setEnablePersistentUserInfoCache:YES];
+//    [[RCIM sharedRCIM] setEnablePersistentUserInfoCache:YES];
 
     // 融云推送设置
     
@@ -269,8 +269,10 @@
     __block RCUserInfo *info;
     
     NSLog(@"%@",userId);
-    
+    NSLog(@"%@",[XFUserInfoManager sharedManager].userInfo);
+
     if ([userId intValue] == [[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"uid"] intValue]) {
+        
         
         info = [[RCUserInfo alloc] initWithUserId:[NSString stringWithFormat:@"%@",[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"uid"]] name:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"nickname"] portrait:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"headIconUrl"]];
         
@@ -500,7 +502,60 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     if ([url.host isEqualToString:@"safepay"]) {
         // 支付跳转支付宝钱包进行支付，处理支付结果
         [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
-            NSLog(@"result = %@",resultDic);
+            
+            if ([resultDic[@"resultStatus"] intValue] == 9000) {
+                
+                NSLog(@"支付成功");
+
+                NSString *result = resultDic[@"result"];
+                NSData *data = [result dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:(NSJSONReadingMutableContainers) error:nil];
+                
+                NSLog(@"result = %@",dic);
+
+                NSString *tradeNo = [NSString stringWithFormat:@"%@",dic[@"alipay_trade_app_pay_response"][@"out_trade_no"]];
+                
+                [XFMineNetworkManager getTradeStatusWithOrderId:tradeNo successBlock:^(id responseObj) {
+                    
+                    NSDictionary *responseDic = (NSDictionary *)responseObj;
+                    NSLog(@"订单状态-----%@",responseDic[@"status"]);
+                    
+                    /*
+                     WAIT_BUYER_PAY // 等待买家付款
+                     TRADE_CLOSED  // 超时关闭
+                     TRADE_SUCCESS // 支付成功
+                     TRADE_FINISHED // 支付结束
+                     
+                     */
+                    if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeSuccess" object:nil];
+
+                    } else {
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeCancel" object:nil];
+
+                    }
+                    
+
+                } failedBlock:^(NSError *error) {
+                    
+                    
+                } progressBlock:^(CGFloat progress) {
+                    
+                    
+                }];
+                
+                
+            }
+            
+            if ([resultDic[@"resultStatus"] intValue] == 6001) {
+                
+                NSLog(@"支付失败");
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeCancel" object:nil];
+                
+            }
         }];
         
         // 授权跳转支付宝钱包进行支付，处理支付结果

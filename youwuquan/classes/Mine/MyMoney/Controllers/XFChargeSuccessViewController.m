@@ -31,9 +31,7 @@
 - (void)clickBackButton {
     
     if (self.type == XFSuccessViewTypeChargeFailed || self.type == XFSuccessViewTypeVipFailed) {
-    
-//        AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    
+        
         [self.navigationController popViewControllerAnimated:YES];
     
     } else {

@@ -250,6 +250,7 @@
 // 搜索动态
 #define YBYsearchStatus @"search/publishs"
 
+#define YBYGetTradeStatusWithID(orderId) [NSString stringWithFormat:@"pay/order/%@",(orderId)]
 
 @implementation XFApiClient
 
@@ -849,5 +850,11 @@
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYsearchStatus];
 }
+
++ (NSString *)pathUrlForGetOrderStatusWith:(NSString *)orderId {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetTradeStatusWithID(orderId)];
+}
+
 
 @end

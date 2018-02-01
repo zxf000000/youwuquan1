@@ -825,5 +825,12 @@
  */
 + (NSString *)pathUrlForSearchPuhlishs;
 
+/**
+ 订单状态
+
+ @param orderId oid
+ @return url
+ */
++ (NSString *)pathUrlForGetOrderStatusWith:(NSString *)orderId;
 
 @end

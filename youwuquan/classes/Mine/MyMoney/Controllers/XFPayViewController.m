@@ -96,9 +96,37 @@
     
     [self loadVipList];
     [self loadChargeList];
-    [self loadvipInfo];
+//    [self loadvipInfo];
     
     [self.view setNeedsUpdateConstraints];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chargeSuccess) name:@"chargeSuccess" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chargeCanceled) name:@"chargeCancel" object:nil];
+
+}
+
+- (void)chargeCanceled {
+    
+    [UIAlertController xfalertControllerWithMsg:@"订单取消" doneBlock:^{
+        
+        
+    }];
+    
+}
+
+- (void)chargeSuccess {
+    
+    XFChargeSuccessViewController *succesVC = [[XFChargeSuccessViewController alloc] init];
+    succesVC.type = XFSuccessViewTypeChargeSuccess;
+    [self.navigationController pushViewController:succesVC animated:YES];
+    
+}
+
+- (void)dealloc {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
 }
 
 - (void)loadChargeList {
@@ -148,7 +176,7 @@
     
     [XFMineNetworkManager getMyVipInfoWithsuccessBlock:^(id responseObj) {
     
-        NSArray *vipDatas = (NSArray *)responseObj;
+//        NSArray *vipDatas = (NSArray *)responseObj;
         
         
         
@@ -233,15 +261,6 @@
     [XFMineNetworkManager chargeWithNumber:[NSString stringWithFormat:@"%zd",_chargeNumber] type:type successBlock:^(id responseObj) {
         [HUD hideAnimated:YES];
 
-        // 充值成功,刷新
-//        [self.navigationController pushViewController:[[XFChargeSuccessViewController alloc] init] animated:YES];
-        
-        /*
-        alipay_sdk=alipay-sdk-java-dynamicVersionNo&app_id=2016082100305669&biz_content=%7B%22body%22%3A%22%E5%B0%A4%E7%89%A9%E5%9C%88%E9%92%BB%E7%9F%B3%E5%85%85%E5%80%BC%E3%80%90+60+%E4%B8%AA%E3%80%91%22%2C%22out_trade_no%22%3A%222018020114411676404%22%2C%22product_code%22%3A%22QUICK_MSECURITY_PAY%22%2C%22subject%22%3A%22%E5%B0%A4%E7%89%A9%E5%9C%88%E9%92%BB%E7%9F%B3%E5%85%85%E5%80%BC%E3%80%90+60+%E4%B8%AA%E3%80%91%22%2C%22timeout_express%22%3A%2230m%22%2C%22total_amount%22%3A%220.01%22%7D&charset=utf-8&format=json&method=alipay.trade.app.pay&notify_url=http%3A%2F%2F47.104.153.152%2Fapi%2Fpayment%2Falipay%2Fcallback&sign=DVlSCMfZIvWK9LFmhA3KlroCt7QIW%2BZOF%2FMsBkqgy9l8v4gODSwh%2Fak0x1rt6dYKEf6BK3Z2UL%2Bem16KIcwVDctlHV8nW2IjuQCZeOA3cnDxLpqhHD1QzbYTV5Tbk9PPK9zTegZQEplzTstxWNG8mzZjmk%2FEYG7EICAWgUJQxJ1yFsPKYElCWIYKuKswV00M%2FlAwxCaI6ljbhh7h4SFeLqDOYUwfcfEIL%2FJafDzK8KreTtEmkqGlp1G9TgFhYAjvQaBww3AWo1JTm05r%2Fq0Ax33y5IO9BUUPTTo%2FXBwnjTqCPzMOCNTwJjlsWMVOtIP%2F8t8KvdZrqVQT9u%2F87rTxLA%3D%3D&sign_type=RSA2&timestamp=2018-02-01+14%3A41%3A16&version=1.0
-        
-         */
-        
-        // 下单
         NSString *str = (NSString *)responseObj;
         
         NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
@@ -249,6 +268,11 @@
         [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
             
             NSLog(@"%@-----alipay回调",resultDic);
+            
+            if ([resultDic[@"resultStatus"] intValue] == 9000) {
+
+            }
+            
             
         }];
         
@@ -483,8 +507,6 @@
 }
 - (void)chargeTableViewCell:(XFChargeTableViewCell *)cell didClickPayButton:(UIButton *)payButton {
     
-    
-    
     XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
     
     successVC.type = XFSuccessViewTypeChargeFailed;
@@ -503,7 +525,7 @@
 
     } else {
         
-        return self.chargeList.count + 1;
+        return self.chargeList.count;
     }
     
     
@@ -545,16 +567,9 @@
         
         cell.index = indexPath;
         
-        if (indexPath.item < self.chargeList.count) {
+        cell.model = self.chargeList[indexPath.item];
+        cell.isAuto = NO;
 
-            cell.model = self.chargeList[indexPath.item];
-            cell.isAuto = NO;
-            
-        } else {
-            
-            cell.isAuto = YES;
-        }
-        
         cell.selectedBlock = ^(NSIndexPath *indexPath) {
             
             self.selectedChargeIndex = indexPath;
@@ -565,20 +580,6 @@
     }
 
     return nil;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (collectionView == self.chargeCollectionView) {
-        
-        if (indexPath.item == self.chargeList.count) {
-            
-            // 填写自主ine
-            
-        }
-        
-    }
-    
 }
 
 - (void)setupScrolLView {

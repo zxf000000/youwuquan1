@@ -107,7 +107,6 @@
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperations:@[operation1,operation2] waitUntilFinished:NO];
 
-    
 }
 
 - (void)getCardDatas {
@@ -192,21 +191,37 @@ dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 
 - (void)setupCards {
     
+    if (self.pics.count == 0) {
+        
+        XFShareCardView *view = [[XFShareCardView alloc] initWithFrame:frameOutside];
+        view.type = XFCardShareViewtypeAdd;
+        view.delegate = self;
+        [self.view addSubview:view];
+        
+        return;
+    }
+
     NSMutableArray *arr = [NSMutableArray array];
     
     for (NSInteger i = 0 ; i < 3 ; i ++ ) {
         
         XFShareCardView *view;
         view = [[XFShareCardView alloc] initWithFrame:frameOutside];
-        XFSharePicModel *model = self.pics[0];
-        [view.picView setImageWithURL:[NSURL URLWithString:model.imgUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
-        view.inviteUrl = [NSString stringWithFormat:@"http://118.126.102.173:8081/yby/views/register/register.html?uid=%@",[XFUserInfoManager sharedManager].userInfo[@"info"][@"uid"]];
-        view.delegate = self;
+        
+        if (self.pics[i]) {
+            XFSharePicModel *model = self.pics[i];
 
-        self.bottomIndex = i;
-        
-        view.type = XFCardShareViewtypePic;
-        
+            [view.picView setImageWithURL:[NSURL URLWithString:model.imgUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+            view.inviteUrl = [NSString stringWithFormat:@"http://118.126.102.173:8081/yby/views/register/register.html?uid=%@",[XFUserInfoManager sharedManager].userInfo[@"info"][@"uid"]];
+            view.delegate = self;
+            self.bottomIndex = i;
+            view.type = XFCardShareViewtypePic;
+        } else {
+            view.delegate = self;
+            self.bottomIndex = i;
+            view.type = XFCardShareViewtypeAdd;
+        }
+    
         if (i == 0) {
             
             view.transform = self.insideTransform;
@@ -220,7 +235,6 @@ dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
         
         if (i == 2) {
             self.outsideView = view;
-
         }
         
         [self.view addSubview:view];
@@ -339,7 +353,7 @@ dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
             
             self.outsideView = middleView;
             self.bottomIndex += 1;
-            if (self.bottomIndex == self.picArr.count) {
+            if (self.bottomIndex == self.pics.count) {
                 
                 view.type = XFCardShareViewtypeAdd;
                 self.addView = view;
@@ -347,7 +361,8 @@ dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
                 
             } else {
                 
-                view.picView.image = [UIImage imageNamed:self.picArr[self.bottomIndex]];
+                XFSharePicModel *model = self.pics[self.bottomIndex];
+                [view.picView setImageWithURL:[NSURL URLWithString:model.imgUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
                 view.type = XFCardShareViewtypePic;
                 
             }

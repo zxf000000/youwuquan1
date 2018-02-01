@@ -6,7 +6,7 @@
 //  Copyright © 2017年 mr.zhou. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "XFOtherMainViewController.h"
 
 typedef NS_ENUM(NSInteger,XFSuccessViewType) {
     
@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger,XFSuccessViewType) {
     
 };
 
-@interface XFChargeSuccessViewController : UIViewController
+@interface XFChargeSuccessViewController : XFOtherMainViewController
 
 @property (nonatomic,assign) XFSuccessViewType type;
 
