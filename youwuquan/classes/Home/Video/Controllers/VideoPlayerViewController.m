@@ -48,7 +48,7 @@
 
 @property (nonatomic,assign) BOOL sliderCanMove;
 
-
+@property (nonatomic,strong) MBProgressHUD *loadingProgressHUD;
 
 @end
 
@@ -128,7 +128,7 @@
     if (self.beginButton.selected) {
         
         [self.player play];
-
+        
     } else {
         
         [self.player pause];
@@ -187,6 +187,8 @@
 #pragma mark - playerDelegate
 - (void)videoPlayerIsReadyToPlayVideo:(VIMVideoPlayer *)videoPlayer {
     
+    [self.loadingProgressHUD hideAnimated:YES];
+    
     CMTime time = videoPlayer.player.currentItem.duration;
     Float64 seconds = CMTimeGetSeconds(time);
     self.totalTimeLabel.text = [XFToolManager timeStringWithTime:seconds];
@@ -208,8 +210,6 @@
 
     }
     
-
-    
 }
 - (void)videoPlayer:(VIMVideoPlayer *)videoPlayer loadedTimeRangeDidChange:(float)duration {
     
@@ -217,14 +217,16 @@
 }
 - (void)videoPlayerPlaybackBufferEmpty:(VIMVideoPlayer *)videoPlayer {
     
-    
+    [self.loadingProgressHUD hideAnimated:YES];
+
 }
 - (void)videoPlayerPlaybackLikelyToKeepUp:(VIMVideoPlayer *)videoPlayer {
     
     
 }
 - (void)videoPlayer:(VIMVideoPlayer *)videoPlayer didFailWithError:(NSError *)error {
-    
+    [self.loadingProgressHUD hideAnimated:YES];
+
     
 }
 
@@ -399,6 +401,8 @@
     /////////////////////////////////////////////////////// MDVRLibrary
     
     [self.player play];
+    
+    self.loadingProgressHUD = [XFToolManager showProgressHUDtoView:self.view];
 }
 
 

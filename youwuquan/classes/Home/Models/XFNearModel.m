@@ -10,4 +10,19 @@
 
 @implementation XFNearModel
 
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    
+    
+    
+}
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
+    
+    if (self = [super init]) {
+        
+        
+    }
+    return self;
+} // NS_DESIGNATED_INITIALIZER
+
+
 @end

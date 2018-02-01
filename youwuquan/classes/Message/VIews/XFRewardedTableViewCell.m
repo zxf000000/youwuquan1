@@ -23,7 +23,7 @@
         _nameLabel = [[UILabel alloc] init];
         _nameLabel.textColor = UIColorHex(868383);
         _nameLabel.font = [UIFont systemFontOfSize:12];
-//        _nameLabel.text = kRandomName;
+        _nameLabel.textAlignment = NSTextAlignmentCenter;
         [self.contentView addSubview:_nameLabel];
         
         [self setNeedsUpdateConstraints];
@@ -44,6 +44,7 @@
        
         make.centerX.mas_offset(0);
         make.top.mas_equalTo(_iconView.mas_bottom).offset(10);
+        make.left.right.mas_offset(0);
         
     }];
     
@@ -68,7 +69,6 @@
     layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     self.collectionView.collectionViewLayout = layout;
-    
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
     [self.collectionView registerClass:[XFMessageRewardedCollectionCell class] forCellWithReuseIdentifier:@"XFMessageRewardedCollectionCell"];
@@ -84,11 +84,9 @@
     
 }
 
-
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
     return self.datas.count;
-    
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -98,7 +96,8 @@
     XFNearModel *model = self.datas[indexPath.item];
     
     cell.nameLabel.text = model.nickname;
-    [cell.iconView setImageWithURL:[NSURL URLWithString:model.headIconUrl] options:(YYWebImageOptionProgressiveBlur)];
+    
+    [cell.iconView setImageWithURL:[NSURL URLWithString:model.headIconUrl] placeholder:[UIImage imageNamed:@"zhanweitu44"]];
     
     return cell;
     

@@ -30,7 +30,7 @@
 #import <AVKit/AVKit.h>
 #import "XFAlertViewController.h"
 #import "XFPayViewController.h"
-
+#import "FTPopOverMenu.h"
 
 @interface XFFindTextureViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate,XFFindHeaderdelegate>
 
@@ -790,6 +790,35 @@
 }
 
 #pragma mark - cellNodeDelegate点赞
+
+- (void)findCellNode:(XFFindCellNode *)node didClickJuBaoButtonWithButton:(ASButtonNode *)jubaoButton {
+    
+    
+    FTPopOverMenuConfiguration *configuration = [FTPopOverMenuConfiguration defaultConfiguration];
+    configuration.menuRowHeight = 40;
+    configuration.menuWidth = 80;
+    [FTPopOverMenu showForSender:jubaoButton.view
+                   withMenuArray:@[@"举报"]
+                      imageArray:@[@"find_jubao"]
+                       doneBlock:^(NSInteger selectedIndex) {
+                            // 举报操作
+                           MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view];
+                           
+                           dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                               
+                               [XFToolManager changeHUD:HUD successWithText:@"举报成功!"];
+                               
+                           });
+                           
+                       } dismissBlock:^{
+                           
+
+                           
+                       }];
+    
+    
+}
+
 - (void)playbackFinished:(NSNotification *)notice {
     
     self.isPlaying = NO;
@@ -919,7 +948,6 @@
             
             avPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
             [[avPlayer player] play];
-            
             [self presentViewController:avPlayer animated:YES completion:nil];
             
         }
@@ -934,34 +962,37 @@
         
         for (int i = 0; i < node.picNodes.count; i++) {
             
-            XFNetworkImageNode *imgNode = node.picNodes[i];
-            UIImageView *imgView = [[UIImageView alloc] init];
-            
-            CGRect rect = CGRectZero;
-            
-            if ([imgNode isKindOfClass:[XFNetworkImageNode class]]) {
+            if (i < node.openCount) {
                 
-                rect = [node.view convertRect:imgNode.view.frame toView:self.view];
-                imgView.frame = rect;
+                XFNetworkImageNode *imgNode = node.picNodes[i];
+                UIImageView *imgView = [[UIImageView alloc] init];
                 
-            } else if ([imgNode isKindOfClass:[ASOverlayLayoutSpec class]]){
+                CGRect rect = CGRectZero;
                 
-                ASOverlayLayoutSpec *overlay = (ASOverlayLayoutSpec *)imgNode;
-                for (ASDisplayNode *picNode in overlay.children) {
+                if ([imgNode isKindOfClass:[XFNetworkImageNode class]]) {
                     
-                    if ([picNode isKindOfClass:[XFNetworkImageNode class]]) {
+                    rect = [node.view convertRect:imgNode.view.frame toView:self.view];
+                    imgView.frame = rect;
+                    
+                } else if ([imgNode isKindOfClass:[ASOverlayLayoutSpec class]]){
+                    
+                    ASOverlayLayoutSpec *overlay = (ASOverlayLayoutSpec *)imgNode;
+                    for (ASDisplayNode *picNode in overlay.children) {
                         
-                        rect = [node.view convertRect:picNode.view.frame toView:self.view];
-                        imgView.frame = rect;
+                        if ([picNode isKindOfClass:[XFNetworkImageNode class]]) {
+                            
+                            rect = [node.view convertRect:picNode.view.frame toView:self.view];
+                            imgView.frame = rect;
+
+                        }
                         
                     }
-                    
                 }
                 
+                LBPhotoWebItem *item = [[LBPhotoWebItem alloc] initWithURLString:urls[i] frame:rect];
+                [items addObject:item];
             }
             
-            LBPhotoWebItem *item = [[LBPhotoWebItem alloc] initWithURLString:urls[i] frame:rect];
-            [items addObject:item];
         }
         
         [LBPhotoBrowserManager.defaultManager showImageWithWebItems:items selectedIndex:index fromImageViewSuperView:self.view].lowGifMemory = YES;
@@ -1001,8 +1032,15 @@
         return image;
     } completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
         
-        // 分享
-        [XFShareManager sharedUrl:@"http://www.baidu.com" image:image title:model.user[@"nickname"] detail:@"我在尤物圈等你哦"];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSString *baseUrl = @"http://118.126.102.173:8081/share/index.html";
+            NSString *shareUrl = [NSString stringWithFormat:@"%@?publishId=%@",baseUrl,model.id];
+            
+            [XFShareManager sharedUrl:shareUrl image:image title:model.user[@"nickname"] detail:@"我在尤物圈等你"];
+        });
+        
+
     }];
     
     
@@ -1066,7 +1104,7 @@
     XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
     
     detailVC.hidesBottomBarWhenPushed = YES;
-    detailVC.userId = model.user[@"uid"];
+    detailVC.userId = [NSString stringWithFormat:@"%@",model.user[@"uid"]];
     detailVC.userName = model.user[@"nickname"];
     detailVC.iconUrl = model.user[@"headIconUrl"];
     [self.navigationController pushViewController:detailVC animated:YES];

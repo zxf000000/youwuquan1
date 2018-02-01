@@ -667,4 +667,17 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
                 failedBlock:(MineRequestFailedBlock)failedBlock
               progressBlock:(MineRequestProgressBlock)progressBlock;
 
+
+/**
+ 获取分享背景图
+
+ @param successBlock 0
+ @param failedBlock 0
+ @param progressBlock 0
+ */
++ (void)getSharePicWithsuccessBlock:(MineRequestSuccessBlock)successBlock
+                        failedBlock:(MineRequestFailedBlock)failedBlock
+                      progressBlock:(MineRequestProgressBlock)progressBlock;
+
+
 @end

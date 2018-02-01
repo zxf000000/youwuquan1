@@ -149,7 +149,7 @@
                 failedBlock:(MineRequestFailedBlock)failedBlock
               progressBlock:(MineRequestProgressBlock)progressBlock {
     
-    [XFNetworking uploadFileWithUrl:[XFApiClient pathUrlForUpdateIcon] fileData:UIImageJPEGRepresentation(icon, 0.2) type:@"image" name:@"image" mimeType:@"image/jpeg" progressBlock:^(int64_t bytesWriten, int64_t totalBytes) {
+    [XFNetworking uploadFileWithUrl:[XFApiClient pathUrlForUpdateIcon] fileData:UIImageJPEGRepresentation(icon, 0.8) type:@"image" name:@"image" mimeType:@"image/jpeg" progressBlock:^(int64_t bytesWriten, int64_t totalBytes) {
         progressBlock(bytesWriten/(CGFloat)totalBytes);
         
     } successBlock:^(id response) {
@@ -1294,6 +1294,25 @@
                              @"phone":phone
                              };
     [XFNetworking putWithUrl:[XFApiClient pathUrlForUpdateAddress:[NSString stringWithFormat:@"%zd",addressId]] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+}
+
++ (void)getSharePicWithsuccessBlock:(MineRequestSuccessBlock)successBlock
+                        failedBlock:(MineRequestFailedBlock)failedBlock
+                      progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetSharePicrures] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
         progressBlock(bytesRead/(CGFloat)totalBytes);
         

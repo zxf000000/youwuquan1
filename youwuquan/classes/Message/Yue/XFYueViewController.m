@@ -15,10 +15,14 @@
 #import "XFActivityViewController.h"
 #import "XFSystemMsgModel.h"
 #import "XFLikeCommentModel.h"
+#import "XFMessageNetworkManager.h"
 
 @interface XFYueViewController () <UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic,strong) UITableView *tableView;
+
+@property (nonatomic,assign) NSInteger page;
+
 
 @end
 
@@ -27,7 +31,238 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.msgs = [NSMutableArray array];
+    
     [self setupTableView];
+    
+    [self loadData];
+    
+}
+
+- (void)loadData {
+    
+    self.page = 0;
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    
+    NSString *lastDate;
+    if ([XFUserInfoManager sharedManager].lastGetNotificationDate) {
+        
+        lastDate = [XFUserInfoManager sharedManager].lastGetNotificationDate;
+        
+    } else {
+        
+        lastDate = @"2017-01-01 01:00:00";
+    }
+    
+    NSDate *date = [NSDate dateWithTimeInterval:-3600 * 24 * 10 sinceDate:[NSDate date]];
+    
+    lastDate = [dateFormatter stringFromDate:date];
+    
+    switch(self.type) {
+            
+        case LikeComment:
+        {
+            [XFMessageNetworkManager getPersonalNotificationWithDate:lastDate type:@"like,comment" successBlock:^(id responseObj) {
+                
+                NSArray *likeComments = (NSArray *)responseObj;
+                NSMutableArray *arrLike = [NSMutableArray array];
+                NSMutableArray *arrOther = [NSMutableArray array];
+                
+                for (int i = 0 ; i < likeComments.count ; i ++ ) {
+                    
+                    NSDictionary *dic = likeComments[i];
+                    
+                    if ([dic[@"type"] isEqualToString:@"like"] || [dic[@"type"] isEqualToString:@"comment"]) {
+                        [arrLike addObject:[XFLikeCommentModel modelWithDictionary:likeComments[i]]];
+                        
+                        
+                    } else {
+                        
+                        [arrOther addObject:[XFLikeCommentModel modelWithDictionary:likeComments[i]]];
+                        
+                    }
+                    
+                }
+                
+                self.msgs = arrLike;
+                
+                [self.tableView reloadData];
+                
+            } failBlock:^(NSError *error) {
+                
+            } progressBlock:^(CGFloat progress) {
+                
+            }];
+            
+        }
+            break;
+        case System:
+        {
+            [XFMessageNetworkManager getSystemNotificationListWithPage:self.page size:10 successBlock:^(id responseObj) {
+                NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+                NSMutableArray *arr = [NSMutableArray array];
+                for (int i = 0; i < datas.count; i ++ ) {
+                    
+                    [arr addObject:[XFSystemMsgModel modelWithDictionary:datas[i]]];
+                    
+                }
+                
+                self.msgs = arr;
+                
+                [self.tableView reloadData];
+                
+            } failBlock:^(NSError *error) {
+                
+            } progressBlock:^(CGFloat progress) {
+                
+            }];
+        }
+            break;
+        case  Activity:
+        {
+            [XFMessageNetworkManager getPersonalNotificationWithDate:lastDate type:@"reward,gift,yellowPicture" successBlock:^(id responseObj) {
+                
+                NSArray *likeComments = (NSArray *)responseObj;
+                NSMutableArray *arrLike = [NSMutableArray array];
+                
+                for (int i = 0 ; i < likeComments.count ; i ++ ) {
+                    
+                    [arrLike addObject:[XFLikeCommentModel modelWithDictionary:likeComments[i]]];
+                    
+                }
+                
+                self.msgs = arrLike;
+                
+                [self.tableView reloadData];
+                
+            } failBlock:^(NSError *error) {
+                
+            } progressBlock:^(CGFloat progress) {
+                
+            }];
+            
+        }
+            break;
+    }
+    
+}
+
+- (void)loadMoreData {
+    
+    self.page += 1;
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    
+    NSString *lastDate;
+    if ([XFUserInfoManager sharedManager].lastGetNotificationDate) {
+        
+        lastDate = [XFUserInfoManager sharedManager].lastGetNotificationDate;
+        
+    } else {
+        
+        lastDate = @"2017-01-01 01:00:00";
+    }
+    
+    NSDate *date = [NSDate dateWithTimeInterval:-3600 * 24 * 10 sinceDate:[NSDate date]];
+    
+    lastDate = [dateFormatter stringFromDate:date];
+    
+    switch(self.type) {
+            
+        case LikeComment:
+        {
+            [self.tableView.mj_footer endRefreshing];
+
+            [XFMessageNetworkManager getPersonalNotificationWithDate:lastDate type:@"like,comment" successBlock:^(id responseObj) {
+                
+                NSArray *likeComments = (NSArray *)responseObj;
+                NSMutableArray *arrLike = [NSMutableArray array];
+                NSMutableArray *arrOther = [NSMutableArray array];
+                
+                for (int i = 0 ; i < likeComments.count ; i ++ ) {
+                    
+                    NSDictionary *dic = likeComments[i];
+                    
+                    if ([dic[@"type"] isEqualToString:@"like"] || [dic[@"type"] isEqualToString:@"comment"]) {
+                        [arrLike addObject:[XFLikeCommentModel modelWithDictionary:likeComments[i]]];
+                        
+                        
+                    } else {
+                        
+                        [arrOther addObject:[XFLikeCommentModel modelWithDictionary:likeComments[i]]];
+                        
+                    }
+                    
+                }
+                
+                self.msgs = arrLike.copy;
+                
+                [self.tableView reloadData];
+                
+            } failBlock:^(NSError *error) {
+                
+            } progressBlock:^(CGFloat progress) {
+                
+            }];
+            
+        }
+            break;
+        case System:
+        {
+            [XFMessageNetworkManager getSystemNotificationListWithPage:self.page size:10 successBlock:^(id responseObj) {
+                NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+                NSMutableArray *arr = [NSMutableArray array];
+                for (int i = 0; i < datas.count; i ++ ) {
+                    
+                    [arr addObject:[XFSystemMsgModel modelWithDictionary:datas[i]]];
+                    
+                }
+                
+                [self.msgs addObjectsFromArray:arr.copy];
+                
+                [self.tableView reloadData];
+                
+                [self.tableView.mj_footer endRefreshing];
+                
+            } failBlock:^(NSError *error) {
+                
+            } progressBlock:^(CGFloat progress) {
+                
+            }];
+        }
+            break;
+        case  Activity:
+        {
+            [self.tableView.mj_footer endRefreshing];
+
+            [XFMessageNetworkManager getPersonalNotificationWithDate:lastDate type:@"reward,gift,yellowPicture" successBlock:^(id responseObj) {
+                
+                NSArray *likeComments = (NSArray *)responseObj;
+                NSMutableArray *arrLike = [NSMutableArray array];
+                
+                for (int i = 0 ; i < likeComments.count ; i ++ ) {
+                    
+                    [arrLike addObject:[XFLikeCommentModel modelWithDictionary:likeComments[i]]];
+                    
+                }
+                
+                self.msgs = arrLike.copy;
+                
+                [self.tableView reloadData];
+                
+            } failBlock:^(NSError *error) {
+                
+            } progressBlock:^(CGFloat progress) {
+                
+            }];
+            
+        }
+            break;
+    }
+    
     
 }
 
@@ -40,6 +275,12 @@
     self.tableView.estimatedRowHeight = 200;
     [self.view addSubview:self.tableView];
     self.tableView.backgroundColor = UIColorHex(f4f4f4);
+    self.tableView.tableFooterView = [[UIView alloc] init];
+    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+       
+        [self loadMoreData];
+        
+    }];
     
 }
 
@@ -193,11 +434,11 @@
                 cell.likeButton.hidden = YES;
                 cell.commentBottomContrains.active = YES;
                 cell.likeBottomContrains.active = NO;
-
+                
             }
             
             [cell.iconView setImageWithURL:[NSURL URLWithString:info[@"headIconUrl"]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
-
+            
             return cell;
         }
             break;

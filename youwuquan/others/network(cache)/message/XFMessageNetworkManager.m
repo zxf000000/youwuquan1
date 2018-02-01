@@ -62,4 +62,20 @@
     
 }
 
++ (void)getSystemNotificationListWithPage:(NSInteger)page
+                                     size:(NSInteger)size
+                             successBlock:(MsgRequestSuccessBlock)successBlock
+                                failBlock:(MsgRequestFailedBlock)failedBlock
+                            progressBlock:(MsgRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetSystemNotificationbyList] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        successBlock(response);
+    } failBlock:^(NSError *error) {
+        failedBlock(error);
+    }];
+}
+
 @end

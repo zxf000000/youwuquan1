@@ -107,6 +107,8 @@
      */
     [[RCIMClient sharedRCIMClient] registerMessageType:XFDiamondMessageContent.class];
     
+    [[RCIM sharedRCIM] setEnablePersistentUserInfoCache:YES];
+
     // 融云推送设置
     
     /**
@@ -185,9 +187,6 @@
     
     return YES;
 }
-
-
-
 
 /**
  实时检查当前网络状态

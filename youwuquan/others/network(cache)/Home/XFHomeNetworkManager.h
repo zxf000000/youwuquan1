@@ -286,4 +286,17 @@ typedef void(^HomeRequestProgressBlock)(CGFloat progress);
                 failBlock:(HomeRequestFailedBlock)failBlock
                  progress:(HomeRequestProgressBlock)progressBlock;
 
+
+/**
+ 获取搜索关键词
+
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getSearchKeyWorkWithsuccessBlock:(HomeRequestSuccessBlock)successBlock
+                               failBlock:(HomeRequestFailedBlock)failBlock
+                                progress:(HomeRequestProgressBlock)progressBlock;
+
+
 @end

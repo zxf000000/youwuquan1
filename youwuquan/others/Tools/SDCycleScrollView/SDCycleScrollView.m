@@ -635,7 +635,7 @@ NSString * const ID = @"SDCycleScrollViewCell";
         cell.titleLabelTextColor = self.titleLabelTextColor;
         cell.titleLabelTextFont = self.titleLabelTextFont;
         cell.hasConfigured = YES;
-        cell.imageView.contentMode = self.bannerImageViewContentMode;
+//        cell.imageView.contentMode = self.bannerImageViewContentMode;
         cell.clipsToBounds = YES;
         cell.onlyDisplayText = self.onlyDisplayText;
     }

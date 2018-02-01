@@ -21,7 +21,14 @@
 #define frameMiddle  CGRectMake(itemX + 0.05 * itemWidth, itemY + 0.1 * itemHeight + 5, itemWidth * 0.9, itemHeight * 0.9)
 #define frameInside  CGRectMake(itemX + 0.1 * itemWidth, itemY + 0.2 * itemHeight + 10, itemWidth * 0.8, itemHeight * 0.8)
 
+@implementation XFSharePicModel
+
+
+@end
+
 @interface XFShareCardViewController () <XFShareCardViewDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+
+@property (nonatomic,copy) NSArray *pics;
 
 @property (nonatomic,strong) UIView *bottomView;
 
@@ -72,9 +79,6 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     self.picArr = @[@"find1",@"find2",@"find3",@"find4"];
-    
-    [self getCode];
-    
     self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
     
     UIButton *shareButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 60, 30))];
@@ -84,24 +88,86 @@
     
     [shareButton addTarget:self action:@selector(clickShareButton) forControlEvents:(UIControlEventTouchUpInside)];
     
+    // 获取广告
+    NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
+        [self getCardDatas];
+
+    }];
+    // 获取认证信息列表
+    NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
+        [self getCode];
+
+    }];
+    
+    //设置依赖
+    [operation2 addDependency:operation1];      //任务3依赖任务2
+    
+    
+    //创建队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperations:@[operation1,operation2] waitUntilFinished:NO];
+
+    
+}
+
+- (void)getCardDatas {
+    
+        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    
+    [XFMineNetworkManager getSharePicWithsuccessBlock:^(id responseObj) {
+       
+                dispatch_semaphore_signal(sema);
+        
+        NSArray *datas = (NSArray *)responseObj;
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0 ; i < datas.count; i ++ ) {
+            
+            [arr addObject:[XFSharePicModel modelWithDictionary:datas[i]]];
+        }
+        
+        if (arr.count < 3) {
+            
+            [arr addObjectsFromArray:arr.copy];
+            [arr addObjectsFromArray:arr.copy];
+
+        }
+        
+        self.pics = arr.copy;
+        [self setupSizes];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self setupCards];
+
+        });
+    
+    } failedBlock:^(NSError *error) {
+        
+        dispatch_semaphore_signal(sema);
+
+    } progressBlock:^(CGFloat progress) {
+        
+    }];
+dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+
 }
 
 - (void)getCode {
     
-    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
+//    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
     [XFMineNetworkManager getShareUrlWithsuccessBlock:^(id responseObj) {
         
-        [HUD hideAnimated:YES];
+//        [HUD hideAnimated:YES];
         
         self.inviteUrl = ((NSDictionary *)responseObj)[@"url"];
         
-        [self setupSizes];
         
-        [self setupCards];
+//        [self setupCards];
         
     } failedBlock:^(NSError *error) {
-        [HUD hideAnimated:YES];
+//        [HUD hideAnimated:YES];
 
     } progressBlock:^(CGFloat progress) {
         
@@ -132,9 +198,9 @@
         
         XFShareCardView *view;
         view = [[XFShareCardView alloc] initWithFrame:frameOutside];
-        
-        view.picView.image = [UIImage imageNamed:self.picArr[i]];
-        view.inviteUrl = self.inviteUrl;
+        XFSharePicModel *model = self.pics[0];
+        [view.picView setImageWithURL:[NSURL URLWithString:model.imgUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        view.inviteUrl = [NSString stringWithFormat:@"http://118.126.102.173:8081/yby/views/register/register.html?uid=%@",[XFUserInfoManager sharedManager].userInfo[@"info"][@"uid"]];
         view.delegate = self;
 
         self.bottomIndex = i;

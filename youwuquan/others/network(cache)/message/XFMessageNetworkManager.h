@@ -46,5 +46,18 @@ typedef void(^MsgRequestProgressBlock)(CGFloat progress);
                             failBlock:(MsgRequestFailedBlock)failedBlock
                         progressBlock:(MsgRequestProgressBlock)progressBlock;
 
+/**
+ 根据列表获取系统通知列表
+ 
+ @param dateStr 时间
+ @param successBlock 成功
+ @param failedBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getSystemNotificationListWithPage:(NSInteger)page
+                                 size:(NSInteger)size
+                         successBlock:(MsgRequestSuccessBlock)successBlock
+                            failBlock:(MsgRequestFailedBlock)failedBlock
+                        progressBlock:(MsgRequestProgressBlock)progressBlock;
 
 @end

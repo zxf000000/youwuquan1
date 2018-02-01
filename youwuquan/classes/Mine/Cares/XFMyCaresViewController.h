@@ -16,6 +16,8 @@
 @property (nonatomic,copy) NSArray *identificationIds;
 @property (nonatomic,copy) NSString *introduce;
 @property (nonatomic,copy) NSString *nickname;
+@property (nonatomic,copy) NSString *fansUid;
+
 
 @end
 

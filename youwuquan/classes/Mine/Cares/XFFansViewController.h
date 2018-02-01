@@ -8,6 +8,8 @@
 
 #import "XFOtherMainViewController.h"
 
+
+
 @interface XFFansViewController : XFOtherMainViewController
 
 @end

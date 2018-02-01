@@ -12,6 +12,9 @@
 #import "XFLoginNetworkManager.h"
 #import "CHWebView.h"
 #import "XFMineNetworkManager.h"
+#import "XFUserAgreementViewController.h"
+#import "XFHelpViewController.h"
+#import "XFAboutViewController.h"
 
 @interface XFSetViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *totalCostLabel;
@@ -204,6 +207,31 @@
             } progressBlock:^(CGFloat progress) {
                 
             }];
+        }
+            break;
+            
+        case 2:
+        {
+            XFUserAgreementViewController *agreementVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFUserAgreementViewController"];
+            
+            [self.navigationController pushViewController:agreementVC animated:YES];
+            
+        }
+            break;
+        case 3:
+        {
+            XFAboutViewController *aboutVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFAboutViewController"];
+            
+            [self.navigationController pushViewController:aboutVC animated:YES];
+            
+        }
+            break;
+        case 4:
+        {
+            XFHelpViewController *helpVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFHelpViewController"];
+            
+            [self.navigationController pushViewController:helpVC animated:YES];
+            
         }
             break;
         default:

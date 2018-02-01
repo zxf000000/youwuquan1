@@ -515,4 +515,33 @@
     
 }
 
+
+
+/**
+ 获取搜索关键词
+ 
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getSearchKeyWorkWithsuccessBlock:(HomeRequestSuccessBlock)successBlock
+                               failBlock:(HomeRequestFailedBlock)failBlock
+                                progress:(HomeRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGetSearchKeyword] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+    
+}
+
+
 @end

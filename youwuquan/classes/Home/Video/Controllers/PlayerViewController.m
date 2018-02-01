@@ -113,23 +113,23 @@ typedef void(^PickerDoneBlock)(int key);
                                     @"NORMAL",[NSNumber numberWithInt:MDModeDisplayNormal],
                                     @"GLASS",[NSNumber numberWithInt:MDModeDisplayGlass],
                                     nil];
-
-    NSDictionary* projectionDic = [[NSDictionary alloc]initWithObjectsAndKeys:
-                                   @"SPHERE",[NSNumber numberWithInt:MDModeProjectionSphere],
-                                   @"DOME180",[NSNumber numberWithInt:MDModeProjectionDome180],
-                                   @"DOME230",[NSNumber numberWithInt:MDModeProjectionDome230],
-                                   @"DOME180_UPPER",[NSNumber numberWithInt:MDModeProjectionDome180Upper],
-                                   @"DOME230_UPPER",[NSNumber numberWithInt:MDModeProjectionDome230Upper],
-                                   @"STEREO",[NSNumber numberWithInt:MDModeProjectionStereoSphere],
-                                   @"PLANE_FIT",[NSNumber numberWithInt:MDModeProjectionPlaneFit],
-                                   @"PLANE_CROP",[NSNumber numberWithInt:MDModeProjectionPlaneCrop],
-                                   @"PLANE_FULL",[NSNumber numberWithInt:MDModeProjectionPlaneFull],
-                                nil];
-    
-    NSDictionary* antiDic = [[NSDictionary alloc]initWithObjectsAndKeys:
-                                   @"ENABLE",[NSNumber numberWithInt:1],
-                                   @"DISABLE",[NSNumber numberWithInt:0],
-                                   nil];
+//
+//    NSDictionary* projectionDic = [[NSDictionary alloc]initWithObjectsAndKeys:
+//                                   @"SPHERE",[NSNumber numberWithInt:MDModeProjectionSphere],
+//                                   @"DOME180",[NSNumber numberWithInt:MDModeProjectionDome180],
+//                                   @"DOME230",[NSNumber numberWithInt:MDModeProjectionDome230],
+//                                   @"DOME180_UPPER",[NSNumber numberWithInt:MDModeProjectionDome180Upper],
+//                                   @"DOME230_UPPER",[NSNumber numberWithInt:MDModeProjectionDome230Upper],
+//                                   @"STEREO",[NSNumber numberWithInt:MDModeProjectionStereoSphere],
+//                                   @"PLANE_FIT",[NSNumber numberWithInt:MDModeProjectionPlaneFit],
+//                                   @"PLANE_CROP",[NSNumber numberWithInt:MDModeProjectionPlaneCrop],
+//                                   @"PLANE_FULL",[NSNumber numberWithInt:MDModeProjectionPlaneFull],
+//                                nil];
+//
+//    NSDictionary* antiDic = [[NSDictionary alloc]initWithObjectsAndKeys:
+//                                   @"ENABLE",[NSNumber numberWithInt:1],
+//                                   @"DISABLE",[NSNumber numberWithInt:0],
+//                                   nil];
     
     __block MDVRLibrary *blockVRLib = self.vrLibrary;
 

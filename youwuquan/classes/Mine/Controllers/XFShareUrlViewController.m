@@ -175,7 +175,12 @@
     
     [picker dismissViewControllerAnimated:YES completion:^{
        
-        [XFShareManager sharedUrlImageWithBg:@"shareurl_bg" icon:image url:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [XFShareManager sharedUrlImageWithBg:@"shareurl_bg" icon:image url:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"]];
+
+        });
+        
         
     }];
     
@@ -196,7 +201,12 @@
     
     XFShareUrlCell *cell = (XFShareUrlCell *)[self.collectionView cellForItemAtIndexPath:self.selectedIndexPath];
     
-    [XFShareManager sharedUrlImageWithBg:@"shareurl_bg" icon:cell.picView.image url:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [XFShareManager sharedUrlImageWithBg:@"shareurl_bg" icon:cell.picView.image url:[XFUserInfoManager sharedManager].userInfo[@"inviteUrl"]];
+
+    });
+    
 
     
 }

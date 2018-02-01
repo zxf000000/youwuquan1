@@ -91,7 +91,7 @@
             [button mas_makeConstraints:^(MASConstraintMaker *make) {
                 
                 make.top.mas_offset(0);
-                make.bottom.mas_offset(2);
+                make.bottom.mas_offset(0);
                 make.left.mas_offset(spacing);
                 make.width.mas_equalTo(50);
                 make.height.mas_equalTo(44);
@@ -104,13 +104,12 @@
             [button mas_makeConstraints:^(MASConstraintMaker *make) {
                 
                 make.top.mas_offset(0);
-                make.bottom.mas_offset(2);
+                make.bottom.mas_offset(0);
                 make.right.mas_offset(-spacing);
                 make.left.mas_equalTo(firstButton.mas_right).offset(spacing);
                 make.width.mas_equalTo(firstButton);
                 make.height.mas_equalTo(44);
 
-                
             }];
             
         } else {
@@ -121,7 +120,7 @@
             [button mas_makeConstraints:^(MASConstraintMaker *make) {
                 
                 make.top.mas_offset(0);
-                make.bottom.mas_offset(2);
+                make.bottom.mas_offset(0);
                 make.right.mas_equalTo(afterbutton.mas_left);
                 make.width.mas_equalTo(firstButton);
                 make.left.mas_equalTo(beforbutton.mas_right);

@@ -18,7 +18,7 @@ typedef NS_ENUM (NSInteger,XFYueVCType) {
 
 @interface XFYueViewController : XFOtherMainViewController
 
-@property (nonatomic,copy) NSArray *msgs;
+@property (nonatomic,strong) NSMutableArray *msgs;
 
 @property (nonatomic,assign) BOOL hasSeprator;
 

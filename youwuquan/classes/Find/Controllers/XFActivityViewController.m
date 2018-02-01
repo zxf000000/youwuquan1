@@ -18,6 +18,8 @@
 
 @property (nonatomic,strong) XFPayActView *payView;
 
+@property (nonatomic,strong) UIView *shadowView;
+
 @end
 
 @implementation XFActivityViewController
@@ -61,7 +63,7 @@
     [UIView animateWithDuration:0.2 animations:^{
        
         self.payView.frame = CGRectMake(0, kScreenHeight - 265 - 64, kScreenWidth, 285);
-        
+        self.shadowView.alpha = 1;
     }];
 
 }
@@ -101,11 +103,12 @@
     [self.view addSubview:self.payView];
     
     __weak typeof(_payView) weakpayView = _payView;
-
+    __weak typeof(self) weakSelf = self;
     self.payView.wxpayBlock = ^{
         [UIView animateWithDuration:0.2 animations:^{
             
             weakpayView.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 285);
+            weakSelf.shadowView.alpha = 0;
             
         } completion:^(BOOL finished) {
             
@@ -118,7 +121,8 @@
         [UIView animateWithDuration:0.2 animations:^{
             
             weakpayView.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 285);
-            
+            weakSelf.shadowView.alpha = 0;
+
         } completion:^(BOOL finished) {
             
         }];
@@ -129,13 +133,16 @@
         [UIView animateWithDuration:0.2 animations:^{
            
             weakpayView.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 285);
+            weakSelf.shadowView.alpha = 0;
 
         }];
         
     };
-    
-    
-    
+    self.shadowView = [[UIView alloc] init];
+    self.shadowView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+    [self.view insertSubview:self.shadowView belowSubview:self.payView];
+    self.shadowView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    self.shadowView.alpha = 0;
 }
 
 - (void)updateViewConstraints {

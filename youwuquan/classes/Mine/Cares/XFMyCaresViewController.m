@@ -68,10 +68,8 @@
     
     _nameLabel.text = _model.nickname;
     [_iconView setImageWithURL:[NSURL URLWithString:_model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
-    
+    _careButton.hidden = YES;
     _statusLabel.text = _model.introduce;
-//    _careButton.selected = [_model.followEach isEqualToString:@"single"]? YES;
-    _careButton.selected = YES;
 }
 
 - (void)updateConstraints {

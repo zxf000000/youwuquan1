@@ -791,4 +791,25 @@
  */
 + (NSString *)pathUrlForGetSystemNotification;
 
+/**
+ 获取搜索关坚持
+
+ @return url
+ */
++ (NSString *)pathUrlForGetSearchKeyword;
+
+/**
+ 根据列表获取系统通知
+
+ @return url
+ */
++ (NSString *)pathUrlForGetSystemNotificationbyList;
+
+/**
+ 获取分享背景图片
+
+ @return url
+ */
++ (NSString *)pathUrlForGetSharePicrures;
+
 @end

@@ -9,6 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "XFOtherMainViewController.h"
 
+@interface XFSharePicModel : NSObject
+
+@property (nonatomic,copy) NSString *creatTime;
+@property (nonatomic,copy) NSString *id;
+@property (nonatomic,copy) NSString *imgUrl;
+
+@end
+
 @interface XFShareCardViewController : XFOtherMainViewController
 
 @end

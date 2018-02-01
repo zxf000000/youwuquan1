@@ -22,7 +22,7 @@
 - (void)awakeFromNib {
 
     [super awakeFromNib];
-    [[NSBundle mainBundle] loadNibNamed:@"XFPayView" owner:self options:nil];
+    [[NSBundle mainBundle] loadNibNamed:@"XFPayActView" owner:self options:nil];
     self.contentView.frame = self.bounds;
     [self addSubview:self.contentView];
     self.layer.cornerRadius = 10;

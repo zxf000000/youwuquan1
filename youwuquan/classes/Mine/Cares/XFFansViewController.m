@@ -9,6 +9,8 @@
 #import "XFFansViewController.h"
 #import "XFMyCaresViewController.h"
 #import "XFMineNetworkManager.h"
+#import "XFMyFansTableViewCell.h"
+#import "XFMineNetworkManager.h"
 
 @interface XFFansViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -121,14 +123,41 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    XFMyCareViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFMyCareViewCell"];
+    XFMyFansTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"XFMyFansTableViewCell"];
     
     if (cell == nil) {
         
-        cell  = [[XFMyCareViewCell alloc] initWithStyle:(UITableViewCellStyleDefault) reuseIdentifier:@"XFMyCareViewCell"];
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"XFMyFansTableViewCell" owner:nil options:nil] lastObject];
     }
     
-    cell.model = self.datas[indexPath.row];
+    XFMyCareModel *model = self.datas[indexPath.row];
+    
+    cell.model = model;
+    
+    cell.clickCareButtonBlock = ^(XFMyFansTableViewCell *cell) {
+      
+        XFMyCareModel *model = cell.model;
+        
+        if ([model.followEach isEqualToString:@"each"]) {
+            
+            
+            
+        } else {
+            
+            [XFMineNetworkManager careSomeoneWithUid:model.fansUid successBlock:^(id responseObj) {
+                
+                cell.careButton.selected = YES;
+                cell.careButton.layer.borderColor = UIColorHex(808080).CGColor;
+                
+            } failedBlock:^(NSError *error) {
+                
+            } progressBlock:^(CGFloat progress) {
+                
+            }];
+            
+        }
+        
+    };
     
     return cell;
 }
@@ -141,7 +170,7 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
-    
+    self.tableView.tableFooterView = [[UIView alloc] init];
     self.tableView.mj_header = [XFToolManager refreshHeaderWithBlock:^{
         [self loadData];
         

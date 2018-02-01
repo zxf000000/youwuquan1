@@ -30,10 +30,12 @@
 #import "LBPhotoBrowserManager.h"
 #import <AVKit/AVKit.h>
 #import "XFAlertViewController.h"
+#import "FTPopOverMenu.h"
+
 
 #define kHeaderHeight kScreenWidth
 
-@interface XFFindDetailViewController () <ASTableDelegate,ASTableDataSource,XFStatusCellNodeDelegate,XFFindCellDelegate>
+@interface XFFindDetailViewController () <ASTableDelegate,ASTableDataSource,XFFindCellDelegate>
 
 @property (nonatomic,strong) ASTableNode *tableNode;
 
@@ -75,7 +77,6 @@
 @property (nonatomic,strong) NSMutableArray *indexPathsTobeReload;
 
 @property (nonatomic,assign) NSInteger page;
-
 
 @end
 
@@ -136,7 +137,7 @@
 
 - (void)loadPicWall {
     
-    [XFMineNetworkManager getOtherPhotoWallWithUserId:self.userId successBlock:^(id responseObj) {
+    [XFMineNetworkManager getOtherPhotoWallWithUserId:[NSString stringWithFormat:@"%@",self.userId] successBlock:^(id responseObj) {
         
         NSArray *datas = (NSArray *)responseObj;
         
@@ -173,7 +174,7 @@
     
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     
-    [XFMineNetworkManager getOtherInfoWithUid:self.userId successBlock:^(id responseObj) {
+    [XFMineNetworkManager getOtherInfoWithUid:[NSString stringWithFormat:@"%@",self.userId] successBlock:^(id responseObj) {
         
         self.userInfo = ((NSDictionary *)responseObj)[@"info"];
         
@@ -289,6 +290,7 @@
     if (_followButton.selected) {
         
         _followButton.backgroundColor = UIColorHex(808080);
+        
     } else {
         
         _followButton.backgroundColor = kMainRedColor;
@@ -321,10 +323,11 @@
     } transform:^UIImage * _Nullable(UIImage * _Nonnull image, NSURL * _Nonnull url) {
         
         return image;
-    } completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
         
+    } completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
         // 分享
         [XFShareManager sharedImageWithBg:@"" icon:image name:status.user[@"nickname"] userid:[NSString stringWithFormat:@"ID:%@",status.user[@"uid"]] address:@"深圳南山区"];
+        
     }];
     
     
@@ -551,6 +554,36 @@
 }
 
 #pragma mark - celldelegate
+
+- (void)findCellNode:(XFFindCellNode *)node didClickJuBaoButtonWithButton:(ASButtonNode *)jubaoButton {
+    
+    
+    FTPopOverMenuConfiguration *configuration = [FTPopOverMenuConfiguration defaultConfiguration];
+    configuration.menuRowHeight = 40;
+    configuration.menuWidth = 80;
+    [FTPopOverMenu showForSender:jubaoButton.view
+                   withMenuArray:@[@"举报"]
+                      imageArray:@[@"find_jubao"]
+                       doneBlock:^(NSInteger selectedIndex) {
+                           // 举报操作
+                           MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view];
+                           
+                           dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                               
+                               [XFToolManager changeHUD:HUD successWithText:@"举报成功!"];
+                               
+                           });
+                           
+                       } dismissBlock:^{
+                           
+                           
+                           
+                       }];
+    
+    
+}
+
+
 - (void)findCellNode:(XFFindCellNode *)node didClickImageWithIndex:(NSInteger)index urls:(NSArray *)urls {
     
     XFStatusModel *model = node.model;
@@ -647,31 +680,6 @@
     [self presentViewController:giftVC animated:YES completion:nil];
     
     return;
-    //
-    //    XFYwqAlertView *alertView = [XFYwqAlertView showToView:self.navigationController.view withTitle:@"打赏用户" icon:@"" remainNUmber:@"100"];
-    //
-    //    [alertView dsShowanimation];
-    //
-    //    alertView.doneBlock = ^{
-    //
-    //        MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-    //        HUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    //        HUD.bezelView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:1];
-    //        HUD.contentColor = [UIColor whiteColor];
-    //
-    //        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    
-    //        });
-    //
-    //
-    //
-    //    };
-    //
-    //    alertView.cancelBlock = ^{
-    //
-    //
-    //    };
-    
 }
 
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -936,15 +944,8 @@
                                                                                                                }];
             
             sender.selected = NO;
-            
-            if (sender.selected) {
-                
-                sender.backgroundColor = UIColorHex(808080);
-                
-            } else {
-                
-            }
-            
+            sender.backgroundColor = kMainRedColor;
+
             [HUD hideAnimated:YES];
             
         } failedBlock:^(NSError *error) {
@@ -960,7 +961,7 @@
         
         [XFMineNetworkManager careSomeoneWithUid:self.userId successBlock:^(id responseObj) {
             [HUD hideAnimated:YES];
-
+            
             // 关注成功
             XFStatusModel *model = [[XFStatusModel alloc] init];
             model.uid = self.userId;
@@ -968,13 +969,13 @@
                                                                                                                @"followed":@(YES)
                                                                                                                }];
             sender.selected = YES;
-            
+            sender.backgroundColor = UIColorHex(808080);
+
             if (sender.selected) {
                 
-                sender.backgroundColor = kMainRedColor;
                 
             } else {
-                
+
             }
         } failedBlock:^(NSError *error) {
             [HUD hideAnimated:YES];
@@ -1019,7 +1020,7 @@
     self.headerImage = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, 0, kScreenWidth, kHeaderHeight) imageNamesGroup:@[]];
     
     self.headerImage.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;
-    
+//    self.headerImage.contentMode = UIViewContentModeScaleAspectFit;
     [self.headerView addSubview:self.headerImage];
     
     self.tableNode.view.contentInset = UIEdgeInsetsMake(kHeaderHeight, 0, 0, 0);
@@ -1383,9 +1384,7 @@
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:YES animated:YES];
-    
-    //    [self.tableNode reloadData];
-    
+        
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1405,6 +1404,5 @@
     }
     return _wheelPageControl;
 }
-
 
 @end

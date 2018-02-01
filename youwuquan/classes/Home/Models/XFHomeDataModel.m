@@ -10,6 +10,23 @@
 
 @implementation XFHomeDataModel
 
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    
+    
+    
+}
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
+    
+    if (self = [super init]) {
+        
+        
+    }
+    
+    return self;
+}// NS_DESIGNATED_INITIALIZER
+
+
+
 + (instancetype)modelWithUserName:(NSString *)name userIcon:(NSString *)userIcon price:(NSString *)price likeNumer:(NSString *)likeNumer isLiked:(NSString *)isLiked userPic:(NSString *)userPic {
     
     return [[self alloc] initWithUserName:name userIcon:userIcon price:price likeNumer:likeNumer isLiked:isLiked userPic:userPic];

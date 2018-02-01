@@ -115,6 +115,8 @@
 
 @property (nonatomic,strong) UIView *unlockView;
 
+@property (nonatomic,strong) MBProgressHUD *videoProgressHUD;
+
 @end
 
 @implementation XFVideoDetailViewController
@@ -127,6 +129,7 @@
     if ([self.model.category isEqualToString:@"hd"]) {
         
         self.type = Hightdefinition;
+        
     } else {
         
         self.type = VRVideo;
@@ -136,7 +139,11 @@
     if (self.type == Hightdefinition) {
         
         [self setupVideoView];
-        
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleDeviceOrientationDidChange:)
+                                                     name:UIDeviceOrientationDidChangeNotification
+                                                   object:nil];
     } else {
         
         [self setupVrView];
@@ -148,17 +155,11 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrame:)
                                                  name:UIKeyboardWillChangeFrameNotification object:nil];
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleDeviceOrientationDidChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil
-     ];
+
     
     
     self.count = 10;
     
-    //    [self.view bringSubviewToFront:self.inputView];
     self.inputView.frame = CGRectMake(0, kScreenHeight - 44, kScreenWidth, 44);
     [self setupUnlockView];
     [self loadData];
@@ -316,13 +317,16 @@
         
     } else {
         
-                [self.plPlayer play];
+        [self.plPlayer play];
     }
     
 }
 
 #pragma mark - 初始化VR占位区域
 - (void)setupVrView {
+    
+    [self.videoView removeFromSuperview];
+    self.videoView = nil;
     
     [self.vrView removeFromSuperview];
     self.vrView = nil;
@@ -479,20 +483,17 @@
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"VideoPlayer" bundle:nil];
     PlayerViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"VideoPlayerViewController"];
+
     
     [self presentViewController:vc animated:YES completion:^{
         [vc initParams:[NSURL URLWithString:self.model.video[@"srcUrl"]]];
+
     }];
-}
-
-
-- (void)setupVRView {
-    
-    
 }
 
 - (void)handleDeviceOrientationDidChange:(UIInterfaceOrientation)interfaceOrientation
 {
+    
     //1.获取 当前设备 实例
     UIDevice *device = [UIDevice currentDevice] ;
     /**
@@ -546,12 +547,12 @@
 
 
 - (void)dealloc {
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIDeviceOrientationDidChangeNotification
-                                                  object:nil
-     ];
-    [[UIDevice currentDevice]endGeneratingDeviceOrientationNotifications];
+//
+//    [[NSNotificationCenter defaultCenter] removeObserver:self
+//                                                    name:UIDeviceOrientationDidChangeNotification
+//                                                  object:nil
+//     ];
+//    [[UIDevice currentDevice]endGeneratingDeviceOrientationNotifications];
     
     
 }
@@ -588,6 +589,12 @@
     
     [[IQKeyboardManager sharedManager] setEnable:YES];
     [IQKeyboardManager sharedManager].enableAutoToolbar = YES;
+//
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIDeviceOrientationDidChangeNotification
+                                                  object:nil
+     ];
+    [[UIDevice currentDevice]endGeneratingDeviceOrientationNotifications];
 }
 
 
@@ -783,6 +790,10 @@
     
     [self.videoView removeFromSuperview];
     self.videoView = nil;
+    
+    [self.vrView removeFromSuperview];
+    self.vrView = nil;
+
     [self.plPlayer stop];
     
     self.plPlayer = nil;
@@ -792,14 +803,13 @@
     [option setOptionValue:@15 forKey:PLPlayerOptionKeyTimeoutIntervalForMediaPackets];
     self.plPlayer = [PLPlayer playerWithURL:[NSURL URLWithString:self.model.video[@"srcUrl"]] option:option];
     self.plPlayer.delegate = self;
-    
+    self.plPlayer.autoReconnectEnable = YES;
+    [self.plPlayer.launchView setImageWithURL:[NSURL URLWithString:self.model.coverImage[@"imageUrl"]] options:(YYWebImageOptionProgressive)];
     //获取播放器视图
     self.videoView = self.plPlayer.playerView;
     self.videoView.frame = CGRectMake(0, 0, kScreenWidth, kScreenWidth * 9/16.f);
     //添加播放器视图到需要展示的界面上
     [self.view addSubview:self.videoView];
-    
-//    [self.plPlayer play];
     
     // 添加点按事件
     
@@ -1249,6 +1259,11 @@
 #pragma mark - 设置播放器横屏的元素位置
 - (void)setPortraitVideoPlayerControlViewFrame {
     
+    if (self.type == VRVideo) {
+        
+        return;
+    }
+    
     //获取到状态栏
     UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
     //设置透明度为0
@@ -1283,6 +1298,8 @@
         
     }];
     
+
+    
     [UIView animateWithDuration:0.3 animations:^{
         
         self.videoView.transform = CGAffineTransformIdentity;
@@ -1300,10 +1317,11 @@
         [self.topShadowView layoutIfNeeded];
         
         [self.controlView layoutIfNeeded];
+        
+        [self.videoView removeFromSuperview];
+        [self.view addSubview:self.videoView];
     }];
-    
-    //    self.controlView.frame = CGRectMake(0, 0, kScreenHeight, 35);
-    
+        
     if (@available (iOS 11, *)) {
         
         [self.controlView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -1327,7 +1345,7 @@
     }
     
     //获取到状态栏
-    UIView *statusBar = [[UIApplication sharedApplication]valueForKey:@"statusBar"];
+    UIView *statusBar = [[UIApplication sharedApplication] valueForKey:@"statusBar"];
     //设置透明度为0
     statusBar.alpha = 0.0f;
     

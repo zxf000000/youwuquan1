@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 @protocol XFFindCellDelegate <NSObject>
 
+- (void)findCellNode:(XFFindCellNode *)node didClickJuBaoButtonWithButton:(ASButtonNode *)jubaoButton;
+
 - (void)findCellclickMpreButtonWithIndex:(NSIndexPath *)index open:(BOOL)isOpen;
 
 - (void)findCellNode:(XFFindCellNode *)node didClickVoiceButtonWithUrl:(NSString *)url;

@@ -35,36 +35,36 @@
     
     //设置需要显示哪些类型的会话
     [self setDisplayConversationTypes:@[@(ConversationType_PRIVATE),
-                                        @(ConversationType_DISCUSSION),
-                                        @(ConversationType_CHATROOM),
-                                        @(ConversationType_GROUP),
-                                        @(ConversationType_APPSERVICE),
                                         @(ConversationType_SYSTEM)]];
-    //设置需要将哪些类型的会话在会话列表中聚合显示
-    [self setCollectionConversationType:@[@(ConversationType_DISCUSSION),
-                                          @(ConversationType_GROUP)]];
-    
     [self setupHeaderView];
     
+    
+    self.conversationListTableView.showsVerticalScrollIndicator = NO;
     // 系统消息
     UIButton *rightButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 70, 30))];
     rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, 50, 0, 0);
     [rightButton setImage:[UIImage imageNamed:@"msg_ring"] forState:(UIControlStateNormal)];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-
     
-    self.navigationItem.rightBarButtonItem.badgeValue = @"99";
+    self.navigationItem.rightBarButtonItem.badgeValue = @"0";
     self.navigationItem.rightBarButtonItem.badgeBGColor = kMainRedColor;
+    self.navigationItem.rightBarButtonItem.badge.hidden = YES;
 
     [rightButton addTarget:self action:@selector(clickRightButton) forControlEvents:(UIControlEventTouchUpInside)];
     
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRecieveNotification) name:kJPFNetworkDidReceiveMessageNotification object:nil];
+    self.conversationListTableView.bounces = NO;
     
-    [self loadData];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    [self loadData];
 
+    
+}
 
 - (void)loadData {
     
@@ -81,7 +81,7 @@
         lastDate = @"2017-01-01 01:00:00";
     }
     
-    lastDate = @"2017-01-01 01:00:00";
+//    lastDate = @"2017-01-01 01:00:00";
 
     // 获取系统消息
     [XFMessageNetworkManager getSystemNotificationWithDate:lastDate successBlock:^(id responseObj) {
@@ -103,10 +103,11 @@
         if (self.systemMsgs.count > 0) {
             
             self.navigationItem.rightBarButtonItem.badgeValue = [NSString stringWithFormat:@"%zd",self.systemMsgs.count];
-            
+            self.navigationItem.rightBarButtonItem.badge.hidden = NO;
+
         } else {
             
-            self.systemNumberLabel.hidden = YES;
+            self.navigationItem.rightBarButtonItem.badge.hidden = YES;
 
         }
         
@@ -196,8 +197,10 @@
         
     };
 
-    self.headerVC.view.frame = CGRectMake(0, 0, kScreenWidth, self.headerVC.headerHeight);
-    self.conversationListTableView.tableHeaderView = self.headerVC.view;
+    self.headerVC.view.frame = CGRectMake(0, -self.headerVC.headerHeight, kScreenWidth, self.headerVC.headerHeight);
+    
+    self.conversationListTableView.contentInset = UIEdgeInsetsMake(self.headerVC.headerHeight, 0, 0, 0);
+    [self.conversationListTableView addSubview:self.headerVC.view];
     self.conversationListTableView.tableFooterView = [[UIView alloc] init];
     self.emptyConversationView = [[UIView alloc] init];
     

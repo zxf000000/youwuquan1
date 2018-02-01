@@ -21,6 +21,7 @@
 #import "XFFIndCacheManager.h"
 #import "XFLoginNetworkManager.h"
 #import "XFTagsModel.h"
+#import "XFHomeNetworkManager.h"
 
 // 缓存历史记录
 #import <YYCache.h>
@@ -170,33 +171,36 @@
 
 - (void)loadData {
     
-    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
     // 获取标签
     [XFLoginNetworkManager getAllTagsWithprogress:^(CGFloat progress) {
         
         
     } successBlock:^(id responseObj) {
         
-        [HUD hideAnimated:YES];
         
-        NSArray *datas = (NSArray *)responseObj;
-        
-        NSMutableArray *arr = [NSMutableArray array];
-        
-        for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
-            
-            [arr addObject:[XFTagsModel modelWithJSON:datas[i]]];
-            
-        }
-        
-        self.titleArr = arr.copy;
-        
-        [self.historyView reloadData];
+
         
     } failBlock:^(NSError *error) {
-        [HUD hideAnimated:YES];
         
     }];
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view withText:nil];
+
+    [XFHomeNetworkManager getSearchKeyWorkWithsuccessBlock:^(id responseObj) {
+        [HUD hideAnimated:YES];
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        
+
+        self.titleArr = datas.copy;
+        
+        [self.historyView reloadData];
+    } failBlock:^(NSError *error) {
+        [HUD hideAnimated:YES];
+
+    } progress:^(CGFloat progress) {
+        
+    }];
+
+    
 }
 
 - (void)getHistoryData {
@@ -470,16 +474,16 @@
                 break;
             case 1:
             {
-                XFTagsModel *model = self.titleArr[indexPath.item];
-                cell.titleLabel.text = model.tagName;
+                NSDictionary *title = self.titleArr[indexPath.item];
+                cell.titleLabel.text = title[@"word"];
 
             }
                 break;
         }
     } else {
         
-        XFTagsModel *model = self.titleArr[indexPath.item];
-        cell.titleLabel.text = model.tagName;
+        NSDictionary *title = self.titleArr[indexPath.item];
+        cell.titleLabel.text = title[@"word"];
     }
     
     return cell;
@@ -498,18 +502,16 @@
                 break;
             case 1:
             {
-                XFTagsModel *model = self.titleArr[indexPath.item];
-       
-                self.searchBar.text = model.tagName;
-                
+                NSDictionary *title = self.titleArr[indexPath.item];
+                self.searchBar.text = title[@"word"];
+
             }
                 break;
         }
     } else {
         
-        XFTagsModel *model = self.titleArr[indexPath.item];
-        
-        self.searchBar.text = model.tagName;
+        NSDictionary *title = self.titleArr[indexPath.item];
+        self.searchBar.text = title[@"word"];
         
     }
     

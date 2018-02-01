@@ -199,8 +199,6 @@
 
 - (void)loadMoreData {
     
-    NSLog(@"刷新----");
-    
     if (self.videoType == Hightdefinition) {
         self.hdPage += 1;
         

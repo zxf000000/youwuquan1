@@ -98,6 +98,7 @@
 
 @property (nonatomic,assign) NSInteger page;
 
+@property (nonatomic,strong) UIImageView *loadingView;
 
 @end
 
@@ -134,6 +135,10 @@
     
     
     [self.view setNeedsUpdateConstraints];
+    
+    self.loadingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"start"]];
+    self.loadingView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+    [self.tabBarController.view addSubview:self.loadingView];
 
 }
 
@@ -217,7 +222,7 @@
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
     [XFHomeNetworkManager getHomeDataWithSuccessBlock:^(id responseObj) {
-        dispatch_semaphore_signal(sema);
+//        dispatch_semaphore_signal(sema);
 
         NSDictionary *datas = (NSDictionary *)responseObj;
         NSArray *youwuData = datas[@"youwu"];
@@ -274,7 +279,17 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             [self.tableNode.view.mj_header endRefreshing];
-            [self.tableNode reloadData];
+            [self.tableNode reloadDataWithCompletion:^{
+                
+                [UIView animateWithDuration:0.2 animations:^{
+                   
+                    self.loadingView.alpha = 0;
+                    
+                } completion:^(BOOL finished) {
+                    [self.loadingView removeFromSuperview];
+                }];
+                
+            }];
 
         });
         
@@ -1002,7 +1017,7 @@
         
         XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
         detailVC.hidesBottomBarWhenPushed = YES;
-        detailVC.userId = model.uid;
+        detailVC.userId = [NSString stringWithFormat:@"%@",model.uid];
         detailVC.userName = model.nickname;
         detailVC.iconUrl = model.headIconUrl;
         [self.navigationController pushViewController:detailVC animated:YES];
@@ -1418,7 +1433,7 @@
         
         videoDetailVC.hidesBottomBarWhenPushed = YES;
         
-        videoDetailVC.type = weakSelf.videoVC.videoType;
+//        videoDetailVC.type = weakSelf.videoVC.videoType;
         
         videoDetailVC.model = videoModel;
         

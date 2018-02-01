@@ -239,6 +239,12 @@
 #define YBYGetNotificationsByDate @"message/personal/by-date"
 // 根据上次日期获取节点时间系统通知
 #define YBYGetSystemNotificationWithDate @"message/system/by-date"
+// 获取系统通知列表
+#define YBYGetSystemList @"message/system/list"
+// 搜索关键词
+#define YBYGetSearchKeyword @"search/words"
+// 获取分享插图
+#define YBYGetShareCardPics @"share/pictures"
 
 @implementation XFApiClient
 
@@ -812,6 +818,21 @@
 + (NSString *)pathUrlForGetSystemNotification {
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetSystemNotificationWithDate];
+}
+
++ (NSString *)pathUrlForGetSearchKeyword {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetSearchKeyword];
+}
+
++ (NSString *)pathUrlForGetSystemNotificationbyList {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetSystemList];
+}
+
++ (NSString *)pathUrlForGetSharePicrures {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetShareCardPics];
 }
 
 

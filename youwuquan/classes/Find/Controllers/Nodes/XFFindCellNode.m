@@ -286,6 +286,8 @@
         
         [self addSubnode:_setbutton];
         
+        [_setbutton addTarget:self action:@selector(clickSetButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
+        
         // 小图标们
         NSArray *identifications = _model.user[@"identifications"];
         
@@ -413,6 +415,17 @@
     }
     
 }
+
+- (void)clickSetButton {
+    
+    if ([self.delegate respondsToSelector:@selector(findCellNode:didClickJuBaoButtonWithButton:)]) {
+        
+        [self.delegate findCellNode:self didClickJuBaoButtonWithButton:self.setbutton];
+        
+    }
+}
+
+
 // 展开
 - (void)clickMoreButton:(ASButtonNode *)sender {
     

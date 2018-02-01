@@ -15,7 +15,7 @@
     if (self = [super init]) {
         self.backgroundColor = [UIColor whiteColor];
         _iconNode = [[ASImageNode alloc] init];
-        _iconNode.contentMode = UIViewContentModeScaleAspectFill;
+        _iconNode.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubnode:_iconNode];
         
         _titleNode = [[ASTextNode alloc] init];
@@ -26,7 +26,7 @@
 
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize {
     
-    _iconNode.style.preferredSize = CGSizeMake(40, 40);
+    _iconNode.style.preferredSize = CGSizeMake(35, 35);
     
     ASStackLayoutSpec *stackLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionVertical) spacing:16 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_iconNode,_titleNode]];
     
