@@ -78,7 +78,7 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
         }
     }
     
-    [self loadData];
+//    [self loadData];
     
 }
 

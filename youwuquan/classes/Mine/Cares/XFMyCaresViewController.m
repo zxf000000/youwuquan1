@@ -147,7 +147,7 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    [self setupSearchBar];
+//    [self setupSearchBar];
     
     [self setupTableView];
     
@@ -267,7 +267,7 @@
 
 - (void)setupTableView {
     
-    self.tableView = [[UITableView alloc] initWithFrame:(CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44))];
+    self.tableView = [[UITableView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 44))];
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;

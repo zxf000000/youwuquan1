@@ -350,7 +350,7 @@
                         failedBlock:(MineRequestFailedBlock)failedBlock
                       progressBlock:(MineRequestProgressBlock)progressBlock {
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForGEtOtherWallWithId:userId] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForGEtOtherWallWithId:[NSString stringWithFormat:@"%@",userId]] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
     } successBlock:^(id response) {

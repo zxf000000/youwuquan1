@@ -257,17 +257,15 @@
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
     // register to receive notifications
     [application registerForRemoteNotifications];
+
 }
 
-// AppDelegate class
-
-
-
+// App
 #pragma mark - 会话用户消息获取
 - (void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion {
     
     __block RCUserInfo *info;
-    
+
     NSLog(@"%@",userId);
     NSLog(@"%@",[XFUserInfoManager sharedManager].userInfo);
 

@@ -64,11 +64,9 @@
     
     YYWebImageOperation *operation;
     __weak typeof(operation) weakOperation = operation;
+    
     operation = [[YYWebImageManager sharedManager] requestImageWithURL:URL options:YYWebImageOptionProgressiveBlur | YYWebImageOptionSetImageWithFadeAnimation progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-        
-//        CGFloat progress = receivedSize/(CGFloat)expectedSize;
-        
-//        downloadProgress(progress);
+
         
     } transform:nil completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
         

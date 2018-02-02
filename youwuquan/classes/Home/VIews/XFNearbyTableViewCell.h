@@ -18,7 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *picView;
 @property (nonatomic,copy) NSArray *iconImages;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-
+@property (nonatomic,copy) NSArray *authenticationIcons;
 @property (nonatomic,strong) NSMutableArray *iconsVIew;
 
 @property (nonatomic,strong) XFNearModel *model;

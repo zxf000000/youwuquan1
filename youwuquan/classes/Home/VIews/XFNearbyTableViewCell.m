@@ -13,25 +13,6 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    self.icons = @[@"A",@"C",@"D",@"F",@"H",@"M",@"P",@"R",@"S",@"T",@"V"];
-    self.iconsVIew = [NSMutableArray array];
-    for (NSInteger i = 0;i < 4;i ++ ) {
-        
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:self.icons[i]]];
-        
-        [self.contentView addSubview:imageView];
-        
-        [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-           
-            make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(8);
-            make.left.mas_offset(i*(12 + 3)+8);
-            make.width.height.mas_equalTo(12);
-            
-        }];
-        
-        [self.iconsVIew addObject:imageView];
-    }
-    
     [self setMyShadowWithRound:4];
 }
 
@@ -45,13 +26,33 @@
     
     _distanceButton.hidden = YES;
     
-    for (NSInteger i = 0;i < 4;i ++ ) {
+    // 小图标们
+    NSArray *identifications = _model.identifications;
+    
+    NSMutableArray *icons = [NSMutableArray array];
+    for (NSInteger i= 0 ; i < identifications.count ; i ++ ) {
         
-        UIImageView *imageView = self.iconsVIew[i];
+        if ([[XFAuthManager sharedManager].ids containsObject:[NSString stringWithFormat:@"%@",identifications[i]]]) {
+            
+            NSInteger index = [[XFAuthManager sharedManager].ids indexOfObject:[NSString stringWithFormat:@"%@",identifications[i]]];
+            
+            XFNetworkImageNode *imgNode = [[XFNetworkImageNode alloc] init];
+            imgNode.url = [NSURL URLWithString:[XFAuthManager sharedManager].icons[index]];
+            [self addSubnode:imgNode];
+            
+            [icons addObject:imgNode];
+        }
+    }
+    
+    _authenticationIcons = icons.copy;
+    
+    for (NSInteger i = 0;i < _authenticationIcons.count;i ++ ) {
         
-        [self.contentView addSubview:imageView];
+        XFNetworkImageNode *imageView = _authenticationIcons[i];
         
-        [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        [self.contentView addSubnode:imageView];
+        
+        [imageView.view mas_makeConstraints:^(MASConstraintMaker *make) {
             
             make.centerY.mas_equalTo(self.nameLabel);
             make.right.mas_offset(-i*(12 + 3)+8);
@@ -69,6 +70,34 @@
     [_picView setImageWithURL:[NSURL URLWithString:_model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
 
     [_distanceButton setTitle:[NSString stringWithFormat:@"%.2fkm",[_model.distance floatValue]] forState:(UIControlStateNormal)];
+    // 小图标们
+    NSArray *identifications = _model.identifications;
+    
+    NSMutableArray *icons = [NSMutableArray array];
+    for (NSInteger i= 0 ; i < identifications.count ; i ++ ) {
+        
+        if ([[XFAuthManager sharedManager].ids containsObject:[NSString stringWithFormat:@"%@",identifications[i]]]) {
+            
+            NSInteger index = [[XFAuthManager sharedManager].ids indexOfObject:[NSString stringWithFormat:@"%@",identifications[i]]];
+            
+            UIImageView *imgView = [[UIImageView alloc] init];
+            [imgView setImageWithURL:[NSURL URLWithString:[XFAuthManager sharedManager].icons[index]] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+
+            [self.contentView addSubview:imgView];
+            
+            [icons addObject:imgView];
+            
+            [imgView mas_makeConstraints:^(MASConstraintMaker *make) {
+                
+                make.centerY.mas_equalTo(self.nameLabel);
+                make.right.mas_offset(-i*(12 + 3)+8);
+                make.width.height.mas_equalTo(12);
+                
+            }];
+        }
+    }
+    
+    _authenticationIcons = icons.copy;
 }
 
 

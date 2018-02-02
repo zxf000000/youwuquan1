@@ -368,7 +368,6 @@
     [XFHomeNetworkManager getHomeAdWithSuccessBlock:^(id responseObj) {
         
         NSArray *datas = (NSArray *)responseObj;
-//        self.adDatas = datas;
         NSMutableArray *arr = [NSMutableArray array];
         
         for (NSInteger i = 0 ; i < datas.count ; i ++ ) {

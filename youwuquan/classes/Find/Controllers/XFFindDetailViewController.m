@@ -407,7 +407,8 @@
             
             [HUD hideAnimated:YES];
             [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:NO] ;
-            
+            self.followButton.selected = NO;
+            self.followButton.backgroundColor = kMainRedColor;
             
         } failedBlock:^(NSError *error) {
             [HUD hideAnimated:YES];
@@ -424,7 +425,8 @@
             [HUD hideAnimated:YES];
             
             [self refreshFollowStatusWithUid:model.user[@"uid"] witfFollowed:YES];
-            
+            self.followButton.selected = YES;
+            self.followButton.backgroundColor = UIColorHex(808080);
         } failedBlock:^(NSError *error) {
             
             [HUD hideAnimated:YES];
@@ -945,6 +947,7 @@
             
             sender.selected = NO;
             sender.backgroundColor = kMainRedColor;
+            [self refreshFollowStatusWithUid:self.userId witfFollowed:NO];
 
             [HUD hideAnimated:YES];
             
@@ -970,6 +973,7 @@
                                                                                                                }];
             sender.selected = YES;
             sender.backgroundColor = UIColorHex(808080);
+            [self refreshFollowStatusWithUid:self.userId witfFollowed:YES];
 
             if (sender.selected) {
                 

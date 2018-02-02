@@ -191,7 +191,7 @@
 - (void)clickSendButton {
     
     if (![self.videoInputTf.text isHasContent]) {
-        
+    
         [XFToolManager showProgressInWindowWithString:@"请输入内容"];
         
         return;
@@ -1137,7 +1137,7 @@
     [self.plPlayer seekTo:CMTimeMake((int64_t)(totalTime * progress), self.plPlayer.totalDuration.timescale)];
     
 }
-
+#pragma mark - 播放器状态改变
 - (void)player:(PLPlayer *)player statusDidChange:(PLPlayerStatus)state {
     
     switch (state) {
@@ -1185,7 +1185,7 @@
             break;
         case PLPlayerStatusCompleted:
         {
-            
+            [self clickBeginButton];
         }
             break;
         case PLPlayerStatusPreparing:
@@ -1430,14 +1430,7 @@
         self.commentedModel = model;
         // 回复
         [self.videoInputTf becomeFirstResponder];
-        
-        // 个人信息
-        
-        //        XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
-        //        detailVC.userId = model.uid;
-        //        detailVC.userName = model.username;
-        //        detailVC.iconUrl = model.headIconUrl;
-        //        [self.navigationController pushViewController:detailVC animated:YES];
+
     }
     
 }
@@ -1463,9 +1456,7 @@
         default:
             break;
     }
-    
     return 1;
-    
 }
 
 - (ASCellNode *)tableNode:(ASTableNode *)tableNode nodeForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1524,9 +1515,7 @@
                         
                     } failedBlock:^(NSError *error) {
                         
-                        
                     } progressBlock:^(CGFloat progress) {
-                        
                         
                     }];
                 } else {
@@ -1535,16 +1524,12 @@
                         
                         button.selected = YES;
                         
-                        
                     } failedBlock:^(NSError *error) {
                         
                     } progressBlock:^(CGFloat progress) {
                         
                     }];
-                    
                 }
-                
-                
             };
             
             if ([_indexPathsTobeReload containsObject:indexPath]) {
@@ -1555,18 +1540,10 @@
                 oldCellNode.neverShowPlaceholders = YES;
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                     cell.neverShowPlaceholders = NO;
-                    
-                    //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
-                    //
-                    //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
-                    
+ 
                 });
-                
             }
-            
             return cell;
-            
-            
         }
             break;
         case 2:
@@ -1578,18 +1555,13 @@
                     XFStatusCenterNode *cell = [[XFStatusCenterNode alloc] init];
                     
                     return cell;
-                    
-                    
                 }
                     break;
                 case 9:
                 {
-                    
                     if (!self.isOpen) {
-                        
-                        
+                
                         XFStatusBottomNode *node = [[XFStatusBottomNode alloc] init];
-                        
                         // 加载更多评论
                         node.clickMoreButtonBlock = ^{
                             
@@ -1597,7 +1569,6 @@
                             self.isOpen = YES;
                             
                             [self reloadData];
-                            
                             
                         };
                         if ([_indexPathsTobeReload containsObject:indexPath]) {
@@ -1608,21 +1579,14 @@
                             oldCellNode.neverShowPlaceholders = YES;
                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                                 node.neverShowPlaceholders = NO;
-                                
-                                //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
-                                //
-                                //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
-                                
+        
                             });
                             
                         }
                         
                         return node;
-                        
-                        
-                        
+                    
                     } else {
-                        
                         
                         XFCommentModel *model = self.comments[indexPath.row - 1];
                         
@@ -1636,17 +1600,10 @@
                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                                 node.neverShowPlaceholders = NO;
                                 
-                                //                            NSInteger index = [self.indexPathsTobeReload indexOfObject:indexPath];
-                                //
-                                //                            [self.indexPathsTobeReload removeObjectAtIndex:index];
-                                
                             });
-                            
                         }
                         return node;
-                        
                     }
-                    
                     
                 }
                 default:
@@ -1716,6 +1673,14 @@
 
 
 #pragma mark - 键盘监听
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    [self clickSendButton];
+    
+    return YES;
+}
+
 - (void)keyboardDidChangeFrame:(NSNotification *)notification {
     
     NSDictionary *info = notification.userInfo;
@@ -1782,7 +1747,7 @@
     self.videoInputView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.videoInputView];
     
-    UIView *bgView = [[UIView alloc] initWithFrame:(CGRectMake(6, 6, kScreenWidth - 126, 37))];
+    UIView *bgView = [[UIView alloc] initWithFrame:(CGRectMake(6, 6, kScreenWidth - 46, 37))];
     bgView.backgroundColor = UIColorHex(e0e0e0);
     bgView.layer.cornerRadius = 5;
     [self.videoInputView addSubview:bgView];
@@ -1791,6 +1756,7 @@
     _videoInputTf.placeholder = @"评论吧";
     _videoInputTf.delegate = self;
     _videoInputTf.font = [UIFont systemFontOfSize:14];
+    _videoInputTf.returnKeyType = UIReturnKeySend;
     [bgView addSubview:_videoInputTf];
     
     UIButton *sendButton = [[UIButton alloc] init];
@@ -1799,15 +1765,15 @@
     sendButton.frame = CGRectMake(bgView.width - 37, 0, 37, 37);
     [bgView addSubview:sendButton];
     
-    _likeButton = [[UIButton alloc] initWithFrame:(CGRectMake(bgView.right, 0, 40, 49))];
-    [_likeButton setImage:[UIImage imageNamed:@"find_like"] forState:(UIControlStateNormal)];
-    [self.videoInputView addSubview:_likeButton];
+//    _likeButton = [[UIButton alloc] initWithFrame:(CGRectMake(bgView.right, 0, 40, 49))];
+//    [_likeButton setImage:[UIImage imageNamed:@"find_like"] forState:(UIControlStateNormal)];
+//    [self.videoInputView addSubview:_likeButton];
     
-    _commentButton = [[UIButton alloc] initWithFrame:(CGRectMake(_likeButton.right, 0, 40, 49))];
-    [_commentButton setImage:[UIImage imageNamed:@"find_comment"] forState:(UIControlStateNormal)];
-    [self.videoInputView addSubview:_commentButton];
+//    _commentButton = [[UIButton alloc] initWithFrame:(CGRectMake(_likeButton.right, 0, 40, 49))];
+//    [_commentButton setImage:[UIImage imageNamed:@"find_comment"] forState:(UIControlStateNormal)];
+//    [self.videoInputView addSubview:_commentButton];
     
-    _shareButton = [[UIButton alloc] initWithFrame:(CGRectMake(_commentButton.right, 0, 40, 49))];
+    _shareButton = [[UIButton alloc] initWithFrame:(CGRectMake(bgView.right, 0, 40, 49))];
     [_shareButton setImage:[UIImage imageNamed:@"find_share"] forState:(UIControlStateNormal)];
     [self.videoInputView addSubview:_shareButton];
     
@@ -1834,9 +1800,6 @@
     self.tableNode.frame = CGRectMake(0, kScreenWidth * 9 / 16.f, kScreenWidth, kScreenHeight - kScreenWidth * 9 / 16.f - 44);
     
 }
-
-
-
 
 - (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
     

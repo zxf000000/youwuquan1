@@ -20,7 +20,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="474.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="find_pic2" translatesAutoresizingMaskIntoConstraints="NO" id="Vcw-xk-dcn">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Vcw-xk-dcn">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="364.5"/>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="Vcw-xk-dcn" secondAttribute="height" multiplier="36:41" id="eyK-Ng-3tS"/>
@@ -68,7 +68,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="find_pic2" width="140" height="140"/>
         <image name="home_location" width="8" height="10"/>
         <image name="home_picture" width="17" height="17"/>
         <image name="home_video" width="21" height="15"/>

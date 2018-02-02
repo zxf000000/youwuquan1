@@ -159,8 +159,13 @@
 
 @property (nonatomic,strong) MBProgressHUD *HUD;
 
-@end
+@property (nonatomic,assign) NSInteger page;
 
+@property (nonatomic,copy) NSString *keyWord;
+
+@property (nonatomic,strong) NSMutableArray *indexPathsTobeReload;
+
+@end
 @implementation XFSearchViewController
 
 - (void)viewDidLoad {
@@ -187,6 +192,31 @@
     
     [self loadData];
 
+}
+
+- (void)reloadData {
+    
+    _indexPathsTobeReload = [NSMutableArray array];
+    
+    NSArray *cells = self.resultNode.visibleNodes;
+    
+    for (ASCellNode *node in cells) {
+        
+        if ([node isKindOfClass:[XFFindCellNode class]]) {
+            
+            [_indexPathsTobeReload addObject:node.indexPath];
+            
+        }
+        
+    }
+    
+    [self.resultNode reloadDataWithCompletion:^{
+        
+        _indexPathsTobeReload = [NSMutableArray array];
+        
+    }];
+    
+    
 }
 
 - (void)loadData {
@@ -238,6 +268,10 @@
 
 - (void)beginSearchWithtext:(NSString *)text {
 
+    self.keyWord = text;
+    
+    self.page = 0;
+    
     [XFHomeNetworkManager searchUsersWithword:text Page:0 size:20 successBlock:^(id responseObj) {
         
         NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
@@ -259,7 +293,7 @@
         
     }];
     
-    [XFHomeNetworkManager searchPublishsWithword:text Page:0 size:10 successBlock:^(id responseObj) {
+    [XFHomeNetworkManager searchPublishsWithword:text Page:self.page size:10 successBlock:^(id responseObj) {
         NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
         NSMutableArray *arr = [NSMutableArray array];
         
@@ -270,7 +304,9 @@
         
         self.datas = arr;
 
-        [self.resultNode reloadData];
+//        [self.resultNode reloadData];
+        
+        [self reloadData];
         
         [self.searchBar resignFirstResponder];
         self.historyView.hidden = YES;
@@ -308,6 +344,34 @@
     });
     
 
+}
+
+- (void)loadMoreResult {
+    
+    self.page += 1;
+    
+    [XFHomeNetworkManager searchPublishsWithword:self.keyWord Page:self.page size:10 successBlock:^(id responseObj) {
+        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        
+        for (int i= 0 ; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFStatusModel modelWithDictionary:datas[i]]];
+        }
+        
+        [self.datas addObjectsFromArray:arr.copy];
+        
+//        [self.resultNode reloadData];
+        [self reloadData];
+        [self.resultNode.view.mj_footer endRefreshing];
+        
+    } failBlock:^(NSError *error) {
+        [self.resultNode.view.mj_footer endRefreshing];
+
+    } progress:^(CGFloat progress) {
+        
+    }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -634,6 +698,12 @@
     self.resultNode.view.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     self.resultNode.hidden = YES;
+    
+    self.resultNode.view.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+       
+        [self loadMoreResult];
+        
+    }];
 }
 
 #pragma mark - cellNodeDelegate点赞
@@ -650,32 +720,38 @@
     return self.datas.count + 1;
 }
 
-- (ASCellNodeBlock)tableNode:(ASTableNode *)tableNode nodeBlockForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (ASCellNode *)tableNode:(ASTableNode *)tableNode nodeForRowAtIndexPath:(NSIndexPath *)indexPath {
     
+
     if (indexPath.item == 0) {
         
-         return ^ASCellNode *() {
-            
+
             ASSearchManCellNode *node = [[ASSearchManCellNode alloc] initWithDatas:self.userDatas];
-             
-             node.didSelecSearchMan = ^(XFSearchUserModel *model) {
-                 
-                 XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
-                 detailVC.userId = model.uid;
-                 detailVC.userName = model.nickname;
-                 detailVC.iconUrl = model.headIconUrl;
-                 detailVC.hidesBottomBarWhenPushed = YES;
-                 [self.navigationController pushViewController:detailVC animated:YES];
-             };
-             
-             
+            
+            node.didSelecSearchMan = ^(XFSearchUserModel *model) {
+                
+                XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+                detailVC.userId = model.uid;
+                detailVC.userName = model.nickname;
+                detailVC.iconUrl = model.headIconUrl;
+                detailVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            };
+            
+            if ([_indexPathsTobeReload containsObject:indexPath]) {
+                
+                ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                
+                node.neverShowPlaceholders = YES;
+                oldCellNode.neverShowPlaceholders = YES;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    node.neverShowPlaceholders = NO;
+                    
+                    
+                });
+            }
             return node;
-        };
-        
     }
-    
-    
-    return ^ASCellNode *{
     
         XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.datas[indexPath.row -1]];
         
@@ -683,6 +759,20 @@
         
         node.delegate = self;
         
+        if ([_indexPathsTobeReload containsObject:indexPath]) {
+            
+            ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+            
+            node.neverShowPlaceholders = YES;
+            oldCellNode.neverShowPlaceholders = YES;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                node.neverShowPlaceholders = NO;
+                
+                
+            });
+            
+        }
+
         if (self.isOpenIndexPath == indexPath) {
             node.shadowNode.hidden = YES;
             
@@ -691,15 +781,12 @@
         }
         
         return node;
-    };
-
 }
 
 #pragma mark - cellNodeDelegate点赞
 
 - (void)findCellNode:(XFFindCellNode *)node didClickJuBaoButtonWithButton:(ASButtonNode *)jubaoButton {
-    
-    
+
     FTPopOverMenuConfiguration *configuration = [FTPopOverMenuConfiguration defaultConfiguration];
     configuration.menuRowHeight = 40;
     configuration.menuWidth = 80;
@@ -717,11 +804,7 @@
                            });
                            
                        } dismissBlock:^{
-                           
-                           
-                           
                        }];
-    
     
 }
 
@@ -1096,7 +1179,8 @@
     }
 
     if (reload) {
-        [self.resultNode reloadData];
+//        [self.resultNode reloadData];
+        [self reloadData];
     }
     
 }

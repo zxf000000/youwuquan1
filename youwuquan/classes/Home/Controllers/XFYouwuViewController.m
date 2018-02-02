@@ -39,12 +39,14 @@
 
 - (void)loadMoreData {
     
+    self.page += 1;
+    
     switch (self.type) {
             
         case Nethot:
         {
             // 网红
-            [XFHomeNetworkManager getHotMoreDataWithPage:self.page size:15 successBlock:^(id responseObj) {
+            [XFHomeNetworkManager getHotMoreDataWithPage:self.page size:20 successBlock:^(id responseObj) {
                 
                 NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
                 NSMutableArray *arr = [NSMutableArray array];
@@ -71,7 +73,7 @@
             break;
         case Youwu:
         {
-            [XFHomeNetworkManager getYouwuMoreDataWithPage:self.page size:15 successBlock:^(id responseObj) {
+            [XFHomeNetworkManager getYouwuMoreDataWithPage:self.page size:20 successBlock:^(id responseObj) {
                
                 NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
                 NSMutableArray *arr = [NSMutableArray array];
@@ -226,8 +228,8 @@
         [self.headCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
            
             make.left.right.mas_offset(0);
-            make.bottom.mas_offset(-20);
-            make.top.mas_offset(47);
+            make.bottom.mas_offset(-10);
+            make.top.mas_offset(37);
         }];
         return header;
     }
@@ -347,7 +349,6 @@
     
     self.collectionView.mj_header = [XFToolManager refreshHeaderWithBlock:^{
         [self loadData];
-        
     }];
     
     self.collectionView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{

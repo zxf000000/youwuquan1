@@ -10,7 +10,7 @@
 
 @interface XFNearModel : NSObject <NSCoding>
 
-@property (nonatomic,copy) NSString *identifications;
+@property (nonatomic,copy) NSArray *identifications;
 @property (nonatomic,copy) NSString *nickname;
 @property (nonatomic,copy) NSString *headIconUrl;
 @property (nonatomic,copy) NSString *distance;
