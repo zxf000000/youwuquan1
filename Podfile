@@ -18,7 +18,7 @@ pod 'Texture'
 pod 'RongCloudIM/IMLib', '~> 2.8.3'
 pod 'RongCloudIM/IMKit', '~> 2.8.3'  
 pod 'JPush'
-pod 'HJDanmaku'
+#pod 'HJDanmaku'
 
 
 # U-Share SDK UI模块（分享面板，建议添加）
@@ -52,7 +52,7 @@ pod 'MD360Player4iOS', '~> 1.0.0'
 
 pod 'VIMVideoPlayer', '~> 6.0.1'
 
-pod 'ActionSheetPicker-3.0'
+#pod 'ActionSheetPicker-3.0'
 
 # 七牛云短视频
 pod 'PLShortVideoKit'

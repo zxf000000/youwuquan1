@@ -222,8 +222,6 @@
     [afNetworkReachabilityManager startMonitoring];  //开启网络监视器；
 }
 
-
-
 - (void)customizeInterfaceWithTabBarController:(CYLTabBarController *)tabBarController {
     //设置导航栏
     
@@ -417,6 +415,8 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     if([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
         [JPUSHService handleRemoteNotification:userInfo];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"didRecieveNotification" object:nil];
+
     completionHandler();  // 系统要求执行这个方法
 }
 
@@ -425,6 +425,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     // 程序在后台的时候接受到推送消息
     // Required, iOS 7 Support
     [JPUSHService handleRemoteNotification:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"didRecieveNotification" object:nil];
     completionHandler(UIBackgroundFetchResultNewData);
 }
 

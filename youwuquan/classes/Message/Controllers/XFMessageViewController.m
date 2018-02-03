@@ -18,6 +18,8 @@
 #import "XFSystemMsgModel.h"
 #import "XFLikeCommentModel.h"
 
+
+
 @interface XFMessageViewController () <UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic,strong) UITableView *tableView;
@@ -40,7 +42,7 @@
 - (instancetype)init {
     
     if (self = [super init]) {
-        
+        // 头部的高度
         _headerHeight = 65 * (self.cellIcons.count + 1) + 136 + 15 + 15;
     }
     return self;
@@ -53,15 +55,13 @@
     
     [self setupTableView];
     
+    // 从首页缓存的附近的人拿到数据
     if ([XFHomeCacheManger sharedManager].nearData) {
         
         self.nearData = [XFHomeCacheManger sharedManager].nearData;
         
         [self.tableView reloadData];
-        
     }
-    
-    
 }
 
 - (void)setLikeDatas:(NSArray *)likeDatas {
@@ -89,7 +89,7 @@
         
         XFYueViewController *chatVC = [[XFYueViewController alloc] init];
         chatVC.hidesBottomBarWhenPushed = YES;
-        chatVC.msgs = self.otherDatas;
+        chatVC.msgs = [NSMutableArray arrayWithArray:self.otherDatas];
         chatVC.title = @"综合消息";
         chatVC.hasSeprator = NO;
         chatVC.type = Activity;
@@ -99,7 +99,7 @@
         
         XFYueViewController *chatVC = [[XFYueViewController alloc] init];
         chatVC.hidesBottomBarWhenPushed = YES;
-        chatVC.msgs = self.likeDatas;
+        chatVC.msgs = [NSMutableArray arrayWithArray:self.likeDatas];
         chatVC.title = @"动态互动";
         chatVC.hasSeprator = YES;
         chatVC.type = LikeComment;
@@ -289,13 +289,11 @@
         }
         cell.iconImage.image = [UIImage imageNamed:@"message_like"];
         cell.titleLabel.text = @"动态互动";
+        // 获取最近的一条消息
         XFLikeCommentModel *model = [self.likeDatas firstObject];
-        
         if (model) {
             
             cell.timeLabel.text = [XFToolManager changeLongToDateWith:model.creatTime];
-
-            
             NSData *jsonData = [model.extraJson dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *info = [NSJSONSerialization JSONObjectWithData:jsonData options:(NSJSONReadingMutableContainers) error:nil];
             
@@ -309,30 +307,22 @@
                 
             }
         }
-        
-
-        
     }
-
     return cell;
 }
 
 - (void)setupTableView {
     
     self.tableView = [[UITableView alloc] init];
-    
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    
     [self.view addSubview:self.tableView];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = kBgGrayColor;
-//    self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 49);
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
        
         make.edges.mas_offset(0);
-        
     }];
     self.tableView.showsVerticalScrollIndicator = NO;
     
@@ -352,7 +342,6 @@
     if (_cellIcons == nil) {
         
         _cellIcons = @[@"message_like"];
-
         
     }
     return _cellIcons;

@@ -13,7 +13,7 @@
 #import "XFMessageNetworkManager.h"
 #import "XFSystemMsgModel.h"
 #import "XFLikeCommentModel.h"
-
+#import "XFMessageCacheManager.h"
 @interface XFMessageListViewController ()
 
 @property (nonatomic,strong) XFMessageViewController *headerVC;
@@ -23,6 +23,7 @@
 @property (nonatomic,copy) NSArray *systemMsgs;
 @property (nonatomic,copy) NSArray *likeDatas;
 @property (nonatomic,copy) NSArray *otherDatas;
+@property (nonatomic,assign) BOOL recievedNotification;
 
 @end
 
@@ -55,14 +56,26 @@
     
     self.conversationListTableView.bounces = NO;
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRecieveNotification) name:@"didRecieveNotification" object:nil];
+    
+    [self loadData];
+}
+
+- (void)didRecieveNotification {
+
+    self.recievedNotification = YES;
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     
     [super viewWillAppear:animated];
-    
-    [self loadData];
 
+    if (self.recievedNotification) {
+    
+        [self loadData];
+        
+    }
     
 }
 
@@ -99,6 +112,15 @@
         NSString *date = [dateFormatter stringFromDate:[NSDate date]];
         
         [[XFUserInfoManager sharedManager] updateLastDate:date];
+        
+        if (self.systemMsgs.count > 0) {
+            [[XFMessageCacheManager sharedManager] updateSystemMessageCacheWith:arr.copy];
+
+        } else {
+            
+            self.systemMsgs = [XFMessageCacheManager sharedManager].systemMessageCache;
+        }
+        
         
         if (self.systemMsgs.count > 0) {
             
@@ -142,9 +164,27 @@
         
         self.likeDatas = arrLike.copy;
         self.otherDatas = arrOther.copy;
+
+        if (_likeDatas.count > 0) {
+            
+            [[XFMessageCacheManager sharedManager] updateLikeCommentsMessageCacheWith:arrLike.copy];
+
+        } else {
+            
+            self.likeDatas = [XFMessageCacheManager sharedManager].likeCommentCache;
+        }
+        
+        if (_otherDatas.count > 0) {
+            [[XFMessageCacheManager sharedManager] updateOtherMessageWith:arrOther.copy];
+
+        } else {
+            
+            self.otherDatas = [XFMessageCacheManager sharedManager].otherMessageCache;
+        }
+        
         self.headerVC.likeDatas = self.likeDatas;
         self.headerVC.otherDatas = self.otherDatas;
-
+        
     } failBlock:^(NSError *error) {
     
     } progressBlock:^(CGFloat progress) {

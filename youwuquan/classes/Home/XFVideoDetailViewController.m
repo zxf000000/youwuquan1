@@ -14,9 +14,9 @@
 
 #import <MDVRLibrary.h>
 
-#import "XFDanmuCell.h"
-#import "XFDanmuModel.h"
-#import <HJDanmakuView.h>
+//#import "XFDanmuCell.h"
+//#import "XFDanmuModel.h"
+//#import <HJDanmakuView.h>
 
 #import "VideoPlayerViewController.h"
 
@@ -35,7 +35,7 @@
 
 #define kVideoVideHeight (9/16.f * kScreenWidth)
 
-@interface XFVideoDetailViewController () <ASTableDelegate,ASTableDataSource,HJDanmakuViewDateSource,HJDanmakuViewDelegate,MD360DirectorFactory,PLPlayerDelegate,UITextFieldDelegate>
+@interface XFVideoDetailViewController () <ASTableDelegate,ASTableDataSource,MD360DirectorFactory,PLPlayerDelegate,UITextFieldDelegate>
 
 @property (nonatomic,strong) UIButton *backButton;
 
@@ -69,7 +69,6 @@
 @property (nonatomic,strong) UIView *topShadowView;
 @property (nonatomic,strong) UIButton *dmButton;
 
-@property (nonatomic,strong) HJDanmakuView *danmuView;
 
 @property (nonatomic,strong) AVPlayer *player;
 
@@ -735,23 +734,16 @@
     
     if (self.dmButton.selected == YES) {
         
-        [self.danmuView pause];
-        self.danmuView.hidden = YES;
+//        [self.danmuView pause];
+//        self.danmuView.hidden = YES;
     } else {
         
-        [self.danmuView pause];
-        self.danmuView.hidden = YES;
+//        [self.danmuView pause];
+//        self.danmuView.hidden = YES;
     }
     
 }
 
-#pragma mark - delegate
-
-- (void)prepareCompletedWithDanmakuView:(HJDanmakuView *)danmakuView {
-    
-    [self.danmuView play];
-    
-}
 //
 //#pragma mark - dataSource
 //
@@ -762,27 +754,6 @@
 //- (float)playTimeWithDanmakuView:(HJDanmakuView *)danmakuView {
 //    return self.progressSlider.value * 120.0;
 //}
-
-
-- (CGFloat)danmakuView:(HJDanmakuView *)danmakuView widthForDanmaku:(HJDanmakuModel *)danmaku {
-    XFDanmuModel *model = (XFDanmuModel *)danmaku;
-    
-    return [model.text sizeWithAttributes:@{NSFontAttributeName: model.textFont}].width + 1.0f;
-}
-
-- (HJDanmakuCell *)danmakuView:(HJDanmakuView *)danmakuView cellForDanmaku:(HJDanmakuModel *)danmaku {
-    XFDanmuModel *model = (XFDanmuModel *)danmaku;
-    XFDanmuCell *cell = [danmakuView dequeueReusableCellWithIdentifier:@"danmu"];
-    if (model.selfFlag) {
-        cell.zIndex = 30;
-        cell.layer.borderWidth = 0.5;
-        cell.layer.borderColor = [UIColor redColor].CGColor;
-    }
-    cell.textLabel.font = model.textFont;
-    cell.textLabel.textColor = model.textColor;
-    cell.textLabel.text = model.text;
-    return cell;
-}
 
 
 #pragma mark - 播放器

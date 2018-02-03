@@ -7,7 +7,7 @@
 //
 
 #import "PlayerViewController.h"
-#import "ActionSheetPicker.h"
+//#import "ActionSheetPicker.h"
 
 @interface PickerHelper : NSObject{
     NSInteger prevIndex;
@@ -30,8 +30,8 @@ typedef void(^PickerDoneBlock)(int key);
 }
 
 - (void)action:(id) sender{
-    NSArray* values = [self.dictionary allValues];
-    [self pick:values defaultIndex:prevIndex sender:sender];
+//    NSArray* values = [self.dictionary allValues];
+//    [self pick:values defaultIndex:prevIndex sender:sender];
 }
 
 - (int)indexToKey:(NSInteger) index{
@@ -44,25 +44,25 @@ typedef void(^PickerDoneBlock)(int key);
     NSArray* keys = [self.dictionary allKeys];
     return [keys indexOfObject:[NSNumber numberWithInteger:key]];
 }
-
-- (void) pick:(NSArray*)data defaultIndex:(long)index sender:(id)sender{
-    [ActionSheetStringPicker showPickerWithTitle:@""
-                                            rows:data
-                                initialSelection:index
-                                       doneBlock:^(ActionSheetStringPicker *picker, NSInteger selectedIndex, id selectedValue) {
-                                           //NSLog(@"Picker: %@, Index: %ld, value: %@",picker, selectedIndex, selectedValue);
-                                           prevIndex = selectedIndex;
-                                           UIButton* button = sender;
-                                           [button setTitle:selectedValue forState:UIControlStateNormal];
-                                           
-                                           if (self.doneBlock) {
-                                               self.doneBlock([self indexToKey:selectedIndex]);
-                                           }
-                                       }
-                                    cancelBlock:^(ActionSheetStringPicker *picker) {
-                                    }
-                                         origin:sender];
-}
+//
+//- (void) pick:(NSArray*)data defaultIndex:(long)index sender:(id)sender{
+//    [ActionSheetStringPicker showPickerWithTitle:@""
+//                                            rows:data
+//                                initialSelection:index
+//                                       doneBlock:^(ActionSheetStringPicker *picker, NSInteger selectedIndex, id selectedValue) {
+//                                           //NSLog(@"Picker: %@, Index: %ld, value: %@",picker, selectedIndex, selectedValue);
+//                                           prevIndex = selectedIndex;
+//                                           UIButton* button = sender;
+//                                           [button setTitle:selectedValue forState:UIControlStateNormal];
+//
+//                                           if (self.doneBlock) {
+//                                               self.doneBlock([self indexToKey:selectedIndex]);
+//                                           }
+//                                       }
+//                                    cancelBlock:^(ActionSheetStringPicker *picker) {
+//                                    }
+//                                         origin:sender];
+//}
 
 @end
 

@@ -35,7 +35,38 @@
     return self;
 }
 
+- (void)updateSystemMessageCacheWith:(NSArray *)systemMessageCache {
+    
+    [self.msgCache setObject:systemMessageCache forKey:kSystermMsgCache];
+    
+}
+- (void)updateLikeCommentsMessageCacheWith:(NSArray *)likeCOmments {
+    [self.msgCache setObject:likeCOmments forKey:KLikeCommentsMessageCache];
+}
+
+- (void)updateOtherMessageWith:(NSArray *)othermessage {
+
+    [self.msgCache setObject:othermessage forKey:kOtherMessageCache];
+}
+
+- (NSArray *)systemMessageCache {
+    
+    return (NSArray *)[_msgCache objectForKey:kSystermMsgCache];
+    
+}
+
+- (NSArray *)likeCommentCache {
+    
+    return (NSArray *)[_msgCache objectForKey:KLikeCommentsMessageCache];
+}
+
+- (NSArray *)otherMessageCache {
+    
+    return (NSArray *)[_msgCache objectForKey:kOtherMessageCache];
+}
+
 - (void)updateCacheWith:(NSDictionary *)info {
+    
     
     [self updateHuDongMsgWith:info];
     

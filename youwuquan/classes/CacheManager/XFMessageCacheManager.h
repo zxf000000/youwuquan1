@@ -8,22 +8,24 @@
 
 #import <Foundation/Foundation.h>
 
+#define kSystemMessageCache @"systemMessageCache"
+#define KLikeCommentsMessageCache @"likeCommentMessageCache"
+#define kOtherMessageCache @"OtherMessageCache"
+
 @interface XFMessageCacheManager : NSObject
 
 @property (nonatomic,strong) YYCache *msgCache;
 
+@property (nonatomic,copy) NSArray *systemMessageCache;
+@property (nonatomic,copy) NSArray *otherMessageCache;
+@property (nonatomic,copy) NSArray *likeCommentCache;
+
 + (instancetype)sharedManager;
-
-@property (nonatomic,copy) NSArray *hudongMsgs;
-
-@property (nonatomic,copy) NSArray *zongheMsgs;
-
-@property (nonatomic,copy) NSArray *systermMsgs;
 
 - (void)updateCacheWith:(NSDictionary *)info;
 
-- (void)updateHuDongMsgWith:(NSDictionary *)dic;
-- (void)updateZongHeMsgWith:(NSDictionary *)dic;
-- (void)updateSystermMsgWith:(NSDictionary *)dic;
+- (void)updateSystemMessageCacheWith:(NSArray *)systemMessageCache;
+- (void)updateLikeCommentsMessageCacheWith:(NSArray *)likeCOmments;
+- (void)updateOtherMessageWith:(NSArray *)othermessage;
 
 @end
