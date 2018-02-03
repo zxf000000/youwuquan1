@@ -280,6 +280,7 @@
 		B75ECB341FB96A8300952713 /* XFRegistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75ECB331FB96A8300952713 /* XFRegistViewController.m */; };
 		B75ECB391FB9A72600952713 /* XFForgetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75ECB381FB9A72600952713 /* XFForgetViewController.m */; };
 		B75ECB3C1FB9A9FC00952713 /* XFPwdTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = B75ECB3B1FB9A9FC00952713 /* XFPwdTextField.m */; };
+		B768125D2025E56F007819FE /* SCSiriWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = B768125C2025E56F007819FE /* SCSiriWaveformView.m */; };
 		B76EA5B41FB54B3B001673CC /* XFFIndHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B76EA5B31FB54B3B001673CC /* XFFIndHeaderCell.m */; };
 		B76EA5B71FB55801001673CC /* XFSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = B76EA5B61FB55801001673CC /* XFSlideView.m */; };
 		B76EE2E6200B4C990025A66D /* XFFindActivityModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B76EE2E5200B4C990025A66D /* XFFindActivityModel.m */; };
@@ -400,7 +401,6 @@
 		B78C2CB61FE79E59006A0B70 /* XFShareCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B78C2CB41FE79E58006A0B70 /* XFShareCardViewController.m */; };
 		B78C2CB91FE7A1D6006A0B70 /* XFShareCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = B78C2CB81FE7A1D6006A0B70 /* XFShareCardView.m */; };
 		B78F632B1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B78F632A1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m */; };
-		B793C3CB20158A9500034484 /* SCSiriWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = B793C3CA20158A9400034484 /* SCSiriWaveformView.m */; };
 		B793C3D42015BDAB00034484 /* XFVIPCenterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B793C3D32015BDAB00034484 /* XFVIPCenterViewController.m */; };
 		B793C3D82015BE3400034484 /* XFVipCenterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B793C3D62015BE3400034484 /* XFVipCenterTableViewCell.m */; };
 		B793C3D92015BE3400034484 /* XFVipCenterTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B793C3D72015BE3400034484 /* XFVipCenterTableViewCell.xib */; };
@@ -1008,6 +1008,8 @@
 		B75ECB381FB9A72600952713 /* XFForgetViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFForgetViewController.m; sourceTree = "<group>"; };
 		B75ECB3A1FB9A9FC00952713 /* XFPwdTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFPwdTextField.h; sourceTree = "<group>"; };
 		B75ECB3B1FB9A9FC00952713 /* XFPwdTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFPwdTextField.m; sourceTree = "<group>"; };
+		B768125B2025E56F007819FE /* SCSiriWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSiriWaveformView.h; sourceTree = "<group>"; };
+		B768125C2025E56F007819FE /* SCSiriWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSiriWaveformView.m; sourceTree = "<group>"; };
 		B76EA5B21FB54B3B001673CC /* XFFIndHeaderCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFFIndHeaderCell.h; sourceTree = "<group>"; };
 		B76EA5B31FB54B3B001673CC /* XFFIndHeaderCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFFIndHeaderCell.m; sourceTree = "<group>"; };
 		B76EA5B51FB55801001673CC /* XFSlideView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFSlideView.h; sourceTree = "<group>"; };
@@ -1205,8 +1207,6 @@
 		B78F632A1FD7FCF800F83900 /* XFUserInfoNetWorkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFUserInfoNetWorkManager.m; sourceTree = "<group>"; };
 		B79371EC1FDBD7C9004F0AC8 /* UIView+GetBounes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+GetBounes.h"; sourceTree = "<group>"; };
 		B79371ED1FDBD7CA004F0AC8 /* UIView+GetBounes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+GetBounes.m"; sourceTree = "<group>"; };
-		B793C3C920158A9400034484 /* SCSiriWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSiriWaveformView.h; sourceTree = "<group>"; };
-		B793C3CA20158A9400034484 /* SCSiriWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSiriWaveformView.m; sourceTree = "<group>"; };
 		B793C3D22015BDAB00034484 /* XFVIPCenterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFVIPCenterViewController.h; sourceTree = "<group>"; };
 		B793C3D32015BDAB00034484 /* XFVIPCenterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFVIPCenterViewController.m; sourceTree = "<group>"; };
 		B793C3D52015BE3400034484 /* XFVipCenterTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFVipCenterTableViewCell.h; sourceTree = "<group>"; };
@@ -2355,7 +2355,6 @@
 			children = (
 				B773C5D8201363840017BFCF /* XFPublishVideoViewController.h */,
 				B773C5D9201363850017BFCF /* XFPublishVideoViewController.m */,
-				B793C3C820158A9400034484 /* SCSiriWaveformView */,
 				B7C7FCB3201186A90040976C /* IQAudioRecorderController */,
 				B7E3FF301FC6E8F30086414F /* ImagePicker */,
 				B74AEA141FA32115002BD4A6 /* XFPublishViewController.h */,
@@ -2662,6 +2661,15 @@
 			children = (
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		B768125A2025E56F007819FE /* SCSiriWaveformView */ = {
+			isa = PBXGroup;
+			children = (
+				B768125B2025E56F007819FE /* SCSiriWaveformView.h */,
+				B768125C2025E56F007819FE /* SCSiriWaveformView.m */,
+			);
+			path = SCSiriWaveformView;
 			sourceTree = "<group>";
 		};
 		B76EE2E7200B79D50025A66D /* ImagePicker */ = {
@@ -2982,16 +2990,6 @@
 			path = UserInfo;
 			sourceTree = "<group>";
 		};
-		B793C3C820158A9400034484 /* SCSiriWaveformView */ = {
-			isa = PBXGroup;
-			children = (
-				B793C3C920158A9400034484 /* SCSiriWaveformView.h */,
-				B793C3CA20158A9400034484 /* SCSiriWaveformView.m */,
-			);
-			name = SCSiriWaveformView;
-			path = "../../../../../Down/IQAudioRecorderController 2/IQAudioRecorderController/SCSiriWaveformView";
-			sourceTree = "<group>";
-		};
 		B7954E9F1FC26BE10016BD45 /* PGDatePicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -3176,6 +3174,7 @@
 		B7C7FCB3201186A90040976C /* IQAudioRecorderController */ = {
 			isa = PBXGroup;
 			children = (
+				B768125A2025E56F007819FE /* SCSiriWaveformView */,
 				B7C7FCB4201186A90040976C /* FDWaveformView */,
 				B7C7FCB7201186A90040976C /* IQAudioCropperViewController.h */,
 				B7C7FCB8201186A90040976C /* IQAudioCropperViewController.m */,
@@ -3854,7 +3853,6 @@
 				B76EA5B71FB55801001673CC /* XFSlideView.m in Sources */,
 				B729E1291FBED3740045FF68 /* XFChooseLabelViewController.m in Sources */,
 				B7392EBE1FD2396B00F2B0DD /* XFShareManager.m in Sources */,
-				B793C3CB20158A9500034484 /* SCSiriWaveformView.m in Sources */,
 				B72A4C04200EE99E0013157A /* PLSVideoEditingController.m in Sources */,
 				B74AE9F91FA30835002BD4A6 /* XFNetWorkManager.m in Sources */,
 				B7AC616B1FC666F600B27C40 /* XFPublishTransation.m in Sources */,
@@ -3913,6 +3911,7 @@
 				B7DF08FD1FE250FC00310B79 /* NullSafe.m in Sources */,
 				B7A6864A1FEE06FB006B9109 /* XFNetworking+RequestManager.m in Sources */,
 				B74AE9FB1FA30835002BD4A6 /* MBProgressHUD+XMG.m in Sources */,
+				B768125D2025E56F007819FE /* SCSiriWaveformView.m in Sources */,
 				B72A4C05200EE99E0013157A /* PLSColorPicker.m in Sources */,
 				B718C7961FA8DA0000DA470B /* YYControl.m in Sources */,
 				B70CCC5A1FE547F100F5B7F3 /* XFFIndCacheManager.m in Sources */,

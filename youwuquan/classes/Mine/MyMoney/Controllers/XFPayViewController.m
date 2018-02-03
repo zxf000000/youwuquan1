@@ -20,7 +20,7 @@
 #import "XFPayAlertViewController.h"
 #import <AlipaySDK/AlipaySDK.h>
 
-@interface XFPayViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFVipTableViewCellDelegate,XChargeTableViewCellDelegate>
+@interface XFPayViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFVipTableViewCellDelegate,XChargeTableViewCellDelegate,NSXMLParserDelegate>
 
 @property (nonatomic,weak) UIView *topView;
 
@@ -263,18 +263,35 @@
 
         NSString *str = (NSString *)responseObj;
         
-        NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
         
-        [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
-            
-            NSLog(@"%@-----alipay回调",resultDic);
-            
-            if ([resultDic[@"resultStatus"] intValue] == 9000) {
+        if ([type isEqualToString:@"ALIPAY"]) {
+            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
 
-            }
+            [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
+                
+                NSLog(@"%@-----alipay回调",resultDic);
+                
+                if ([resultDic[@"resultStatus"] intValue] == 9000) {
+                    
+                }
+                
+                
+            }];
             
+        } else {
             
-        }];
+
+            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+
+            // 解析
+            NSData *xmlData = [orderStr dataUsingEncoding:NSUTF8StringEncoding];
+            NSXMLParser *paraser = [[NSXMLParser alloc] initWithData:xmlData];
+            paraser.delegate = self;
+            [paraser parse];
+            
+        }
+        
+
         
     } failedBlock:^(NSError *error) {
         [HUD hideAnimated:YES];
@@ -283,6 +300,18 @@
         
         
     }];
+}
+
+- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
+    
+    NSLog(@"解析出----%@",string);
+    
+}
+
+- (void)parser:(NSXMLParser *)parser foundCDATA:(NSData *)CDATABlock {
+    
+    
+    
 }
 
 - (void)selectChargeType {
