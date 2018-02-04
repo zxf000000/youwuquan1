@@ -11,4 +11,7 @@
 
 @interface XFActivityViewController : XFOtherMainViewController
 
+@property (nonatomic,copy) NSString *activityId;
+
+
 @end

@@ -291,4 +291,35 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
                               progress:(FindRequestProgressBlock)progressBlock;
 
 
+/**
+ 报名活动
+
+ @param activityId 活动id
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)checkinActivityWithId:(NSString *)activityId
+                 successBlock:(FindRequestSuccessBlock)successBlock
+                    failBlock:(FindRequestFailedBlock)failBlock
+                     progress:(FindRequestProgressBlock)progressBlock;
+
+
+/**
+ 支付活动费用
+
+ @param activityId 活动id
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)payActivityWithId:(NSString *)activityId
+                     type:(NSString *)type
+                 successBlock:(FindRequestSuccessBlock)successBlock
+                    failBlock:(FindRequestFailedBlock)failBlock
+                     progress:(FindRequestProgressBlock)progressBlock;
+
+
+
+
 @end

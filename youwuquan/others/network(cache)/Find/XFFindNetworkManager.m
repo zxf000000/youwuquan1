@@ -9,6 +9,7 @@
 #import "XFFindNetworkManager.h"
 #import "XFNetworking.h"
 #import "XFApiClient.h"
+#import <AFHTTPSessionManager.h>
 
 @implementation XFFindNetworkManager
 
@@ -671,5 +672,75 @@
         
     }];
 }
+
+
++ (void)checkinActivityWithId:(NSString *)activityId
+                 successBlock:(FindRequestSuccessBlock)successBlock
+                    failBlock:(FindRequestFailedBlock)failBlock
+                     progress:(FindRequestProgressBlock)progressBlock {
+    
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForCheckActiviyWithActivityId:activityId] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+    
+}
+
+
+/**
+ 支付活动费用
+ 
+ @param activityId 活动id
+ @param successBlock 0
+ @param failBlock 0
+ @param progressBlock 0
+ */
++ (void)payActivityWithId:(NSString *)activityId
+                     type:(NSString *)type
+             successBlock:(FindRequestSuccessBlock)successBlock
+                failBlock:(FindRequestFailedBlock)failBlock
+                 progress:(FindRequestProgressBlock)progressBlock {
+    
+    NSDictionary *params = @{@"payment":type};
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
+                                                                              @"text/html",
+                                                                              @"text/json",
+                                                                              @"text/plain",
+                                                                              @"text/javascript",
+                                                                              @"text/xml",
+                                                                              @"image/*",
+                                                                              @"text/*",
+                                                                              @"application/octet-stream",
+                                                                              @"application/zip"]];
+    
+    [manager POST:[XFApiClient pathUrlForPayActivityWithId:activityId] parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSString *str = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        
+        successBlock(str);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"%@",error);
+        failBlock(error);
+        
+    }];
+    
+}
+
 
 @end

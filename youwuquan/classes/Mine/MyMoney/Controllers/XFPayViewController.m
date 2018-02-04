@@ -19,6 +19,7 @@
 #import "XFChargeModel.h"
 #import "XFPayAlertViewController.h"
 #import <AlipaySDK/AlipaySDK.h>
+#import <WXApi.h>
 
 @interface XFPayViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFVipTableViewCellDelegate,XChargeTableViewCellDelegate,NSXMLParserDelegate>
 
@@ -71,6 +72,9 @@
 
 @property (nonatomic,assign) NSInteger chargeNumber;
 
+@property (nonatomic,strong) NSMutableDictionary *xmlDictionary;
+
+@property (nonatomic,copy) NSString *currentKey;
 
 @end
 
@@ -89,6 +93,9 @@
                          @{@"diamonds":@"1380(送100)",@"money":@"128元"},
                          @{@"diamonds":@"2200(送220)",@"money":@"198元"},
                          @{@"diamonds":@"4000(送620)",@"money":@"388元"}];
+    
+    
+    self.xmlDictionary = [NSMutableDictionary dictionary];
     
     [self setupTopView];
     [self setupScrolLView];
@@ -302,16 +309,50 @@
     }];
 }
 
-- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
+- (void)parserDidStartDocument:(NSXMLParser *)parser {
     
-    NSLog(@"解析出----%@",string);
+    NSLog(@"kaishijiexi");
+    
+    self.xmlDictionary = [NSMutableDictionary dictionary];
     
 }
 
-- (void)parser:(NSXMLParser *)parser foundCDATA:(NSData *)CDATABlock {
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary<NSString *,NSString *> *)attributeDict {
     
+    self.currentKey = elementName;
     
+}
+
+
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
     
+
+    
+}
+
+- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
+    
+    NSLog(@"解析出----%@",string);
+    [self.xmlDictionary setObject:string forKey:self.currentKey];
+}
+
+- (void)parserDidEndDocument:(NSXMLParser *)parser {
+    
+    NSLog(@"解析结果---%@",self.xmlDictionary);
+    
+    NSTimeInterval time = NSTimeIntervalSince1970;
+    
+    // 解析结果
+    PayReq *request = [[PayReq alloc] init];
+    request.openID = self.xmlDictionary[@"appid"];
+    request.partnerId = self.xmlDictionary[@"mch_id"];
+    request.prepayId = self.xmlDictionary[@"prepay_id"];
+    request.package = @"Sign=WXPay";
+    request.nonceStr = self.xmlDictionary[@"nonce_str"];
+    request.timeStamp = time;
+    request.sign= self.xmlDictionary[@"sign"];
+
+    [WXApi sendReq:request];
 }
 
 - (void)selectChargeType {
@@ -465,12 +506,24 @@
         // 微信
         [XFMineNetworkManager buyVipWithWechatWithDays:[model.day intValue] successBlock:^(id responseObj) {
             
-            [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
-            XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
+//            [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
+//            XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
+//
+//            successVC.type = XFSuccessViewTypeVipSuccess;
+//
+//            [self.navigationController pushViewController:successVC animated:YES];
+            [HUD hideAnimated:YES];
+
+            NSString *str = (NSString *)responseObj;
+            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
             
-            successVC.type = XFSuccessViewTypeVipSuccess;
+            // 解析
+            NSData *xmlData = [orderStr dataUsingEncoding:NSUTF8StringEncoding];
+            NSXMLParser *paraser = [[NSXMLParser alloc] initWithData:xmlData];
+            paraser.delegate = self;
+            [paraser parse];
             
-            [self.navigationController pushViewController:successVC animated:YES];
+            
         } failedBlock:^(NSError *error) {
             [HUD hideAnimated:YES];
             
@@ -485,22 +538,23 @@
         // 支付宝
         [XFMineNetworkManager buyVipWithAlipayWithDays:[model.day intValue] successBlock:^(id responseObj) {
             
-//            [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
-//            XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
-//
-//            successVC.type = XFSuccessViewTypeVipSuccess;
-//
-//            [self.navigationController pushViewController:successVC animated:YES];
-            
             NSString *str = (NSString *)responseObj;
             
-            [[AlipaySDK defaultService] payOrder:str fromScheme:@"" callback:^(NSDictionary *resultDic) {
-               
-                NSLog(@"回调");
+            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+            
+            [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
+                
+                NSLog(@"%@-----alipay回调",resultDic);
+                
+                if ([resultDic[@"resultStatus"] intValue] == 9000) {
+                    
+                }
+                
                 
             }];
             
-            
+            [HUD hideAnimated:YES];
+
         } failedBlock:^(NSError *error) {
             [HUD hideAnimated:YES];
             

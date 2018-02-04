@@ -27,7 +27,7 @@
 //#import <TencentOpenAPI/TencentOAuth.h>
 //#import <TencentOpenAPI/QQApiInterface.h>
 //微信SDK头文件
-//#import <WXApi.h>
+#import <WXApi.h>
 
 #import "XFMessageViewController.h"
 #import "XFMineViewController.h"
@@ -51,7 +51,7 @@
 #define USHARE_DEMO_APPKEY @"5a559d19b27b0a4556000275"
 
 
-@interface AppDelegate () <JPUSHRegisterDelegate,UITabBarControllerDelegate,RCIMUserInfoDataSource>
+@interface AppDelegate () <JPUSHRegisterDelegate,UITabBarControllerDelegate,RCIMUserInfoDataSource,WXApiDelegate>
 
 @end
 
@@ -388,6 +388,12 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     NSLog(@"did Fail To Register For Remote Notifications With Error: %@", error);
 }
 
+#pragma mark - 支付回调
+-(void) onResp:(BaseResp*)resp {
+    
+    
+    
+}
 
 #pragma mark- JPUSHRegisterDelegate
 
@@ -468,6 +474,9 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
      [微信平台从U-Share 4/5升级说明]http://dev.umeng.com/social/ios/%E8%BF%9B%E9%98%B6%E6%96%87%E6%A1%A3#1_1
      */
     [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_WechatSession appKey:@"wx0c651ac02e3a8be1" appSecret:@"353ddbdd2778b19fcd213da7f541e28b" redirectURL:nil];
+    
+    [WXApi registerApp:@"wx0c651ac02e3a8be1"];//注册appid
+
     /*
      * 移除相应平台的分享，如微信收藏
      */
@@ -488,7 +497,6 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     
 }
 
-
 // 支持所有iOS系统
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
@@ -496,85 +504,89 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     BOOL result = [[UMSocialManager defaultManager] handleOpenURL:url sourceApplication:sourceApplication annotation:annotation];
     if (!result) {
         // 其他如支付等SDK的回调
-    }
-    
-    if ([url.host isEqualToString:@"safepay"]) {
-        // 支付跳转支付宝钱包进行支付，处理支付结果
-        [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
-            
-            if ([resultDic[@"resultStatus"] intValue] == 9000) {
+        [WXApi handleOpenURL:url delegate:self];
+       
+        if ([url.host isEqualToString:@"safepay"]) {
+            // 支付跳转支付宝钱包进行支付，处理支付结果
+            [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
                 
-                NSLog(@"支付成功");
-
+                if ([resultDic[@"resultStatus"] intValue] == 9000) {
+                    
+                    NSLog(@"支付成功");
+                    
+                    NSString *result = resultDic[@"result"];
+                    NSData *data = [result dataUsingEncoding:NSUTF8StringEncoding];
+                    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:(NSJSONReadingMutableContainers) error:nil];
+                    
+                    NSLog(@"result = %@",dic);
+                    
+                    NSString *tradeNo = [NSString stringWithFormat:@"%@",dic[@"alipay_trade_app_pay_response"][@"out_trade_no"]];
+                    
+                    [XFMineNetworkManager getTradeStatusWithOrderId:tradeNo successBlock:^(id responseObj) {
+                        
+                        NSDictionary *responseDic = (NSDictionary *)responseObj;
+                        NSLog(@"订单状态-----%@",responseDic[@"status"]);
+                        
+                        /*
+                         WAIT_BUYER_PAY // 等待买家付款
+                         TRADE_CLOSED  // 超时关闭
+                         TRADE_SUCCESS // 支付成功
+                         TRADE_FINISHED // 支付结束
+                         
+                         */
+                        if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
+                            
+                            [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeSuccess" object:nil];
+                            
+                        } else {
+                            
+                            [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeCancel" object:nil];
+                            
+                        }
+                        
+                        
+                    } failedBlock:^(NSError *error) {
+                        
+                        
+                    } progressBlock:^(CGFloat progress) {
+                        
+                        
+                    }];
+                    
+                    
+                }
+                
+                if ([resultDic[@"resultStatus"] intValue] == 6001) {
+                    
+                    NSLog(@"支付失败");
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeCancel" object:nil];
+                    
+                }
+            }];
+            
+            // 授权跳转支付宝钱包进行支付，处理支付结果
+            [[AlipaySDK defaultService] processAuth_V2Result:url standbyCallback:^(NSDictionary *resultDic) {
+                NSLog(@"result = %@",resultDic);
+                // 解析 auth code
                 NSString *result = resultDic[@"result"];
-                NSData *data = [result dataUsingEncoding:NSUTF8StringEncoding];
-                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:(NSJSONReadingMutableContainers) error:nil];
-                
-                NSLog(@"result = %@",dic);
-
-                NSString *tradeNo = [NSString stringWithFormat:@"%@",dic[@"alipay_trade_app_pay_response"][@"out_trade_no"]];
-                
-                [XFMineNetworkManager getTradeStatusWithOrderId:tradeNo successBlock:^(id responseObj) {
-                    
-                    NSDictionary *responseDic = (NSDictionary *)responseObj;
-                    NSLog(@"订单状态-----%@",responseDic[@"status"]);
-                    
-                    /*
-                     WAIT_BUYER_PAY // 等待买家付款
-                     TRADE_CLOSED  // 超时关闭
-                     TRADE_SUCCESS // 支付成功
-                     TRADE_FINISHED // 支付结束
-                     
-                     */
-                    if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
-                        
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeSuccess" object:nil];
-
-                    } else {
-                        
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeCancel" object:nil];
-
-                    }
-                    
-
-                } failedBlock:^(NSError *error) {
-                    
-                    
-                } progressBlock:^(CGFloat progress) {
-                    
-                    
-                }];
-                
-                
-            }
-            
-            if ([resultDic[@"resultStatus"] intValue] == 6001) {
-                
-                NSLog(@"支付失败");
-                
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeCancel" object:nil];
-                
-            }
-        }];
-        
-        // 授权跳转支付宝钱包进行支付，处理支付结果
-        [[AlipaySDK defaultService] processAuth_V2Result:url standbyCallback:^(NSDictionary *resultDic) {
-            NSLog(@"result = %@",resultDic);
-            // 解析 auth code
-            NSString *result = resultDic[@"result"];
-            NSString *authCode = nil;
-            if (result.length>0) {
-                NSArray *resultArr = [result componentsSeparatedByString:@"&"];
-                for (NSString *subResult in resultArr) {
-                    if (subResult.length > 10 && [subResult hasPrefix:@"auth_code="]) {
-                        authCode = [subResult substringFromIndex:10];
-                        break;
+                NSString *authCode = nil;
+                if (result.length>0) {
+                    NSArray *resultArr = [result componentsSeparatedByString:@"&"];
+                    for (NSString *subResult in resultArr) {
+                        if (subResult.length > 10 && [subResult hasPrefix:@"auth_code="]) {
+                            authCode = [subResult substringFromIndex:10];
+                            break;
+                        }
                     }
                 }
-            }
-            NSLog(@"授权结果 authCode = %@", authCode?:@"");
-        }];
+                NSLog(@"授权结果 authCode = %@", authCode?:@"");
+            }];
+        }
+        
     }
+    
+
     
     return result;
 }

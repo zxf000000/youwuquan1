@@ -12,7 +12,6 @@
 #define YBYHost @"http://118.126.102.173/api/v1/"
 //#define YBYHost @"http://47.104.153.152:80/api/v1/"
 //#define YBYHost @"http://192.168.123.179:80/api/v1/"
-
 // 用户登录
 #define YBYLogin @"signin"
 // 用户登出
@@ -832,5 +831,22 @@
  @return url
  */
 + (NSString *)pathUrlForGetOrderStatusWith:(NSString *)orderId;
+
+
+/**
+ 报名活动
+
+ @param activityId 活动id
+ @return url
+ */
++ (NSString *)pathUrlForCheckActiviyWithActivityId:(NSString *)activityId;
+
+/**
+ 支付活动费用
+
+ @param activityId 活动id
+ @return url
+ */
++ (NSString *)pathUrlForPayActivityWithId:(NSString *)activityId;
 
 @end

@@ -1065,19 +1065,49 @@
     
     NSDictionary *params = @{@"day":@(days)};
     
-    [XFNetworking postWithUrl:[XFApiClient pathUrlForChargeWithAlipay] refreshRequest:NO cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
+                                                                              @"text/html",
+                                                                              @"text/json",
+                                                                              @"text/plain",
+                                                                              @"text/javascript",
+                                                                              @"text/xml",
+                                                                              @"image/*",
+                                                                              @"text/*",
+                                                                              @"application/octet-stream",
+                                                                              @"application/zip"]];
+    [manager POST:[XFApiClient pathUrlForChargeWithAlipay] parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
         
-        progressBlock(bytesRead/(CGFloat)totalBytes);
         
-    } successBlock:^(id response) {
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        successBlock(response);
         
-    } failBlock:^(NSError *error) {
+        NSString *str = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        
+        successBlock(str);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         
         failedBlock(error);
         
     }];
+    
+//
+//    [XFNetworking postWithUrl:[XFApiClient pathUrlForChargeWithAlipay] refreshRequest:NO cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+//
+//        progressBlock(bytesRead/(CGFloat)totalBytes);
+//
+//    } successBlock:^(id response) {
+//
+//        successBlock(response);
+//
+//    } failBlock:^(NSError *error) {
+//
+//        failedBlock(error);
+//
+//    }];
     
 }
 /**
@@ -1094,21 +1124,50 @@
                    progressBlock:(MineRequestProgressBlock)progressBlock {
     
     NSDictionary *params = @{@"day":@(days)};
-
     
-    [XFNetworking postWithUrl:[XFApiClient pathUrlForChargeVipWithWechat] refreshRequest:NO cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
+                                                                              @"text/html",
+                                                                              @"text/json",
+                                                                              @"text/plain",
+                                                                              @"text/javascript",
+                                                                              @"text/xml",
+                                                                              @"image/*",
+                                                                              @"text/*",
+                                                                              @"application/octet-stream",
+                                                                              @"application/zip"]];
+    [manager POST:[XFApiClient pathUrlForChargeVipWithWechat] parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
         
-        progressBlock(bytesRead/(CGFloat)totalBytes);
         
-    } successBlock:^(id response) {
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        successBlock(response);
         
-    } failBlock:^(NSError *error) {
+        NSString *str = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        
+        successBlock(str);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         
         failedBlock(error);
         
     }];
+    
+//
+//    [XFNetworking postWithUrl:[XFApiClient pathUrlForChargeVipWithWechat] refreshRequest:NO cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+//
+//        progressBlock(bytesRead/(CGFloat)totalBytes);
+//
+//    } successBlock:^(id response) {
+//
+//        successBlock(response);
+//
+//    } failBlock:^(NSError *error) {
+//
+//        failedBlock(error);
+//
+//    }];
     
 }
 /**

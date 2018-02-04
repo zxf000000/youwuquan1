@@ -9,8 +9,10 @@
 #import "XFActivityViewController.h"
 #import "XFPayActView.h"
 #import <WXApi.h>
+#import "XFFindNetworkManager.h"
+#import <AlipaySDK/AlipaySDK.h>
 
-@interface XFActivityViewController () <WXApiDelegate>
+@interface XFActivityViewController () <WXApiDelegate,NSXMLParserDelegate>
 
 @property (nonatomic,strong) UIScrollView *scrollView;
 
@@ -19,6 +21,10 @@
 @property (nonatomic,strong) XFPayActView *payView;
 
 @property (nonatomic,strong) UIView *shadowView;
+
+@property (nonatomic,strong) NSMutableDictionary *xmlDictionary;
+
+@property (nonatomic,copy) NSString *currentKey;
 
 @end
 
@@ -105,6 +111,10 @@
     __weak typeof(_payView) weakpayView = _payView;
     __weak typeof(self) weakSelf = self;
     self.payView.wxpayBlock = ^{
+        
+        
+
+        
         [UIView animateWithDuration:0.2 animations:^{
             
             weakpayView.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 285);
@@ -112,9 +122,10 @@
             
         } completion:^(BOOL finished) {
             
-
+            [self payAvtivityWithType:@"WECHAT"];
             
         }] ;
+
     };
     
     self.payView.alipayBlock = ^{
@@ -125,6 +136,8 @@
 
         } completion:^(BOOL finished) {
             
+            [self payAvtivityWithType:@"ALIPAY"];
+
         }];
     };
     
@@ -143,6 +156,109 @@
     [self.view insertSubview:self.shadowView belowSubview:self.payView];
     self.shadowView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     self.shadowView.alpha = 0;
+}
+
+- (void)payAvtivityWithType:(NSString *)type {
+   
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    // 微信支付
+    [XFFindNetworkManager checkinActivityWithId:self.activityId successBlock:^(id responseObj) {
+        
+        // 报名成功之后开启支付
+        [XFFindNetworkManager payActivityWithId:self.activityId type:type successBlock:^(id responseObj) {
+            [HUD hideAnimated:YES];
+            NSString *str = (NSString *)responseObj;
+            
+            if ([type isEqualToString:@"ALIPAY"]) {
+                NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+                
+                [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
+                    
+                    NSLog(@"%@-----alipay回调",resultDic);
+                    
+                    if ([resultDic[@"resultStatus"] intValue] == 9000) {
+                        
+                    }
+                    
+                    
+                }];
+                
+            } else {
+                
+                
+                NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+                
+                // 解析
+                NSData *xmlData = [orderStr dataUsingEncoding:NSUTF8StringEncoding];
+                NSXMLParser *paraser = [[NSXMLParser alloc] initWithData:xmlData];
+                paraser.delegate = self;
+                [paraser parse];
+                
+            }
+            
+        } failBlock:^(NSError *error) {
+            [HUD hideAnimated:YES];
+
+        } progress:^(CGFloat progress) {
+            
+        }];
+        
+        
+    } failBlock:^(NSError *error) {
+        [HUD hideAnimated:YES];
+
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
+    
+    
+}
+
+- (void)parserDidStartDocument:(NSXMLParser *)parser {
+    
+    NSLog(@"kaishijiexi");
+    
+    self.xmlDictionary = [NSMutableDictionary dictionary];
+    
+}
+
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary<NSString *,NSString *> *)attributeDict {
+    
+    self.currentKey = elementName;
+    
+}
+
+
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
+    
+    
+    
+}
+
+- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
+    
+    NSLog(@"解析出----%@",string);
+    [self.xmlDictionary setObject:string forKey:self.currentKey];
+}
+
+- (void)parserDidEndDocument:(NSXMLParser *)parser {
+    
+    NSLog(@"解析结果---%@",self.xmlDictionary);
+    
+    NSTimeInterval time = NSTimeIntervalSince1970;
+    
+    // 解析结果
+    PayReq *request = [[PayReq alloc] init];
+    request.openID = self.xmlDictionary[@"appid"];
+    request.partnerId = self.xmlDictionary[@"mch_id"];
+    request.prepayId = self.xmlDictionary[@"prepay_id"];
+    request.package = @"Sign=WXPay";
+    request.nonceStr = self.xmlDictionary[@"nonce_str"];
+    request.timeStamp = time;
+    request.sign= self.xmlDictionary[@"sign"];
+    
+    [WXApi sendReq:request];
 }
 
 - (void)updateViewConstraints {

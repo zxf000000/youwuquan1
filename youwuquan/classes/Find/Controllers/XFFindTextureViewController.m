@@ -628,7 +628,11 @@
             
             // 活动页面
             // TODO:
+            // 获取活动model
+            XFFindActivityModel *model = self.adDatas[indexPath.row - 1];
+            
             XFActivityViewController *activityVC = [[XFActivityViewController alloc] init];
+            activityVC.activityId = model.id;
             activityVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:activityVC animated:YES];
             
@@ -1214,7 +1218,7 @@
         
         
         [XFToolManager popanimationForLikeNode:node.likeButton.imageNode.layer complate:^{}];
-        
+
     } failBlock:^(NSError *error) {
         
         

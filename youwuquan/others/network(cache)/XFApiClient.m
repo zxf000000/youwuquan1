@@ -252,6 +252,12 @@
 
 #define YBYGetTradeStatusWithID(orderId) [NSString stringWithFormat:@"pay/order/%@",(orderId)]
 
+// 报名活动
+#define YBYCheckinActivityWithID(activityID) [NSString stringWithFormat:@"activity/checkIn/%@",(activityID)]
+// 活动付费
+#define YBYBuyActivityWithId(activityID) [NSString stringWithFormat:@"activity/pay/%@",(activityID)]
+
+
 @implementation XFApiClient
 
 // 发送验证码
@@ -854,6 +860,16 @@
 + (NSString *)pathUrlForGetOrderStatusWith:(NSString *)orderId {
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetTradeStatusWithID(orderId)];
+}
+
++ (NSString *)pathUrlForCheckActiviyWithActivityId:(NSString *)activityId {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYCheckinActivityWithID(activityId)];
+}
+
++ (NSString *)pathUrlForPayActivityWithId:(NSString *)activityId {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYBuyActivityWithId(activityId)];
 }
 
 
