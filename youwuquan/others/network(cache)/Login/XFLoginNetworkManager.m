@@ -10,7 +10,7 @@
 #import "XFNetworking.h"
 #import "XFApiClient.h"
 #import <JPUSHService.h>
-
+#import <AFHTTPSessionManager.h>
 
 @implementation XFLoginNetworkManager
 
@@ -290,8 +290,63 @@
                                  @"phone":phone,
                                  @"code":code
                                  };
-    NSLog(@"%@",type);
+        NSLog(@"%@",type);
     
+    // 微信返回xml,所以要另外设置
+    if ([type isEqualToString:@"WeChat"]) {
+    
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
+                                                                                  @"text/html",
+                                                                                  @"text/json",
+                                                                                  @"text/plain",
+                                                                                  @"text/javascript",
+                                                                                  @"text/xml",
+                                                                                  @"image/*",
+                                                                                  @"text/*",
+                                                                                  @"application/octet-stream",
+                                                                                  @"application/zip"]];
+        [manager POST:[XFApiClient pathUrlForChargeWithAlipay] parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
+            
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+//            NSString *str = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            
+//            successBlock(str);
+            // 获取融云
+            [self getImTokenWithprogress:^(CGFloat progress) {
+                
+            } successBlock:^(id responseObj) {
+                
+                NSString *token = responseObj[@"token"];
+                
+                // 成功之后登录融云
+                [self loginRongyunWithRongtoken:token successBlock:^(id responseObj) {
+                    
+                    [XFUserInfoManager sharedManager].rongToken = token;
+                    
+                    successBlock(responseObj);
+                    
+                } failedBlock:^(NSError *error) {
+                    
+                    failBlock(error);
+                    
+                }];
+                
+            } failBlock:^(NSError *error) {
+                failBlock(error);
+            }];
+            
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+            failBlock(error);
+            
+        }];
+        
+    } else {
         [XFNetworking postWithUrl:[XFApiClient pathUrlForSignupWith:type] refreshRequest:NO cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
             
             progressBlock(bytesRead/(CGFloat)totalBytes);
@@ -317,17 +372,21 @@
                     failBlock(error);
                     
                 }];
-
+                
             } failBlock:^(NSError *error) {
                 failBlock(error);
             }];
-            
+        
         } failBlock:^(NSError *error) {
             
             failBlock(error);
             
         }];
         
+    }
+    
+    
+
         
     
 }

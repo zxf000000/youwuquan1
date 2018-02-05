@@ -165,6 +165,8 @@
             }];
         } failBlock:^(NSError *error) {
             
+            NSLog(@"%@---注册失败",[error userInfo]);
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 [HUD hideAnimated:YES];

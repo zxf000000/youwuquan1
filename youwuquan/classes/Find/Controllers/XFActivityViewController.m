@@ -175,12 +175,9 @@
                 [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
                     
                     NSLog(@"%@-----alipay回调",resultDic);
-                    
                     if ([resultDic[@"resultStatus"] intValue] == 9000) {
                         
                     }
-                    
-                    
                 }];
                 
             } else {
