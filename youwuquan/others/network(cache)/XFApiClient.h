@@ -849,4 +849,13 @@
  */
 + (NSString *)pathUrlForPayActivityWithId:(NSString *)activityId;
 
+
+/**
+ 获取活动详情
+
+ @param activityId 活动
+ @return url
+ */
++ (NSString *)pathUrlForGetActivityDetailWithId:(NSString *)activityId;
+
 @end

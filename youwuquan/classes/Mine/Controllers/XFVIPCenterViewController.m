@@ -8,6 +8,7 @@
 
 #import "XFVIPCenterViewController.h"
 #import "XFMineNetworkManager.h"
+#import "XFPayViewController.h"
 
 @interface XFVIPCenterViewController ()
 @property (weak, nonatomic) IBOutlet UIButton *signButton;
@@ -22,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *diamondsNumberLabel;
 
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
+@property (weak, nonatomic) IBOutlet UILabel *vipDetailLabel;
 
 @end
 
@@ -60,7 +62,26 @@
 
     [XFMineNetworkManager getMyVipInfoWithsuccessBlock:^(id responseObj) {
        
-        
+        NSDictionary *vipInfo = (NSDictionary *)responseObj;
+        if ([vipInfo[@"vipLevel"] isEqualToString:@"vip"]) {
+            
+            // 设置vip信息
+            /*
+             [0]    (null)    @"updateTime" : (long)1517830830000
+             [1]    (null)    @"vipLevel" : @"vip"
+             [2]    (null)    @"terminationDate" : (long)1543739767000
+             **/
+            
+            NSDate *date = [NSDate dateWithTimeIntervalSince1970:[vipInfo[@"terminationDate"] longValue]/1000];
+            
+            //
+            //
+                NSDateFormatter *format = [[NSDateFormatter alloc] init];
+                format.dateFormat = @"yyyy-MM-dd HH:mm";
+            NSString *datestr = [format stringFromDate:date];
+            self.vipDetailLabel.text = [NSString stringWithFormat:@"vip到期时间:%@",datestr];
+            
+        }
         
     } failedBlock:^(NSError *error) {
         
@@ -80,5 +101,12 @@
 - (IBAction)clickSignButton:(id)sender {
 }
 - (IBAction)clickBuyVipButton:(id)sender {
+    
+    XFPayViewController *payVC = [[XFPayViewController alloc] init];
+    
+    //        payVC.type = XFPayVCTypeCharge;
+    
+    [self.navigationController pushViewController:payVC animated:YES];
+    
 }
 @end

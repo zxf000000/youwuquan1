@@ -109,7 +109,7 @@
      */
     [[RCIMClient sharedRCIMClient] registerMessageType:XFDiamondMessageContent.class];
     
-//    [[RCIM sharedRCIM] setEnablePersistentUserInfoCache:YES];
+    [[RCIM sharedRCIM] setEnablePersistentUserInfoCache:YES];
 
     // 融云推送设置
     
@@ -269,8 +269,24 @@
 
     if ([userId intValue] == [[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"uid"] intValue]) {
         
+        //         设置当前登录用户信
+        [XFMineNetworkManager getAllInfoWithsuccessBlock:^(id responseObj) {
+            
+            NSDictionary *userInfo = (NSDictionary *)responseObj;
+            
+            RCUserInfo *info = [[RCUserInfo alloc] initWithUserId:userInfo[@"basicInfo"][@"uid"] name:userInfo[@"basicInfo"][@"nickname"] portrait:userInfo[@"basicInfo"][@"headIconUrl"]];
+            
+            [RCIM sharedRCIM].currentUserInfo = info;
+            completion(info);
+
+            
+        } failedBlock:^(NSError *error) {
+            
+        } progressBlock:^(CGFloat progress) {
+            
+        }];
         
-        info = [[RCUserInfo alloc] initWithUserId:[NSString stringWithFormat:@"%@",[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"uid"]] name:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"nickname"] portrait:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"headIconUrl"]];
+//        info = [[RCUserInfo alloc] initWithUserId:[NSString stringWithFormat:@"%@",[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"uid"]] name:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"nickname"] portrait:[XFUserInfoManager sharedManager].userInfo[@"basicInfo"][@"headIconUrl"]];
         
     } else {
         
@@ -290,7 +306,6 @@
         }];
     }
 
-    completion(info);
     
 }
 
@@ -391,7 +406,15 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 #pragma mark - 支付回调
 -(void) onResp:(BaseResp*)resp {
     
-    
+    if (resp.errCode == WXSuccess) {
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeSuccess" object:nil];
+        
+    } else {
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeCancel" object:nil];
+
+    }
     
 }
 
@@ -520,38 +543,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
                     
                     NSLog(@"result = %@",dic);
                     
-                    NSString *tradeNo = [NSString stringWithFormat:@"%@",dic[@"alipay_trade_app_pay_response"][@"out_trade_no"]];
-                    
-                    [XFMineNetworkManager getTradeStatusWithOrderId:tradeNo successBlock:^(id responseObj) {
-                        
-                        NSDictionary *responseDic = (NSDictionary *)responseObj;
-                        NSLog(@"订单状态-----%@",responseDic[@"status"]);
-                        
-                        /*
-                         WAIT_BUYER_PAY // 等待买家付款
-                         TRADE_CLOSED  // 超时关闭
-                         TRADE_SUCCESS // 支付成功
-                         TRADE_FINISHED // 支付结束
-                         
-                         */
-                        if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
-                            
-                            [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeSuccess" object:nil];
-                            
-                        } else {
-                            
-                            [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeCancel" object:nil];
-                            
-                        }
-                        
-                        
-                    } failedBlock:^(NSError *error) {
-                        
-                        
-                    } progressBlock:^(CGFloat progress) {
-                        
-                        
-                    }];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"chargeSuccess" object:nil];
                     
                     
                 }

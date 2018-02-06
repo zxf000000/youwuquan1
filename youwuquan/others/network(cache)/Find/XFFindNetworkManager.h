@@ -300,6 +300,8 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
  @param progressBlock 0
  */
 + (void)checkinActivityWithId:(NSString *)activityId
+                      payment:(NSString *)payment
+                     quantity:(NSInteger)quantity
                  successBlock:(FindRequestSuccessBlock)successBlock
                     failBlock:(FindRequestFailedBlock)failBlock
                      progress:(FindRequestProgressBlock)progressBlock;
@@ -320,6 +322,16 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
                      progress:(FindRequestProgressBlock)progressBlock;
 
 
+/**
+ 获取活动详情
 
-
+ @param activityId 活动id
+ @param successBlock 成功
+ @param failBlock 失败
+ @param progressBlock 进度
+ */
++ (void)getActivityDetailWith:(NSString *)activityId
+                 successBlock:(FindRequestSuccessBlock)successBlock
+                    failBlock:(FindRequestFailedBlock)failBlock
+                     progress:(FindRequestProgressBlock)progressBlock;
 @end

@@ -17,8 +17,8 @@
 #import "XFMessageNetworkManager.h"
 #import "XFSystemMsgModel.h"
 #import "XFLikeCommentModel.h"
-
-
+#import "XFHomeNetworkManager.h"
+#import "XFFindDetailViewController.h"
 
 @interface XFMessageViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -55,13 +55,38 @@
     
     [self setupTableView];
     
-    // 从首页缓存的附近的人拿到数据
-    if ([XFHomeCacheManger sharedManager].nearData) {
+//    // 从首页缓存的附近的人拿到数据
+//    if ([XFHomeCacheManger sharedManager].nearData) {
+//
+//        self.nearData = [XFHomeCacheManger sharedManager].nearData;
+//
+//        [self.tableView reloadData];
+//    }
+    
+    [self loadNearData];
+}
+
+- (void)loadNearData {
+    
+    [XFHomeNetworkManager getNearbyDataWithSex:@"" longitude:[XFUserInfoManager sharedManager].userLong latitude:[XFUserInfoManager sharedManager].userLati distance:100 page:0 size:10 successBlock:^(id responseObj) {
         
-        self.nearData = [XFHomeCacheManger sharedManager].nearData;
-        
+        NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i = 0; i < datas.count ; i ++ ) {
+            
+            [arr addObject:[XFNearModel modelWithDictionary:datas[i]]];
+            
+        }
+        // 成功之后
+        //        [self.tableNode reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:(UITableViewRowAnimationFade)];
+        self.nearData = arr.copy;
         [self.tableView reloadData];
-    }
+    } failBlock:^(NSError *error) {
+        
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
 }
 
 - (void)setLikeDatas:(NSArray *)likeDatas {
@@ -202,6 +227,7 @@
 
 //去掉UItableview headerview黏性
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
     if (scrollView == self.tableView)
     {
         CGFloat sectionHeaderHeight = 47;
@@ -219,6 +245,16 @@
         
         XFRewardedTableViewCell *cell = [[[NSBundle mainBundle] loadNibNamed:@"XFRewardedTableViewCell" owner:nil options:nil] lastObject];
         cell.datas = self.nearData;
+        cell.didSelectedNearDataWithModel = ^(XFNearModel *model) {
+          
+            XFFindDetailViewController *detailVC = [[XFFindDetailViewController alloc] init];
+            detailVC.userId = model.uid;
+            detailVC.userName = model.nickname;
+            detailVC.iconUrl = model.headIconUrl;
+            detailVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVC animated:YES];
+            
+        };
         return cell;
     }
     

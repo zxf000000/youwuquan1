@@ -13,10 +13,23 @@
 @property (weak, nonatomic) IBOutlet UIButton *alipButton;
 @property (strong, nonatomic) IBOutlet UIView *contentView;
 
-@property (nonatomic,copy) void(^wxpayBlock)(void);
-@property (nonatomic,copy) void(^alipayBlock)(void);
+@property (nonatomic,copy) void(^wxpayBlock)(NSInteger number);
+@property (nonatomic,copy) void(^alipayBlock)(NSInteger number);
 @property (nonatomic,copy) void(^cancelBlock)(void);
 @property (weak, nonatomic) IBOutlet UILabel *priceLabel;
+
+@property (weak, nonatomic) IBOutlet UILabel *numberLabel;
+- (IBAction)clickAddbutton:(id)sender;
+@property (weak, nonatomic) IBOutlet UIButton *priceButton;
+- (IBAction)clickPayButton:(id)sender;
+- (IBAction)clickMinusButton:(id)sender;
+@property (weak, nonatomic) IBOutlet UIButton *wxSelectedButton;
+@property (weak, nonatomic) IBOutlet UIButton *aliSelectedbutton;
+
+@property (nonatomic,assign) NSInteger number;
+
+@property (nonatomic,assign) NSInteger price;
+
 
 
 @end

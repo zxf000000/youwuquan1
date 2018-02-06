@@ -26,7 +26,7 @@
 //#endif
 
 
-@interface XFPublishViewController () <UINavigationControllerDelegate>
+@interface XFPublishViewController () <UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 
 @property (nonatomic,weak) UIButton *cancelButton;
 
@@ -575,7 +575,33 @@
         
     }];
     [self.captureSession startRunning];
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapPreviewView)];
+    [self.viewContainer addGestureRecognizer:tap];
+}
 
+- (void)tapPreviewView {
+    
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.allowsEditing = YES;
+    picker.delegate = self;
+
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        
+    [self presentViewController:picker animated:YES completion:nil];
+
+    
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    
 }
 
 -(void)viewDidAppear:(BOOL)animated{

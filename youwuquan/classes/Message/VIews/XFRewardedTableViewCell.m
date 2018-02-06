@@ -84,6 +84,17 @@
     
 }
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    XFNearModel *model = self.datas[indexPath.item];
+    
+    if(self.didSelectedNearDataWithModel) {
+        
+        self.didSelectedNearDataWithModel(model);
+    }
+    
+}
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
     return self.datas.count;

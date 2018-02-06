@@ -253,13 +253,14 @@
 #define YBYGetTradeStatusWithID(orderId) [NSString stringWithFormat:@"pay/order/%@",(orderId)]
 
 // 报名活动
-#define YBYCheckinActivityWithID(activityID) [NSString stringWithFormat:@"activity/checkIn/%@",(activityID)]
+#define YBYCheckinActivityWithID(activityID) [NSString stringWithFormat:@"activity/check-in/%@",(activityID)]
 // 活动付费
 #define YBYBuyActivityWithId(activityID) [NSString stringWithFormat:@"activity/pay/%@",(activityID)]
 
+// 活动详情
+#define YBYGetActivityDetailWithId(activityID) [NSString stringWithFormat:@"activity/%@",(activityID)]
 
 @implementation XFApiClient
-
 // 发送验证码
 + (NSString *)pathUrlForSendCodeWithNumber:(NSString *)phone {
     
@@ -870,6 +871,11 @@
 + (NSString *)pathUrlForPayActivityWithId:(NSString *)activityId {
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYBuyActivityWithId(activityId)];
+}
+
++ (NSString *)pathUrlForGetActivityDetailWithId:(NSString *)activityId {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetActivityDetailWithId(activityId)];
 }
 
 

@@ -75,6 +75,10 @@
 @property (nonatomic,strong) NSMutableDictionary *xmlDictionary;
 
 @property (nonatomic,copy) NSString *currentKey;
+@property (nonatomic,assign) long timeStamp;
+
+@property (nonatomic,copy) NSString *wxOrderId;
+
 
 @end
 
@@ -103,7 +107,6 @@
     
     [self loadVipList];
     [self loadChargeList];
-//    [self loadvipInfo];
     
     [self.view setNeedsUpdateConstraints];
     
@@ -123,10 +126,86 @@
 }
 
 - (void)chargeSuccess {
+        /*
+         WAIT_BUYER_PAY // 等待买家付款
+         TRADE_CLOSED  // 超时关闭
+         TRADE_SUCCESS // 支付成功
+         TRADE_FINISHED // 支付结束
+         
+         */
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
-    XFChargeSuccessViewController *succesVC = [[XFChargeSuccessViewController alloc] init];
-    succesVC.type = XFSuccessViewTypeChargeSuccess;
-    [self.navigationController pushViewController:succesVC animated:YES];
+        [XFMineNetworkManager getTradeStatusWithOrderId:self.wxOrderId successBlock:^(id responseObj) {
+            NSDictionary *responseDic = (NSDictionary *)responseObj;
+            NSLog(@"订单状态-----%@",responseDic[@"status"]);
+            if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
+                
+                [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
+                
+            } else {
+                
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    
+                    [XFMineNetworkManager getTradeStatusWithOrderId:self.wxOrderId successBlock:^(id responseObj) {
+                        NSDictionary *responseDic = (NSDictionary *)responseObj;
+                        NSLog(@"订单状态-----%@",responseDic[@"status"]);
+                        if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
+                            
+                            [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
+                            
+                        } else {
+                            
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                
+                                [XFMineNetworkManager getTradeStatusWithOrderId:self.wxOrderId successBlock:^(id responseObj) {
+                                    NSDictionary *responseDic = (NSDictionary *)responseObj;
+                                    NSLog(@"订单状态-----%@",responseDic[@"status"]);
+                                    if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
+                                        
+                                        [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
+                                        
+                                    } else {
+                                        
+//                                        [XFToolManager changeHUD:HUD successWithText:@"支付失败"];
+                                        [HUD hideAnimated:YES];
+                                        [XFToolManager showProgressInWindowWithString:@"支付失败"];
+                                        
+                                    }
+                                    
+                                } failedBlock:^(NSError *error) {
+                                    [HUD hideAnimated:YES];
+                                    
+                                } progressBlock:^(CGFloat progress) {
+                                    
+                                }];
+                                
+                            });
+                            
+                        }
+                        
+                    } failedBlock:^(NSError *error) {
+                        [HUD hideAnimated:YES];
+
+                    } progressBlock:^(CGFloat progress) {
+                        
+                    }];
+                    
+                });
+                
+            }
+            
+        } failedBlock:^(NSError *error) {
+            
+            [HUD hideAnimated:YES];
+            
+        } progressBlock:^(CGFloat progress) {
+            
+        }];
+    
+    
+//    XFChargeSuccessViewController *succesVC = [[XFChargeSuccessViewController alloc] init];
+//    succesVC.type = XFSuccessViewTypeChargeSuccess;
+//    [self.navigationController pushViewController:succesVC animated:YES];
     
 }
 
@@ -268,12 +347,14 @@
     [XFMineNetworkManager chargeWithNumber:[NSString stringWithFormat:@"%zd",_chargeNumber] type:type successBlock:^(id responseObj) {
         [HUD hideAnimated:YES];
 
-        NSString *str = (NSString *)responseObj;
+        NSDictionary *dic = (NSDictionary *)responseObj;
+        self.wxOrderId = dic[@"order_id"];
         
-        
+        NSString *str = dic[@"data"][@"ali"];
+        self.timeStamp = [dic[@"timestamp"] longValue];
         if ([type isEqualToString:@"ALIPAY"]) {
-            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
-
+//            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+            NSString *orderStr = str;
             [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
                 
                 NSLog(@"%@-----alipay回调",resultDic);
@@ -287,20 +368,24 @@
             
         } else {
             
-
-            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
-
-            // 解析
-            NSData *xmlData = [orderStr dataUsingEncoding:NSUTF8StringEncoding];
-            NSXMLParser *paraser = [[NSXMLParser alloc] initWithData:xmlData];
-            paraser.delegate = self;
-            [paraser parse];
+            NSDictionary *data = dic[@"data"];
             
+            // 解析结果
+            PayReq *request = [[PayReq alloc] init];
+            request.partnerId = data[@"partnerid"];
+            request.prepayId = data[@"prepayid"];
+            request.package = data[@"package"];
+            request.nonceStr = data[@"noncestr"];
+            request.timeStamp = (UInt32)[data[@"timestamp"] longValue];
+            request.sign= data[@"sign"];
+            
+            [WXApi sendReq:request];
         }
-        
-
-        
+    
     } failedBlock:^(NSError *error) {
+        
+        NSLog(@"支付请求失败---%@",[error userInfo]);
+        
         [HUD hideAnimated:YES];
         
     } progressBlock:^(CGFloat progress) {
@@ -339,20 +424,7 @@
 - (void)parserDidEndDocument:(NSXMLParser *)parser {
     
     NSLog(@"解析结果---%@",self.xmlDictionary);
-    
-    NSTimeInterval time = NSTimeIntervalSince1970;
-    
-    // 解析结果
-    PayReq *request = [[PayReq alloc] init];
-    request.openID = self.xmlDictionary[@"appid"];
-    request.partnerId = self.xmlDictionary[@"mch_id"];
-    request.prepayId = self.xmlDictionary[@"prepay_id"];
-    request.package = @"Sign=WXPay";
-    request.nonceStr = self.xmlDictionary[@"nonce_str"];
-    request.timeStamp = time;
-    request.sign= self.xmlDictionary[@"sign"];
 
-    [WXApi sendReq:request];
 }
 
 - (void)selectChargeType {
@@ -450,7 +522,6 @@
         self.chargeButton.selected = YES;
         self.vipButton.selected = NO;
 
-
     } else {
         
         self.chargeButton.selected = NO;
@@ -506,23 +577,23 @@
         // 微信
         [XFMineNetworkManager buyVipWithWechatWithDays:[model.day intValue] successBlock:^(id responseObj) {
             
-//            [XFToolManager changeHUD:HUD successWithText:@"购买成功!"];
-//            XFChargeSuccessViewController *successVC = [[XFChargeSuccessViewController alloc] init];
-//
-//            successVC.type = XFSuccessViewTypeVipSuccess;
-//
-//            [self.navigationController pushViewController:successVC animated:YES];
             [HUD hideAnimated:YES];
 
-            NSString *str = (NSString *)responseObj;
-            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+            // 调用微信支付
+            NSDictionary *dic = (NSDictionary *)responseObj;
             
-            // 解析
-            NSData *xmlData = [orderStr dataUsingEncoding:NSUTF8StringEncoding];
-            NSXMLParser *paraser = [[NSXMLParser alloc] initWithData:xmlData];
-            paraser.delegate = self;
-            [paraser parse];
+            NSDictionary *data = dic[@"data"];
             
+            // 解析结果
+            PayReq *request = [[PayReq alloc] init];
+            request.partnerId = data[@"partnerid"];
+            request.prepayId = data[@"prepayid"];
+            request.package = data[@"package"];
+            request.nonceStr = data[@"noncestr"];
+            request.timeStamp = (UInt32)[data[@"timestamp"] longValue];
+            request.sign= data[@"sign"];
+            
+            [WXApi sendReq:request];
             
         } failedBlock:^(NSError *error) {
             [HUD hideAnimated:YES];
@@ -538,9 +609,9 @@
         // 支付宝
         [XFMineNetworkManager buyVipWithAlipayWithDays:[model.day intValue] successBlock:^(id responseObj) {
             
-            NSString *str = (NSString *)responseObj;
+            NSDictionary *dic = (NSDictionary *)responseObj;
             
-            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+            NSString *orderStr = dic[@"data"][@"ali"];
             
             [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
                 

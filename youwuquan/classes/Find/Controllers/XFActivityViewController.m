@@ -11,7 +11,7 @@
 #import <WXApi.h>
 #import "XFFindNetworkManager.h"
 #import <AlipaySDK/AlipaySDK.h>
-
+#import "XFMineNetworkManager.h"
 @interface XFActivityViewController () <WXApiDelegate,NSXMLParserDelegate>
 
 @property (nonatomic,strong) UIScrollView *scrollView;
@@ -26,6 +26,10 @@
 
 @property (nonatomic,copy) NSString *currentKey;
 
+@property (nonatomic,copy) NSDictionary *activityInfo;
+@property (nonatomic,copy) NSString *wxOrderId;
+@property (nonatomic,assign) long timeStamp;
+
 @end
 
 @implementation XFActivityViewController
@@ -38,37 +42,136 @@
     [self initViews];
     
     [self.view setNeedsUpdateConstraints];
+    
+    [self loadData];
+    
+    self.bmButton.enabled = NO;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chargeSuccess) name:@"chargeSuccess" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chargeCanceled) name:@"chargeCancel" object:nil];
 }
 
-//onReq是微信终端向第三方程序发起请求，要求第三方程序响应。第三方程序响应完后必须调用sendRsp返回。在调用sendRsp返回时，会切回到微信终端程序界面。
-- (void)onReq:(BaseReq *)req {
+- (void)chargeCanceled {
     
+    [UIAlertController xfalertControllerWithMsg:@"订单取消" doneBlock:^{
+        
+        
+    }];
     
 }
 
-//如果第三方程序向微信发送了sendReq的请求，那么onResp会被回调。sendReq请求调用后，会切到微信终端程序界面。
-- (void)onResp:(BaseResp *)resp {
+- (void)chargeSuccess {
+    /*
+     WAIT_BUYER_PAY // 等待买家付款
+     TRADE_CLOSED  // 超时关闭
+     TRADE_SUCCESS // 支付成功
+     TRADE_FINISHED // 支付结束
+     
+     */
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
-    if ([resp isKindOfClass:[PayResp class]]){
-        PayResp*response=(PayResp*)resp;
-        switch(response.errCode){
-            case WXSuccess:
-                //服务器端查询支付通知或查询API返回的结果再提示成功
-                NSLog(@"支付成功");
-                break;
-            default:
-                NSLog(@"支付失败，retcode=%d",resp.errCode);
-                break;
+    [XFMineNetworkManager getTradeStatusWithOrderId:self.wxOrderId successBlock:^(id responseObj) {
+        NSDictionary *responseDic = (NSDictionary *)responseObj;
+        NSLog(@"订单状态-----%@",responseDic[@"status"]);
+        if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
+            
+            [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
+            
+        } else {
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                [XFMineNetworkManager getTradeStatusWithOrderId:self.wxOrderId successBlock:^(id responseObj) {
+                    NSDictionary *responseDic = (NSDictionary *)responseObj;
+                    NSLog(@"订单状态-----%@",responseDic[@"status"]);
+                    if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
+                        
+                        [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
+                        
+                    } else {
+                        
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            
+                            [XFMineNetworkManager getTradeStatusWithOrderId:self.wxOrderId successBlock:^(id responseObj) {
+                                NSDictionary *responseDic = (NSDictionary *)responseObj;
+                                NSLog(@"订单状态-----%@",responseDic[@"status"]);
+                                if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
+                                    
+                                    [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
+                                    
+                                } else {
+                                    
+                                    //                                        [XFToolManager changeHUD:HUD successWithText:@"支付失败"];
+                                    [HUD hideAnimated:YES];
+                                    [XFToolManager showProgressInWindowWithString:@"支付失败"];
+                                    
+                                }
+                                
+                            } failedBlock:^(NSError *error) {
+                                [HUD hideAnimated:YES];
+                                
+                            } progressBlock:^(CGFloat progress) {
+                                
+                            }];
+                            
+                        });
+                        
+                    }
+                    
+                } failedBlock:^(NSError *error) {
+                    [HUD hideAnimated:YES];
+                    
+                } progressBlock:^(CGFloat progress) {
+                    
+                }];
+                
+            });
+            
         }
-    }
+        
+    } failedBlock:^(NSError *error) {
+        
+        [HUD hideAnimated:YES];
+        
+    } progressBlock:^(CGFloat progress) {
+        
+    }];
+    
+    
+    //    XFChargeSuccessViewController *succesVC = [[XFChargeSuccessViewController alloc] init];
+    //    succesVC.type = XFSuccessViewTypeChargeSuccess;
+    //    [self.navigationController pushViewController:succesVC animated:YES];
     
 }
+
+- (void)loadData {
+   
+    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+    
+    [XFFindNetworkManager getActivityDetailWith:self.activityId successBlock:^(id responseObj) {
+       
+        [HUD hideAnimated:YES];
+        
+        NSDictionary *dic = (NSDictionary *)responseObj;
+        self.activityInfo = dic;
+        self.bmButton.enabled = YES;
+        self.payView.price = [self.activityInfo[@"price"] integerValue];
+
+    } failBlock:^(NSError *error) {
+        [HUD hideAnimated:YES];
+
+    } progress:^(CGFloat progress) {
+        
+    }];
+    
+}
+
 
 - (void)clickBmButton {
     
     [UIView animateWithDuration:0.2 animations:^{
        
-        self.payView.frame = CGRectMake(0, kScreenHeight - 265 - 64, kScreenWidth, 285);
+        self.payView.frame = CGRectMake(0, kScreenHeight - 320 - 64, kScreenWidth, 320);
         self.shadowView.alpha = 1;
     }];
 
@@ -105,15 +208,12 @@
     self.payView = [[XFPayActView alloc] init];
     
     self.payView.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 285);
-    
     [self.view addSubview:self.payView];
     
     __weak typeof(_payView) weakpayView = _payView;
     __weak typeof(self) weakSelf = self;
-    self.payView.wxpayBlock = ^{
-        
-        
-
+    
+    self.payView.wxpayBlock = ^(NSInteger number) {
         
         [UIView animateWithDuration:0.2 animations:^{
             
@@ -122,25 +222,25 @@
             
         } completion:^(BOOL finished) {
             
-            [self payAvtivityWithType:@"WECHAT"];
+            [weakSelf payAvtivityWithType:@"WECHAT" number:number];
             
         }] ;
-
     };
     
-    self.payView.alipayBlock = ^{
+    self.payView.alipayBlock = ^(NSInteger number) {
+        
         [UIView animateWithDuration:0.2 animations:^{
             
             weakpayView.frame = CGRectMake(0, kScreenHeight, kScreenWidth, 285);
             weakSelf.shadowView.alpha = 0;
-
+            
         } completion:^(BOOL finished) {
             
-            [self payAvtivityWithType:@"ALIPAY"];
-
+            [weakSelf payAvtivityWithType:@"ALIPAY" number:number];
+            
         }];
     };
-    
+
     self.payView.cancelBlock = ^{
       
         [UIView animateWithDuration:0.2 animations:^{
@@ -158,57 +258,53 @@
     self.shadowView.alpha = 0;
 }
 
-- (void)payAvtivityWithType:(NSString *)type {
+- (void)payAvtivityWithType:(NSString *)type number:(NSInteger)number {
    
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     // 微信支付
-    [XFFindNetworkManager checkinActivityWithId:self.activityId successBlock:^(id responseObj) {
+    
+    [XFFindNetworkManager checkinActivityWithId:self.activityId payment:type quantity:number successBlock:^(id responseObj) {
+        [HUD hideAnimated:YES];
+        NSDictionary *dic = (NSDictionary *)responseObj;
+        self.wxOrderId = dic[@"order_id"];
         
-        // 报名成功之后开启支付
-        [XFFindNetworkManager payActivityWithId:self.activityId type:type successBlock:^(id responseObj) {
-            [HUD hideAnimated:YES];
-            NSString *str = (NSString *)responseObj;
-            
-            if ([type isEqualToString:@"ALIPAY"]) {
-                NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+        NSString *str = dic[@"data"][@"ali"];
+        self.timeStamp = [dic[@"timestamp"] longValue];
+        if ([type isEqualToString:@"ALIPAY"]) {
+            //            NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
+            NSString *orderStr = str;
+            [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
                 
-                [[AlipaySDK defaultService] payOrder:orderStr fromScheme:@"alipayYWQ" callback:^(NSDictionary *resultDic) {
+                NSLog(@"%@-----alipay回调",resultDic);
+                
+                if ([resultDic[@"resultStatus"] intValue] == 9000) {
                     
-                    NSLog(@"%@-----alipay回调",resultDic);
-                    if ([resultDic[@"resultStatus"] intValue] == 9000) {
-                        
-                    }
-                }];
-                
-            } else {
+                }
                 
                 
-                NSString *orderStr = [str substringWithRange:NSMakeRange(1, str.length-2)];
-                
-                // 解析
-                NSData *xmlData = [orderStr dataUsingEncoding:NSUTF8StringEncoding];
-                NSXMLParser *paraser = [[NSXMLParser alloc] initWithData:xmlData];
-                paraser.delegate = self;
-                [paraser parse];
-                
-            }
+            }];
             
-        } failBlock:^(NSError *error) {
-            [HUD hideAnimated:YES];
-
-        } progress:^(CGFloat progress) {
+        } else {
             
-        }];
-        
-        
+            NSDictionary *data = dic[@"data"];
+            
+            // 解析结果
+            PayReq *request = [[PayReq alloc] init];
+            request.partnerId = data[@"partnerid"];
+            request.prepayId = data[@"prepayid"];
+            request.package = data[@"package"];
+            request.nonceStr = data[@"noncestr"];
+            request.timeStamp = (UInt32)[data[@"timestamp"] longValue];
+            request.sign= data[@"sign"];
+            
+            [WXApi sendReq:request];
+        }
     } failBlock:^(NSError *error) {
         [HUD hideAnimated:YES];
 
     } progress:^(CGFloat progress) {
         
     }];
-    
-    
     
 }
 

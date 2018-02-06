@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class XFNearModel;
 
 @interface XFMessageRewardedCollectionCell : UICollectionViewCell
 
@@ -22,5 +23,6 @@
 
 @property (nonatomic,copy) NSArray *datas;
 
+@property (nonatomic,copy) void(^didSelectedNearDataWithModel)(XFNearModel *model);
 
 @end
