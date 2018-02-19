@@ -19,6 +19,7 @@
 
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import "CustomeImagePicker.h"
+#import "XFAuthManager.h"
 
 
 #define kImgInset 12
@@ -88,6 +89,9 @@
 @property (nonatomic,strong) UITextField *priceTextField;
 @property (nonatomic,strong) UIButton *doneButton;
 @property (nonatomic,strong) UIView *priceView;
+@property (nonatomic,assign) BOOL isUp;
+
+
 @end
 
 
@@ -106,6 +110,19 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
     [self setupScrolLView];
     [self setupOtherView];
     [self prepareUpload];
+    
+    XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
+    
+    
+    if ([model.identificationName isEqualToString:@"基本认证"]) {
+        _isUp = YES;
+        
+        self.bottomView.hidden = YES;
+    } else {
+        _isUp = NO;
+        self.bottomView.hidden = NO;
+
+    }
     
     [self.view setNeedsUpdateConstraints];
 }

@@ -12,7 +12,7 @@
 
 - (void)setFont:(UIFont *)font alignment:(NSTextAlignment)textAlignment textColor:(UIColor *)color offset:(CGFloat)offset text:(NSString *)text lineSpace:(NSInteger)lineSpace kern:(NSInteger)kern {
     
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:text];
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:text ? text : @""];
     
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     

@@ -20,7 +20,7 @@
 #import "PLShortVideoKit/PLShortVideoKit.h"
 #import "CustomeImagePicker.h"
 #import "XFSecretphotoNotiViewController.h"
-
+#import "XFAuthManager.h"
 
 #define kImgInset 12
 #define kImgPadding 2
@@ -83,6 +83,9 @@
 @property (nonatomic,strong) UIView *bottomView;
 @property (nonatomic,strong) UISwitch *openSwitch;
 
+@property (nonatomic,assign) BOOL isUp;
+
+
 @end
 
 static NSString *const kUploadToken = @"MqF35-H32j1PH8igh-am7aEkduP511g-5-F7j47Z:clOQ5Y4gJ15PnfZciswh7mQbBJ4=:eyJkZWxldGVBZnRlckRheXMiOjMwLCJzY29wZSI6InNob3J0LXZpZGVvIiwiZGVhZGxpbmUiOjE2NTUyNjAzNTd9";
@@ -100,6 +103,19 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
     [self setupScrolLView];
     [self setupOtherView];
     [self prepareUpload];
+    
+    XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
+    
+    
+    if ([model.identificationName isEqualToString:@"基本认证"]) {
+        _isUp = YES;
+        
+        self.bottomView.hidden = YES;
+    } else {
+        _isUp = NO;
+        self.bottomView.hidden = NO;
+        
+    }
     
     [self.view setNeedsUpdateConstraints];
 }

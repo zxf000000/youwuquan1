@@ -15,6 +15,7 @@
 #import "XFUserAgreementViewController.h"
 #import "XFHelpViewController.h"
 #import "XFAboutViewController.h"
+#import "XFUserxieyiViewController.h"
 
 @interface XFSetViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *totalCostLabel;
@@ -192,13 +193,15 @@
             [XFMineNetworkManager checkUpdateForAppWithsuccessBlock:^(id responseObj) {
                 [HUD hideAnimated:YES];
 
-                NSArray *results = ((NSDictionary *)responseObj)[@"results"];
+//                NSArray *results = ((NSDictionary *)responseObj)[@"results"];
+//
+//                if (results.count == 0) {
+//
+//                    [XFToolManager showProgressInWindowWithString:@"已经是最新版本"];
+//
+//                }
                 
-                if (results.count == 0) {
-                    
-                    [XFToolManager showProgressInWindowWithString:@"已经是最新版本"];
-                    
-                }
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms-apps://itunes.apple.com/cn/app/jie-zou-da-shi/id1335528589?mt=8"]];
                 
                 
             } failedBlock:^(NSError *error) {
@@ -234,25 +237,52 @@
             
         }
             break;
+        case 5:
+        {
+            XFUserxieyiViewController *xieyiVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFUserxieyiViewController"];
+            [self.navigationController pushViewController:xieyiVC animated:YES];
+            
+        }
+            break;
         default:
         {
-            //
-            UIViewController *webVC = [[UIViewController alloc] init];
+//            UIViewController *webVC = [[UIViewController alloc] init];
+//            webVC.title = @"用户隐私协议";
+//            CHWebView *webView = [[CHWebView alloc]initWithFrame:webVC.view.bounds];
+//
+//            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.cnblogs.com/mikemikezzz/p/8444299.html"]];
+//
+//            [webView loadRequest:request];
+//            //    webView.delegate = self;
+//            [webVC.view addSubview:webView];
+//
+//            [self.navigationController pushViewController:webVC animated:YES];
+
+
             
-            CHWebView *webView = [[CHWebView alloc]initWithFrame:webVC.view.bounds];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"是否拨打投诉电话" message:@"4000-560-128" preferredStyle:(UIAlertControllerStyleAlert)];
             
-            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.uuuooo.net"]];
+            UIAlertAction *actionDone = [UIAlertAction actionWithTitle:@"拨打" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                
+                NSMutableString *str = [[NSMutableString alloc] initWithFormat:@"tel:%@",@"4000-560-128"];
+                
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
+            }];
             
-            [webView loadRequest:request];
-            //    webView.delegate = self;
-            [webVC.view addSubview:webView];
+            UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                
+                
+            }];
             
-            [self.navigationController pushViewController:webVC animated:YES];
+            [alert addAction:actionDone];
+            [alert addAction:actionCancel];
+            
+            [self presentViewController:alert animated:YES completion:nil];
+            
         }
             break;
             
     }
-    
 
     
 }

@@ -46,6 +46,9 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 
 @interface XFFindCellNode : ASCellNode <ASNetworkImageNodeDelegate>
 
+@property (nonatomic,assign) BOOL isUp;
+
+
 /**
  背景(阴影)
  */

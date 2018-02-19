@@ -50,23 +50,17 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
     self.addButton.layer.cornerRadius = 22;
     
     NSDictionary *info = [XFUserInfoManager sharedManager].userInfo;
-    
     if (info[@"info"][@"phone"]) {
         
         self.phoneTextField.text = info[@"info"][@"phone"];
-    
     }
-    
     if (info[@"info"][@"wechat"]) {
         
         self.wxTextField.text = info[@"info"][@"wechat"];
     }
-    
-    
-    if (self.isIdAuth) {
+    if ([self.authId integerValue] == 25) {
         
         self.detailLabel.text = @"请上传身份证正反面和手持身份证大头照";
-
         
     } else {
         
@@ -74,11 +68,8 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
         for (UILabel *label in self.desLabels) {
             
             label.hidden = YES;
-            
         }
     }
-    
-//    [self loadData];
     
 }
 

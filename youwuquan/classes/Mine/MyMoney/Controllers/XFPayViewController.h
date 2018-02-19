@@ -20,4 +20,6 @@ typedef NS_ENUM (NSInteger,XFPayVCType) {
 
 @property (nonatomic,assign) XFPayVCType type;
 
+@property (nonatomic,copy) NSString *diamondsNum;
+
 @end

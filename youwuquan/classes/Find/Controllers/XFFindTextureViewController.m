@@ -449,9 +449,7 @@
         
         [_indexPathsTobeReload addObject:node.indexPath];
 
-        
     }
-    
     
     [self.rightNode reloadDataWithCompletion:^{
         
@@ -469,9 +467,7 @@
         
         [XFFindNetworkManager getInviteDataWithPage:self.page rows:10 SuccessBlock:^(id responseObj) {
             
-            
             NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
-            
             NSMutableArray *arr = [NSMutableArray array];
             for (NSInteger i = 0 ; i < datas.count ; i ++ ) {
                 
@@ -623,7 +619,6 @@
                 [self presentViewController:navi animated:NO completion:nil];
                 
                 return;
-                
             }
             
             // 活动页面

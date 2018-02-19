@@ -14,7 +14,7 @@
     [super awakeFromNib];
     
     [self setMyShadowWithColor:UIColorHex(808080)];
-
+    
     self.bgView.layer.masksToBounds = YES;
     self.bgView.layer.cornerRadius = 5;
     self.backgroundColor = [UIColor clearColor];
@@ -22,7 +22,6 @@
     self.picVIew.contentMode = UIViewContentModeScaleAspectFill;
     self.picVIew.layer.masksToBounds = YES;
 }
-
 
 - (void)setModel:(XFHomeDataModel *)model {
     

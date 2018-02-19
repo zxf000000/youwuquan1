@@ -378,7 +378,7 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
  @param failedBlock 失败
  @param progressBlock 进度
  */
-+ (void)txWithNumber:(NSString *)number
++ (void)txWithNumber:(NSInteger )number
               method:(NSString *)method
                payId:(NSString *)payId
                 name:(NSString *)name
@@ -386,6 +386,19 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
          failedBlock:(MineRequestFailedBlock)failedBlock
        progressBlock:(MineRequestProgressBlock)progressBlock;
 
+
+/**
+ 获取可以提现的人民币
+
+ @param number 钻石数量
+ @param successBlock 0
+ @param failedBlock 0
+ @param progressBlock 0
+ */
++ (void)getMoneyFortxWithNumber:(NSInteger)number
+                   successBlock:(MineRequestSuccessBlock)successBlock
+                    failedBlock:(MineRequestFailedBlock)failedBlock
+                  progressBlock:(MineRequestProgressBlock)progressBlock;
 
 /**
  交易记录

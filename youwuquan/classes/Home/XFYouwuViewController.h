@@ -15,6 +15,17 @@ typedef NS_ENUM(NSInteger, XFYouwuVCType) {
     
 };
 
+@interface headerView : UICollectionReusableView <UICollectionViewDelegate,UICollectionViewDataSource>
+
+@property (nonatomic,strong) UICollectionView *headCollectionView;
+
+@property (nonatomic,copy) NSArray *models;
+@property (nonatomic,assign) XFYouwuVCType type;
+
+@property (nonatomic,strong) UILabel *titleLabel;
+
+@end
+
 @interface XFYouwuViewController : UIViewController
 
 @property (nonatomic,assign) XFYouwuVCType type;

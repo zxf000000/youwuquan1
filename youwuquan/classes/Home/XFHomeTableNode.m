@@ -81,7 +81,7 @@
         // 名字
         _nameNode = [[ASTextNode alloc] init];
         _nameNode.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
-        [_nameNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:[UIColor whiteColor] offset:-1.5 text:_model.nickname lineSpace:0 kern:1];
+        [_nameNode setFont:[UIFont systemFontOfSize:11] alignment:(NSTextAlignmentCenter) textColor:[UIColor whiteColor] offset:-1.5 text:_model.nickname ? _model.nickname : @"user" lineSpace:0 kern:1];
         
         _nameNode.cornerRadius = 3;
         

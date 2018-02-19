@@ -37,6 +37,7 @@
     _canCashLabel.text = _diamondLabel.text = [NSString stringWithFormat:@"%zd",[_model.balance integerValue]];;
     _cashedLabel.text = [NSString stringWithFormat:@"%zd",[_model.withdraw integerValue]];
     _goadNumLabel.text = [NSString stringWithFormat:@"%zd",[_model.coin integerValue]];
+    _personNUmLabel.text = [NSString stringWithFormat:@"%@",_model.tuiguangNum];
 
 }
 

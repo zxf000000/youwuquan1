@@ -13,12 +13,14 @@
 #import "XFGiftViewController.h"
 #import "XFMineNetworkManager.h"
 #import "XFFindDetailViewController.h"
+#import "XFAuthManager.h"
 
 @interface XFChatViewController () <XFGiftVCDelegate>
 
 @property (nonatomic,copy) NSString *headerIconUrl;
 @property (nonatomic,copy) NSString *nickName;
 @property (nonatomic,strong) UIImageView *iconView;
+@property (nonatomic,assign) BOOL isUp;
 
 
 @end
@@ -35,18 +37,36 @@
     
     // 注册送钻石Cell
     [self registerClass:XFDiamondCollectionViewCell.class forMessageClass:XFDiamondMessageContent.class];
+    XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
     
+    
+    if ([model.identificationName isEqualToString:@"基本认证"]) {
+        _isUp = YES;
+        
+    } else {
+        _isUp = NO;
+    }
     
     [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:0 image:[UIImage imageNamed:@"msg_pic"] title:@"照片"];
     [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:1 image:[UIImage imageNamed:@"msg_shot"] title:@"拍摄"];
     [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:2 image:[UIImage imageNamed:@"msg_location"] title:@"位置"];
     
-    [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_sendgift"] title:@"送礼物" tag:9004];
+    if (_isUp) {
 
-    [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_dateher"] title:@"约她" tag:9005];
+    } else {
+        
+        [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_sendgift"] title:@"送礼物" tag:9004];
+        
+        [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_dateher"] title:@"约她" tag:9005];
+    }
+    
+
     
     [self.conversationMessageCollectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"UICollectionReusableView"];
 
+    
+
+    
     [self loadInnfo];
 
 }
@@ -76,14 +96,21 @@
     
     if (tag == 9004) {
         
-        XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
-        giftVC.userName = self.nickName;
-        giftVC.uid = self.targetId;
-        giftVC.iconUrl = self.headerIconUrl;
-        giftVC.delegate = self;
+        if (self.isUp) {
+            
+        } else {
+            
+            XFGiftViewController *giftVC = [[XFGiftViewController alloc] init];
+            giftVC.userName = self.nickName;
+            giftVC.uid = self.targetId;
+            giftVC.iconUrl = self.headerIconUrl;
+            giftVC.delegate = self;
+            
+            [self presentViewController:giftVC animated:YES completion:nil];
+            [[IQKeyboardManager sharedManager] setEnable:YES];
+            
+        }
 
-        [self presentViewController:giftVC animated:YES completion:nil];
-        [[IQKeyboardManager sharedManager] setEnable:YES];
 
 
     }

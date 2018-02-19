@@ -59,4 +59,8 @@
 @property (nonatomic,strong) id <XFMyHeaderDelegate> delegate;
 
 - (instancetype)initWithUserinfo:(NSDictionary *)userInfo;
+
+@property (nonatomic,assign) BOOL isUp;
+
+
 @end

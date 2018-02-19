@@ -12,6 +12,8 @@
 #import "XFRegistInfoViewController.h"
 #import <YYCache.h>
 #import "XFLoginNetworkManager.h"
+#import "CHWebView.h"
+#import "XFUserxieyiViewController.h"
 
 @interface XFRegistViewController ()
 
@@ -369,6 +371,7 @@
     [self.userCodeButton setTitleColor:kMainRedColor forState:(UIControlStateNormal)];
     self.userCodeButton.titleLabel.font = [UIFont systemFontOfSize:10];
     [self.registView addSubview:self.userCodeButton];
+    [self.userCodeButton addTarget:self action:@selector(clickUserCodeButton) forControlEvents:(UIControlEventTouchUpInside)];
     
     self.line1 = [[UIView alloc] init];
     self.line1.backgroundColor = UIColorHex(e0e0e0);
@@ -388,6 +391,14 @@
     [self.codeButton addTarget:self action:@selector(clickCodeButton:) forControlEvents:(UIControlEventTouchUpInside)];
     [self.registBUtton addTarget:self action:@selector(clickRegistButton) forControlEvents:(UIControlEventTouchUpInside)];
 
+}
+
+- (void)clickUserCodeButton {
+   
+    XFUserxieyiViewController *xieyiVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFUserxieyiViewController"];
+    [self.navigationController pushViewController:xieyiVC animated:YES];
+
+    
 }
 
 - (void)updateViewConstraints {

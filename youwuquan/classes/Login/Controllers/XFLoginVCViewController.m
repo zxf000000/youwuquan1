@@ -13,7 +13,8 @@
 #import "XFMineNetworkManager.h"
 #import <UMSocialCore/UMSocialCore.h>
 #import "XFBindPhoneViewController.h"
-
+#import <WXApi.h>
+#import <UMSocialQQHandler.h>
 
 @interface XFLoginVCViewController ()
 
@@ -70,6 +71,22 @@
     self.navigationController.navigationBar.hidden = YES;
     
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bindPhoneSuccess) name:@"kBindPhoneSuccess" object:nil];
+    
+    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"mqq://"]]) {
+        
+        
+    }else{
+        
+        self.qqButton.hidden = YES;
+    }
+    
+    if (![WXApi isWXAppInstalled]) {
+        
+        self.wxbutton.hidden = YES;
+        
+    }
+    
+    
     
 }
 

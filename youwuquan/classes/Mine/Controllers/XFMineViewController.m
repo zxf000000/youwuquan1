@@ -33,6 +33,7 @@
 #import "XFMyDetailViewController.h"
 #import "XFVIPCenterViewController.h"
 #import "XFRefreshInfoViewController.h"
+#import "XFAuthManager.h"
 
 #define kHeaderHeight (kScreenWidth * 195/375.f)
 
@@ -120,6 +121,9 @@
 
 @property (nonatomic,assign) BOOL isChanged;
 
+@property (nonatomic,assign) BOOL isUp;
+
+
 
 @end
 
@@ -143,7 +147,20 @@
     [self setupHeaderView];
     [self setupInfoView];
     
+
+    XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
+    
+    
+    if ([model.identificationName isEqualToString:@"基本认证"]) {
+        _isUp = YES;
+
+        
+    } else {
+        _isUp = NO;
+
+    }
     [self loadData];
+   
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshUserInfo) name:kRefreshUserInfoKey object:nil];
@@ -295,7 +312,16 @@
 
 - (void)headerDidClickInvitebutton {
     
-    XFYwqAlertView *alert = [XFYwqAlertView showToView:self.view withTitle:@"邀请有礼" detail:@"成功邀请好友将会获得好友消费1%的提成"];
+    XFYwqAlertView *alert ;
+    
+    if (_isUp) {
+        
+        alert = [XFYwqAlertView showToView:self.view withTitle:@"邀请有礼" detail:@"邀请好友"];;
+
+    } else {
+        
+        alert = [XFYwqAlertView showToView:self.view withTitle:@"邀请有礼" detail:@"成功邀请好友将会获得好友消费1%的提成"];;
+    }
     
     [alert showAnimation];
     
@@ -346,19 +372,43 @@
             break;
         case 2:
         {
-            // vip中心
-            XFVIPCenterViewController *vipVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFVIPCenterViewController"];
-            vipVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:vipVC animated:YES];
             
+            if (self.isUp) {
+                
+                // 富豪榜
+                XFLeaderboardViewController *leaderBoardVC = [[XFLeaderboardViewController alloc] init];
+                leaderBoardVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:leaderBoardVC animated:YES];
+            } else {
+                
+                // vip中心
+                XFVIPCenterViewController *vipVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFVIPCenterViewController"];
+                vipVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:vipVC animated:YES];
+                
+            }
+            
+
         }
             break;
         case 3:
         {
-            // 我的钱包
-            XFMyMoneyViewController *myMoneyVC = [[XFMyMoneyViewController alloc] init];
-            myMoneyVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:myMoneyVC animated:YES];
+            if (self.isUp) {
+                
+                [XFToolManager showProgressInWindowWithString:@"敬请期待"];
+                
+                return;
+
+                
+            } else {
+                
+                // 我的钱包
+                XFMyMoneyViewController *myMoneyVC = [[XFMyMoneyViewController alloc] init];
+                myMoneyVC.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:myMoneyVC animated:YES];
+            }
+            
+
             
         }
             break;
@@ -527,7 +577,7 @@
     
     UILabel *infoLabel = [[UILabel alloc] init];
     
-    infoLabel.text = @"版本信息";
+    infoLabel.text = @"ywq 1.0";
     infoLabel.textColor = [UIColor blackColor];
     infoLabel.font = [UIFont systemFontOfSize:13];
     [footerView addSubview:infoLabel];

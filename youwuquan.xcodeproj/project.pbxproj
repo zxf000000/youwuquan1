@@ -131,7 +131,6 @@
 		B72A4BDD200EE99E0013157A /* music_no_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = B72A4A39200EE99D0013157A /* music_no_selected.png */; };
 		B72A4BDE200EE99E0013157A /* music_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = B72A4A3A200EE99D0013157A /* music_selected.png */; };
 		B72A4BDF200EE99E0013157A /* progressbar_front.png in Resources */ = {isa = PBXBuildFile; fileRef = B72A4A3B200EE99D0013157A /* progressbar_front.png */; };
-		B72A4BE0200EE99E0013157A /* qiniu_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B72A4A3C200EE99D0013157A /* qiniu_logo.png */; };
 		B72A4BE1200EE99E0013157A /* record_close_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = B72A4A3D200EE99D0013157A /* record_close_normal.png */; };
 		B72A4BE2200EE99E0013157A /* rotate.png in Resources */ = {isa = PBXBuildFile; fileRef = B72A4A3E200EE99D0013157A /* rotate.png */; };
 		B72A4BE3200EE99E0013157A /* scan_line.png in Resources */ = {isa = PBXBuildFile; fileRef = B72A4A3F200EE99D0013157A /* scan_line.png */; };
@@ -209,6 +208,7 @@
 		B72B22162010856B0081B32D /* LBZoomScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B72B22092010856B0081B32D /* LBZoomScrollView.m */; };
 		B72B22172010856B0081B32D /* UIImage+LBDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = B72B220B2010856B0081B32D /* UIImage+LBDecoder.m */; };
 		B72B22182010856B0081B32D /* UIView+LBFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = B72B220D2010856B0081B32D /* UIView+LBFrame.m */; };
+		B7317F1C2029B8B400189DF9 /* qiniu_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B7317F1B2029B8B300189DF9 /* qiniu_logo.png */; };
 		B73688861FDBE01400483068 /* XFDiamondMessageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = B73688851FDBE01400483068 /* XFDiamondMessageContent.m */; };
 		B73688891FDBE0F600483068 /* XFDiamondCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B73688881FDBE0F600483068 /* XFDiamondCollectionViewCell.m */; };
 		B737D6472005AAFA00D6A8B8 /* XFGiftManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B737D6462005AAFA00D6A8B8 /* XFGiftManager.m */; };
@@ -480,6 +480,7 @@
 		B7D4E25E2021C0B400FB8F0D /* XFMyFansTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4E25C2021C0B400FB8F0D /* XFMyFansTableViewCell.m */; };
 		B7D4E25F2021C0B400FB8F0D /* XFMyFansTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7D4E25D2021C0B400FB8F0D /* XFMyFansTableViewCell.xib */; };
 		B7D64A5E20174A8E0077C5CC /* XFOtherInfoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D64A5D20174A8E0077C5CC /* XFOtherInfoManager.m */; };
+		B7D87DC5203157F900F3E6F9 /* XFUserxieyiViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D87DC4203157F900F3E6F9 /* XFUserxieyiViewController.m */; };
 		B7DB14F71FD0037F0095AED0 /* XFYueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7DB14F61FD0037F0095AED0 /* XFYueViewController.m */; };
 		B7DB14FB1FD00BB00095AED0 /* XFYueTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7DB14F91FD00BB00095AED0 /* XFYueTableViewCell.m */; };
 		B7DB14FC1FD00BB00095AED0 /* XFYueTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7DB14FA1FD00BB00095AED0 /* XFYueTableViewCell.xib */; };
@@ -522,6 +523,7 @@
 		B7E3FF3B1FC727F90086414F /* XFSelectLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E3FF3A1FC727F90086414F /* XFSelectLabelViewController.m */; };
 		B7E3FF3F1FC82C390086414F /* XFMutableTagsView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E3FF3E1FC82C390086414F /* XFMutableTagsView.m */; };
 		B7E3FF421FC97FE40086414F /* XFUserInfoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E3FF411FC97FE40086414F /* XFUserInfoManager.m */; };
+		B7E60E94202C15C700AB57FD /* XFYouwuCollectionNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E60E93202C15C700AB57FD /* XFYouwuCollectionNode.m */; };
 		B7EA92091FEB65DE0092EB8A /* XFTxTotalTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EA92071FEB65DE0092EB8A /* XFTxTotalTableViewCell.m */; };
 		B7EA920A1FEB65DE0092EB8A /* XFTxTotalTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B7EA92081FEB65DE0092EB8A /* XFTxTotalTableViewCell.xib */; };
 		B7EA920E1FEB65ED0092EB8A /* XFTxDiaTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EA920C1FEB65ED0092EB8A /* XFTxDiaTableViewCell.m */; };
@@ -751,7 +753,6 @@
 		B72A4A39200EE99D0013157A /* music_no_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = music_no_selected.png; sourceTree = "<group>"; };
 		B72A4A3A200EE99D0013157A /* music_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = music_selected.png; sourceTree = "<group>"; };
 		B72A4A3B200EE99D0013157A /* progressbar_front.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = progressbar_front.png; sourceTree = "<group>"; };
-		B72A4A3C200EE99D0013157A /* qiniu_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = qiniu_logo.png; sourceTree = "<group>"; };
 		B72A4A3D200EE99D0013157A /* record_close_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record_close_normal.png; sourceTree = "<group>"; };
 		B72A4A3E200EE99D0013157A /* rotate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rotate.png; sourceTree = "<group>"; };
 		B72A4A3F200EE99D0013157A /* scan_line.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = scan_line.png; sourceTree = "<group>"; };
@@ -868,6 +869,7 @@
 		B72B220B2010856B0081B32D /* UIImage+LBDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LBDecoder.m"; sourceTree = "<group>"; };
 		B72B220C2010856B0081B32D /* UIView+LBFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LBFrame.h"; sourceTree = "<group>"; };
 		B72B220D2010856B0081B32D /* UIView+LBFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LBFrame.m"; sourceTree = "<group>"; };
+		B7317F1B2029B8B300189DF9 /* qiniu_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = qiniu_logo.png; sourceTree = "<group>"; };
 		B73688841FDBE01400483068 /* XFDiamondMessageContent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFDiamondMessageContent.h; sourceTree = "<group>"; };
 		B73688851FDBE01400483068 /* XFDiamondMessageContent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFDiamondMessageContent.m; sourceTree = "<group>"; };
 		B73688871FDBE0F600483068 /* XFDiamondCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFDiamondCollectionViewCell.h; sourceTree = "<group>"; };
@@ -1358,6 +1360,8 @@
 		B7D4E25D2021C0B400FB8F0D /* XFMyFansTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = XFMyFansTableViewCell.xib; sourceTree = "<group>"; };
 		B7D64A5C20174A8E0077C5CC /* XFOtherInfoManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFOtherInfoManager.h; sourceTree = "<group>"; };
 		B7D64A5D20174A8E0077C5CC /* XFOtherInfoManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFOtherInfoManager.m; sourceTree = "<group>"; };
+		B7D87DC3203157F900F3E6F9 /* XFUserxieyiViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFUserxieyiViewController.h; sourceTree = "<group>"; };
+		B7D87DC4203157F900F3E6F9 /* XFUserxieyiViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFUserxieyiViewController.m; sourceTree = "<group>"; };
 		B7DB14F51FD0037F0095AED0 /* XFYueViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFYueViewController.h; sourceTree = "<group>"; };
 		B7DB14F61FD0037F0095AED0 /* XFYueViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFYueViewController.m; sourceTree = "<group>"; };
 		B7DB14F81FD00BB00095AED0 /* XFYueTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFYueTableViewCell.h; sourceTree = "<group>"; };
@@ -1439,6 +1443,8 @@
 		B7E3FF3E1FC82C390086414F /* XFMutableTagsView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMutableTagsView.m; sourceTree = "<group>"; };
 		B7E3FF401FC97FE40086414F /* XFUserInfoManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFUserInfoManager.h; sourceTree = "<group>"; };
 		B7E3FF411FC97FE40086414F /* XFUserInfoManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFUserInfoManager.m; sourceTree = "<group>"; };
+		B7E60E92202C15C700AB57FD /* XFYouwuCollectionNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFYouwuCollectionNode.h; sourceTree = "<group>"; };
+		B7E60E93202C15C700AB57FD /* XFYouwuCollectionNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFYouwuCollectionNode.m; sourceTree = "<group>"; };
 		B7EA92061FEB65DE0092EB8A /* XFTxTotalTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFTxTotalTableViewCell.h; sourceTree = "<group>"; };
 		B7EA92071FEB65DE0092EB8A /* XFTxTotalTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFTxTotalTableViewCell.m; sourceTree = "<group>"; };
 		B7EA92081FEB65DE0092EB8A /* XFTxTotalTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = XFTxTotalTableViewCell.xib; sourceTree = "<group>"; };
@@ -1778,7 +1784,7 @@
 				B72A4A39200EE99D0013157A /* music_no_selected.png */,
 				B72A4A3A200EE99D0013157A /* music_selected.png */,
 				B72A4A3B200EE99D0013157A /* progressbar_front.png */,
-				B72A4A3C200EE99D0013157A /* qiniu_logo.png */,
+				B7317F1B2029B8B300189DF9 /* qiniu_logo.png */,
 				B72A4A3D200EE99D0013157A /* record_close_normal.png */,
 				B72A4A3E200EE99D0013157A /* rotate.png */,
 				B72A4A3F200EE99D0013157A /* scan_line.png */,
@@ -2970,6 +2976,8 @@
 		B7736D762025B29C007CD1B7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B7E60E92202C15C700AB57FD /* XFYouwuCollectionNode.h */,
+				B7E60E93202C15C700AB57FD /* XFYouwuCollectionNode.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -3341,6 +3349,8 @@
 				B7DF7AD820201DEF009DCE86 /* XFHelpViewController.m */,
 				B7DF7ADA20201F36009DCE86 /* XFAboutViewController.h */,
 				B7DF7ADB20201F36009DCE86 /* XFAboutViewController.m */,
+				B7D87DC3203157F900F3E6F9 /* XFUserxieyiViewController.h */,
+				B7D87DC4203157F900F3E6F9 /* XFUserxieyiViewController.m */,
 			);
 			path = set;
 			sourceTree = "<group>";
@@ -3537,6 +3547,7 @@
 				B774596F1FE3B2DF00BEC7F7 /* XFAcceptTableViewCell.xib in Resources */,
 				B72B21DD200F1CA60081B32D /* XFChargeCollectionViewCell.xib in Resources */,
 				B757DA9F1FCBFD1D002C0F3D /* XFLeaderboardTableViewCell.xib in Resources */,
+				B7317F1C2029B8B400189DF9 /* qiniu_logo.png in Resources */,
 				B7EDEA2A2022C97D004C578E /* AlipaySDK.bundle in Resources */,
 				B77459741FE3B75A00BEC7F7 /* XFAvtivityMsgTableViewCell.xib in Resources */,
 				B72A4C0D200EE99E0013157A /* co.mp4 in Resources */,
@@ -3617,7 +3628,6 @@
 				B72A4BEF200EE99E0013157A /* plsmusics.json in Resources */,
 				B72A4BF0200EE99E0013157A /* Road_to_Moscow.mp3 in Resources */,
 				B72A4BCC200EE99E0013157A /* delete.png in Resources */,
-				B72A4BE0200EE99E0013157A /* qiniu_logo.png in Resources */,
 				B72A4BAF200EE99E0013157A /* btn_close_sound@2x.png in Resources */,
 				B72A4BC5200EE99E0013157A /* cut_bar_left@3x.png in Resources */,
 				B729E0EC1FBEC2550045FF68 /* Login.storyboard in Resources */,
@@ -3845,6 +3855,7 @@
 				B76EE321200B79F00025A66D /* YCameraViewController.m in Sources */,
 				B773C5D0201309F00017BFCF /* XFMyDetailViewController.m in Sources */,
 				B72A4BE9200EE99E0013157A /* MovieTransCodeViewController.m in Sources */,
+				B7D87DC5203157F900F3E6F9 /* XFUserxieyiViewController.m in Sources */,
 				B72A4BF9200EE99E0013157A /* PLSColumnListView.m in Sources */,
 				B72A4BFA200EE99E0013157A /* PLSDeleteButton.m in Sources */,
 				B76EA5B41FB54B3B001673CC /* XFFIndHeaderCell.m in Sources */,
@@ -4038,6 +4049,7 @@
 				B72A4BFD200EE99E0013157A /* PLSFormatGifView.m in Sources */,
 				B7C7FCD3201186AA0040976C /* IQPlaybackDurationView.m in Sources */,
 				B7736DD82025B29C007CD1B7 /* XFActorViewController.m in Sources */,
+				B7E60E94202C15C700AB57FD /* XFYouwuCollectionNode.m in Sources */,
 				B78C2CB61FE79E59006A0B70 /* XFShareCardViewController.m in Sources */,
 				B7FD7AFB20036BE000B6112B /* UIView+SDExtension.m in Sources */,
 				B7DF09001FE35EC900310B79 /* UIAlertController+ShowSingleDoneWithMsg.m in Sources */,

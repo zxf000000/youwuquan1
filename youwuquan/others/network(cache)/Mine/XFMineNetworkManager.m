@@ -681,7 +681,7 @@
  @param failedBlock 失败
  @param progressBlock 进度
  */
-+ (void)txWithNumber:(NSString *)number
++ (void)txWithNumber:(NSInteger )number
               method:(NSString *)method
                payId:(NSString *)payId
                 name:(NSString *)name
@@ -692,7 +692,7 @@
     NSDictionary *params = @{@"payMethod":method,
                              @"payId":payId,
                              @"accountName":name,
-                             @"diamonds":number
+                             @"diamonds":@(number)
                              };
     
     [XFNetworking postWithUrl:[XFApiClient pathUrlForwithDraw] refreshRequest:YES cache:NO praams:params progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
@@ -711,6 +711,26 @@
     
 }
 
++ (void)getMoneyFortxWithNumber:(NSInteger)number
+                   successBlock:(MineRequestSuccessBlock)successBlock
+                    failedBlock:(MineRequestFailedBlock)failedBlock
+                  progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForwithDraw] refreshRequest:YES cache:NO praams:@{@"diamonds":@(number)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+       
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+    
+}
 
 /**
  交易记录

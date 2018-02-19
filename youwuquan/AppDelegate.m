@@ -274,7 +274,7 @@
             
             NSDictionary *userInfo = (NSDictionary *)responseObj;
             
-            RCUserInfo *info = [[RCUserInfo alloc] initWithUserId:userInfo[@"basicInfo"][@"uid"] name:userInfo[@"basicInfo"][@"nickname"] portrait:userInfo[@"basicInfo"][@"headIconUrl"]];
+            RCUserInfo *info = [[RCUserInfo alloc] initWithUserId:[NSString stringWithFormat:@"%@",userInfo[@"basicInfo"][@"uid"]] name:userInfo[@"basicInfo"][@"nickname"] portrait:userInfo[@"basicInfo"][@"headIconUrl"]];
             
             [RCIM sharedRCIM].currentUserInfo = info;
             completion(info);

@@ -11,6 +11,7 @@
 #import "XFPublishAddImageViewCollectionViewCell.h"
 #import "XFMineNetworkManager.h"
 #import "XFmyPhotoModel.h"
+#import <IQKeyboardManager.h>
 
 #define kItemWidth (kScreenWidth - 60)/3.f
 
@@ -32,7 +33,6 @@
 
 @property (nonatomic,assign) BOOL isHeader;
 
-
 @end
 
 @implementation XFRefreshInfoViewController
@@ -53,8 +53,37 @@
     
     [self loadWalldata];
     
+    //监听键盘的通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrameNotify:) name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
+
+-(void)keyboardWillChangeFrameNotify:(NSNotification*)notify {
+    
+    // 0.取出键盘动画的时间
+    CGFloat duration = [notify.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    // 1.取得键盘最后的frame
+    CGRect keyboardFrame = [notify.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    // 2.计算控制器的view需要平移的距离
+    //    CGFloat transformY = keyboardFrame.origin.y - self.view.frame.size.height;
+    
+    // 3.执行动画
+    [UIView animateWithDuration:duration animations:^{
+        
+        if (keyboardFrame.origin.y == kScreenHeight) {
+            
+            self.scrollView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+            
+        } else {
+            
+            self.scrollView.frame = CGRectMake(0, -kScreenHeight + 64 + keyboardFrame.origin.y, kScreenWidth, kScreenHeight - 64);
+            
+        }
+        
+        
+        
+    }];
+}
 - (void)clickTapImage {
     self.isHeader = YES;
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
@@ -154,6 +183,22 @@
         
     }
     
+    
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:animated];
+    
+    [IQKeyboardManager sharedManager].shouldResignOnTouchOutside = YES;
+    
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    
+    [super viewWillDisappear:animated];
+    
+    [self.view endEditing:YES];
     
 }
 
@@ -339,10 +384,6 @@
     [self.infoVC.view setMyShadow];
     
     self.scrollView.contentSize = CGSizeMake(kScreenWidth, self.infoVC.view.bottom + 10);
-    
-    
-    
-    
 }
 
 @end

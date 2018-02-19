@@ -31,6 +31,7 @@
 #import <AVKit/AVKit.h>
 #import "XFAlertViewController.h"
 #import "FTPopOverMenu.h"
+#import "XFAuthManager.h"
 
 
 #define kHeaderHeight kScreenWidth
@@ -78,6 +79,9 @@
 
 @property (nonatomic,assign) NSInteger page;
 
+@property (nonatomic,assign) BOOL isUp;
+
+
 @end
 
 @implementation XFFindDetailViewController
@@ -98,6 +102,19 @@
     [self.view bringSubviewToFront:self.myNavigationbar];
     
     [self setupHeaderView];
+    
+    XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
+    
+    
+    if ([model.identificationName isEqualToString:@"基本认证"]) {
+        _isUp = YES;
+        
+        
+    } else {
+        _isUp = NO;
+        
+    }
+    
     [self setupBottomView];
     
     if (@available (ios 11 , * )) {
@@ -1343,6 +1360,15 @@
     [chatButton addTarget:self action:@selector(ClickWeiXinButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
     [giftButton addTarget:self action:@selector(clickGiftButton) forControlEvents:(ASControlNodeEventTouchUpInside)];
     [yueButton addTarget:self action:@selector(clickChatButton) forControlEvents:(UIControlEventTouchUpInside)];
+    
+    if (self.isUp) {
+        
+        chatButton.hidden = YES;
+        giftButton.hidden = YES;
+        line2.hidden = YES;
+        lineView.hidden = YES;
+        yueButton.frame = CGRectMake(10, 5, kScreenWidth - 20, 34);
+    }
     
     [self.bottomView addSubview:yueButton];
     

@@ -36,6 +36,7 @@
 @property (nonatomic,copy) NSString *phoneExpense;
 @property (nonatomic,copy) NSString *phoneReceive;
 
+@property (nonatomic,copy) NSString *tuiguangNum;
 
 
 @end

@@ -23,6 +23,8 @@
     if (self  = [super init]) {
         
         _model = model;
+       
+
         
         self.backgroundColor = UIColorHex(f4f4f4);
         self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -280,6 +282,20 @@
         [_moneyButton setImage:[UIImage imageNamed:@"find_money"] forState:(UIControlStateNormal)];
         
         [self addSubnode:_moneyButton];
+        
+        XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
+        
+        
+        if ([model.identificationName isEqualToString:@"基本认证"]) {
+            _isUp = YES;
+            _moneyButton.hidden = YES;
+            
+        } else {
+            _isUp = NO;
+            _moneyButton.hidden = NO;
+
+        }
+        
         
         _setbutton = [[ASButtonNode alloc] init];
         [_setbutton setImage:[UIImage imageNamed:@"find_set"] forState:(UIControlStateNormal)];

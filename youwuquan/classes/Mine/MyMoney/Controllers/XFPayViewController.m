@@ -79,6 +79,7 @@
 
 @property (nonatomic,copy) NSString *wxOrderId;
 
+@property (nonatomic,strong) UILabel *diamondsLabel;
 
 @end
 
@@ -141,7 +142,8 @@
             if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
                 
                 [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
-                
+                [self loadData];
+
             } else {
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -152,7 +154,8 @@
                         if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
                             
                             [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
-                            
+                            [self loadData];
+
                         } else {
                             
                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -163,6 +166,8 @@
                                     if ([responseDic[@"status"] isEqualToString:@"TRADE_SUCCESS"]) {
                                         
                                         [XFToolManager changeHUD:HUD successWithText:@"支付成功"];
+                                        
+                                        [self loadData];
                                         
                                     } else {
                                         
@@ -236,7 +241,25 @@
     
 }
 
+- (void)loadData {
+    
+    [XFMineNetworkManager getMyWalletDetailWithsuccessBlock:^(id responseObj) {
+        
+        self.diamondsLabel.text = [NSString stringWithFormat:@"%@",((NSDictionary *)responseObj)[@"balance"]];
+        
+    } failedBlock:^(NSError *error) {
+        
+        
+    } progressBlock:^(CGFloat progress) {
+        
+        
+    }];
+    
+}
+
 - (void)loadVipList {
+
+    [self loadData];
     
     [XFMineNetworkManager getVipListWithsuccessBlock:^(id responseObj) {
         
@@ -832,20 +855,20 @@
     [self.chargView addSubview:titleLabel];
     titleLabel.frame = CGRectMake(0, 22, kScreenWidth, 10);
     
-    UILabel *dismondsLabel = [[UILabel alloc] init];
-    dismondsLabel.textColor = [UIColor blackColor];
-    dismondsLabel.font = [UIFont systemFontOfSize:22];
-    dismondsLabel.text = @"123";
-    dismondsLabel.textAlignment = NSTextAlignmentCenter;
-    [self.chargView addSubview:dismondsLabel];
-    dismondsLabel.frame = CGRectMake(0, titleLabel.bottom + 14, kScreenWidth, 18);
+    self.diamondsLabel = [[UILabel alloc] init];
+    self.diamondsLabel.textColor = [UIColor blackColor];
+    self.diamondsLabel.font = [UIFont systemFontOfSize:22];
+    self.diamondsLabel.text = self.diamondsNum;
+    self.diamondsLabel.textAlignment = NSTextAlignmentCenter;
+    [self.chargView addSubview:self.diamondsLabel];
+    self.diamondsLabel.frame = CGRectMake(0, titleLabel.bottom + 14, kScreenWidth, 18);
     
     UILabel *desLabel = [[UILabel alloc] init];
     desLabel.textColor = [UIColor blackColor];
     desLabel.font = [UIFont systemFontOfSize:15];
     desLabel.text = @"请选择充值金额";
     [self.chargView addSubview:desLabel];
-    desLabel.frame = CGRectMake(13, dismondsLabel.bottom + 12, kScreenWidth, 15);
+    desLabel.frame = CGRectMake(13, self.diamondsLabel.bottom + 12, kScreenWidth, 15);
     
     CGFloat itemWidth = 100 * kScreenWidth / 375.f;
     CGFloat itemHeight = 123 / 100.f * itemWidth;

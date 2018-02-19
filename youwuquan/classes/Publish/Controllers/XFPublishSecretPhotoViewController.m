@@ -13,13 +13,13 @@
 #import "XFFindNetworkManager.h"
 
 #import "PLShortVideoKit/PLShortVideoKit.h"
-
+#import <IQKeyboardManager.h>
 #define kItemWidth (kScreenWidth - 20 - 6)/3
 #define KImgBottom 15
 #define kImgPadding 2
 #define kImgInset 12
 
-@interface XFPublishSecretPhotoViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFpublishCollectionCellDelegate,XFImagePickerDelegate>
+@interface XFPublishSecretPhotoViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFpublishCollectionCellDelegate,XFImagePickerDelegate,UITextFieldDelegate>
 
 @property (nonatomic,strong) UICollectionView *picCollection;
 
@@ -30,6 +30,9 @@
 @property (nonatomic,strong) UIButton *publishButton;
 
 @property (nonatomic,strong) UIView *lineView;
+
+@property (nonatomic,weak) UIScrollView *scrollView;
+
 
 @end
 
@@ -45,8 +48,38 @@
     [self setupViews];
     
     [self updateViewConstraints];
+    
+    //监听键盘的通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrameNotify:) name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
+
+-(void)keyboardWillChangeFrameNotify:(NSNotification*)notify {
+    
+    // 0.取出键盘动画的时间
+    CGFloat duration = [notify.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    // 1.取得键盘最后的frame
+    CGRect keyboardFrame = [notify.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    // 2.计算控制器的view需要平移的距离
+//    CGFloat transformY = keyboardFrame.origin.y - self.view.frame.size.height;
+    
+    // 3.执行动画
+    [UIView animateWithDuration:duration animations:^{
+        
+        if (keyboardFrame.origin.y == kScreenHeight) {
+            
+            self.scrollView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+
+        } else {
+            
+            self.scrollView.frame = CGRectMake(0, -kScreenHeight + 64 + keyboardFrame.origin.y, kScreenWidth, kScreenHeight - 64);
+
+        }
+        
+        
+        
+    }];
+}
 
 - (void)clickPublishButton {
     
@@ -133,6 +166,27 @@
         });
     }];
     
+    
+}
+
+
+-(void)viewWillAppear:(BOOL)animated{
+    
+    [super viewWillAppear:animated];
+    
+    [IQKeyboardManager sharedManager].shouldResignOnTouchOutside = YES;
+//
+    
+}
+
+//
+
+-(void)viewWillDisappear:(BOOL)animated{
+    
+    [super viewWillDisappear:animated];
+    
+    [self.priceTextField resignFirstResponder];
+//
     
 }
 
@@ -240,15 +294,16 @@
                 return self.pics.count + 1;
                 
             }
-    
-        
-        
  
     return 0;
 }
 
 - (void)setupViews {
     
+    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+    
+    [self.view addSubview:scrollView];
+    self.scrollView = scrollView;
     _publishButton = [[UIButton alloc] initWithFrame:(CGRectMake(0, 0, 40, 21))];;
     [_publishButton setTitle:@"发布" forState:(UIControlStateNormal)];
     [_publishButton setTitleColor:UIColorHex(808080) forState:(UIControlStateDisabled)];
@@ -269,39 +324,24 @@
     self.picCollection.backgroundColor = [UIColor whiteColor];
     [self.picCollection registerNib:[UINib nibWithNibName:@"XFPublishAddImageViewCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"XFPublishAddImageViewCollectionViewCell"];
     
-    [self.view addSubview:self.picCollection];
+    [scrollView addSubview:self.picCollection];
     self.picCollection.frame = CGRectMake(0, 30, kScreenWidth, kItemWidth * 3 + 40);
     
     
     self.priceTextField = [[UITextField alloc] init];
     self.priceTextField.placeholder = @"请输入查看价格";
     self.priceTextField.keyboardType = UIKeyboardTypeNumberPad;
-    [self.view addSubview:self.priceTextField];
+    [scrollView addSubview:self.priceTextField];
+    self.priceTextField.delegate = self;
     
     self.lineView = [[UIView alloc] init];
     self.lineView.backgroundColor = [UIColor blackColor];
-    [self.view addSubview:self.lineView];
+    [scrollView addSubview:self.lineView];
+    
+    self.priceTextField.frame = CGRectMake(10, self.picCollection.bottom, kScreenWidth - 20, 30);
+    self.lineView.frame = CGRectMake(10, self.priceTextField.bottom + 5, kScreenWidth - 20, 1);
 }
 
-- (void)updateViewConstraints {
-    
-    [self.priceTextField mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.top.mas_equalTo(self.picCollection.mas_bottom);
-        make.left.mas_offset(10);
-        make.right.mas_offset(-10);
-        make.height.mas_equalTo(30);
-    }];
-    
-    [self.lineView mas_makeConstraints:^(MASConstraintMaker *make) {
-       
-        make.top.mas_equalTo(self.priceTextField.mas_bottom);
-        make.left.mas_offset(10);
-        make.right.mas_offset(-10);
-        make.height.mas_equalTo(1);
-    }];
-    
-    [super updateViewConstraints];
-}
+
 
 @end

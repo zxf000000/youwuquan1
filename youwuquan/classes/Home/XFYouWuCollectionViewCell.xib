@@ -61,7 +61,7 @@
                 <outlet property="nameLable" destination="ICH-bJ-lQ6" id="1mn-XP-cDd"/>
                 <outlet property="picVIew" destination="Q4k-5k-pzQ" id="INv-Pn-E9u"/>
             </connections>
-            <point key="canvasLocation" x="-58" y="-6.5"/>
+            <point key="canvasLocation" x="17" y="-66"/>
         </collectionViewCell>
     </objects>
 </document>

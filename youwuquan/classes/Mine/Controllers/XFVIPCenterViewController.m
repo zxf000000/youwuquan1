@@ -9,6 +9,7 @@
 #import "XFVIPCenterViewController.h"
 #import "XFMineNetworkManager.h"
 #import "XFPayViewController.h"
+#import "XFAuthManager.h"
 
 @interface XFVIPCenterViewController ()
 @property (weak, nonatomic) IBOutlet UIButton *signButton;
@@ -25,6 +26,9 @@
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
 @property (weak, nonatomic) IBOutlet UILabel *vipDetailLabel;
 
+@property (nonatomic,assign) BOOL isUp;
+
+
 @end
 
 @implementation XFVIPCenterViewController
@@ -35,7 +39,7 @@
     CGFloat iconWidth = 70 * kScreenWidth / 375.f - 2;
     self.iconView.layer.cornerRadius = iconWidth/2.f;
     self.iconView.layer.masksToBounds = YES;
-
+   
     [self loadData];
 }
 

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>尤物圈</string>
+	<string>尤圈</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -73,7 +73,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>8</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>wechat</string>
@@ -121,19 +121,19 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>App需要您的同意,才能访问相机</string>
+	<string>App需要您的同意,才能访问相机,用于本页面的相机预览</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>App需要您的同意,才能始终访问位置</string>
+	<string>App需要您的同意,才能始终访问位置,用于定位获取附近的人</string>
 	<key>NSLocationUsageDescription</key>
-	<string>App需要您的同意,才能访问位置</string>
+	<string>App需要您的同意,才能访问位置,用于定位获取附近的人</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>App需要您的同意,才能在使用期间访问位置</string>
+	<string>App需要您的同意,才能在使用期间访问位置,用于定位获取附近的人</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>App需要您的同意,才能访问麦克风</string>
+	<string>App需要您的同意,才能访问麦克风,用于录音</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>App需要您的同意,才能添加照片到相册</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>App需要您的同意,才能访问相册</string>
+	<string>App需要您的同意,才能访问相册,用于选择发布的图片</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

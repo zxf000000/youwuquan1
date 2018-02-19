@@ -72,10 +72,14 @@
     [XFHomeNetworkManager getVideoAdWithSuccessBlock:^(id responseObj) {
         
         NSArray *adData = (NSArray *)responseObj;
-        
-        self.adDatas = adData[0];
-        
-        [self.headerPicView setImageWithURL:_adDatas[@"image"][@"imageUrl"] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+       
+        if (adData.count > 0) {
+            
+            self.adDatas = adData[0];
+            
+            [self.headerPicView setImageWithURL:_adDatas[@"image"][@"imageUrl"] options:(YYWebImageOptionSetImageWithFadeAnimation)];
+        }
+
         
     } failBlock:^(NSError *error) {
         

@@ -7,7 +7,6 @@
 //
 
 #import "XFAuthManager.h"
-#import "XFMyAuthViewController.h"
 #import "XFMineNetworkManager.h"
 
 @implementation XFAuthManager
