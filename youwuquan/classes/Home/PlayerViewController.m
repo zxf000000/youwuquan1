@@ -144,6 +144,12 @@ typedef void(^PickerDoneBlock)(int key);
         [blockVRLib switchDisplayMode:key];
     }];
     
+    if (self.isGlass) {
+    
+        [blockVRLib switchDisplayMode:1];
+
+    }
+    
 
 }
 

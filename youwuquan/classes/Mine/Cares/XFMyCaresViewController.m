@@ -8,6 +8,7 @@
 
 #import "XFMyCaresViewController.h"
 #import "XFMineNetworkManager.h"
+#import "XFFindDetailViewController.h"
 
 @implementation XFMyCareModel
 
@@ -48,14 +49,7 @@
         
         [self.contentView addSubview:_careButton];
         
-        for (NSInteger i = 0; i < 4; i ++ ) {
-            
-            UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zhanweitu44"]];
-            
-            [_authIcons addObject:imgView];
-            
-            [self.contentView addSubview:imgView];
-        }
+
         
         [self setNeedsUpdateConstraints];
     }
@@ -70,6 +64,15 @@
     [_iconView setImageWithURL:[NSURL URLWithString:_model.headIconUrl] options:(YYWebImageOptionSetImageWithFadeAnimation)];
     _careButton.hidden = YES;
     _statusLabel.text = _model.introduce;
+    
+//    for (NSInteger i = 0; i < _model.identificationIds.count ; i ++ ) {
+//
+//        UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zhanweitu44"]];
+//
+//        [_authIcons addObject:imgView];
+//
+//        [self.contentView addSubview:imgView];
+//    }
 }
 
 - (void)updateConstraints {
@@ -226,6 +229,18 @@
         
         
     }];
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    XFMyCareModel *model = self.datas[indexPath.row];
+    
+    XFFindDetailViewController *datailVC = [[XFFindDetailViewController alloc] init];
+    datailVC.userId = model.followedUid;
+    datailVC.userName = model.nickname;
+    datailVC.iconUrl = model.headIconUrl;
+    [self.navigationController pushViewController:datailVC animated:YES];
     
 }
 

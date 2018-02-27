@@ -482,7 +482,7 @@
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"VideoPlayer" bundle:nil];
     PlayerViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"VideoPlayerViewController"];
-
+    
     
     [self presentViewController:vc animated:YES completion:^{
         [vc initParams:[NSURL URLWithString:self.model.video[@"srcUrl"]]];
@@ -1477,14 +1477,17 @@
             };
             
             cell.clickFollowButtonBlock = ^(ASButtonNode *button) {
-                
+                MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
                 if (button.selected) {
                     
                     [XFMineNetworkManager unCareSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
                         
                         button.selected = NO;
-                        
+                        [HUD hideAnimated:YES];
+
                     } failedBlock:^(NSError *error) {
+                        
+                        [HUD hideAnimated:YES];
                         
                     } progressBlock:^(CGFloat progress) {
                         
@@ -1492,11 +1495,13 @@
                 } else {
                     
                     [XFMineNetworkManager careSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
-                        
+                        [HUD hideAnimated:YES];
+
                         button.selected = YES;
                         
                     } failedBlock:^(NSError *error) {
-                        
+                        [HUD hideAnimated:YES];
+
                     } progressBlock:^(CGFloat progress) {
                         
                     }];
@@ -1815,15 +1820,18 @@
                 
                 cell.clickFollowButtonBlock = ^(ASButtonNode *button) {
                     
+                    MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
+
                     if (button.selected) {
                         
                         [XFMineNetworkManager unCareSomeoneWithUid:self.allInfo[@"user"][@"uid"] successBlock:^(id responseObj) {
                             
                             button.selected = NO;
-                            
+                            [HUD hideAnimated:YES];
                         } failedBlock:^(NSError *error) {
                             
-                            
+                            [HUD hideAnimated:YES];
+
                         } progressBlock:^(CGFloat progress) {
                             
                             
@@ -1834,9 +1842,11 @@
                             
                             button.selected = YES;
                             
-                            
+                            [HUD hideAnimated:YES];
+
                         } failedBlock:^(NSError *error) {
-                            
+                            [HUD hideAnimated:YES];
+
                         } progressBlock:^(CGFloat progress) {
                             
                         }];

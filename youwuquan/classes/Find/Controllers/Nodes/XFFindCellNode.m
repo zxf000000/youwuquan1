@@ -286,15 +286,15 @@
         XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
         
         
-        if ([model.identificationName isEqualToString:@"基本认证"]) {
-            _isUp = YES;
-            _moneyButton.hidden = YES;
-            
-        } else {
-            _isUp = NO;
+//        if ([model.identificationName isEqualToString:@"基本认证"]) {
+//            _isUp = YES;
+//            _moneyButton.hidden = YES;
+//
+//        } else {
+//            _isUp = NO;
             _moneyButton.hidden = NO;
 
-        }
+//        }
         
         
         _setbutton = [[ASButtonNode alloc] init];

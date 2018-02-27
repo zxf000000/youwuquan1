@@ -165,6 +165,7 @@
 
 @property (nonatomic,strong) NSMutableArray *indexPathsTobeReload;
 
+
 @end
 @implementation XFSearchViewController
 
@@ -284,9 +285,13 @@
         
         self.userDatas = arr.copy;
         
-        [self.resultNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
-        
-        
+        if (self.userDatas.count > 0) {
+            
+//            [self.resultNode reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:(UITableViewRowAnimationNone)];
+            [self reloadData];
+
+        }
+    
     } failBlock:^(NSError *error) {
         
     } progress:^(CGFloat progress) {
@@ -321,29 +326,15 @@
                 [self.historyArr removeObjectAtIndex:0];
                 
             }
-            //        [self.historyView reloadData];
-            
             [self.historyCache setObject:self.historyArr forKey:kSearchHistoryKey];
 
         }
-
-
-        
     } failBlock:^(NSError *error) {
         
     } progress:^(CGFloat progress) {
         
     }];
-    
-    
-
-    
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-    });
-    
-
+ 
 }
 
 - (void)loadMoreResult {
@@ -362,7 +353,6 @@
         
         [self.datas addObjectsFromArray:arr.copy];
         
-//        [self.resultNode reloadData];
         [self reloadData];
         [self.resultNode.view.mj_footer endRefreshing];
         
@@ -717,7 +707,16 @@
 
 - (NSInteger)tableNode:(ASTableNode *)tableNode numberOfRowsInSection:(NSInteger)section {
     
-    return self.datas.count + 1;
+    if (self.userDatas.count > 0) {
+        
+        return self.datas.count + 1;
+
+    } else {
+        
+        return self.datas.count;
+
+    }
+    
 }
 
 - (ASCellNode *)tableNode:(ASTableNode *)tableNode nodeForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -725,7 +724,9 @@
 
     if (indexPath.item == 0) {
         
-
+        
+        if (self.userDatas.count > 0) {
+            
             ASSearchManCellNode *node = [[ASSearchManCellNode alloc] initWithDatas:self.userDatas];
             
             node.didSelecSearchMan = ^(XFSearchUserModel *model) {
@@ -751,9 +752,54 @@
                 });
             }
             return node;
+
+        } else {
+            XFStatusModel *model = self.datas[0];
+        
+            XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:model];
+            
+            node.index = indexPath;
+            
+            node.delegate = self;
+            
+            if ([_indexPathsTobeReload containsObject:indexPath]) {
+                
+                ASCellNode *oldCellNode = [tableNode nodeForRowAtIndexPath:indexPath];
+                
+                node.neverShowPlaceholders = YES;
+                oldCellNode.neverShowPlaceholders = YES;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    node.neverShowPlaceholders = NO;
+                    
+                    
+                });
+                
+            }
+            
+            if (self.isOpenIndexPath == indexPath) {
+                node.shadowNode.hidden = YES;
+                
+            } else {
+                node.shadowNode.hidden = NO;
+            }
+            
+            return node;
+            
+        }
+        
+
     }
     
-        XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:self.datas[indexPath.row -1]];
+    XFStatusModel *model;
+    if (self.userDatas.count > 0) {
+        
+        model = self.datas[indexPath.row -1];
+    } else {
+        
+        model = self.datas[indexPath.row];
+    }
+    
+        XFFindCellNode *node = [[XFFindCellNode alloc] initWithModel:model];
         
         node.index = indexPath;
         

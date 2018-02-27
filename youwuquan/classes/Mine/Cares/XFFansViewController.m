@@ -11,6 +11,7 @@
 #import "XFMineNetworkManager.h"
 #import "XFMyFansTableViewCell.h"
 #import "XFMineNetworkManager.h"
+#import "XFFindDetailViewController.h"
 
 @interface XFFansViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -107,6 +108,18 @@
         
     }];
     
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    XFMyCareModel *model = self.datas[indexPath.row];
+    
+    XFFindDetailViewController *datailVC = [[XFFindDetailViewController alloc] init];
+    datailVC.userId = model.fansUid;
+    datailVC.userName = model.nickname;
+    datailVC.iconUrl = model.headIconUrl;
+    [self.navigationController pushViewController:datailVC animated:YES];
     
 }
 

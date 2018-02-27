@@ -141,16 +141,16 @@
         XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
         
         
-        if ([model.identificationName isEqualToString:@"基本认证"]) {
-            _isUp = YES;
-            _imgs = @[@"me_zl",@"me_rz",@"me_fh",@"me_jn"];
-            _titles = @[@"我的资料",@"我的认证",@"VIP富豪榜",@"我的技能"];
-            
-        } else {
+//        if ([model.identificationName isEqualToString:@"基本认证"]) {
+//            _isUp = YES;
+//            _imgs = @[@"me_zl",@"me_rz",@"me_fh",@"me_jn"];
+//            _titles = @[@"我的资料",@"我的认证",@"VIP富豪榜",@"我的技能"];
+//
+//        } else {
             _isUp = NO;
             _imgs = @[@"me_zl",@"me_rz",@"mine_vip",@"me_cf",@"me_fh",@"me_jn"];
             _titles = @[@"我的资料",@"我的认证",@"VIP中心",@"我的财富",@"VIP富豪榜",@"我的技能"];
-        }
+//        }
         
 
 

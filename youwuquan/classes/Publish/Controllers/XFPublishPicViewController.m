@@ -107,15 +107,15 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
     XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
     
     
-    if ([model.identificationName isEqualToString:@"基本认证"]) {
-        _isUp = YES;
-        
-        self.bottomView.hidden = YES;
-    } else {
+//    if ([model.identificationName isEqualToString:@"基本认证"]) {
+//        _isUp = YES;
+//
+//        self.bottomView.hidden = YES;
+//    } else {
         _isUp = NO;
         self.bottomView.hidden = NO;
         
-    }
+//    }
     
     [self.view setNeedsUpdateConstraints];
 }

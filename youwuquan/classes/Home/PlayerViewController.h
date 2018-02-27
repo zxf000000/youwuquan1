@@ -15,6 +15,10 @@
 @interface PlayerViewController : UIViewController
 @property (nonatomic, strong) MDVRLibrary* vrLibrary;
 @property (nonatomic, strong) NSURL* mURL;
+
+@property (nonatomic,assign) BOOL isGlass;
+
+
 - (void) onClosed;
 
 - (void) initParams:(NSURL*)url;

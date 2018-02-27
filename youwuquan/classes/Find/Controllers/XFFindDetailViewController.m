@@ -106,14 +106,14 @@
     XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
     
     
-    if ([model.identificationName isEqualToString:@"基本认证"]) {
-        _isUp = YES;
-        
-        
-    } else {
+//    if ([model.identificationName isEqualToString:@"基本认证"]) {
+//        _isUp = YES;
+//
+//
+//    } else {
         _isUp = NO;
         
-    }
+//    }
     
     [self setupBottomView];
     

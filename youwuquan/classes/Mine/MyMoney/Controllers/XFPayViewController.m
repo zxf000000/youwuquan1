@@ -20,6 +20,7 @@
 #import "XFPayAlertViewController.h"
 #import <AlipaySDK/AlipaySDK.h>
 #import <WXApi.h>
+#import "XFPayManager.h"
 
 @interface XFPayViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFVipTableViewCellDelegate,XChargeTableViewCellDelegate,NSXMLParserDelegate>
 
@@ -322,10 +323,12 @@
         XFChargeModel *model = self.chargeList[self.selectedChargeIndex.item];
         number = [model.price intValue];
         self.chargeNumber = number;
-        [self selectChargeType];
+//        [self selectChargeType];
+        [[XFPayManager sharedManager] buyProductsWithId:@"com.nckj.youwuquan.zxf001" andQuantity:1];
 
         
     } else {
+        
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请输入充值金额" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
         [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
            

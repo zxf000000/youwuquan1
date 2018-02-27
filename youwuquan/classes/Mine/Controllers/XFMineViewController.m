@@ -35,7 +35,10 @@
 #import "XFRefreshInfoViewController.h"
 #import "XFAuthManager.h"
 
+
 #define kHeaderHeight (kScreenWidth * 195/375.f)
+
+// 客服电话 4000560128
 
 @implementation XFMyTableCellNode
 
@@ -151,14 +154,14 @@
     XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
     
     
-    if ([model.identificationName isEqualToString:@"基本认证"]) {
-        _isUp = YES;
-
-        
-    } else {
+//    if ([model.identificationName isEqualToString:@"基本认证"]) {
+//        _isUp = YES;
+//
+//
+//    } else {
         _isUp = NO;
 
-    }
+//    }
     [self loadData];
    
     
@@ -314,14 +317,14 @@
     
     XFYwqAlertView *alert ;
     
-    if (_isUp) {
-        
-        alert = [XFYwqAlertView showToView:self.view withTitle:@"邀请有礼" detail:@"邀请好友"];;
-
-    } else {
-        
+//    if (_isUp) {
+//
+//        alert = [XFYwqAlertView showToView:self.view withTitle:@"邀请有礼" detail:@"邀请好友"];;
+//
+//    } else {
+    
         alert = [XFYwqAlertView showToView:self.view withTitle:@"邀请有礼" detail:@"成功邀请好友将会获得好友消费1%的提成"];;
-    }
+//    }
     
     [alert showAnimation];
     
@@ -573,20 +576,47 @@
     }
     
     // footer
-    UIView *footerView = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, 34))];
+    UIView *footerView = [[UIView alloc] initWithFrame:(CGRectMake(0, 0, kScreenWidth, 60))];
+    
+    NSString *contact = @"联系客服 4000 560 128";
+    NSRange rangeofNumber = [contact rangeOfString:@"4000 560 128"];
+    
+    NSMutableAttributedString *contactStr = [[NSMutableAttributedString alloc] initWithString:contact];
+    
+    [contactStr setTextHighlightRange:rangeofNumber color:kRGBColorWith(0.093, 0.492, 1) backgroundColor:[UIColor whiteColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+       
+        NSMutableString *str = [[NSMutableString alloc] initWithFormat:@"tel:%@",@"4000-560-128"];
+        
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
+        
+        NSLog(@"打电话");
+    }];
+    [contactStr setColor:[UIColor blueColor] range:rangeofNumber];
+
+    YYLabel *contactLabel = [[YYLabel alloc] init];
+    [contactLabel setAttributedText:contactStr];
+    
+    [footerView addSubview:contactLabel];
+
     
     UILabel *infoLabel = [[UILabel alloc] init];
     
-    infoLabel.text = @"ywq 1.0";
+    infoLabel.text = @"版本 1.0";
     infoLabel.textColor = [UIColor blackColor];
     infoLabel.font = [UIFont systemFontOfSize:13];
     [footerView addSubview:infoLabel];
     
-    [infoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        
+    [contactLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(0);
-        make.centerY.mas_offset(-5);
+        make.top.mas_offset(10);
     }];
+    [infoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.top.mas_offset(30);
+
+    }];
+    
+
     
     self.tableNode.view.tableFooterView = footerView;
     

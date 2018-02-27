@@ -40,25 +40,25 @@
     XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
     
     
-    if ([model.identificationName isEqualToString:@"基本认证"]) {
-        _isUp = YES;
-        
-    } else {
+//    if ([model.identificationName isEqualToString:@"基本认证"]) {
+//        _isUp = YES;
+//
+//    } else {
         _isUp = NO;
-    }
+//    }
     
     [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:0 image:[UIImage imageNamed:@"msg_pic"] title:@"照片"];
     [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:1 image:[UIImage imageNamed:@"msg_shot"] title:@"拍摄"];
     [self.chatSessionInputBarControl.pluginBoardView updateItemAtIndex:2 image:[UIImage imageNamed:@"msg_location"] title:@"位置"];
     
-    if (_isUp) {
-
-    } else {
-        
+//    if (_isUp) {
+//
+//    } else {
+    
         [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_sendgift"] title:@"送礼物" tag:9004];
         
         [self.chatSessionInputBarControl.pluginBoardView insertItemWithImage:[UIImage imageNamed:@"msg_dateher"] title:@"约她" tag:9005];
-    }
+//    }
     
 
     
