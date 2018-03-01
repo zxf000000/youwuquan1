@@ -119,9 +119,9 @@
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     
     
-        if (self.models.count > 10) {
+        if (self.models.count > 5) {
             
-            return 10;
+            return 5;
             
         } else {
             
@@ -345,7 +345,7 @@
 //        datailVC.hidesBottomBarWhenPushed = YES;
 //        [self.navigationController pushViewController:datailVC animated:YES];
 //    } else {
-        XFHomeDataModel *model = self.models[indexPath.item + 10];
+        XFHomeDataModel *model = self.models[indexPath.item + 5];
         XFFindDetailViewController *datailVC = [[XFFindDetailViewController alloc] init];
         datailVC.userId = model.uid;
         datailVC.userName = model.nickname;
@@ -372,9 +372,9 @@
 //        }
 //
 //    } else {
-        if (self.models.count > 10) {
+        if (self.models.count > 5) {
             
-            return self.models.count - 10;
+            return self.models.count - 5;
             
         } else {
             
@@ -397,7 +397,7 @@
 //
 //    } else {
     
-        XFHomeDataModel *model = self.models[indexPath.item + 10];
+        XFHomeDataModel *model = self.models[indexPath.item + 5];
         cell.model =  model;
 
 //    }

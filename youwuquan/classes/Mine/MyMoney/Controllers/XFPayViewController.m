@@ -21,6 +21,8 @@
 #import <AlipaySDK/AlipaySDK.h>
 #import <WXApi.h>
 #import "XFPayManager.h"
+#import "BLPaymentManager.h"
+#import "XFVIPCenterViewController.h"
 
 @interface XFPayViewController () <UICollectionViewDelegate,UICollectionViewDataSource,XFVipTableViewCellDelegate,XChargeTableViewCellDelegate,NSXMLParserDelegate>
 
@@ -289,13 +291,10 @@
 //        NSArray *vipDatas = (NSArray *)responseObj;
         
         
-        
     } failedBlock:^(NSError *error) {
         
         if (!error) {
-            
             // vip卡未激活
-            
             
         }
         
@@ -315,54 +314,72 @@
         return;
         
     }
+    NSInteger number = 0;
+    XFChargeModel *model = self.chargeList[self.selectedChargeIndex.item];
+    number = [model.price intValue];
+    self.chargeNumber = number;
     
-    __block NSInteger number;
+    BLPaymentManager *manager = [BLPaymentManager sharedManager];
     
-    if (self.selectedChargeIndex.item < self.chargeList.count) {
-        
-        XFChargeModel *model = self.chargeList[self.selectedChargeIndex.item];
-        number = [model.price intValue];
-        self.chargeNumber = number;
-//        [self selectChargeType];
-        [[XFPayManager sharedManager] buyProductsWithId:@"com.nckj.youwuquan.zxf001" andQuantity:1];
+    // 验证成功回调block
+    manager.checkSuccessWithId = ^(NSString * _Nonnull payId) {
+      
+        for (XFChargeModel *model in self.chargeList) {
+            
+            if ([model.iosProductId isEqualToString:payId]) {
+                
+                MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+                HUD.label.text = @"正在充值钻石";
+                
+                [XFMineNetworkManager iapChargeWithDiamond:[model.price integerValue] successBlock:^(id responseObj) {
+                    
+                    [HUD hideAnimated:YES];
 
-        
-    } else {
-        
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"请输入充值金额" message:nil preferredStyle:(UIAlertControllerStyleAlert)];
-        [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-           
-            textField.placeholder = @"请输入金额";
-            textField.keyboardType = UIKeyboardTypeNumberPad;
-        }];
-        
-        UIAlertAction *actionDone = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-           
-            UITextField *textField = alert.textFields[0];
-            if (![textField.text isHasContent] || [textField.text intValue] <= 0) {
+                    UIAlertController *alert = [UIAlertController xfalertControllerWithMsg:@"钻石充值成功" doneBlock:^{
+                        
+                        // 刷新钻石数量
+                        [XFMineNetworkManager getMyWalletDetailWithsuccessBlock:^(id responseObj) {
+                            
+                            NSLog(@"%@",responseObj);
+                            self.diamondsLabel.text = [NSString stringWithFormat:@"%@",((NSDictionary *)responseObj)[@"balance"]];
+                            
+                        } failedBlock:^(NSError *error) {
+                            
+                            [HUD hideAnimated:YES];
+                            
+                        } progressBlock:^(CGFloat progress) {
+                            
+                            
+                        }];
+                        
+                    }];
+                    
+                    [self presentViewController:alert animated:YES completion:nil];
+                } failedBlock:^(NSError *error) {
+                    
+                    [HUD hideAnimated:YES];
+                    
+                } progressBlock:^(CGFloat progress) {
+                    
+                }];
                 
-                [XFToolManager showProgressInWindowWithString:@"请输入有效金额"];
-                return;
-            } else {
-                
-                self.chargeNumber = [textField.text intValue];
-                
-                [self selectChargeType];
             }
             
-            
-        }];
+        }
         
-        UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
-            
-            
-            
-        }];
+    };
+    
+    typeof(manager) weakManager = manager;
+    
+    [manager fetchProductInfoWithProductIdentifiers:[NSSet setWithObject:model.iosProductId] completion:^(NSArray<SKProduct *> * _Nullable products, NSError * _Nullable error) {
         
-        [alert addAction:actionDone];
-        [alert addAction:actionCancel];
-        [self presentViewController:alert animated:YES completion:nil];
-    }
+        SKProduct *product = [products lastObject];
+        
+        [weakManager buyProduct:product error:&error];
+        
+    }];
+
+
 
 }
 
@@ -587,6 +604,81 @@
     }
     
     XFVipModel *model = self.vipList[self.selectedVipIndex.item];
+    
+    BLPaymentManager *manager = [BLPaymentManager sharedManager];
+    
+    // 验证成功回调block
+    manager.checkSuccessWithId = ^(NSString * _Nonnull payId) {
+        
+        for (XFVipModel *model in self.vipList) {
+            
+        
+            if ([model.iosProductId isEqualToString:payId]) {
+                
+                MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+                HUD.label.text = @"正在购买VIP";
+                
+//                [XFMineNetworkManager iapChargeWithDiamond:[model.price integerValue] successBlock:^(id responseObj) {
+//
+//
+//                    [XFMineNetworkManager buyVipWithDiamondsWithDays:[model.day integerValue] successBlock:^(id responseObj) {
+//
+//                        [HUD hideAnimated:YES];
+//                        UIAlertController *alert = [UIAlertController xfalertControllerWithMsg:@"充值成功" doneBlock:^{
+//
+//                        }];
+//
+//                        [self presentViewController:alert animated:YES completion:nil];
+//
+//                    } failedBlock:^(NSError *error) {
+//                        [HUD hideAnimated:YES];
+//
+//                    } progressBlock:^(CGFloat progress) {
+//
+//                    }];
+//                } failedBlock:^(NSError *error) {
+//
+//                    [HUD hideAnimated:YES];
+//
+//                } progressBlock:^(CGFloat progress) {
+//
+//                }];
+//
+                    [XFMineNetworkManager iapVipWithDays:[model.day intValue] successBlock:^(id responseObj) {
+
+                        [HUD hideAnimated:YES];
+                        
+                        UIAlertController *alert = [UIAlertController xfalertControllerWithMsg:@"购买VIP成功" doneBlock:^{
+                           
+                            XFVIPCenterViewController *vipVC = [[UIStoryboard storyboardWithName:@"My" bundle:nil] instantiateViewControllerWithIdentifier:@"XFVIPCenterViewController"];
+                            vipVC.hidesBottomBarWhenPushed = YES;
+                            [self.navigationController pushViewController:vipVC animated:YES];
+                            
+                        }];
+                        
+                        [self presentViewController:alert animated:YES completion:nil];
+                    } failedBlock:^(NSError *error) {
+                        [HUD hideAnimated:YES];
+                    } progressBlock:^(CGFloat progress) {
+
+                    }];
+            
+            }
+            
+        }
+        
+    };
+    
+    typeof(manager) weakManager = manager;
+    
+    [manager fetchProductInfoWithProductIdentifiers:[NSSet setWithObject:model.iosProductId] completion:^(NSArray<SKProduct *> * _Nullable products, NSError * _Nullable error) {
+        
+        SKProduct *product = [products lastObject];
+        
+        [weakManager buyProduct:product error:&error];
+        
+    }];
+    return;
     
     XFPayAlertViewController *alertVC = [[XFPayAlertViewController alloc] init];
     

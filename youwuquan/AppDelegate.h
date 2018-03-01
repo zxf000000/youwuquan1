@@ -23,5 +23,10 @@
 @property (nonatomic,assign) BOOL isLogin;
 
 
+// 检查订单
+@property (nonatomic,assign) BOOL isAlreadChecked;
+
+
+
 @end
 

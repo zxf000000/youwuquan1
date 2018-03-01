@@ -102,7 +102,7 @@
     self.title = @"发现";
     
     self.hdCount = 0;
-    self.page = -1;
+    self.page = 0;
     self.carePage = -1;
     
     self.view.backgroundColor = [UIColor whiteColor];
@@ -185,20 +185,20 @@
     self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
     // 获取活动
-    NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
+//    NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
         [self getAdData];
-    }];
+//    }];
     // 获取推荐列表
-    NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
+//    NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
         [self loadinviteData];
-    }];
+//    }];
     
     //设置依赖
-    [operation2 addDependency:operation1];      //任务3依赖任务2
+//    [operation2 addDependency:operation1];      //任务3依赖任务2
     
     //创建队列
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    [queue addOperations:@[operation2, operation1] waitUntilFinished:NO];
+//    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+//    [queue addOperations:@[operation2, operation1] waitUntilFinished:NO];
     
 }
 
@@ -340,7 +340,7 @@
         
         NSArray *datas = ((NSDictionary *)responseObj)[@"content"];
         
-        NSLog(@"%@",datas);
+//        NSLog(@"%@",datas);
         
         NSMutableArray *arr = [NSMutableArray array];
         
@@ -371,8 +371,6 @@
 }
 
 - (void)loadinviteData {
-    
-    self.page = 0;
     
     [XFFindNetworkManager getInviteDataWithPage:self.page rows:10 SuccessBlock:^(id responseObj) {
         

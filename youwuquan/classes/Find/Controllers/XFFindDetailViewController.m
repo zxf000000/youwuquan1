@@ -103,7 +103,7 @@
     
     [self setupHeaderView];
     
-    XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
+//    XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
     
     
 //    if ([model.identificationName isEqualToString:@"基本认证"]) {
@@ -124,7 +124,7 @@
     }
     
     self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
-    self.tableNode.alpha = 0;
+//    self.tableNode.alpha = 0;
     [self network];
 }
 
@@ -189,7 +189,7 @@
 
 - (void)loadInfo {
     
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+//    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     
     [XFMineNetworkManager getOtherInfoWithUid:[NSString stringWithFormat:@"%@",self.userId] successBlock:^(id responseObj) {
         
@@ -203,11 +203,11 @@
         });
         
         
-        dispatch_semaphore_signal(sema);
+//        dispatch_semaphore_signal(sema);
         
         
     } failedBlock:^(NSError *error) {
-        dispatch_semaphore_signal(sema);
+//        dispatch_semaphore_signal(sema);
         
         
     } progressBlock:^(CGFloat progress) {
@@ -215,7 +215,7 @@
         
     }];
     
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+//    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     
 }
 

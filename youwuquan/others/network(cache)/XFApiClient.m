@@ -260,6 +260,12 @@
 // 活动详情
 #define YBYGetActivityDetailWithId(activityID) [NSString stringWithFormat:@"activity/%@",(activityID)]
 
+// 内购充值钻石
+#define YBYIAPChargeDiamond @"user/balance/ios/diamond"
+// 内购买会员
+#define YBYIAPChargeVip @"user/balance/ios/vip"
+
+
 @implementation XFApiClient
 // 发送验证码
 + (NSString *)pathUrlForSendCodeWithNumber:(NSString *)phone {
@@ -878,5 +884,14 @@
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYGetActivityDetailWithId(activityId)];
 }
 
++ (NSString *)pathUrlForIAPChargeDiamonds {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYIAPChargeDiamond];
+}
+
++ (NSString *)pathUrlForIAPChargeVIP {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYIAPChargeVip];
+}
 
 @end

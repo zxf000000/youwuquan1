@@ -858,4 +858,19 @@
  */
 + (NSString *)pathUrlForGetActivityDetailWithId:(NSString *)activityId;
 
+/**
+ 内购钻石
+ 
+ @return url
+ */
++ (NSString *)pathUrlForIAPChargeDiamonds;
+
+/**
+ 内购vip
+ 
+ @return url
+ */
++ (NSString *)pathUrlForIAPChargeVIP;
+
+
 @end

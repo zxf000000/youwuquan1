@@ -436,6 +436,8 @@
     [XFNetworking postWithUrl:[XFApiClient pathUrlForLoginWithToken] refreshRequest:YES cache:NO praams:@{@"token":token} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
     } successBlock:^(id response) {
+        
+        // 刷新个人信息
         success(response);
         
     } failBlock:^(NSError *error) {

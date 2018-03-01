@@ -190,7 +190,7 @@
       
         XFPayViewController *payVC = [[XFPayViewController alloc] init];
         
-//        payVC.type = XFPayVCTypeCharge;
+        payVC.type = XFPayVCTypeCharge;
         
         [self.navigationController pushViewController:payVC animated:YES];
         

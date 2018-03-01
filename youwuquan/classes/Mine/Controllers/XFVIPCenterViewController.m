@@ -27,6 +27,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *vipDetailLabel;
 
 @property (nonatomic,assign) BOOL isUp;
+@property (weak, nonatomic) IBOutlet UIImageView *vipRightImg;
 
 
 @end
@@ -36,13 +37,28 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.title = @"VIP中心";
+    
     CGFloat iconWidth = 70 * kScreenWidth / 375.f - 2;
     self.iconView.layer.cornerRadius = iconWidth/2.f;
     self.iconView.layer.masksToBounds = YES;
    
+    self.vipRightImg.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapVipRight)];
+    [self.vipRightImg addGestureRecognizer:tap];
     [self loadData];
 }
 
+- (void)tapVipRight {
+    
+    // 会员权益
+    UIAlertController *alert = [UIAlertController xfalertControllerWithMsg:@"会员可以免费查看所有私密视频和图片" doneBlock:^{
+        
+    }];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+    
+}
 
 
 - (void)loadData {
@@ -100,9 +116,20 @@
     
 }
 
+- (IBAction)clickChargeButton:(UIButton *)sender {
+    
+    XFPayViewController *payVC = [[XFPayViewController alloc] init];
+    
+    payVC.type = XFPayVCTypeCharge;
+    
+    [self.navigationController pushViewController:payVC animated:YES];
+}
 
 
 - (IBAction)clickSignButton:(id)sender {
+    
+    [XFToolManager showProgressInWindowWithString:@"还没有签到功能哦"];
+    
 }
 - (IBAction)clickBuyVipButton:(id)sender {
     

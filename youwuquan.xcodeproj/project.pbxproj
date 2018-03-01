@@ -260,6 +260,16 @@
 		B753628A1FB69D0000EDFE94 /* XFConnectNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B75362891FB69D0000EDFE94 /* XFConnectNode.m */; };
 		B753628D1FB6C39D00EDFE94 /* XFMyHeaderNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B753628C1FB6C39D00EDFE94 /* XFMyHeaderNode.m */; };
 		B75362AB1FB6E55000EDFE94 /* XFCarouselView.m in Sources */ = {isa = PBXBuildFile; fileRef = B75362AA1FB6E55000EDFE94 /* XFCarouselView.m */; };
+		B756745120454C8400BC51E9 /* BLJailbreakDetectTool.m in Sources */ = {isa = PBXBuildFile; fileRef = B756744220454C8400BC51E9 /* BLJailbreakDetectTool.m */; };
+		B756745220454C8400BC51E9 /* BLPaymentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B756744420454C8400BC51E9 /* BLPaymentManager.m */; };
+		B756745320454C8400BC51E9 /* BLPaymentTransactionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B756744620454C8400BC51E9 /* BLPaymentTransactionModel.m */; };
+		B756745420454C8400BC51E9 /* BLPaymentVerifyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B756744820454C8400BC51E9 /* BLPaymentVerifyManager.m */; };
+		B756745520454C8400BC51E9 /* BLPaymentVerifyTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B756744A20454C8400BC51E9 /* BLPaymentVerifyTask.m */; };
+		B756745620454C8400BC51E9 /* BLWalletCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = B756744C20454C8400BC51E9 /* BLWalletCompat.m */; };
+		B756745720454C8400BC51E9 /* BLWalletKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = B756744F20454C8400BC51E9 /* BLWalletKeyChainStore.m */; };
+		B756745820454C8400BC51E9 /* receipt.txt in Resources */ = {isa = PBXBuildFile; fileRef = B756745020454C8400BC51E9 /* receipt.txt */; };
+		B756745B20455DCD00BC51E9 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = B756745920455DCD00BC51E9 /* UICKeyChainStore.m */; };
+		B756745F20455E2D00BC51E9 /* NSData+MD5Digest.m in Sources */ = {isa = PBXBuildFile; fileRef = B756745E20455E2D00BC51E9 /* NSData+MD5Digest.m */; };
 		B757DA941FCBB410002C0F3D /* XFLeaderboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B757DA931FCBB410002C0F3D /* XFLeaderboardViewController.m */; };
 		B757DA971FCBDB9D002C0F3D /* UILabel+Setup.m in Sources */ = {isa = PBXBuildFile; fileRef = B757DA961FCBDB9D002C0F3D /* UILabel+Setup.m */; };
 		B757DA9A1FCBEC8F002C0F3D /* XFLeaderboardModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B757DA991FCBEC8F002C0F3D /* XFLeaderboardModel.m */; };
@@ -973,6 +983,26 @@
 		B753628C1FB6C39D00EDFE94 /* XFMyHeaderNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMyHeaderNode.m; sourceTree = "<group>"; };
 		B75362A91FB6E55000EDFE94 /* XFCarouselView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFCarouselView.h; sourceTree = "<group>"; };
 		B75362AA1FB6E55000EDFE94 /* XFCarouselView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFCarouselView.m; sourceTree = "<group>"; };
+		B756744120454C8400BC51E9 /* BLJailbreakDetectTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLJailbreakDetectTool.h; sourceTree = "<group>"; };
+		B756744220454C8400BC51E9 /* BLJailbreakDetectTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLJailbreakDetectTool.m; sourceTree = "<group>"; };
+		B756744320454C8400BC51E9 /* BLPaymentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLPaymentManager.h; sourceTree = "<group>"; };
+		B756744420454C8400BC51E9 /* BLPaymentManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLPaymentManager.m; sourceTree = "<group>"; };
+		B756744520454C8400BC51E9 /* BLPaymentTransactionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLPaymentTransactionModel.h; sourceTree = "<group>"; };
+		B756744620454C8400BC51E9 /* BLPaymentTransactionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLPaymentTransactionModel.m; sourceTree = "<group>"; };
+		B756744720454C8400BC51E9 /* BLPaymentVerifyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLPaymentVerifyManager.h; sourceTree = "<group>"; };
+		B756744820454C8400BC51E9 /* BLPaymentVerifyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLPaymentVerifyManager.m; sourceTree = "<group>"; };
+		B756744920454C8400BC51E9 /* BLPaymentVerifyTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLPaymentVerifyTask.h; sourceTree = "<group>"; };
+		B756744A20454C8400BC51E9 /* BLPaymentVerifyTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLPaymentVerifyTask.m; sourceTree = "<group>"; };
+		B756744B20454C8400BC51E9 /* BLWalletCompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLWalletCompat.h; sourceTree = "<group>"; };
+		B756744C20454C8400BC51E9 /* BLWalletCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLWalletCompat.m; sourceTree = "<group>"; };
+		B756744D20454C8400BC51E9 /* BLWalletInjecting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLWalletInjecting.h; sourceTree = "<group>"; };
+		B756744E20454C8400BC51E9 /* BLWalletKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLWalletKeyChainStore.h; sourceTree = "<group>"; };
+		B756744F20454C8400BC51E9 /* BLWalletKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLWalletKeyChainStore.m; sourceTree = "<group>"; };
+		B756745020454C8400BC51E9 /* receipt.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = receipt.txt; sourceTree = "<group>"; };
+		B756745920455DCD00BC51E9 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
+		B756745A20455DCD00BC51E9 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
+		B756745D20455E2D00BC51E9 /* NSData+MD5Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+MD5Digest.h"; sourceTree = "<group>"; };
+		B756745E20455E2D00BC51E9 /* NSData+MD5Digest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+MD5Digest.m"; sourceTree = "<group>"; };
 		B757DA921FCBB410002C0F3D /* XFLeaderboardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFLeaderboardViewController.h; sourceTree = "<group>"; };
 		B757DA931FCBB410002C0F3D /* XFLeaderboardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFLeaderboardViewController.m; sourceTree = "<group>"; };
 		B757DA951FCBDB9D002C0F3D /* UILabel+Setup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UILabel+Setup.h"; sourceTree = "<group>"; };
@@ -2517,6 +2547,7 @@
 		B74AE9E51FA30835002BD4A6 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				B756744020454C8400BC51E9 /* BLIAP */,
 				B7DF7ADD20204866009DCE86 /* FTPopOverMenu */,
 				B72B21F92010856B0081B32D /* LBPhotoBrowser */,
 				B7C6ABE6201EF68400D4A500 /* UIBarButtonItem+Badge.h */,
@@ -2596,6 +2627,41 @@
 				B75362AA1FB6E55000EDFE94 /* XFCarouselView.m */,
 			);
 			path = XFcarousel;
+			sourceTree = "<group>";
+		};
+		B756744020454C8400BC51E9 /* BLIAP */ = {
+			isa = PBXGroup;
+			children = (
+				B756744120454C8400BC51E9 /* BLJailbreakDetectTool.h */,
+				B756744220454C8400BC51E9 /* BLJailbreakDetectTool.m */,
+				B756744320454C8400BC51E9 /* BLPaymentManager.h */,
+				B756744420454C8400BC51E9 /* BLPaymentManager.m */,
+				B756744520454C8400BC51E9 /* BLPaymentTransactionModel.h */,
+				B756744620454C8400BC51E9 /* BLPaymentTransactionModel.m */,
+				B756744720454C8400BC51E9 /* BLPaymentVerifyManager.h */,
+				B756744820454C8400BC51E9 /* BLPaymentVerifyManager.m */,
+				B756744920454C8400BC51E9 /* BLPaymentVerifyTask.h */,
+				B756744A20454C8400BC51E9 /* BLPaymentVerifyTask.m */,
+				B756744B20454C8400BC51E9 /* BLWalletCompat.h */,
+				B756744C20454C8400BC51E9 /* BLWalletCompat.m */,
+				B756744D20454C8400BC51E9 /* BLWalletInjecting.h */,
+				B756744E20454C8400BC51E9 /* BLWalletKeyChainStore.h */,
+				B756744F20454C8400BC51E9 /* BLWalletKeyChainStore.m */,
+				B756745020454C8400BC51E9 /* receipt.txt */,
+				B756745A20455DCD00BC51E9 /* UICKeyChainStore.h */,
+				B756745920455DCD00BC51E9 /* UICKeyChainStore.m */,
+				B756745C20455E2D00BC51E9 /* NSData+MD5Digest */,
+			);
+			path = BLIAP;
+			sourceTree = "<group>";
+		};
+		B756745C20455E2D00BC51E9 /* NSData+MD5Digest */ = {
+			isa = PBXGroup;
+			children = (
+				B756745D20455E2D00BC51E9 /* NSData+MD5Digest.h */,
+				B756745E20455E2D00BC51E9 /* NSData+MD5Digest.m */,
+			);
+			path = "NSData+MD5Digest";
 			sourceTree = "<group>";
 		};
 		B757DAA01FCC0760002C0F3D /* MySkill */ = {
@@ -3686,6 +3752,7 @@
 				B76EE346200B79F70025A66D /* take-snap@2x.png in Resources */,
 				B72B21D2200F019C0081B32D /* XFVipCollectionViewCell.xib in Resources */,
 				B72A4BD1200EE99E0013157A /* Effects4.png in Resources */,
+				B756745820454C8400BC51E9 /* receipt.txt in Resources */,
 				B72A4BEB200EE99E0013157A /* counter-6s.m4a in Resources */,
 				B72A4BC1200EE99E0013157A /* btn_sound@2x.png in Resources */,
 				B793C3D92015BE3400034484 /* XFVipCenterTableViewCell.xib in Resources */,
@@ -3847,10 +3914,12 @@
 				B7736DE62025B29C007CD1B7 /* XFHomeSecondReusableView.m in Sources */,
 				B753626F1FB5896D00EDFE94 /* XFFindNewTableViewCell.m in Sources */,
 				B7736DD62025B29C007CD1B7 /* XFActorInviteTableViewCell.m in Sources */,
+				B756745320454C8400BC51E9 /* BLPaymentTransactionModel.m in Sources */,
 				B74AE9F41FA30835002BD4A6 /* UIScrollView+touchesCatch.m in Sources */,
 				B7503AE21FD9489B00192BF4 /* XFStatusModel.m in Sources */,
 				B79C76271FC434830040B844 /* XFCardSizeCache.m in Sources */,
 				B7954EC01FC26BE10016BD45 /* PGPickerTableView.m in Sources */,
+				B756745620454C8400BC51E9 /* BLWalletCompat.m in Sources */,
 				B70F5730200E297E00AD317A /* UITabBarItem+CYLTabBarControllerExtention.m in Sources */,
 				B751B0551FFF1FD800811A7C /* XFPicModel.m in Sources */,
 				B72A4B96200EE99E0013157A /* GifFormatViewController.m in Sources */,
@@ -3898,6 +3967,7 @@
 				B74AE9F81FA30835002BD4A6 /* XFNetWorkApiTool.m in Sources */,
 				B7736DE02025B29C007CD1B7 /* XFHomeDataParamentModel.m in Sources */,
 				B7C6ABD1201C70C000D4A500 /* XFSelectePaytypeViewController.m in Sources */,
+				B756745720454C8400BC51E9 /* BLWalletKeyChainStore.m in Sources */,
 				B7736DFD2025B29C007CD1B7 /* XFVideoMoreCell.m in Sources */,
 				B72A4C08200EE99E0013157A /* PLSTextBar.m in Sources */,
 				B7C7FCCD201186AA0040976C /* IQAudioRecorderConstants.m in Sources */,
@@ -3910,6 +3980,7 @@
 				B7CED9971FE1424C00B81FAD /* XFCommentModel.m in Sources */,
 				B701AC9C1FA96C64000728FC /* XFFindTextureViewController.m in Sources */,
 				B757DA9E1FCBFD1D002C0F3D /* XFLeaderboardTableViewCell.m in Sources */,
+				B756745220454C8400BC51E9 /* BLPaymentManager.m in Sources */,
 				B7736DE12025B29C007CD1B7 /* XFHomeHeaderCollectionViewCell.m in Sources */,
 				B7954EB81FC26BE10016BD45 /* NSBundle+PGDatePicker.m in Sources */,
 				B75362751FB5C74000EDFE94 /* XFFindDetailViewController.m in Sources */,
@@ -3965,6 +4036,7 @@
 				B72A4BF2200EE99E0013157A /* PhotoAlbumViewController.m in Sources */,
 				B75362871FB6883700EDFE94 /* XFFindApproveNode.m in Sources */,
 				B7D0A05A20160FBF0038D2F7 /* XFSDCollectionViewCell.m in Sources */,
+				B756745F20455E2D00BC51E9 /* NSData+MD5Digest.m in Sources */,
 				B79C76211FC40E7D0040B844 /* XFCardView.m in Sources */,
 				B7736DF12025B29C007CD1B7 /* XFNearbyCellNode.m in Sources */,
 				B7C1742B1FBA8DF80029ACDE /* XFRewardedTableViewCell.m in Sources */,
@@ -3990,6 +4062,7 @@
 				B7C6ABDF201ED24B00D4A500 /* XFMessageNetworkManager.m in Sources */,
 				B7DB8E5D1FBFD85200FFFC7D /* UIButton+NaviBackButton.m in Sources */,
 				B723CBEE1FBC1A6400DC25E9 /* XFStatusDetailViewController.m in Sources */,
+				B756745B20455DCD00BC51E9 /* UICKeyChainStore.m in Sources */,
 				B77459821FE3FA6900BEC7F7 /* XFVipTableViewCell.m in Sources */,
 				B718C79F1FA8DDFC00DA470B /* YYTableView.m in Sources */,
 				B72A4BF5200EE99E0013157A /* RecordViewController.m in Sources */,
@@ -4032,6 +4105,7 @@
 				B7A644FB2009F4B900F9C2D0 /* XFMessageCacheManager.m in Sources */,
 				B7C6ABF3201F31E000D4A500 /* XFLikeCommentModel.m in Sources */,
 				B76EE2E6200B4C990025A66D /* XFFindActivityModel.m in Sources */,
+				B756745120454C8400BC51E9 /* BLJailbreakDetectTool.m in Sources */,
 				B7EA92521FECB1890092EB8A /* XFShortVideoViewController.m in Sources */,
 				B75362831FB6053E00EDFE94 /* XFFinddetailInfoTableViewCell.m in Sources */,
 				B7AABEC71FC5671E0031E0E8 /* XFMissionTableViewCell.m in Sources */,
@@ -4141,6 +4215,7 @@
 				B7C9EB3C1FCE9EBE0087C87E /* XFMyStatusViewController.m in Sources */,
 				B757DAB91FCD3CF5002C0F3D /* XFOpenPhotoViewController.m in Sources */,
 				B7F8AFA61FDA81ED00C9173D /* XFPreviewViewController.m in Sources */,
+				B756745420454C8400BC51E9 /* BLPaymentVerifyManager.m in Sources */,
 				B774597B1FE3D72D00BEC7F7 /* XFShareUrlViewController.m in Sources */,
 				B76EE31E200B79F00025A66D /* UIView+RNActivityView.m in Sources */,
 				B76EE312200B79F00025A66D /* CustomeImagePicker.m in Sources */,
@@ -4152,6 +4227,7 @@
 				B757DAA71FCC095A002C0F3D /* XFSkillCollectionViewCell.m in Sources */,
 				B72A4BF8200EE99E0013157A /* PLSClipMovieView.m in Sources */,
 				B751B04F1FFD188500811A7C /* XFFindNetworkManager.m in Sources */,
+				B756745520454C8400BC51E9 /* BLPaymentVerifyTask.m in Sources */,
 				B72A4BF7200EE99E0013157A /* PLSClipAudioView.m in Sources */,
 				B74AE9F61FA30835002BD4A6 /* XFHomeCoreDataManager.m in Sources */,
 				B7AABEC01FC55A1D0031E0E8 /* XFChatViewController.m in Sources */,
@@ -4283,6 +4359,7 @@
 			baseConfigurationReference = B9E44837A542194B9079B32E /* Pods-youwuquan.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = youwuquan/youwuquan.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -4382,6 +4459,7 @@
 			baseConfigurationReference = 46246E4BA86CACF1C982E11B /* Pods-youwuquan.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = youwuquan/youwuquan.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;

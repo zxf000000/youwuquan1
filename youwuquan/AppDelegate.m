@@ -44,6 +44,7 @@
 #import "CYLPlusButtonSubclass.h"
 #import "XFMineNetworkManager.h"
 #import <AlipaySDK/AlipaySDK.h>
+#import "BLPaymentManager.h"
 
 
 #define kRongyunAppkey @"mgb7ka1nmwztg"
@@ -85,8 +86,6 @@
     
     [self confitUShareSettings];
     
-
-
     // 初始化融云
     [[RCIM sharedRCIM] initWithAppKey:kRongyunAppkey];
 
@@ -169,6 +168,7 @@
         
     }
     
+
     [self addReachabilityManager];
     
     [CYLPlusButtonSubclass registerPlusButton];
@@ -621,15 +621,13 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-    
-    [self autoLogin];
 
 }
 
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    [self autoLogin];
+//    [self autoLogin];
 
 }
 
@@ -691,6 +689,10 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     
     // 判断是否有用户
     if ([XFUserInfoManager sharedManager].token) {
+       
+        [[BLPaymentManager sharedManager] startTransactionObservingAndPaymentTransactionVerifingWithUserID:[NSString stringWithFormat:@"%@",[XFUserInfoManager sharedManager].userInfo[@"info"][@"uid"]]];
+        
+        self.isAlreadChecked = YES;
         
         NSCalendar *calendar = [NSCalendar currentCalendar];
         
@@ -761,6 +763,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
                         
                         [XFUserInfoManager sharedManager].rongToken = token;
                         self.isLogin = YES;
+                        
                         
                     } failedBlock:^(NSError *error) {
                         self.isLogin = NO;

@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, ImagePickerType) {
         
         self.wxTextField.text = info[@"info"][@"wechat"];
     }
-    if ([self.authId integerValue] == 25) {
+    if ([self.authId integerValue] == 38) {
         
         self.detailLabel.text = @"请上传身份证正反面和手持身份证大头照";
         

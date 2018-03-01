@@ -12,5 +12,7 @@
 @property (nonatomic,copy) NSString *diamonds;
 @property (nonatomic,copy) NSString *price;
 @property (nonatomic,copy) NSString *title;
+@property (nonatomic,copy) NSString *iosProductId;
+
 
 @end

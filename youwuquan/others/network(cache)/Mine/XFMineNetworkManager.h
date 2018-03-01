@@ -707,5 +707,31 @@ typedef void(^MineRequestProgressBlock)(CGFloat progress);
                     progressBlock:(MineRequestProgressBlock)progressBlock;
 
 
+/**
+ 内购充值钻石
+
+ @param diamonds 钻石数量
+ @param successBlock 成功
+ @param failedBlock 失败
+ @param progressBlock 进度
+ */
++ (void)iapChargeWithDiamond:(NSInteger)price
+                successBlock:(MineRequestSuccessBlock)successBlock
+                 failedBlock:(MineRequestFailedBlock)failedBlock
+               progressBlock:(MineRequestProgressBlock)progressBlock;
+
+/**
+ 内购购买Vip
+
+ @param days 天数
+ @param successBlock 成功
+ @param failedBlock 失败
+ @param progressBlock 进度
+ */
++ (void)iapVipWithDays:(NSInteger)days
+          successBlock:(MineRequestSuccessBlock)successBlock
+           failedBlock:(MineRequestFailedBlock)failedBlock
+         progressBlock:(MineRequestProgressBlock)progressBlock;
+
 
 @end

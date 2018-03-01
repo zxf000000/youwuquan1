@@ -13,6 +13,8 @@
 @property (nonatomic,assign) NSInteger quantity;
 @property (nonatomic,copy) NSString *currencyCode;
 
+@property (nonatomic,strong) MBProgressHUD *HUD;
+
 @end
 
 
@@ -28,6 +30,15 @@
     return manager;
 }
 
+- (instancetype)init {
+    
+    if (self = [super init]) {
+        
+        [self launch];
+    }
+    return self;
+}
+
 - (void)launch {
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
     [self requestProductList];
@@ -41,21 +52,30 @@
 - (void)buyProductsWithId:(NSString *)productsId andQuantity:(NSInteger)quantity {
     self.productsId = productsId;
     self.quantity = quantity;
+    
+    // 开始回调
+    self.payBeginBlock();
+    
     if ([SKPaymentQueue canMakePayments]) {
         //允许程序内付费购买
         [self RequestProductData:@[self.productsId]];
     } else {
+        
         //您的手机没有打开程序内付费购买
-        UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"您的手机没有打开程序内付费购买" message:nil delegate:nil cancelButtonTitle:@"关闭" otherButtonTitles:nil];
-        [alerView show];
+        [self showAlertWithTitle:@"您的手机没有打开程序内付费购买"];
+//
+//        UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"" message:nil delegate:nil cancelButtonTitle:@"关闭" otherButtonTitles:nil];
+//        [alerView show];
     }
 }
 
 - (void)RequestProductData:(NSArray *)productsIdArr {
+    
     //请求对应的产品信息
     NSSet *nsset = [NSSet setWithArray:productsIdArr];
     SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:nsset];
     request.delegate = self;
+
     [request start];
 }
 
@@ -91,6 +111,7 @@
             payment = [SKMutablePayment paymentWithProduct:prct];
             payment.quantity = self.quantity;
             [[SKPaymentQueue defaultQueue] addPayment:payment];
+            
         }
     }
 }
@@ -105,6 +126,7 @@
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
     //交易结果
     for (SKPaymentTransaction *transaction in transactions) {
+        
         switch (transaction.transactionState) {
             case SKPaymentTransactionStatePurchased: {
                 //交易完成
@@ -114,15 +136,18 @@
             case SKPaymentTransactionStateFailed: {
                 //交易失败
                 [self failedTransaction:transaction];
-                UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"交易失败" message:nil delegate:nil cancelButtonTitle:@"关闭" otherButtonTitles:nil];
-                [alerView show];
+                [self showAlertWithTitle:@"交易失败"];
+
             }
                 break;
             case SKPaymentTransactionStateRestored: {
                 //已经购买过该商品
                 [self restoreTransaction:transaction];
-                UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"已经购买过该商品" message:nil delegate:nil cancelButtonTitle:@"关闭" otherButtonTitles:nil];
-                [alerView show];
+
+                [self showAlertWithTitle:@"已经购买过该商品"];
+
+//                UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:@"已经购买过该商品" message:nil delegate:nil cancelButtonTitle:@"关闭" otherButtonTitles:nil];
+//                [alerView show];
             }
                 break;
             case SKPaymentTransactionStatePurchasing: {
@@ -135,6 +160,7 @@
             }
                 break;
             default:
+                
                 break;
         }
     }
@@ -148,9 +174,103 @@
         NSString *bookid = [tt lastObject];
         if ([bookid length] > 0) {
             [self recordTransaction:bookid];
-            [self provideContent:bookid];}
+            [self provideContent:bookid];
+            
+            
+            [self verifyAppStorePurchaseWithPaymentTrasaction:transaction];
+        }
     }
 }
+
+//沙盒测试环境验证
+#define SANDBOX @"https://sandbox.itunes.apple.com/verifyReceipt"
+//正式环境验证
+#define AppStore @"https://buy.itunes.apple.com/verifyReceipt"
+// 验证购买
+- (void)verifySandBoxPurchaseWithPaymentTrasaction:(SKPaymentTransaction *)transaction {
+    
+    // 验证凭据，获取到苹果返回的交易凭据
+    // appStoreReceiptURL iOS7.0增加的，购买交易完成后，会将凭据存放在该地址
+    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    // 从沙盒中获取到购买凭据
+    NSData *receiptData = [NSData dataWithContentsOfURL:receiptURL];
+    // 发送网络POST请求，对购买凭据进行验证
+    //测试验证地址:https://sandbox.itunes.apple.com/verifyReceipt
+    //正式验证地址:https://buy.itunes.apple.com/verifyReceipt
+    NSURL *url = [NSURL URLWithString:SANDBOX];
+    NSMutableURLRequest *urlRequest =
+    [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10.0f];
+    urlRequest.HTTPMethod = @"POST";
+    NSString *encodeStr = [receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+    NSString *payload = [NSString stringWithFormat:@"{\"receipt-data\" : \"%@\"}", encodeStr];
+    NSData *payloadData = [payload dataUsingEncoding:NSUTF8StringEncoding];
+    urlRequest.HTTPBody = payloadData;
+    // 提交验证请求，并获得官方的验证JSON结果 iOS9后更改了另外的一个方法
+    
+    NSData *result = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:nil error:nil];
+    // 官方验证结果为空
+    if (result == nil) {
+        NSLog(@"验证失败");
+
+        
+        return;
+    }
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:result options:NSJSONReadingAllowFragments error:nil];
+    if (dict != nil) {
+        // 比对字典中以下信息基本上可以保证数据安全
+        // bundle_id , application_version , product_id , transaction_id
+
+        NSLog(@"验证成功！购买的商品是：%@", @"_productName");
+        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+
+    }
+
+}
+
+// 验证购买
+- (void)verifyAppStorePurchaseWithPaymentTrasaction:(SKPaymentTransaction *)transaction {
+    
+    // 验证凭据，获取到苹果返回的交易凭据
+    // appStoreReceiptURL iOS7.0增加的，购买交易完成后，会将凭据存放在该地址
+    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    // 从沙盒中获取到购买凭据
+    NSData *receiptData = [NSData dataWithContentsOfURL:receiptURL];
+    // 发送网络POST请求，对购买凭据进行验证
+    //测试验证地址:https://sandbox.itunes.apple.com/verifyReceipt
+    //正式验证地址:https://buy.itunes.apple.com/verifyReceipt
+    NSURL *url = [NSURL URLWithString:AppStore];
+    NSMutableURLRequest *urlRequest =
+    [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10.0f];
+    urlRequest.HTTPMethod = @"POST";
+    NSString *encodeStr = [receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+    NSString *payload = [NSString stringWithFormat:@"{\"receipt-data\" : \"%@\"}", encodeStr];
+    NSData *payloadData = [payload dataUsingEncoding:NSUTF8StringEncoding];
+    urlRequest.HTTPBody = payloadData;
+    // 提交验证请求，并获得官方的验证JSON结果 iOS9后更改了另外的一个方法
+    
+    NSData *result = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:nil error:nil];
+    // 官方验证结果为空
+    if (result == nil) {
+        NSLog(@"验证失败");
+        [self verifySandBoxPurchaseWithPaymentTrasaction:transaction];
+
+        return;
+    }
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:result options:NSJSONReadingAllowFragments error:nil];
+    if (dict != nil) {
+        // 比对字典中以下信息基本上可以保证数据安全
+        // bundle_id , application_version , product_id , transaction_id
+        NSLog(@"验证成功！购买的商品是：%@", @"_productName");
+
+        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+        
+    }
+    
+}
+
+// 验证store
+
+
 
 - (void)recordTransaction:(NSString *)product{
     NSLog(@"记录交易--product == %@",product);
@@ -172,6 +292,21 @@
 
 - (void)terminate {
     [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+}
+
+- (void)showAlertWithTitle:(NSString *)title {
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:(UIAlertControllerStyleAlert)];
+    UIAlertAction *actionDone = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+    }];
+    
+    [alert addAction:actionDone];
+    
+    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+    
+    [vc presentViewController:alert animated:YES completion:nil];
 }
 
 @end

@@ -1242,7 +1242,7 @@
                          failedBlock:(MineRequestFailedBlock)failedBlock
                        progressBlock:(MineRequestProgressBlock)progressBlock {
     
-    [XFNetworking getWithUrl:[XFApiClient pathUrlForMyVipInfo] refreshRequest:NO cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+    [XFNetworking getWithUrl:[XFApiClient pathUrlForMyVipInfo] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         progressBlock(bytesRead/(CGFloat)totalBytes);
         
     } successBlock:^(id response) {
@@ -1454,5 +1454,53 @@
         
     }];
 }
+
++ (void)iapChargeWithDiamond:(NSInteger)price
+                successBlock:(MineRequestSuccessBlock)successBlock
+                 failedBlock:(MineRequestFailedBlock)failedBlock
+               progressBlock:(MineRequestProgressBlock)progressBlock {
+    
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForIAPChargeDiamonds] refreshRequest:YES cache:NO praams:@{@"price":@(price)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+}
+/**
+ 内购购买Vip
+ 
+ @param days 天数
+ @param successBlock 成功
+ @param failedBlock 失败
+ @param progressBlock 进度
+ */
++ (void)iapVipWithDays:(NSInteger)days
+          successBlock:(MineRequestSuccessBlock)successBlock
+           failedBlock:(MineRequestFailedBlock)failedBlock
+         progressBlock:(MineRequestProgressBlock)progressBlock {
+
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForIAPChargeVIP] refreshRequest:YES cache:NO praams:@{@"time":@(days)} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failedBlock(error);
+        
+    }];
+    
+}
+
 
 @end

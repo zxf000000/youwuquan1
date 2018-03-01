@@ -115,6 +115,9 @@
 
 #import "XFImageNodeManager.h"
 
+// 支付管理
+#import "BLPaymentManager.h"
+
 #endif /* PrefixHeader_pch */
 
 #endif

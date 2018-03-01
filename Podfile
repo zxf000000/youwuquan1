@@ -10,6 +10,11 @@ pod 'AFNetworking'
 
 pod 'MJRefresh'
 
+#pod 'UICKeyChainStore'
+#pod 'NSData+MD5Digest' # MD5 验证.
+
+
+
 pod 'YYKit'
 
 pod 'Texture'
@@ -62,7 +67,7 @@ pod 'PLPlayerKit'
 pod 'Bugly'
 
 pod 'DZNEmptyDataSet'
-
-
+    
 end
+
 

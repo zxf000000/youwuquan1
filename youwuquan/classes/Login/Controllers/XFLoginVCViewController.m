@@ -15,6 +15,7 @@
 #import "XFBindPhoneViewController.h"
 #import <WXApi.h>
 #import <UMSocialQQHandler.h>
+#import "AppDelegate.h"
 
 @interface XFLoginVCViewController ()
 
@@ -158,7 +159,7 @@
                 [[XFUserInfoManager sharedManager] updateTokenDate:[NSDate date]];
                 
                 [self saveUserInfoWithUsername:self.phoneTextField.text pwd:self.pwdTextField.text];
-
+                
                 
             } failedBlock:^(NSError *error) {
                 
@@ -196,6 +197,15 @@
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshUserInfoKey object:nil];
         
+        // 开启支付监听
+        AppDelegate *appdelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+        if (!appdelegate.isAlreadChecked) {
+            
+            [[BLPaymentManager sharedManager] startTransactionObservingAndPaymentTransactionVerifingWithUserID:responseObj[@"info"][@"uid"]];
+
+        }
+        
+
         [self dismissViewControllerAnimated:YES completion:nil];
         
     } failedBlock:^(NSError *error) {
