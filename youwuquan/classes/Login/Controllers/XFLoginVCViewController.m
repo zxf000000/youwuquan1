@@ -202,7 +202,7 @@
         if (!appdelegate.isAlreadChecked) {
             
             [[BLPaymentManager sharedManager] startTransactionObservingAndPaymentTransactionVerifingWithUserID:responseObj[@"info"][@"uid"]];
-
+            appdelegate.isAlreadChecked = YES;
         }
         
 

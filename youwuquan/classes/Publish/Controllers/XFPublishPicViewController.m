@@ -474,16 +474,65 @@ static NSString *const kURLPrefix = @"http://shortvideo.pdex-service.com";
     assetCollections = nil;
     
     if (collectionView == self.openView) {
+       
+        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusDenied) {
+            
+            UIAlertController *alert = [UIAlertController xfalertControllerWithMsg:@"您未开启相册权限,请到设置中开启" doneBlock:^{
+                
+                [self.navigationController popViewControllerAnimated:YES];
+            }];
+            
+            [self presentViewController:alert animated:YES completion:nil];
+        }
         
-        XFImagePickerViewController *imagePicker = [[XFImagePickerViewController alloc] init];
         
-        imagePicker.delegate = self;
-        imagePicker.maxNumber = 8;
-        self.isOpenImage = YES;
         
-        imagePicker.selectedNumber = self.openintentionImages.count + self.secintentionImages.count;
+        // 请求相册权限
+        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+            
+            XFImagePickerViewController *imagePicker = [[XFImagePickerViewController alloc] init];
+            
+            imagePicker.delegate = self;
+            imagePicker.maxNumber = 8;
+            self.isOpenImage = YES;
+            
+            imagePicker.selectedNumber = self.openintentionImages.count + self.secintentionImages.count;
+            
+            [self.navigationController pushViewController:imagePicker animated:YES];
+        }
         
-        [self.navigationController pushViewController:imagePicker animated:YES];
+        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined || [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusRestricted) {
+            
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    if (status == PHAuthorizationStatusAuthorized) {
+                        
+                        XFImagePickerViewController *imagePicker = [[XFImagePickerViewController alloc] init];
+                        
+                        imagePicker.delegate = self;
+                        imagePicker.maxNumber = 8;
+                        self.isOpenImage = YES;
+                        
+                        imagePicker.selectedNumber = self.openintentionImages.count + self.secintentionImages.count;
+                        
+                        [self.navigationController pushViewController:imagePicker animated:YES];
+                        
+                    }
+                });
+                
+
+            }];
+        }
+        
+        
+        
+        
+        
+        
+        
+
         
     } else if (collectionView == self.secretView) {
         

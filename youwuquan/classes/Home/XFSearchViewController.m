@@ -385,6 +385,7 @@
 - (void)clickCancelButton {
     
     [self.searchBar resignFirstResponder];
+  
     
     [self dismissViewControllerAnimated:YES
                              completion:nil];
@@ -418,8 +419,13 @@
 }
 
 - (void)tableNode:(ASTableNode *)tableNode didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    XFStatusModel *model = self.datas[indexPath.row];
 
-    XFStatusModel *model = self.datas[indexPath.row - 1];
+    if (self.userDatas.count > 0) {
+        model = self.datas[indexPath.row - 1];
+
+        
+    }
     
     XFStatusDetailViewController *statusVC = [[XFStatusDetailViewController alloc] init];
     statusVC.hidesBottomBarWhenPushed = YES;
@@ -464,6 +470,9 @@
     
     self.historyView.hidden = NO;
     self.resultNode.hidden = YES;
+    
+    [self.historyView reloadData];
+
     
     return YES;
     

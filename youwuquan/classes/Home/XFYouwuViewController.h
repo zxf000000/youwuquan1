@@ -24,6 +24,8 @@ typedef NS_ENUM(NSInteger, XFYouwuVCType) {
 
 @property (nonatomic,strong) UILabel *titleLabel;
 
+@property (nonatomic,copy) void(^headerShouldPushVC)(UIViewController *vc);
+
 @end
 
 @interface XFYouwuViewController : UIViewController

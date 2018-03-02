@@ -779,4 +779,24 @@
     
 }
 
++ (void)tousuStatusWith:(NSString *)statusID
+           successBlock:(FindRequestSuccessBlock)successBlock
+              failBlock:(FindRequestFailedBlock)failBlock
+               progress:(FindRequestProgressBlock)progressBlock {
+    
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForTousustatisWith:statusID] refreshRequest:YES cache:NO praams:nil progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        progressBlock(bytesRead/(CGFloat)totalBytes);
+        
+    } successBlock:^(id response) {
+        
+        successBlock(response);
+        
+    } failBlock:^(NSError *error) {
+        
+        failBlock(error);
+        
+    }];
+    
+}
+
 @end

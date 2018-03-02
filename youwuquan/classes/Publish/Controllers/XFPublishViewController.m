@@ -300,10 +300,13 @@
 //}
 
 - (void)pushOutAddImgVC {
-    
+   
+
     XFPublishPicViewController *publichPicVC = [[XFPublishPicViewController alloc] init];
     self.navigationController.delegate = publichPicVC;
+    
     [self.navigationController pushViewController:publichPicVC animated:YES];
+
 
     
 //    XFAddImageViewController *addimgVC = [[XFAddImageViewController alloc] init];

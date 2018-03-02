@@ -311,15 +311,57 @@
 #pragma mark - 获取所有缩略图
 - (void)getThumbnailImages
 {
-    // 获得所有的自定义相簿
-    PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
-    // 遍历所有的自定义相簿
-    for (PHAssetCollection *assetCollection in assetCollections) {
-        [self enumerateAssetsInAssetCollection:assetCollection original:NO];
+    
+//    PHAuthorizationStatusNotDetermined = 0, // User has not yet made a choice with regards to this application
+//    PHAuthorizationStatusRestricted,        // This application is not authorized to access photo data.
+//    // The user cannot change this application’s status, possibly due to active restrictions
+//    //   such as parental controls being in place.
+//    PHAuthorizationStatusDenied,            // User has explicitly denied this application access to photos data.
+//    PHAuthorizationStatusAuthorized
+    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusDenied) {
+     
+        UIAlertController *alert = [UIAlertController xfalertControllerWithMsg:@"您未开启相册权限,请到设置中开启" doneBlock:^{
+           
+            [self.navigationController popViewControllerAnimated:YES];
+        }];
+        
+        [self presentViewController:alert animated:YES completion:nil];
     }
-    // 获得相机胶卷
-    PHAssetCollection *cameraRoll = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil].lastObject;
-    [self enumerateAssetsInAssetCollection:cameraRoll original:NO];
+
+    // 请求相册权限
+    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+        PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+        // 遍历所有的自定义相簿
+        for (PHAssetCollection *assetCollection in assetCollections) {
+            [self enumerateAssetsInAssetCollection:assetCollection original:NO];
+        }
+        // 获得相机胶卷
+        PHAssetCollection *cameraRoll = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil].lastObject;
+        [self enumerateAssetsInAssetCollection:cameraRoll original:NO];
+    
+    }
+    
+    
+    
+    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined || [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusRestricted) {
+        
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+            
+            if (status == PHAuthorizationStatusAuthorized) {
+                // 获得所有的自定义相簿
+                PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+                // 遍历所有的自定义相簿
+                for (PHAssetCollection *assetCollection in assetCollections) {
+                    [self enumerateAssetsInAssetCollection:assetCollection original:NO];
+                }
+                // 获得相机胶卷
+                PHAssetCollection *cameraRoll = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil].lastObject;
+                [self enumerateAssetsInAssetCollection:cameraRoll original:NO];
+            }
+        }];
+    }
+    
+
     
 }
 

@@ -264,7 +264,8 @@
 #define YBYIAPChargeDiamond @"user/balance/ios/diamond"
 // 内购买会员
 #define YBYIAPChargeVip @"user/balance/ios/vip"
-
+// 投诉
+#define YBYTousuStatus(statusId) [NSString stringWithFormat:@"publish/%@/complaint",(statusId)]
 
 @implementation XFApiClient
 // 发送验证码
@@ -893,5 +894,11 @@
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYIAPChargeVip];
 }
+
++ (NSString *)pathUrlForTousustatisWith:(NSString *)statusId {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYTousuStatus(statusId)];
+}
+
 
 @end

@@ -1278,11 +1278,15 @@
         MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
         
         [XFFindNetworkManager getUserWechatWithUid:self.userId successBlock:^(id responseObj) {
+            
+            NSLog(@"%@---",responseObj);
             [XFToolManager changeHUD:HUD successWithText:@"支付成功!微信/手机会以短信形式发送给您的绑定手机"];
             // 成功提示
             
         } failBlock:^(NSError *error) {
             [HUD hideAnimated:YES];
+            
+            
             if (!error) {
                 // 充值页面
                 XFPayViewController *payVC = [[XFPayViewController alloc] init];

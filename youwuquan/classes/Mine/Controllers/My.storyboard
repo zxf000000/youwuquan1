@@ -199,11 +199,11 @@
                                         <rect key="frame" x="285" y="27" width="80" height="37"/>
                                         <state key="normal" image="Become_VIP"/>
                                     </button>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ordinary" translatesAutoresizingMaskIntoConstraints="NO" id="u1o-BX-Y65">
-                                        <rect key="frame" x="95" y="26" width="67" height="18"/>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="VIP_Nameplate" translatesAutoresizingMaskIntoConstraints="NO" id="u1o-BX-Y65">
+                                        <rect key="frame" x="95" y="13" width="32" height="44"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="未开通VIP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="86P-Md-9bF">
-                                        <rect key="frame" x="95" y="47" width="56" height="14.5"/>
+                                        <rect key="frame" x="95" y="60" width="56" height="14.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -2479,12 +2479,12 @@ b) 在使用尤圈app网 络服务进行网上交易时，您不可避免的要�
         <image name="Diamonds" width="33" height="24"/>
         <image name="Membership_rights" width="28" height="31"/>
         <image name="Sign" width="50" height="50"/>
+        <image name="VIP_Nameplate" width="32" height="44"/>
         <image name="actor_pic14" width="117" height="150"/>
         <image name="actor_pic2" width="117" height="150"/>
         <image name="actor_pic3" width="117" height="150"/>
         <image name="me_caifubj" width="375" height="423"/>
         <image name="my_add" width="115" height="115"/>
-        <image name="ordinary" width="67" height="18"/>
         <image name="price" width="22" height="22"/>
         <image name="request" width="22" height="22"/>
         <image name="site" width="22" height="22"/>

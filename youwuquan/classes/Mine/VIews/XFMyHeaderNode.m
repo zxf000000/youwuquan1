@@ -138,7 +138,7 @@
         _collectionNode.delegate = self;
         _collectionNode.dataSource = self;
        
-        XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
+//        XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
         
         
 //        if ([model.identificationName isEqualToString:@"基本认证"]) {
@@ -148,8 +148,8 @@
 //
 //        } else {
             _isUp = NO;
-            _imgs = @[@"me_zl",@"me_rz",@"mine_vip",@"me_cf",@"me_fh",@"me_jn"];
-            _titles = @[@"我的资料",@"我的认证",@"VIP中心",@"我的财富",@"VIP富豪榜",@"我的技能"];
+            _imgs = @[@"me_zl",@"me_rz",@"mine_vip",@"me_cf",@"me_fh"];
+            _titles = @[@"我的资料",@"我的认证",@"VIP中心",@"我的财富",@"VIP富豪榜"];
 //        }
         
 

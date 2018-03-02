@@ -832,6 +832,14 @@ static NSTimeInterval requestTimeout = 20.f;
     // 获取返回json
     NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     
+    NSInteger jsonCode = [responseDic[@"code"] intValue];
+    
+    if (jsonCode == 4004) {
+            // 发送短信问题
+            [XFToolManager showProgressInWindowWithString:@"短信发送失败，请稍后再试"];
+            return;
+    }
+    
     NSURLResponse *response = [task response];
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     
@@ -927,11 +935,9 @@ static NSTimeInterval requestTimeout = 20.f;
             
         }
             break;
-            
         default:
         {
 //            [XFToolManager showProgressInWindowWithString:@"请求失败,请检查网络连接"];
-            
             
         }
             

@@ -111,6 +111,9 @@
         datailVC.userName = model.nickname;
         datailVC.iconUrl = model.headIconUrl;
         datailVC.hidesBottomBarWhenPushed = YES;
+       
+        self.headerShouldPushVC(datailVC);
+        
 //        [self.navigationController pushViewController:datailVC animated:YES];
     }
     
@@ -312,6 +315,9 @@
         header.models = self.models;
         header.type = self.type;
         
+        header.headerShouldPushVC = ^(UIViewController *vc) {
+            [self.navigationController pushViewController:vc animated:YES];
+        };
         
         return header;
     }

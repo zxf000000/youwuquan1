@@ -185,20 +185,20 @@
     self.HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
     // 获取活动
-//    NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
+    NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
         [self getAdData];
-//    }];
+    }];
     // 获取推荐列表
-//    NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
+    NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
         [self loadinviteData];
-//    }];
+    }];
     
     //设置依赖
-//    [operation2 addDependency:operation1];      //任务3依赖任务2
+    [operation2 addDependency:operation1];      //任务3依赖任务2
     
     //创建队列
-//    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-//    [queue addOperations:@[operation2, operation1] waitUntilFinished:NO];
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperations:@[operation2, operation1] waitUntilFinished:NO];
     
 }
 
@@ -371,6 +371,8 @@
 }
 
 - (void)loadinviteData {
+    
+    self.page = 0;
     
     [XFFindNetworkManager getInviteDataWithPage:self.page rows:10 SuccessBlock:^(id responseObj) {
         
@@ -798,14 +800,19 @@
                    withMenuArray:@[@"举报"]
                       imageArray:@[@"find_jubao"]
                        doneBlock:^(NSInteger selectedIndex) {
-                            // 举报操作
                            MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.view];
+
+                           [XFFindNetworkManager tousuStatusWith:node.model.id successBlock:^(id responseObj) {
+                               
+                               [XFToolManager changeHUD:HUD successWithText:@"已提交到管理员审核"];
+
+                               
+                           } failBlock:^(NSError *error) {
+                               [HUD hideAnimated:YES];
+                           } progress:^(CGFloat progress) {
+                               
+                           }];
                            
-                           dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                               
-                               [XFToolManager changeHUD:HUD successWithText:@"举报成功!"];
-                               
-                           });
                            
                        } dismissBlock:^{
                            

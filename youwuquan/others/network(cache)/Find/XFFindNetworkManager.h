@@ -334,4 +334,10 @@ typedef void(^FindRequestProgressBlock)(CGFloat progress);
                  successBlock:(FindRequestSuccessBlock)successBlock
                     failBlock:(FindRequestFailedBlock)failBlock
                      progress:(FindRequestProgressBlock)progressBlock;
+
++ (void)tousuStatusWith:(NSString *)statusID
+           successBlock:(FindRequestSuccessBlock)successBlock
+              failBlock:(FindRequestFailedBlock)failBlock
+               progress:(FindRequestProgressBlock)progressBlock;
 @end
+

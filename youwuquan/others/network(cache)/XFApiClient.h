@@ -872,5 +872,6 @@
  */
 + (NSString *)pathUrlForIAPChargeVIP;
 
++ (NSString *)pathUrlForTousustatisWith:(NSString *)statusId;
 
 @end
