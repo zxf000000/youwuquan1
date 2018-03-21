@@ -103,7 +103,7 @@
     NSString *receipts = [self.transactionReceiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
 //    NSString *md5 = [NSData MD5HexDigest:[receipts dataUsingEncoding:NSUTF8StringEncoding]];
     
-    
+    NSLog(@"%@",self.transactionReceiptData);
     [self verifyAppStorePurchaseWithPaymentTrasaction:receipts];
     
     
@@ -137,7 +137,7 @@
     NSData *result = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:nil error:nil];
     // 官方验证结果为空
     if (result == nil) {
-        NSLog(@"验证失败");
+        NSLog(@"验证失败---sandbox");
         [self handleUploadCertificateRequestFailed];
 
         return;
@@ -172,6 +172,7 @@
     urlRequest.HTTPMethod = @"POST";
 //    NSString *encodeStr = [receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
     NSString *payload = [NSString stringWithFormat:@"{\"receipt-data\" : \"%@\"}", receipts];
+    NSLog(@"recipt----%@",receipts);
     NSData *payloadData = [payload dataUsingEncoding:NSUTF8StringEncoding];
     urlRequest.HTTPBody = payloadData;
     // 提交验证请求，并获得官方的验证JSON结果 iOS9后更改了另外的一个方法
@@ -179,7 +180,7 @@
     NSData *result = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:nil error:nil];
     // 官方验证结果为空
     if (result == nil) {
-        NSLog(@"验证失败");
+        NSLog(@"验证失败---appstore");
         [self verifySandBoxPurchaseWithPaymentTrasaction:receipts];
         
         return;
@@ -188,9 +189,10 @@
     if (dict != nil) {
         // 比对字典中以下信息基本上可以保证数据安全
         // bundle_id , application_version , product_id , transaction_id
-        NSLog(@"验证成功！购买的商品是：%@", @"_productName");
+        NSLog(@"验证成功！购买的商品是：%@", @"receipts");
         
         NSInteger code = [dict[@"status"] integerValue];
+        
         [self manageCodeWithCode:code reci:receipts];
         
         

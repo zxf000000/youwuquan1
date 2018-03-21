@@ -9,6 +9,7 @@
 #import "XFFindCellNode.h"
 #import "UIImage+ImageEffects.h"
 #import "XFAuthManager.h"
+#import "XFLockImgNode.h"
 
 #define kTextShadowHeight 16
 #define kTextShadowInset -16
@@ -91,6 +92,8 @@
             NSMutableArray *nodes = [NSMutableArray array];
             NSMutableArray *closesNodes = [NSMutableArray array];
             
+            NSString *firstLockUrl = @"";
+            
             for (NSInteger i = 0 ; i < _model.pictures.count ; i ++ ) {
                 
                 NSDictionary *info = _model.pictures[i];
@@ -114,6 +117,11 @@
                     [picNode addTarget:self action:@selector(clickPicNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
                     
                 } else {
+                    
+                    if (self.closeCount == 0) {
+                        firstLockUrl = info[@"image"][@"thumbImage300pxUrl"];
+                    }
+                    
                     XFNetworkImageNode *picNode = [[XFNetworkImageNode alloc] init];
                     picNode.image = [UIImage imageNamed:@"zhanweitu22"];
                     picNode.url = [NSURL URLWithString:info[@"image"][@"thumbImage300pxUrl"]];
@@ -129,18 +137,14 @@
             }
             // 添加一张私密图片
             if (closesNodes.count > 0) {
-
-//                XFNetworkImageNode *node = closesNodes[0];
                 
+                XFLockImgNode *lockNode = [[XFLockImgNode alloc] initWithNumber:self.closeCount img:firstLockUrl];
+                lockNode.cornerRadius = 10;
+                lockNode.clipsToBounds = YES;
+                [self addSubnode:lockNode];
+                [nodes addObject:lockNode];
+                [lockNode addTarget:self action:@selector(clickPicNode:) forControlEvents:ASControlNodeEventTouchUpInside];
 
-                [self addSubnode:closesNodes[0]];
-                [nodes addObject:closesNodes[0]];
-
-                _lockButton  = [[XFLockNode alloc] initWithNumber:self.closeCount];
-                
-                [_lockButton addTarget:self action:@selector(clickPicNode:) forControlEvents:(ASControlNodeEventTouchUpInside)];
-
-                [self addSubnode:_lockButton];
             }
             _picNodes = nodes.copy;
             
@@ -283,18 +287,9 @@
         
         [self addSubnode:_moneyButton];
         
-        XFMyAuthModel *model = [[XFAuthManager sharedManager].authList lastObject];
-        
-        
-//        if ([model.identificationName isEqualToString:@"基本认证"]) {
-//            _isUp = YES;
-//            _moneyButton.hidden = YES;
-//
-//        } else {
-//            _isUp = NO;
-            _moneyButton.hidden = NO;
 
-//        }
+        _isUp = NO;
+        _moneyButton.hidden = NO;
         
         
         _setbutton = [[ASButtonNode alloc] init];
@@ -586,18 +581,19 @@
 
         picNode.style.preferredSize = CGSizeMake(picWidth, picHeight);
         
-        ASOverlayLayoutSpec *overlay;
-        if (self.closeCount > 0) {
-            _lockButton.style.preferredSize = CGSizeMake(50, 50);
-            XFNetworkImageNode *picNode = [self.picNodes lastObject];
-            overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
-        }
+//        ASOverlayLayoutSpec *overlay;
+//        if (self.closeCount > 0) {
+//            _lockButton.style.preferredSize = CGSizeMake(50, 50);
+//            XFNetworkImageNode *picNode = [self.picNodes lastObject];
+//            overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
+//        }
         
         // 图像
         ASInsetLayoutSpec *picShadowLayout = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake(picHeight - picShadowHeight, 0, 0, 0)) child:_imgShadowNode];
         
-        ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:self.closeCount > 0 ? overlay : picNode  overlay:picShadowLayout];
-        
+        ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode  overlay:picShadowLayout];
+        //        ASOverlayLayoutSpec *picLayout = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:self.closeCount > 0 ? overlay : picNode  overlay:picShadowLayout];
+
         _playButton.style.preferredSize = CGSizeMake(80, 80);
         
         ASInsetLayoutSpec *insetPlay = [ASInsetLayoutSpec insetLayoutSpecWithInsets:(UIEdgeInsetsMake((picHeight - 80)/2, (picWidth - 80)/2, (picHeight - 80)/2, (picWidth - 80)/2)) child:_playButton];
@@ -615,14 +611,16 @@
             
         }
         
-        if (self.closeCount > 0) {
-            _lockButton.style.preferredSize = CGSizeMake(50, 50);
-            XFNetworkImageNode *picNode = [self.picNodes lastObject];
-            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
-            NSMutableArray *arr = [NSMutableArray arrayWithArray:self.picNodes];
-            arr[arr.count - 1] = overlay;
-            self.picNodes = arr.copy;
-        }
+//        if (self.closeCount > 0) {
+//            _lockButton.style.preferredSize = CGSizeMake(50, 50);
+//            XFNetworkImageNode *picNode = [self.picNodes lastObject];
+//            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
+//            NSLog(@"使用次数%zd",_useCount + 1);
+//
+//            NSMutableArray *arr = [NSMutableArray arrayWithArray:self.picNodes];
+//            arr[arr.count - 1] = overlay;
+//            self.picNodes = arr.copy;
+//        }
         
         ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1]]];
         ASStackLayoutSpec *downPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[2],_picNodes[3]]];
@@ -648,15 +646,18 @@
             picNode.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);
             
         }
-        if (self.closeCount > 0) {
-            _lockButton.style.preferredSize = CGSizeMake(50, 50);
-            XFNetworkImageNode *picNode = [_picNodes lastObject];
-            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
-            overlay.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);;
-            NSMutableArray *arr = [NSMutableArray arrayWithArray:_picNodes];
-            arr[arr.count - 1] = overlay;
-            _picNodes = arr.copy;
-        }
+//        if (self.closeCount > 0) {
+//            _lockButton.style.preferredSize = CGSizeMake(50, 50);
+//            XFNetworkImageNode *picNode = [_picNodes lastObject];
+//            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
+//            NSLog(@"使用次数%zd",_useCount + 1);
+//
+//            overlay.style.preferredSize = CGSizeMake(littlePicWidth, littlePicWidth);;
+//            NSMutableArray *arr = [NSMutableArray arrayWithArray:_picNodes];
+//            [arr removeLastObject];
+//            [arr addObject:overlay];
+//            _picNodes = arr.copy;
+//        }
         
         ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:_picNodes];
         
@@ -687,15 +688,17 @@
             }
         }
 
-        if (self.closeCount > 0) {
-
-            _lockButton.style.preferredSize = CGSizeMake(50, 50);
-            XFNetworkImageNode *picNode = [downNodes lastObject];
-            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
-            NSMutableArray *arr = [NSMutableArray arrayWithArray:downNodes];
-            arr[arr.count - 1] = overlay;
-            downNodes = arr.copy;
-        }
+//        if (self.closeCount > 0) {
+//
+//            _lockButton.style.preferredSize = CGSizeMake(50, 50);
+//            XFNetworkImageNode *picNode = [downNodes lastObject];
+//            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
+//            NSLog(@"使用次数%zd",_useCount + 1);
+//
+//            NSMutableArray *arr = [NSMutableArray arrayWithArray:downNodes];
+//            arr[arr.count - 1] = overlay;
+//            downNodes = arr.copy;
+//        }
         
         ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1],_picNodes[2]]];
         ASStackLayoutSpec *downPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:downNodes];
@@ -736,14 +739,16 @@
             }
         }
         
-        if (self.closeCount > 0) {
-            _lockButton.style.preferredSize = CGSizeMake(50, 50);
-            XFNetworkImageNode *picNode = [downNodes lastObject];
-            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
-            NSMutableArray *arr = [NSMutableArray arrayWithArray:downNodes];
-            arr[arr.count - 1] = overlay;
-            downNodes = arr.copy;
-        }
+//        if (self.closeCount > 0) {
+//            _lockButton.style.preferredSize = CGSizeMake(50, 50);
+//            XFNetworkImageNode *picNode = [downNodes lastObject];
+//            ASOverlayLayoutSpec *overlay = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:picNode overlay:_lockButton];
+//            NSLog(@"使用次数%zd",_useCount + 1);
+//
+//            NSMutableArray *arr = [NSMutableArray arrayWithArray:downNodes];
+//            arr[arr.count - 1] = overlay;
+//            downNodes = arr.copy;
+//        }
         
         ASStackLayoutSpec *upPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:@[_picNodes[0],_picNodes[1],_picNodes[2]]];
         ASStackLayoutSpec *centerPicLayout = [ASStackLayoutSpec stackLayoutSpecWithDirection:(ASStackLayoutDirectionHorizontal) spacing:3 justifyContent:(ASStackLayoutJustifyContentStart) alignItems:(ASStackLayoutAlignItemsCenter) children:centerNodes];

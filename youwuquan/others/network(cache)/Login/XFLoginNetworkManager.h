@@ -149,4 +149,19 @@ typedef void(^LoginRequestProgressBlock)(CGFloat progress);
           successBlock:(LoginRequestSuccessBlock)success
            failedBlock:(LoginRequestFailedBlock)failed;
 
+
+/**
+ 重置密码
+
+ @param phone 首级
+ @param pwd 新密码
+ @param code 验证码
+ @param success 1
+ @param failed 1
+ */
++ (void)resetPwdWithPhone:(NSString *)phone
+                      pwd:(NSString *)pwd
+                     code:(NSString *)code
+             successBlock:(LoginRequestSuccessBlock)success
+              failedBlock:(LoginRequestFailedBlock)failed;
 @end

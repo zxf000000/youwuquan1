@@ -301,7 +301,10 @@
                                                                                   @"text/*",
                                                                                   @"application/octet-stream",
                                                                                   @"application/zip"]];
-        [manager POST:[XFApiClient pathUrlForChargeWithAlipay] parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+        manager.responseSerializer = [AFJSONResponseSerializer serializer];
+        
+        [manager POST:[XFApiClient pathUrlForSignupWith:type] parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
             
             
         } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -432,6 +435,8 @@
 + (void)loginWithToken:(NSString *)token
           successBlock:(LoginRequestSuccessBlock)success
            failedBlock:(LoginRequestFailedBlock)failed {
+   
+    NSLog(@"%@---",token);
     
     [XFNetworking postWithUrl:[XFApiClient pathUrlForLoginWithToken] refreshRequest:YES cache:NO praams:@{@"token":token} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
         
@@ -447,5 +452,23 @@
     
 }
 
++ (void)resetPwdWithPhone:(NSString *)phone
+                      pwd:(NSString *)pwd
+                     code:(NSString *)code
+             successBlock:(LoginRequestSuccessBlock)success
+              failedBlock:(LoginRequestFailedBlock)failed {
+    
+    [XFNetworking postWithUrl:[XFApiClient pathUrlForResetPassword] refreshRequest:YES cache:NO praams:@{@"phone":phone,@"password":pwd,@"code":code} progressBlock:^(int64_t bytesRead, int64_t totalBytes) {
+        
+    } successBlock:^(id response) {
+
+        success(response);
+        
+    } failBlock:^(NSError *error) {
+        failed(error);
+        
+    }];
+    
+}
 
 @end

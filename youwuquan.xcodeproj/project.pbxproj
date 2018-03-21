@@ -49,6 +49,7 @@
 		B723CC021FBC731B00DC25E9 /* XFSetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B723CC011FBC731B00DC25E9 /* XFSetViewController.m */; };
 		B723CC051FBC737900DC25E9 /* XFMainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B723CC041FBC737900DC25E9 /* XFMainTableViewController.m */; };
 		B723CC091FBC923900DC25E9 /* XFMyPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B723CC081FBC923900DC25E9 /* XFMyPhotoViewController.m */; };
+		B7284D2A2050D5F900A1BB12 /* XFLockImgNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B7284D292050D5F900A1BB12 /* XFLockImgNode.m */; };
 		B729E0EA1FBEC23A0045FF68 /* XFRegistInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B729E0E91FBEC23A0045FF68 /* XFRegistInfoViewController.m */; };
 		B729E0EC1FBEC2550045FF68 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B729E0EB1FBEC2550045FF68 /* Login.storyboard */; };
 		B729E1291FBED3740045FF68 /* XFChooseLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B729E1281FBED3740045FF68 /* XFChooseLabelViewController.m */; };
@@ -672,6 +673,8 @@
 		B723CC041FBC737900DC25E9 /* XFMainTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMainTableViewController.m; sourceTree = "<group>"; };
 		B723CC071FBC923900DC25E9 /* XFMyPhotoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFMyPhotoViewController.h; sourceTree = "<group>"; };
 		B723CC081FBC923900DC25E9 /* XFMyPhotoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFMyPhotoViewController.m; sourceTree = "<group>"; };
+		B7284D282050D5F900A1BB12 /* XFLockImgNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFLockImgNode.h; sourceTree = "<group>"; };
+		B7284D292050D5F900A1BB12 /* XFLockImgNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFLockImgNode.m; sourceTree = "<group>"; };
 		B729E0E81FBEC23A0045FF68 /* XFRegistInfoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XFRegistInfoViewController.h; sourceTree = "<group>"; };
 		B729E0E91FBEC23A0045FF68 /* XFRegistInfoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XFRegistInfoViewController.m; sourceTree = "<group>"; };
 		B729E0EB1FBEC2550045FF68 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
@@ -1620,6 +1623,8 @@
 				B70F5717200DF4DE00AD317A /* XFLockNode.m */,
 				B70F5719200E201200AD317A /* XFUpImageNode.h */,
 				B70F571A200E201200AD317A /* XFUpImageNode.m */,
+				B7284D282050D5F900A1BB12 /* XFLockImgNode.h */,
+				B7284D292050D5F900A1BB12 /* XFLockImgNode.m */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -4020,6 +4025,7 @@
 				B7C6ABE8201EF68500D4A500 /* UIBarButtonItem+Badge.m in Sources */,
 				B757DAD41FCD8225002C0F3D /* UINavigationController+EnableAutorotate.m in Sources */,
 				B72A4B7F200EE99E0013157A /* ClipMovieViewController.m in Sources */,
+				B7284D2A2050D5F900A1BB12 /* XFLockImgNode.m in Sources */,
 				B79F5A961FEA1C0F00EFA843 /* XFGiftViewController.m in Sources */,
 				B7736DDD2025B29C007CD1B7 /* XFHomeCollectionViewCell.m in Sources */,
 				B7736DF42025B29C007CD1B7 /* XFNearbyViewController.m in Sources */,

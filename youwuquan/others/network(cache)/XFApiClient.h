@@ -874,4 +874,11 @@
 
 + (NSString *)pathUrlForTousustatisWith:(NSString *)statusId;
 
+/**
+ 重置密码
+
+ @return url
+ */
++ (NSString *)pathUrlForResetPassword;
+
 @end

@@ -266,6 +266,8 @@
 #define YBYIAPChargeVip @"user/balance/ios/vip"
 // 投诉
 #define YBYTousuStatus(statusId) [NSString stringWithFormat:@"publish/%@/complaint",(statusId)]
+// 重置密码
+#define YBYResetPassword @"update/password"
 
 @implementation XFApiClient
 // 发送验证码
@@ -898,6 +900,11 @@
 + (NSString *)pathUrlForTousustatisWith:(NSString *)statusId {
     
     return [NSString stringWithFormat:@"%@%@",YBYHost,YBYTousuStatus(statusId)];
+}
+
++ (NSString *)pathUrlForResetPassword {
+    
+    return [NSString stringWithFormat:@"%@%@",YBYHost,YBYResetPassword];
 }
 
 

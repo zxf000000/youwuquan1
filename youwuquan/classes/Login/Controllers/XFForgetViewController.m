@@ -98,34 +98,14 @@
     
     MBProgressHUD *HUD = [XFToolManager showProgressHUDtoView:self.navigationController.view];
     
-    [XFLoginNetworkManager changePwdWithNewPwd:self.pwdTextField.text progress:^(CGFloat progress) {
-        
-    } successBlock:^(id responseObj) {
-        
+    [XFLoginNetworkManager resetPwdWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text code:self.codeTextField.text successBlock:^(id responseObj) {
         [XFToolManager changeHUD:HUD successWithText:@"修改成功"];
         
         [self.navigationController popViewControllerAnimated:YES];
-        
-    } failBlock:^(NSError *error) {
-        
+    } failedBlock:^(NSError *error) {
         [HUD hideAnimated:YES];
 
     }];
-    
-//    [[XFLoginManager sharedInstance]  changePwdWithPhone:self.phoneTextField.text pwd:self.pwdTextField.text code:self.codeTextField.text  successBlock:^(NSDictionary *reponseDic) {
-//
-//        if (reponseDic) {
-//
-//
-//
-//        } else {
-//
-//            [HUD hideAnimated:YES];
-//        }
-//
-//    } failedBlock:^(NSError *error) {
-//
-//    }];
     
 }
 

@@ -172,4 +172,7 @@ typedef NS_ENUM(NSInteger,FindCellType) {
 @property (nonatomic,strong) ASButtonNode *moneyButton;
 @property (nonatomic,strong) ASButtonNode *setbutton;
 
+@property (nonatomic,assign) NSInteger useCount;
+
+
 @end
